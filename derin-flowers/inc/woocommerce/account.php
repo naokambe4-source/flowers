@@ -8,6 +8,19 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
+ * Üye kaydı: tek belirleyici Derin Flowers → Üyelik & Takip → "Hesabım sayfasında üye kaydı açık".
+ * WooCommerce ayarı kapalı kalsa bile panel açıksa kayıt formu gösterilir.
+ *
+ * @param mixed $value WooCommerce ayar değeri.
+ * @return string
+ */
+function df_force_registration_setting( $value ) {
+	return df_opt( 'reg_on', 1 ) ? 'yes' : 'no';
+}
+add_filter( 'option_woocommerce_enable_myaccount_registration', 'df_force_registration_setting' );
+add_filter( 'default_option_woocommerce_enable_myaccount_registration', 'df_force_registration_setting' );
+
+/**
  * Kayıt formuna alanlar.
  */
 function df_register_fields() {
