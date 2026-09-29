@@ -1,0 +1,517 @@
+<?php
+/**
+ * Yardımcı fonksiyonlar: seçenekler, görseller, bağlantılar, bölüm başlıkları.
+ *
+ * @package DerinFlowers
+ */
+
+defined( 'ABSPATH' ) || exit;
+
+/**
+ * Şemadan varsayılan değerler.
+ *
+ * @return array
+ */
+function df_defaults() {
+	static $defaults = null;
+	if ( null !== $defaults ) {
+		return $defaults;
+	}
+	$defaults = array();
+	foreach ( df_options_schema() as $tab ) {
+		foreach ( $tab['groups'] as $group ) {
+			foreach ( $group['fields'] as $field ) {
+				if ( empty( $field['id'] ) ) {
+					continue;
+				}
+				if ( 'sections' === $field['type'] ) {
+					$defaults[ $field['id'] ] = df_default_sections();
+					continue;
+				}
+				$defaults[ $field['id'] ] = isset( $field['default'] ) ? $field['default'] : ( in_array( $field['type'], array( 'repeater', 'products', 'checkboxes' ), true ) ? array() : '' );
+			}
+		}
+	}
+	return $defaults;
+}
+
+/**
+ * Varsayılan bölüm listesi.
+ *
+ * @return array
+ */
+function df_default_sections() {
+	$out = array();
+	foreach ( array_keys( df_home_section_labels() ) as $id ) {
+		$out[] = array(
+			'id' => $id,
+			'on' => 1,
+		);
+	}
+	return $out;
+}
+
+/**
+ * Tüm seçenekler (varsayılanlarla birleştirilmiş).
+ *
+ * @return array
+ */
+function df_options() {
+	global $df_options_cache;
+	if ( null === $df_options_cache ) {
+		$saved            = get_option( DF_OPTION, array() );
+		$df_options_cache = array_merge( df_defaults(), is_array( $saved ) ? $saved : array() );
+	}
+	return $df_options_cache;
+}
+
+/**
+ * Tek seçenek.
+ *
+ * @param string $key     Anahtar.
+ * @param mixed  $default Varsayılan.
+ * @return mixed
+ */
+function df_opt( $key, $default = null ) {
+	$opts = df_options();
+	if ( array_key_exists( $key, $opts ) ) {
+		return $opts[ $key ];
+	}
+	return $default;
+}
+
+/**
+ * Seçenek önbelleğini temizler.
+ */
+function df_flush_options_cache() {
+	global $df_options_cache;
+	$df_options_cache = null;
+}
+add_action( 'add_option_' . DF_OPTION, 'df_flush_options_cache' );
+add_action( 'update_option_' . DF_OPTION, 'df_flush_options_cache' );
+
+/**
+ * Bağlantı çözümleyici: "/magaza/" gibi göreli adresleri site adresine çevirir.
+ *
+ * @param string $url URL.
+ * @return string
+ */
+function df_url( $url ) {
+	$url = trim( (string) $url );
+	if ( '' === $url ) {
+		return '';
+	}
+	if ( 0 === strpos( $url, '/' ) && 0 !== strpos( $url, '//' ) ) {
+		return home_url( $url );
+	}
+	if ( 0 === strpos( $url, '#' ) || preg_match( '#^(https?:|mailto:|tel:|//)#i', $url ) ) {
+		return $url;
+	}
+	return home_url( '/' . ltrim( $url, '/' ) );
+}
+
+/**
+ * Metindeki {cutoff}, {year} gibi değişkenleri doldurur.
+ *
+ * @param string $text Metin.
+ * @return string
+ */
+function df_vars( $text ) {
+	return strtr(
+		(string) $text,
+		array(
+			'{cutoff}' => str_replace( ':', '.', (string) df_opt( 'df_cutoff', '16:00' ) ),
+			'{year}'   => wp_date( 'Y' ),
+			'{site}'   => get_bloginfo( 'name' ),
+		)
+	);
+}
+
+/**
+ * Satır satır metni diziye çevirir. "a | b | c" satırlarını parçalar.
+ *
+ * @param string $text  Metin.
+ * @param bool   $split "|" ile bölünsün mü.
+ * @return array
+ */
+function df_lines( $text, $split = false ) {
+	$out = array();
+	foreach ( preg_split( '/\r\n|\r|\n/', (string) $text ) as $line ) {
+		$line = trim( $line );
+		if ( '' === $line ) {
+			continue;
+		}
+		$out[] = $split ? array_map( 'trim', explode( '|', $line ) ) : $line;
+	}
+	return $out;
+}
+
+/**
+ * Çok satırlı metni <br> ile güvenli HTML'e çevirir.
+ *
+ * @param string $text Metin.
+ * @return string
+ */
+function df_nl2br( $text ) {
+	return nl2br( esc_html( trim( (string) $text ) ), false );
+}
+
+/**
+ * Görsel URL'si.
+ *
+ * @param int    $id   Ek ID.
+ * @param string $size Boyut.
+ * @return string
+ */
+function df_img_url( $id, $size = 'full' ) {
+	$id = absint( $id );
+	if ( ! $id ) {
+		return '';
+	}
+	$src = wp_get_attachment_image_url( $id, $size );
+	return $src ? $src : '';
+}
+
+/**
+ * Görsel etiketi ya da zarif yer tutucu.
+ *
+ * @param int    $id    Ek ID.
+ * @param string $size  Boyut.
+ * @param array  $attr  Nitelikler.
+ * @param string $label Görsel yoksa yöneticiye gösterilecek ipucu.
+ * @return string
+ */
+function df_image( $id, $size = 'large', $attr = array(), $label = '' ) {
+	$id = absint( $id );
+	if ( $id && wp_attachment_is_image( $id ) ) {
+		$attr = wp_parse_args(
+			$attr,
+			array(
+				'loading'  => 'lazy',
+				'decoding' => 'async',
+			)
+		);
+		return wp_get_attachment_image( $id, $size, false, $attr );
+	}
+	return df_placeholder( $label );
+}
+
+/**
+ * Görsel eklenmemiş alanlar için tonlu yer tutucu (aynı görseli tekrar etmek yerine).
+ *
+ * @param string $label Etiket.
+ * @return string
+ */
+function df_placeholder( $label = '' ) {
+	$hint = '';
+	if ( $label && current_user_can( 'edit_theme_options' ) ) {
+		$hint = '<span class="df-ph__hint">' . df_icon( 'edit', array( 'size' => 14 ) ) . esc_html( $label ) . '</span>';
+	}
+	return '<span class="df-ph" aria-hidden="true">' . df_icon( 'bouquet', array( 'size' => 42, 'class' => 'df-ph__icon' ) ) . $hint . '</span>';
+}
+
+/**
+ * Bölüm başlığı.
+ *
+ * @param array $args eyebrow, title, sub, align, link, link_text, tag.
+ */
+function df_section_head( $args ) {
+	$args = wp_parse_args(
+		$args,
+		array(
+			'eyebrow'   => '',
+			'title'     => '',
+			'sub'       => '',
+			'align'     => 'center',
+			'link'      => '',
+			'link_text' => '',
+			'tag'       => 'h2',
+			'id'        => '',
+		)
+	);
+	if ( ! $args['title'] && ! $args['eyebrow'] ) {
+		return;
+	}
+	$tag = in_array( $args['tag'], array( 'h1', 'h2', 'h3' ), true ) ? $args['tag'] : 'h2';
+	?>
+	<header class="df-head df-head--<?php echo esc_attr( $args['align'] ); ?>">
+		<div class="df-head__text">
+			<?php if ( $args['eyebrow'] ) : ?>
+				<p class="df-eyebrow"><?php echo esc_html( $args['eyebrow'] ); ?></p>
+			<?php endif; ?>
+			<?php if ( $args['title'] ) : ?>
+				<<?php echo $tag; // phpcs:ignore ?> class="df-head__title"<?php echo $args['id'] ? ' id="' . esc_attr( $args['id'] ) . '"' : ''; ?>><?php echo esc_html( $args['title'] ); ?></<?php echo $tag; // phpcs:ignore ?>>
+			<?php endif; ?>
+			<?php if ( $args['sub'] ) : ?>
+				<p class="df-head__sub"><?php echo esc_html( $args['sub'] ); ?></p>
+			<?php endif; ?>
+		</div>
+		<?php if ( $args['link'] && $args['link_text'] ) : ?>
+			<a class="df-link-arrow" href="<?php echo esc_url( df_url( $args['link'] ) ); ?>"><?php echo esc_html( $args['link_text'] ); ?><?php df_the_icon( 'arrow-right', array( 'size' => 18 ) ); ?></a>
+		<?php endif; ?>
+	</header>
+	<?php
+}
+
+/**
+ * Buton.
+ *
+ * @param string $text    Metin.
+ * @param string $url     Bağlantı.
+ * @param string $variant solid|outline|light|text.
+ * @return string
+ */
+function df_button( $text, $url, $variant = 'solid' ) {
+	if ( ! $text || ! $url ) {
+		return '';
+	}
+	return sprintf(
+		'<a class="df-btn df-btn--%1$s" href="%2$s"><span>%3$s</span></a>',
+		esc_attr( $variant ),
+		esc_url( df_url( $url ) ),
+		esc_html( $text )
+	);
+}
+
+/**
+ * Aktif ana sayfa bölümleri (sıralı).
+ *
+ * @return string[]
+ */
+function df_active_sections() {
+	$labels   = df_home_section_labels();
+	$sections = df_opt( 'home_sections', df_default_sections() );
+	$out      = array();
+	$seen     = array();
+	if ( is_array( $sections ) ) {
+		foreach ( $sections as $s ) {
+			if ( empty( $s['id'] ) || ! isset( $labels[ $s['id'] ] ) ) {
+				continue;
+			}
+			$seen[] = $s['id'];
+			if ( ! empty( $s['on'] ) ) {
+				$out[] = $s['id'];
+			}
+		}
+	}
+	// Temaya sonradan eklenen bölümler varsayılan olarak açık gelir.
+	foreach ( array_keys( $labels ) as $id ) {
+		if ( ! in_array( $id, $seen, true ) ) {
+			$out[] = $id;
+		}
+	}
+	return apply_filters( 'df_active_sections', $out );
+}
+
+/**
+ * Telefon numarasını tel: bağlantısına çevirir.
+ *
+ * @param string $phone Telefon.
+ * @return string
+ */
+function df_tel( $phone ) {
+	$digits = preg_replace( '/[^0-9+]/', '', (string) $phone );
+	return 'tel:' . $digits;
+}
+
+/**
+ * WhatsApp bağlantısı.
+ *
+ * @param string $text Mesaj.
+ * @return string
+ */
+function df_whatsapp_url( $text = '' ) {
+	$num = preg_replace( '/\D/', '', (string) df_opt( 'contact_whatsapp' ) );
+	if ( ! $num ) {
+		return '';
+	}
+	return 'https://wa.me/' . $num . ( $text ? '?text=' . rawurlencode( $text ) : '' );
+}
+
+/**
+ * Sosyal medya bağlantıları.
+ *
+ * @return array<string,string>
+ */
+function df_social_links() {
+	$out = array();
+	foreach ( array( 'instagram', 'facebook', 'pinterest', 'youtube', 'tiktok' ) as $net ) {
+		$url = df_opt( 'social_' . $net );
+		if ( $url ) {
+			$out[ $net ] = $url;
+		}
+	}
+	return $out;
+}
+
+/**
+ * Sayfa ID'sinden bağlantı; sayfa yoksa slug ile arar.
+ *
+ * @param string $opt_key Seçenek anahtarı.
+ * @param string $slug    Yedek slug.
+ * @return string
+ */
+function df_page_url( $opt_key, $slug ) {
+	$id = absint( df_opt( $opt_key ) );
+	if ( $id && get_post_status( $id ) === 'publish' ) {
+		return get_permalink( $id );
+	}
+	$page = get_page_by_path( $slug );
+	return $page ? get_permalink( $page ) : home_url( '/' . $slug . '/' );
+}
+
+/**
+ * Renk tonu: hex rengi açar/koyulaştırır.
+ *
+ * @param string $hex    Renk.
+ * @param float  $amount -1..1.
+ * @return string
+ */
+function df_shade( $hex, $amount ) {
+	$hex = ltrim( (string) $hex, '#' );
+	if ( 3 === strlen( $hex ) ) {
+		$hex = $hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2];
+	}
+	if ( 6 !== strlen( $hex ) ) {
+		return '#' . $hex;
+	}
+	$rgb = array( hexdec( substr( $hex, 0, 2 ) ), hexdec( substr( $hex, 2, 2 ) ), hexdec( substr( $hex, 4, 2 ) ) );
+	foreach ( $rgb as &$c ) {
+		$c = $amount < 0 ? $c * ( 1 + $amount ) : $c + ( 255 - $c ) * $amount;
+		$c = max( 0, min( 255, (int) round( $c ) ) );
+	}
+	return sprintf( '#%02x%02x%02x', $rgb[0], $rgb[1], $rgb[2] );
+}
+
+/**
+ * Hex → "r,g,b".
+ *
+ * @param string $hex Renk.
+ * @return string
+ */
+function df_rgb( $hex ) {
+	$hex = ltrim( (string) $hex, '#' );
+	if ( 3 === strlen( $hex ) ) {
+		$hex = $hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2];
+	}
+	if ( 6 !== strlen( $hex ) ) {
+		return '250,247,242';
+	}
+	return hexdec( substr( $hex, 0, 2 ) ) . ',' . hexdec( substr( $hex, 2, 2 ) ) . ',' . hexdec( substr( $hex, 4, 2 ) );
+}
+
+/**
+ * Google Fonts adresi.
+ *
+ * @return string
+ */
+function df_fonts_url() {
+	$heading = df_opt( 'font_heading', 'Cormorant Garamond' );
+	$body    = df_opt( 'font_body', 'Jost' );
+	$families = array();
+	$map      = array(
+		'Cormorant Garamond' => 'ital,wght@0,400;0,500;0,600;1,400;1,500',
+		'Playfair Display'   => 'ital,wght@0,400;0,500;0,600;1,400',
+		'Bodoni Moda'        => 'ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400',
+		'Marcellus'          => 'wght@400',
+		'Gilda Display'      => 'wght@400',
+		'Lora'               => 'ital,wght@0,400;0,500;1,400',
+		'Jost'               => 'wght@300;400;500;600',
+		'Manrope'            => 'wght@300;400;500;600',
+		'DM Sans'            => 'opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600',
+		'Inter'              => 'wght@300;400;500;600',
+		'Montserrat'         => 'wght@300;400;500;600',
+		'Nunito Sans'        => 'wght@300;400;600',
+	);
+	foreach ( array_unique( array( $heading, $body ) ) as $font ) {
+		if ( isset( $map[ $font ] ) ) {
+			$families[] = 'family=' . str_replace( ' ', '+', $font ) . ':' . $map[ $font ];
+		}
+	}
+	if ( ! $families ) {
+		return '';
+	}
+	return 'https://fonts.googleapis.com/css2?' . implode( '&', $families ) . '&display=swap';
+}
+
+/**
+ * Seçeneklerden CSS değişkenleri.
+ *
+ * @return string
+ */
+function df_css_variables() {
+	$o     = df_options();
+	$vars  = array(
+		'--df-bg'           => $o['color_bg'],
+		'--df-ivory'        => $o['color_ivory'],
+		'--df-ivory-rgb'    => df_rgb( $o['color_ivory'] ),
+		'--df-sand'         => $o['color_sand'],
+		'--df-text'         => $o['color_text'],
+		'--df-text-rgb'     => df_rgb( $o['color_text'] ),
+		'--df-muted'        => $o['color_muted'],
+		'--df-line'         => $o['color_line'],
+		'--df-accent'       => $o['color_accent'],
+		'--df-accent-dark'  => $o['color_accent_dark'],
+		'--df-accent-soft'  => df_shade( $o['color_accent'], 0.86 ),
+		'--df-rose'         => $o['color_rose'],
+		'--df-dark'         => $o['color_dark'],
+		'--df-sale'         => $o['color_sale'],
+		'--df-success'      => $o['color_success'],
+		'--df-topbar'       => $o['topbar_bg'],
+		'--df-header'       => $o['header_bg'],
+		'--df-footer'       => $o['footer_bg'],
+		'--df-font-heading' => '"' . $o['font_heading'] . '", "Times New Roman", serif',
+		'--df-font-body'    => '"' . $o['font_body'] . '", system-ui, -apple-system, "Segoe UI", sans-serif',
+		'--df-scale'        => (float) $o['font_scale'],
+		'--df-container'    => absint( $o['container_width'] ) . 'px',
+		'--df-radius-btn'   => absint( $o['btn_radius'] ) . 'px',
+		'--df-radius'       => absint( $o['card_radius'] ) . 'px',
+		'--df-space'        => absint( $o['section_space'] ) . 'px',
+		'--df-logo-w'       => absint( $o['logo_width'] ) . 'px',
+		'--df-logo-w-m'     => absint( $o['logo_width_mobile'] ) . 'px',
+	);
+	$css = ':root{';
+	foreach ( $vars as $k => $v ) {
+		$css .= $k . ':' . wp_strip_all_tags( (string) $v ) . ';';
+	}
+	return $css . '}';
+}
+
+/**
+ * Logo çıktısı.
+ *
+ * @param string $context header|footer|drawer.
+ */
+function df_logo( $context = 'header' ) {
+	$img_id = absint( 'footer' === $context && df_opt( 'footer_logo' ) ? df_opt( 'footer_logo' ) : df_opt( 'logo_image' ) );
+	$tag    = 'div'; // Ana sayfada H1 hero başlığıdır, logo div olarak kalır.
+	echo '<' . $tag . ' class="df-logo df-logo--' . esc_attr( $context ) . '">';
+	echo '<a href="' . esc_url( home_url( '/' ) ) . '" rel="home" aria-label="' . esc_attr( get_bloginfo( 'name' ) ) . '">';
+	if ( $img_id ) {
+		echo wp_get_attachment_image(
+			$img_id,
+			'medium_large',
+			false,
+			array(
+				'class'   => 'df-logo__img',
+				'loading' => 'eager',
+				'alt'     => get_bloginfo( 'name' ),
+			)
+		);
+	} else {
+		echo '<span class="df-logo__text">' . esc_html( df_opt( 'logo_text', get_bloginfo( 'name' ) ) ) . '</span>';
+		if ( df_opt( 'logo_tagline' ) ) {
+			echo '<span class="df-logo__tag">' . esc_html( df_opt( 'logo_tagline' ) ) . '</span>';
+		}
+	}
+	echo '</a></' . $tag . '>'; // phpcs:ignore
+}
+
+/**
+ * WooCommerce aktif mi?
+ *
+ * @return bool
+ */
+function df_wc() {
+	return class_exists( 'WooCommerce' );
+}

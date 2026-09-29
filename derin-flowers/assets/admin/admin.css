@@ -1,0 +1,126 @@
+/* Derin Flowers — yönetim paneli */
+.df-panel { --a: #8E5E52; --ink: #2B2522; --line: #E6DDD5; --soft: #FAF7F2; max-width: 1320px; margin-right: 20px; }
+.df-panel__top { display: flex; align-items: center; justify-content: space-between; gap: 16px; background: #fff; border: 1px solid var(--line); padding: 16px 22px; margin: 18px 0 16px; }
+.df-panel__brand { display: flex; align-items: center; gap: 14px; }
+.df-panel__brand strong { display: block; font-size: 17px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink); }
+.df-panel__brand span { color: #8a7f79; font-size: 12px; }
+.df-panel__logo { width: 46px; height: 46px; display: grid; place-items: center; background: var(--soft); color: var(--a); border: 1px solid var(--line); }
+.df-panel__links { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.df-panel__layout { display: grid; grid-template-columns: 230px 1fr; gap: 18px; align-items: start; }
+.df-panel__nav { position: sticky; top: 46px; background: #fff; border: 1px solid var(--line); padding: 8px; display: flex; flex-direction: column; gap: 2px; }
+.df-panel__tab { display: flex; align-items: center; gap: 10px; padding: 11px 12px; color: var(--ink); text-decoration: none; font-weight: 500; border-left: 2px solid transparent; }
+.df-panel__tab:hover { background: var(--soft); color: var(--a); }
+.df-panel__tab.is-active { background: var(--soft); color: var(--a); border-left-color: var(--a); }
+.df-panel__tab .dashicons { color: #a39690; }
+.df-panel__tab.is-active .dashicons { color: var(--a); }
+.df-panel__tab:focus { box-shadow: none; outline: 2px solid var(--a); outline-offset: -2px; }
+
+.df-panel__pane { display: none; }
+.df-panel__pane.is-active { display: block; }
+.df-panel__title { font-size: 22px; font-weight: 500; margin: 4px 0 14px; color: var(--ink); }
+
+.df-group { background: #fff; border: 1px solid var(--line); margin-bottom: 14px; }
+.df-group__head { display: flex; align-items: center; gap: 10px; padding: 14px 20px; border-bottom: 1px solid var(--line); }
+.df-group__head h3 { margin: 0; font-size: 14px; font-weight: 600; flex: 1; }
+.df-group--collapsible .df-group__head { cursor: pointer; user-select: none; }
+.df-group--collapsible.is-collapsed .df-group__head { border-bottom: 0; }
+.df-group--collapsible.is-collapsed .df-group__body { display: none; }
+.df-group__chev { transition: transform .2s; color: #8a7f79; }
+.df-group.is-collapsed .df-group__chev { transform: rotate(-90deg); }
+.df-group__body { padding: 18px 20px 6px; }
+.df-group__desc { margin: 0 0 16px; color: #6f6560; max-width: 820px; }
+.df-group.is-highlight { box-shadow: 0 0 0 2px var(--a); }
+
+.df-badge { font-size: 11px; padding: 2px 8px; border-radius: 20px; font-weight: 600; }
+.df-badge.is-on { background: #E7F0E8; color: #3F6A45; }
+.df-badge.is-off { background: #F4E4E1; color: #9A4B3E; }
+
+.df-fields { display: flex; flex-wrap: wrap; gap: 0 20px; }
+.df-field { flex: 1 1 100%; margin-bottom: 16px; min-width: 0; }
+.df-field--half { flex: 1 1 calc(50% - 20px); }
+.df-field--third { flex: 1 1 calc(33.333% - 20px); }
+.df-field--quarter { flex: 1 1 calc(25% - 20px); }
+.df-field__label { display: block; font-weight: 600; margin-bottom: 6px; color: var(--ink); }
+.df-field__desc { color: #8a7f79; margin: 6px 0 0; font-size: 12px; }
+.df-input { width: 100%; max-width: 100%; }
+.df-input--num { max-width: 160px; }
+.df-input--code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; line-height: 1.6; }
+.df-field select.df-input { max-width: 100%; }
+
+.df-switch { display: inline-flex; align-items: center; gap: 10px; cursor: pointer; }
+.df-switch input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.df-switch__track { width: 38px; height: 22px; background: #d9d0ca; border-radius: 22px; position: relative; transition: background .2s; flex: none; }
+.df-switch__track::after { content: ""; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: transform .2s; box-shadow: 0 1px 2px rgba(0,0,0,.2); }
+.df-switch input:checked + .df-switch__track { background: var(--a); }
+.df-switch input:checked + .df-switch__track::after { transform: translateX(16px); }
+.df-switch input:focus-visible + .df-switch__track { outline: 2px solid var(--a); outline-offset: 2px; }
+.df-switch__label { font-weight: 500; }
+
+.df-media { display: flex; gap: 12px; align-items: center; }
+.df-media__preview { width: 120px; height: 84px; background: var(--soft) repeating-linear-gradient(45deg, transparent 0 8px, rgba(0,0,0,.02) 8px 16px); border: 1px dashed #d7ccc4; display: grid; place-items: center; overflow: hidden; flex: none; }
+.df-media__preview span { font-size: 11px; color: #a39690; text-align: center; padding: 4px; }
+.df-media__preview img { width: 100%; height: 100%; object-fit: cover; }
+.df-media.has-image .df-media__preview { border-style: solid; }
+.df-media__actions { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+.df-media__remove { color: #b32d2e !important; }
+
+.df-iconpick { display: flex; gap: 10px; align-items: center; }
+.df-iconpick__preview { width: 38px; height: 38px; display: grid; place-items: center; border: 1px solid var(--line); background: var(--soft); color: var(--a); flex: none; }
+
+.df-checks { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+.df-check { display: block; margin: 0 0 10px; }
+
+/* Bölüm sıralama */
+.df-sections { margin: 0; padding: 0; list-style: none; counter-reset: s; }
+.df-sections__item { display: flex; align-items: center; gap: 14px; padding: 12px 14px; background: #fff; border: 1px solid var(--line); margin-bottom: -1px; }
+.df-sections__item.is-off { background: #fbf9f7; }
+.df-sections__item.is-off .df-sections__label { color: #a39690; text-decoration: line-through; }
+.df-sections__handle { cursor: grab; color: #b0a49e; }
+.df-sections__num { font-family: ui-monospace, monospace; color: #b0a49e; width: 22px; }
+.df-sections__label { flex: 1; font-weight: 500; }
+.df-sections__edit { font-size: 12px; }
+.df-sections .ui-sortable-placeholder { visibility: visible !important; background: var(--soft); border: 1px dashed var(--a); height: 46px; }
+
+/* Tekrarlayıcı */
+.df-repeater__item { border: 1px solid var(--line); margin-bottom: 8px; background: #fff; }
+.df-repeater__bar { display: flex; align-items: center; gap: 10px; padding: 8px 10px; background: var(--soft); cursor: pointer; }
+.df-repeater__handle { cursor: grab; color: #b0a49e; }
+.df-repeater__thumb { width: 38px; height: 30px; background: #efe8e2; overflow: hidden; flex: none; }
+.df-repeater__thumb img { width: 100%; height: 100%; object-fit: cover; }
+.df-repeater__title { flex: 1; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.df-repeater__tools { display: flex; gap: 4px; }
+.df-repeater__tools .button-link { color: #7a6e68; text-decoration: none; }
+.df-repeater__remove:hover { color: #b32d2e !important; }
+.df-repeater__body { padding: 16px 14px 0; border-top: 1px solid var(--line); }
+.df-repeater__item.is-collapsed .df-repeater__body { display: none; }
+.df-repeater__item.is-collapsed .df-repeater__toggle .dashicons { transform: rotate(-90deg); }
+.df-repeater__add .dashicons { vertical-align: text-bottom; font-size: 16px; }
+.df-repeater .ui-sortable-placeholder { visibility: visible !important; border: 1px dashed var(--a); height: 46px; margin-bottom: 8px; }
+
+.df-panel__savebar { position: sticky; bottom: 0; z-index: 20; display: flex; justify-content: flex-end; align-items: center; gap: 16px; background: rgba(255,255,255,.96); border: 1px solid var(--line); padding: 12px 20px; margin-top: 12px; backdrop-filter: blur(6px); }
+.df-panel__hint { color: #8a7f79; }
+.df-panel .button-primary { background: var(--a); border-color: var(--a); }
+.df-panel .button-primary:hover, .df-panel .button-primary:focus { background: #6F463C; border-color: #6F463C; }
+
+.df-tools__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.df-guide { margin: 0; padding-left: 18px; list-style: disc; }
+.df-guide li { margin-bottom: 6px; }
+
+/* Ürün düzenleme meta kutuları */
+.df-meta-row { margin: 0 0 14px; }
+.df-meta-row label { display: block; font-weight: 600; margin-bottom: 4px; }
+.df-meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.df-faq-rows .df-faq-row { border: 1px solid var(--line); padding: 10px; margin-bottom: 8px; background: var(--soft); position: relative; }
+.df-faq-row input, .df-faq-row textarea { width: 100%; margin-bottom: 6px; }
+.df-faq-row .df-faq-remove { position: absolute; top: 6px; right: 8px; color: #b32d2e; text-decoration: none; }
+.df-faq-row .df-faq-handle { cursor: grab; color: #b0a49e; float: left; margin-right: 6px; }
+.df-video-preview video { max-width: 100%; max-height: 180px; background: #000; }
+
+@media (max-width: 960px) {
+	.df-panel__layout { grid-template-columns: 1fr; }
+	.df-panel__nav { position: static; flex-direction: row; flex-wrap: wrap; }
+	.df-field--half, .df-field--third, .df-field--quarter { flex-basis: 100%; }
+	.df-tools__grid { grid-template-columns: 1fr; }
+	.df-meta-grid { grid-template-columns: 1fr; }
+}

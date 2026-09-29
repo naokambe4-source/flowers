@@ -1,0 +1,52 @@
+# Derin Flowers — Premium WordPress + WooCommerce Teması
+
+İzmir'deki premium çiçek butiği için geliştirilmiş, tüm içerik ve tasarımı **WordPress yönetim panelinden** yönetilen tema.
+
+Tema klasörü: [`derin-flowers/`](derin-flowers/)
+
+## Kurulum
+
+1. `derin-flowers` klasörünü zip'leyin → **Görünüm → Temalar → Yeni ekle → Tema yükle**. (Ya da klasörü `wp-content/themes/` içine kopyalayın.)
+2. WooCommerce eklentisi etkin olmalıdır.
+3. **Derin Flowers → Araçlar & Kurulum → Kurulumu çalıştır** — tek tıkla:
+   - ikonlu ürün kategorilerini (Buketler, Güller, Orkideler, Kutuda Çiçek, Vazoda Çiçek, Özel Günler ve alt kategorileri, Söz & Nişan, Koleksiyonlar),
+   - Sipariş Takip, Favorilerim, Teslimat Bölgeleri, Hakkımızda, İletişim ve Blog sayfalarını,
+   - ana menü ve footer menülerini oluşturur,
+   - sepet/ödeme sayfalarını çiçekçi akışına (klasik kısa kod) çevirir ve üyeliği açar.
+   Ürün oluşturmaz; ürünler WooCommerce'ten eklenir.
+4. **Derin Flowers → Tema Ayarları**'ndan görselleri yükleyin (hero, kategori, banner, hikaye, Instagram…). Görsel eklenmemiş alanlar yöneticiye "görsel ekleyin" ipucu gösteren sade bir zemin gösterir; aynı görsel hiçbir yerde otomatik tekrar edilmez.
+5. **WooCommerce → Ayarlar → Genel**: para birimi TRY, binlik ayracı `.` ondalık `,` önerilir.
+
+## Yönetim paneli (Derin Flowers menüsü)
+
+| Sekme | İçerik |
+|---|---|
+| Görünüm & Marka | Logo (görsel veya metin), 12 renk, başlık/metin fontu, içerik genişliği, köşe yuvarlaklığı, bölüm boşlukları |
+| Header | Üst bant metinleri/rengi, logo konumu, yapışkan header, ikonlu **Kategoriler** çekmecesi, arama/hesap/favori/sepet ikonları, menü ikonları |
+| Hero | Çoklu slayt: masaüstü + **ayrı mobil görsel**, "görsel + metin" veya "sadece görsel (tıklanabilir)", opsiyonel arka plan videosu, metin konumu, gradyan, metin rengi, odak noktası, otomatik geçiş |
+| Ana Sayfa | 13 bölümün **aç/kapat + sürükle-bırak sıralama**sı ve her bölümün tüm içerikleri (kategori seçimi, özel gün bannerları, Signature/En Çok Sevilenler ürün kaynağı — elle seçim, öne çıkan, kategori, en çok satan…) |
+| Ürün & Mağaza | Hızlı sepete ekle (varsayılan kapalı → kart ürün detayına götürür), kart ayarları, ürün sayfası notları, güven maddeleri, WhatsApp, bakım/teslimat metinleri, **genel SSS** |
+| Teslimat & Ödeme | Bölge listesi (Şehir \| Bölge \| Ücret — sizin İzmir listeniz hazır), mağazalar, saat aralıkları (+ek ücret), kapalı günler/tarihler, son sipariş saati, hazırlık süresi, ücretsiz teslimat limiti, hazır not mesajları |
+| Footer & İletişim | Footer metinleri/renk/logo, telefonlar, e-posta, adres, saatler, WhatsApp, harita, sosyal medya |
+| Üyelik & Takip | Kayıt ayarları (ad/soyad/telefon/KVKK), giriş sayfası görseli, sipariş takip metinleri |
+
+Araçlar sayfasında ayarları **JSON dışa/içe aktarma** ve sıfırlama da vardır.
+
+## Öne çıkan özellikler
+
+- **Ana sayfa** (istenen sırayla): tam genişlik hero → ince güven şeridi → 4 büyük editorial kategori (3:4) → 3 geniş özel gün banner'ı (16:10) → Signature Collection (4 büyük ürün, 4:5) → tam genişlik Söz & Nişan banner'ı → En Çok Sevilenler → asimetrik %58/%42 ikili koleksiyon → İzmir teslimat (canlı "bugün teslimat için X saat kaldı") → marka hikayesi → Çiçek Rehberi → Instagram → bülten. Tüm ürünler `wc_get_products()` ile WooCommerce'ten gelir; fiyatlar `get_price_html()`.
+- **Ürün detayı** tam genişlik: görsel + **ürün videosu** galerisi (MP4 yükleme veya YouTube/Vimeo), büyütme, aynı gün geri sayımı, Sepete Ekle + **Hemen Al**, WhatsApp, tam genişlik açıklama + ürün içeriği/ölçü/bakım, ürüne özel + genel **SSS** (FAQ schema), benzer ürünler, mobilde yapışkan sepet çubuğu.
+- **Ödeme**: Adrese / Mağazadan teslim, **takvim** (bugün/yarın kısayolları + aylık takvim; kapalı gün ve geçmiş saatler otomatik kapanır), saat aralıkları, gönderici ve alıcı bilgileri (ülke kodlu telefon), aranabilir bölge listesi — ücret siparişe otomatik eklenir, kategoriye göre hazır mesajlı **çiçek notu** + canlı kart önizlemesi. Tüm bilgiler siparişe, yönetici ekranına, e-postalara ve sipariş listesine ("Teslimat" sütunu) yazılır; **not kartı yazdırma** butonu.
+- **Sipariş takip**: `[derin_siparis_takip]` — sipariş no + telefon/e-posta ile durum zaman çizelgesi. Yeni sipariş durumları: **Hazırlanıyor**, **Yolda** (Tamamlandı = Teslim Edildi); müşteriye otomatik bilgilendirme notu.
+- **Üyelik**: sekmeli Giriş / Üye Ol, ad-soyad-telefon-KVKK alanları, Hesabım kısayol kartları.
+- **Favoriler** (üye + ziyaretçi), canlı ürün araması, mini sepet çekmecesi, ürün kategorisine ikon + kapak görseli, menü öğelerine ikon seçimi, bülten aboneleri + CSV.
+
+## Kısa kodlar
+
+`[derin_siparis_takip]` · `[derin_favoriler]` · `[derin_teslimat_bolgeleri]` · `[derin_iletisim]` · `[derin_sss]`
+
+## Notlar
+
+- Çiçekçi ödeme alanları WooCommerce'in **klasik** ödeme sayfasında çalışır. Ödeme sayfası blok kullanıyorsa panelde "Tek tıkla dönüştür" uyarısı çıkar.
+- Bölge ücreti modunda WooCommerce kargo yöntemleri devre dışı kalır; teslimat ücreti bölge listesinden hesaplanır (panelden kapatılabilir).
+- Gerekli sürümler: WordPress 6.2+, WooCommerce 8+, PHP 7.4+.
