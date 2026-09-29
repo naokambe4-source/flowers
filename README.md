@@ -6,7 +6,8 @@ Tema klasörü: [`derin-flowers/`](derin-flowers/)
 
 ## Kurulum
 
-1. `derin-flowers` klasörünü zip'leyin → **Görünüm → Temalar → Yeni ekle → Tema yükle**. (Ya da klasörü `wp-content/themes/` içine kopyalayın.)
+1. Depodaki hazır **`derin-flowers.zip`** dosyasını **Görünüm → Temalar → Yeni ekle → Tema yükle** ile yükleyin.
+   > Deponun tamamını (GitHub "Download ZIP") yüklemeyin: tema bir klasör içeride kaldığı için WordPress "style.css stil dosyası eksik" hatası verir. Kendiniz zip'leyecekseniz `derin-flowers` klasörünü zip'leyin (zip içinde `derin-flowers/style.css` olmalı). FTP ile kuruyorsanız `derin-flowers` klasörünü `wp-content/themes/` içine kopyalayın.
 2. WooCommerce eklentisi etkin olmalıdır.
 3. **Derin Flowers → Araçlar & Kurulum → Kurulumu çalıştır** — tek tıkla:
    - ikonlu ürün kategorilerini (Buketler, Güller, Orkideler, Kutuda Çiçek, Vazoda Çiçek, Özel Günler ve alt kategorileri, Söz & Nişan, Koleksiyonlar),
