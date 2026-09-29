@@ -13,9 +13,9 @@ if ( ! $ce_refs ) {
 }
 $ce_marquee = count( $ce_refs ) >= 5;
 ?>
-<section class="ce-section ce-section--compact ce-refs" aria-labelledby="ce-refs-title">
+<section class="ce-section ce-section--compact ce-refs" aria-labelledby="<?php echo esc_attr( ce_uid( $args, 'ce-refs-title' ) ); ?>">
 	<div class="ce-container">
-		<h2 id="ce-refs-title" class="ce-refs__title"><?php echo esc_html( ce_opt( 'refs_title' ) ); ?></h2>
+		<h2 id="<?php echo esc_attr( ce_uid( $args, 'ce-refs-title' ) ); ?>" class="ce-refs__title"><?php echo esc_html( ce_hopt( $args, 'refs_title' ) ); ?></h2>
 	</div>
 	<div class="ce-refs__viewport<?php echo $ce_marquee ? ' is-marquee' : ''; ?>">
 		<?php for ( $ce_loop = 0; $ce_loop < ( $ce_marquee ? 2 : 1 ); $ce_loop++ ) : ?>

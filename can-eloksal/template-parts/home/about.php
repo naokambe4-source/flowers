@@ -7,11 +7,11 @@
 
 defined( 'ABSPATH' ) || exit;
 
-$ce_img   = absint( ce_opt( 'about_image' ) );
-$ce_img2  = absint( ce_opt( 'about_image_2' ) );
-$ce_badge = ce_opt( 'about_badge' );
+$ce_img   = absint( ce_hopt( $args, 'about_image' ) );
+$ce_img2  = absint( ce_hopt( $args, 'about_image_2' ) );
+$ce_badge = ce_hopt( $args, 'about_badge' );
 ?>
-<section class="ce-section ce-about" aria-labelledby="ce-about-title">
+<section class="ce-section ce-about" aria-labelledby="<?php echo esc_attr( ce_uid( $args, 'ce-about-title' ) ); ?>">
 	<div class="ce-container ce-split">
 		<div class="ce-split__media ce-about__media" data-reveal>
 			<div class="ce-about__frame">
@@ -25,12 +25,12 @@ $ce_badge = ce_opt( 'about_badge' );
 			<?php endif; ?>
 		</div>
 		<div class="ce-split__content" data-reveal>
-			<?php if ( ce_opt( 'about_eyebrow' ) ) : ?>
-				<p class="ce-eyebrow"><?php echo esc_html( ce_opt( 'about_eyebrow' ) ); ?></p>
+			<?php if ( ce_hopt( $args, 'about_eyebrow' ) ) : ?>
+				<p class="ce-eyebrow"><?php echo esc_html( ce_hopt( $args, 'about_eyebrow' ) ); ?></p>
 			<?php endif; ?>
-			<h2 id="ce-about-title" class="ce-display"><?php echo ce_nl2br( ce_opt( 'about_title' ) ); // phpcs:ignore ?></h2>
-			<div class="ce-prose ce-about__text"><?php echo ce_paragraphs( ce_opt( 'about_text' ) ); // phpcs:ignore ?></div>
-			<?php echo ce_button( ce_opt( 'about_button' ), ce_opt( 'about_link' ), 'dark', 'arrow-right' ); // phpcs:ignore ?>
+			<h2 id="<?php echo esc_attr( ce_uid( $args, 'ce-about-title' ) ); ?>" class="ce-display"><?php echo ce_nl2br( ce_hopt( $args, 'about_title' ) ); // phpcs:ignore ?></h2>
+			<div class="ce-prose ce-about__text"><?php echo ce_paragraphs( ce_hopt( $args, 'about_text' ) ); // phpcs:ignore ?></div>
+			<?php echo ce_button( ce_hopt( $args, 'about_button' ), ce_hopt( $args, 'about_link' ), 'dark', 'arrow-right' ); // phpcs:ignore ?>
 		</div>
 	</div>
 </section>

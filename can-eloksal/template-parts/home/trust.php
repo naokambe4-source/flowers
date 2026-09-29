@@ -7,7 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-$ce_items = (array) ce_opt( 'trust_items' );
+$ce_items = (array) ce_hopt( $args, 'trust_items' );
 if ( ! $ce_items ) {
 	return;
 }

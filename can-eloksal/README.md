@@ -86,6 +86,23 @@ Tüm listelerde WordPress'in arama, filtre, sayfalama, toplu işlem ve çöp kut
 
 Özel yetkiler: `ce_manage_inquiries`, `ce_manage_settings`, `ce_view_audit`. Kullanıcılar **Kullanıcılar → Yeni ekle** ile oluşturulur.
 
+## 4.1 Sayfa düzenleme: Builder eklentisi, Elementor ve Özelleştirici
+
+**Can Eloksal Builder eklentisi** (`can-eloksal-builder.zip`, Eklentiler → Yeni ekle → Eklenti yükle):
+
+- Temanın tüm bölümleri blok editöründe **20 sürükle-bırak blok** olarak gelir ("+" → **Can Eloksal**): Hero Slider, Sayfa Başlığı, Güven Şeridi, Hizmetler, Görsel + Metin, Özellik Kartları, Sektörler, Proses, Galeri, CTA, CTA Bandı, Blog, Referanslar, İletişim Kartları, Harita, İletişim Formu, Teklif Formu, Banka Hesapları, Bölüm Başlığı ve **Bölüm (Kapsayıcı)**. Kapsayıcının içine paragraf, görsel, sütun, buton, video gibi her WordPress bloğu konabilir.
+- Her bloğun ayarları sağ paneldedir; önizleme editörde anında güncellenir. Boş bırakılan alanlarda Tema Ayarları kullanılır.
+- **Can Eloksal → Sayfa Oluşturucu**:
+  - *Ana sayfayı düzenlenebilir bloklara aktar*: ana sayfanın mevcut görünümü (sıra + tüm metinler) bloklara çevrilir, önceki içerik yedeklenir ve tek tıkla tema bölümlerine geri dönülebilir.
+  - *Hazır düzenden yeni sayfa*: Kurumsal açılış, Hizmet tanıtım, İletişim, Duyuru/Kampanya, Boş.
+- Blok desenleri: editörde "+" → Desenler → Can Eloksal.
+
+**Elementor ile kullanım:** Tema Elementor ile uyumludur (ücretsiz Elementor'u Eklentiler → Yeni ekle'den kurun). Elementor ile düzenlenen sayfalar otomatik olarak tam genişlikte, tema header/footer'ı ile çizilir; Elementor Pro Theme Builder ile header/footer/arşiv şablonları da değiştirilebilir. İstenirse sayfa şablonu olarak **Boş Tuval (Builder / Elementor)** seçilebilir.
+
+**Görünüm → Özelleştir → Can Eloksal Tasarım** (canlı önizleme): 7 marka rengi, başlık/metin fontu, yazı ölçeği, içerik genişliği, köşe yuvarlaklığı, buton şekli, bölüm boşlukları, header'ı kaydırırken gizleme ve kaydırma animasyonları. Ek CSS için Özelleştir → Ek CSS.
+
+Giriş yapmış yöneticiler ana sayfadaki her bölümün üzerinde bir **"Bölümü düzenle"** kısayolu görür.
+
 ## 5. Görseller
 
 - WordPress her yüklemede orijinal + large/medium/thumbnail ve tema boyutlarını (`ce-hero` 2400, `ce-wide` 1600, `ce-card` 960×720, `ce-tall` 800×1040, `ce-thumb`, `ce-logo`) üretir.

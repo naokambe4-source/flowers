@@ -7,22 +7,22 @@
 
 defined( 'ABSPATH' ) || exit;
 
-$ce_posts = get_posts( array( 'numberposts' => 3, 'post_status' => 'publish', 'ignore_sticky_posts' => true ) );
+$ce_posts = get_posts( array( 'numberposts' => (int) ce_hopt( $args, 'blog_count', 3 ), 'post_status' => 'publish', 'ignore_sticky_posts' => true, 'category_name' => (string) ( $args['category'] ?? '' ) ) );
 if ( ! $ce_posts ) {
 	return;
 }
 $ce_blog = (int) get_option( 'page_for_posts' );
 ?>
-<section class="ce-section ce-blog-preview" aria-labelledby="ce-blog-title">
+<section class="ce-section ce-blog-preview" aria-labelledby="<?php echo esc_attr( ce_uid( $args, 'ce-blog-title' ) ); ?>">
 	<div class="ce-container">
 		<?php
 		ce_section_head(
 			array(
-				'eyebrow'    => ce_opt( 'blog_eyebrow' ),
-				'title'      => ce_opt( 'blog_title' ),
+				'eyebrow'    => ce_hopt( $args, 'blog_eyebrow' ),
+				'title'      => ce_hopt( $args, 'blog_title' ),
 				'link'       => $ce_blog ? get_permalink( $ce_blog ) : home_url( '/blog/' ),
 				'link_label' => 'Tüm yazılar',
-				'id'         => 'ce-blog-title',
+				'id'         => ce_uid( $args, 'ce-blog-title' ),
 			)
 		);
 		?>

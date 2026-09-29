@@ -199,13 +199,18 @@ function ce_form_respond( $ok, $message, $errors = array() ) {
  * @return array|null
  */
 function ce_form_flash() {
+	static $cache = false;
+	if ( false !== $cache ) {
+		return $cache;
+	}
 	$key = isset( $_GET['ce_fm'] ) ? preg_replace( '/[^A-Za-z0-9]/', '', wp_unslash( $_GET['ce_fm'] ) ) : ''; // phpcs:ignore
 	if ( ! $key ) {
 		return null;
 	}
 	$data = get_transient( 'ce_fm_' . $key );
 	delete_transient( 'ce_fm_' . $key );
-	return is_array( $data ) ? $data : null;
+	$cache = is_array( $data ) ? $data : null;
+	return $cache;
 }
 
 add_action( 'wp_ajax_ce_contact', 'ce_handle_contact' );

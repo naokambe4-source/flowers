@@ -37,6 +37,8 @@ require CE_DIR . '/inc/smtp.php';
 require CE_DIR . '/inc/seo.php';
 require CE_DIR . '/inc/sitemap.php';
 require CE_DIR . '/inc/breadcrumbs.php';
+require CE_DIR . '/inc/builder-compat.php';
+require CE_DIR . '/inc/customizer.php';
 
 if ( is_admin() ) {
 	require CE_DIR . '/inc/admin/panel.php';

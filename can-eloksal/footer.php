@@ -10,7 +10,7 @@ $ce_is_quote = is_page_template( 'page-templates/quote.php' );
 ?>
 </main>
 
-<?php if ( ce_opt( 'footer_cta' ) && ! $ce_is_quote && ! is_front_page() ) : ?>
+<?php if ( ce_opt( 'footer_cta' ) && ! $ce_is_quote && ! is_front_page() && ! ( is_singular() && ce_is_builder_content( get_queried_object_id() ) ) ) : ?>
 	<section class="ce-prefooter" aria-labelledby="ce-prefooter-title">
 		<div class="ce-container ce-prefooter__inner">
 			<div>
@@ -27,6 +27,7 @@ $ce_is_quote = is_page_template( 'page-templates/quote.php' );
 	</section>
 <?php endif; ?>
 
+<?php if ( ! ce_elementor_location( 'footer' ) ) : ?>
 <footer class="ce-footer">
 	<div class="ce-container">
 		<div class="ce-footer__grid">
@@ -88,6 +89,8 @@ $ce_is_quote = is_page_template( 'page-templates/quote.php' );
 		</div>
 	</div>
 </footer>
+
+<?php endif; ?>
 
 <?php if ( ce_opt( 'float_whatsapp' ) && ce_whatsapp_url() ) : ?>
 	<a class="ce-float-wa" href="<?php echo esc_url( ce_whatsapp_url() ); ?>" target="_blank" rel="noopener" aria-label="WhatsApp ile yazın">

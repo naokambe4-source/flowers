@@ -8,6 +8,13 @@
 defined( 'ABSPATH' ) || exit;
 
 get_header();
+
+if ( ce_is_builder_content( get_queried_object_id() ) ) {
+	ce_render_canvas();
+	get_footer();
+	return;
+}
+
 while ( have_posts() ) :
 	the_post();
 	get_template_part(

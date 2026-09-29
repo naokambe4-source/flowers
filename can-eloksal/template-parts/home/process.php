@@ -7,14 +7,14 @@
 
 defined( 'ABSPATH' ) || exit;
 
-$ce_steps = (array) ce_opt( 'process_steps' );
+$ce_steps = (array) ce_hopt( $args, 'process_steps' );
 if ( ! $ce_steps ) {
 	return;
 }
 ?>
-<section class="ce-section ce-process" aria-labelledby="ce-process-title">
+<section class="ce-section ce-process" aria-labelledby="<?php echo esc_attr( ce_uid( $args, 'ce-process-title' ) ); ?>">
 	<div class="ce-container">
-		<?php ce_section_head( array( 'eyebrow' => ce_opt( 'process_eyebrow' ), 'title' => ce_opt( 'process_title' ), 'id' => 'ce-process-title', 'align' => 'center' ) ); ?>
+		<?php ce_section_head( array( 'eyebrow' => ce_hopt( $args, 'process_eyebrow' ), 'title' => ce_hopt( $args, 'process_title' ), 'id' => ce_uid( $args, 'ce-process-title' ), 'align' => 'center' ) ); ?>
 		<ol class="ce-timeline" style="--n:<?php echo count( $ce_steps ); ?>">
 			<?php foreach ( $ce_steps as $ce_i => $ce_step ) : ?>
 				<li class="ce-timeline__step" data-reveal style="--i:<?php echo (int) $ce_i; ?>">

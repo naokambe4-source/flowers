@@ -50,7 +50,8 @@
 			header.classList.toggle( 'is-scrolled', y > 24 );
 			var drawerOpen = document.body.classList.contains( 'ce-lock' );
 			var menuOpen = !! $( '.ce-nav__item.is-open', header ) || header.contains( document.activeElement );
-			header.classList.toggle( 'is-hidden', ! drawerOpen && ! menuOpen && y > 480 && y > lastY + 4 );
+			var autohide = document.body.classList.contains( 'ce-header-autohide' );
+			header.classList.toggle( 'is-hidden', autohide && ! drawerOpen && ! menuOpen && y > 480 && y > lastY + 4 );
 			if ( y < lastY - 4 ) { header.classList.remove( 'is-hidden' ); }
 			lastY = y;
 			ticking = false;

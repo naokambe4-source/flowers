@@ -20,6 +20,7 @@ $ce_cta_url   = ce_opt( 'header_cta_url' ) ? ce_url( ce_opt( 'header_cta_url' ) 
 <?php wp_body_open(); ?>
 <a class="ce-skip" href="#main">İçeriğe geç</a>
 
+<?php if ( ! ce_elementor_location( 'header' ) ) : ?>
 <header class="ce-header" data-header>
 	<div class="ce-header__inner">
 		<?php ce_logo( 'header' ); ?>
@@ -78,5 +79,7 @@ $ce_cta_url   = ce_opt( 'header_cta_url' ) ? ce_url( ce_opt( 'header_cta_url' ) 
 		</div>
 	</div>
 </div>
+
+<?php endif; ?>
 
 <main id="main" class="ce-main" tabindex="-1">

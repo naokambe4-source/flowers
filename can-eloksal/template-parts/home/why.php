@@ -7,14 +7,14 @@
 
 defined( 'ABSPATH' ) || exit;
 
-$ce_items = (array) ce_opt( 'why_items' );
+$ce_items = (array) ce_hopt( $args, 'why_items' );
 if ( ! $ce_items ) {
 	return;
 }
 ?>
-<section class="ce-section ce-section--tint ce-why" aria-labelledby="ce-why-title">
+<section class="ce-section ce-section--tint ce-why" aria-labelledby="<?php echo esc_attr( ce_uid( $args, 'ce-why-title' ) ); ?>">
 	<div class="ce-container">
-		<?php ce_section_head( array( 'eyebrow' => ce_opt( 'why_eyebrow' ), 'title' => ce_opt( 'why_title' ), 'id' => 'ce-why-title', 'align' => 'left' ) ); ?>
+		<?php ce_section_head( array( 'eyebrow' => ce_hopt( $args, 'why_eyebrow' ), 'title' => ce_hopt( $args, 'why_title' ), 'id' => ce_uid( $args, 'ce-why-title' ), 'align' => 'left' ) ); ?>
 		<ul class="ce-bento">
 			<?php foreach ( $ce_items as $ce_i => $ce_item ) : ?>
 				<li class="ce-bento__item<?php echo 0 === $ce_i ? ' ce-bento__item--feature' : ''; ?>" data-reveal style="--i:<?php echo (int) $ce_i; ?>">

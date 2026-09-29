@@ -28,6 +28,32 @@ function ce_opt( $key, $default = null ) {
 }
 
 /**
+ * Bölüm ayarı: blok/şablon argümanı verilmişse onu, yoksa Tema Ayarları değerini döndürür.
+ *
+ * @param array  $args    Argümanlar (get_template_part).
+ * @param string $key     Anahtar (Tema Ayarları anahtarıyla aynı).
+ * @param mixed  $default Varsayılan.
+ * @return mixed
+ */
+function ce_hopt( $args, $key, $default = null ) {
+	if ( is_array( $args ) && array_key_exists( $key, $args ) && '' !== $args[ $key ] && null !== $args[ $key ] && array() !== $args[ $key ] ) {
+		return $args[ $key ];
+	}
+	return ce_opt( $key, $default );
+}
+
+/**
+ * Aynı bölüm bir sayfada birden fazla kullanıldığında benzersiz id üretir.
+ *
+ * @param array  $args Argümanlar.
+ * @param string $base Temel id.
+ * @return string
+ */
+function ce_uid( $args, $base ) {
+	return empty( $args['uid'] ) ? $base : $base . '-' . sanitize_key( $args['uid'] );
+}
+
+/**
  * Tema meta alanı (_ce_ önekli).
  *
  * @param int    $post_id Yazı ID.

@@ -37,11 +37,11 @@ foreach ( $ce_posts as $ce_p ) {
 // Yayınlanmış slayt yoksa Tema Ayarları'ndaki hero içeriği.
 if ( ! $ce_slides ) {
 	$ce_slides[] = array(
-		'title'   => str_replace( "\n", '|', ce_opt( 'hero_title' ) ),
-		'eyebrow' => ce_opt( 'hero_eyebrow' ),
-		'text'    => ce_opt( 'hero_text' ),
-		'tags'    => ce_lines( ce_opt( 'hero_tags' ) ),
-		'image'   => absint( ce_opt( 'hero_image' ) ),
+		'title'   => str_replace( "\n", '|', ce_hopt( $args, 'hero_title' ) ),
+		'eyebrow' => ce_hopt( $args, 'hero_eyebrow' ),
+		'text'    => ce_hopt( $args, 'hero_text' ),
+		'tags'    => ce_lines( ce_hopt( $args, 'hero_tags' ) ),
+		'image'   => absint( ce_hopt( $args, 'hero_image' ) ),
 		'mobile'  => 0,
 		'video'   => '',
 		'btn1'    => array( 'Hizmetleri İncele', ce_services_url() ),
