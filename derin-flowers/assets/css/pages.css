@@ -1,0 +1,143 @@
+/* Derin Flowers — Hakkımızda ve İletişim sayfaları (yalnızca bu iki şablonda yüklenir) */
+
+/* ==========================================================================
+   Hakkımızda
+   ========================================================================== */
+.df-about-hero { background: var(--df-ivory); padding: clamp(48px, 6vw, 96px) 0; overflow: hidden; }
+.df-about-hero__grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, .9fr); gap: clamp(40px, 7vw, 120px); align-items: center; }
+.df-about-hero__title { font-size: calc(clamp(48px, 6vw, 88px) * var(--df-scale)); line-height: .98; font-weight: 400; margin: 0 0 28px; }
+.df-about-hero__lead { font-size: clamp(17px, 1.4vw, 20px); line-height: 1.7; color: rgba(var(--df-text-rgb), .78); max-width: 540px; margin: 0; }
+.df-about-hero__media { position: relative; aspect-ratio: 4 / 5; overflow: hidden; background: var(--df-sand); }
+.df-about-hero__media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+
+.df-about-story { padding: var(--df-section) 0; }
+.df-about-story__grid { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.4fr); gap: clamp(32px, 7vw, 120px); align-items: start; }
+.df-about-story__side { position: sticky; top: calc(var(--df-header-h) + 80px); }
+.df-about-story__title { font-size: calc(clamp(32px, 3.2vw, 48px) * var(--df-scale)); line-height: 1.1; margin: 0; }
+.df-about-story__body { max-width: 720px; font-size: 17.5px; line-height: 1.85; color: rgba(var(--df-text-rgb), .84); }
+.df-about-story__body p { margin: 0 0 1.3em; }
+.df-about-dropcap::first-letter { float: left; font-family: var(--df-font-heading); font-size: 4.6em; line-height: .82; padding: .06em .12em 0 0; color: var(--df-accent); }
+
+.df-about-quote { background: var(--df-sand); padding: clamp(56px, 7vw, 104px) 0; text-align: center; }
+.df-about-quote blockquote { margin: 0; }
+.df-about-quote p { font-family: var(--df-font-heading); font-style: italic; font-size: calc(clamp(26px, 2.8vw, 40px) * var(--df-scale)); line-height: 1.35; margin: 0 0 20px; }
+.df-about-quote cite { font-style: normal; font-size: 12px; font-weight: 500; letter-spacing: .24em; text-transform: uppercase; color: var(--df-accent); }
+
+.df-about-values__grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--df-line); }
+.df-about-value { padding: 36px 28px 8px 0; }
+.df-about-value + .df-about-value { padding-left: 28px; border-left: 1px solid var(--df-line); }
+.df-about-value__icon { display: inline-flex; color: var(--df-accent); margin-bottom: 18px; }
+.df-about-value h3 { font-size: 24px; margin: 0 0 10px; }
+.df-about-value p { color: var(--df-muted); font-size: 15.5px; margin: 0; }
+
+.df-about-process { background: var(--df-ivory); }
+.df-about-steps { list-style: none; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(20px, 3vw, 48px); counter-reset: none; }
+.df-about-steps li { border-top: 1px solid rgba(var(--df-text-rgb), .2); padding-top: 22px; }
+.df-about-steps__num { display: block; font-family: var(--df-font-heading); font-size: 44px; line-height: 1; color: var(--df-accent); margin-bottom: 16px; }
+.df-about-steps h3 { font-size: 24px; margin: 0 0 8px; }
+.df-about-steps p { color: var(--df-muted); font-size: 15.5px; margin: 0; }
+
+.df-about-studio__grid { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1fr); gap: clamp(40px, 7vw, 120px); align-items: center; }
+.df-about-studio__grid.no-image { grid-template-columns: minmax(0, 720px); justify-content: center; }
+.df-about-studio__media { position: relative; aspect-ratio: 4 / 5; overflow: hidden; background: var(--df-sand); }
+.df-about-studio__media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.df-about-studio__text h2 { font-size: calc(clamp(34px, 3.6vw, 54px) * var(--df-scale)); line-height: 1.05; margin: 0 0 20px; }
+.df-about-studio__text > p:not(.df-eyebrow):not(.df-about-studio__info) { color: rgba(var(--df-text-rgb), .78); font-size: 17px; }
+.df-about-studio__info { display: flex; gap: 12px; align-items: flex-start; font-size: 15.5px; }
+.df-about-studio__info .df-icon { color: var(--df-accent); flex: none; margin-top: 4px; }
+.df-about-studio__text .df-link-arrow { margin-top: 18px; }
+
+.df-about-cta { background: var(--df-rose); padding: clamp(56px, 7vw, 96px) 0; text-align: center; }
+.df-about-cta h2 { font-size: calc(clamp(30px, 3.4vw, 50px) * var(--df-scale)); max-width: 820px; margin: 0 auto 32px; line-height: 1.15; }
+.df-about-cta__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+
+/* ==========================================================================
+   İletişim
+   ========================================================================== */
+.df-contact-hero { background: var(--df-ivory); padding: clamp(56px, 7vw, 110px) 0 clamp(96px, 10vw, 150px); text-align: center; }
+.df-contact-hero__title { font-size: calc(clamp(44px, 5.4vw, 80px) * var(--df-scale)); line-height: 1; font-weight: 400; margin: 0 0 24px; }
+.df-contact-hero__lead { max-width: 620px; margin: 0 auto; font-size: 18px; color: rgba(var(--df-text-rgb), .75); }
+.df-contact-hero__extra { max-width: 680px; margin: 24px auto 0; }
+
+.df-contact-cards { margin-top: clamp(-80px, -6vw, -48px); position: relative; z-index: 1; }
+.df-contact-cards__grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.df-contact-card { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 30px 26px; background: #fff; border: 1px solid var(--df-line); box-shadow: var(--df-shadow); color: var(--df-text); transition: transform .35s var(--df-ease), box-shadow .35s var(--df-ease), border-color .35s; }
+.df-contact-card:hover { transform: translateY(-4px); box-shadow: var(--df-shadow-lg); border-color: transparent; color: var(--df-text); }
+.df-contact-card__icon { width: 54px; height: 54px; border-radius: 50%; display: grid; place-items: center; background: var(--df-ivory); color: var(--df-accent); margin-bottom: 12px; }
+.df-contact-card__icon--wa { color: #25A55B; }
+.df-contact-card__label { font-size: 11.5px; font-weight: 500; letter-spacing: .2em; text-transform: uppercase; color: var(--df-muted); }
+.df-contact-card strong { font-family: var(--df-font-heading); font-size: 23px; font-weight: 500; line-height: 1.2; word-break: break-word; }
+.df-contact-card__sub { font-size: 14px; color: var(--df-muted); }
+
+.df-contact-main__grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); gap: clamp(40px, 6vw, 96px); align-items: start; }
+.df-contact-form-wrap h2 { font-size: calc(clamp(34px, 3.4vw, 50px) * var(--df-scale)); margin: 0 0 10px; }
+.df-contact-form-wrap__lead { color: var(--df-muted); margin-bottom: 30px; }
+.df-contact-form__row { display: grid; grid-template-columns: 1fr 1fr; gap: 0 18px; }
+.df-contact-field { margin: 0 0 18px; }
+.df-contact-field label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 500; letter-spacing: .04em; }
+.df-contact-field input, .df-contact-field select, .df-contact-field textarea { width: 100%; min-height: 52px; padding: 13px 16px; border: 1px solid var(--df-line); border-radius: 0; background: #fff; font-size: 15.5px; color: var(--df-text); appearance: none; transition: border-color .2s, box-shadow .2s; }
+.df-contact-field textarea { resize: vertical; min-height: 150px; }
+.df-contact-field select { padding-right: 40px; background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%232B2522' stroke-width='1.6'%3E%3Cpath d='m6 9.5 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 16px center; cursor: pointer; }
+.df-contact-field input:focus, .df-contact-field select:focus, .df-contact-field textarea:focus { outline: 0; border-color: var(--df-text); box-shadow: 0 0 0 3px rgba(var(--df-text-rgb), .06); }
+.df-contact-field .required { color: var(--df-sale); }
+.df-contact-check { display: flex; gap: 10px; align-items: flex-start; margin: 4px 0 24px; font-size: 13.5px; color: var(--df-muted); cursor: pointer; }
+.df-contact-check input { width: 18px; height: 18px; margin: 1px 0 0; accent-color: var(--df-accent); flex: none; }
+.df-contact-form .df-btn { min-width: 220px; }
+.df-contact-form__hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.df-contact-alert { display: flex; gap: 12px; align-items: flex-start; padding: 16px 18px; margin: 0 0 24px; font-size: 15px; }
+.df-contact-alert--ok { background: #EEF4EE; border-left: 2px solid var(--df-success); color: #34503a; }
+.df-contact-alert--error { background: #FBF1EE; border-left: 2px solid var(--df-sale); }
+.df-contact-alert .df-icon { flex: none; margin-top: 2px; }
+
+.df-contact-info { position: sticky; top: calc(var(--df-header-h) + 80px); display: grid; gap: 16px; }
+.df-contact-info__card { padding: clamp(26px, 3vw, 40px); background: var(--df-ivory); }
+.df-contact-info__card h3 { font-size: 30px; margin: 0 0 20px; letter-spacing: .04em; }
+.df-contact-info__row { display: flex; gap: 14px; align-items: flex-start; font-size: 15.5px; line-height: 1.6; margin: 0 0 16px; }
+.df-contact-info__row .df-icon { color: var(--df-accent); flex: none; margin-top: 2px; }
+.df-contact-info__social { margin-top: 24px; }
+.df-contact-map { aspect-ratio: 4 / 3; overflow: hidden; background: var(--df-sand); border: 1px solid var(--df-line); }
+.df-contact-map iframe { width: 100%; height: 100%; border: 0; filter: grayscale(.35) sepia(.08); }
+
+.df-contact-faq { background: var(--df-ivory); }
+.df-contact-faq__grid { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: clamp(32px, 7vw, 120px); align-items: start; }
+.df-contact-faq h2 { font-size: calc(clamp(34px, 3.4vw, 50px) * var(--df-scale)); margin: 0 0 12px; }
+.df-contact-faq__lead { color: var(--df-muted); }
+.df-contact-faq .df-faq { border-top: 1px solid var(--df-line); }
+.df-contact-faq .df-faq__item { border-bottom: 1px solid var(--df-line); }
+.df-contact-faq .df-faq__item summary { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 22px 0; cursor: pointer; list-style: none; font-family: var(--df-font-heading); font-size: 22px; line-height: 1.3; }
+.df-contact-faq .df-faq__item summary::-webkit-details-marker { display: none; }
+.df-contact-faq .df-faq__sign { flex: none; color: var(--df-accent); transition: transform .3s var(--df-ease); }
+.df-contact-faq .df-faq__item[open] .df-faq__sign { transform: rotate(45deg); }
+.df-contact-faq .df-faq__a { padding: 0 48px 24px 0; color: rgba(var(--df-text-rgb), .78); }
+.df-contact-faq .df-faq__a p:last-child { margin: 0; }
+
+/* ==========================================================================
+   Duyarlı
+   ========================================================================== */
+@media (max-width: 1024px) {
+	.df-about-values__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+	.df-about-value:nth-child(3) { padding-left: 0; border-left: 0; }
+	.df-about-value:nth-child(n+3) { border-top: 1px solid var(--df-line); margin-top: 28px; }
+	.df-about-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 40px; }
+	.df-contact-cards__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 860px) {
+	.df-about-hero__grid, .df-about-story__grid, .df-about-studio__grid, .df-contact-main__grid, .df-contact-faq__grid { grid-template-columns: 1fr; }
+	.df-about-hero__media { aspect-ratio: 4 / 3.4; order: -1; }
+	.df-about-story__side, .df-contact-info { position: static; }
+	.df-about-studio__media { aspect-ratio: 4 / 3.4; }
+}
+
+@media (max-width: 600px) {
+	.df-about-values__grid { grid-template-columns: 1fr; }
+	.df-about-value, .df-about-value + .df-about-value { padding: 26px 0 0; border-left: 0; }
+	.df-about-value + .df-about-value { border-top: 1px solid var(--df-line); margin-top: 26px; }
+	.df-about-steps { grid-template-columns: 1fr; }
+	.df-contact-cards__grid { grid-template-columns: 1fr; }
+	.df-contact-card { padding: 22px 20px; }
+	.df-contact-form__row { grid-template-columns: 1fr; }
+	.df-contact-form .df-btn { width: 100%; }
+	.df-contact-faq .df-faq__item summary { font-size: 19px; }
+	.df-contact-faq .df-faq__a { padding-right: 0; }
+}

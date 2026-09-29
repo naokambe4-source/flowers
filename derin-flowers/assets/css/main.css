@@ -430,5 +430,9 @@ hr { border: 0; border-top: 1px solid var(--df-line); margin: 2em 0; }
 }
 
 @media (max-width: 420px) {
-	.df-logo__text { font-size: 19px; letter-spacing: .12em; }
+	.df-logo__text { font-size: 17px; letter-spacing: .1em; }
+	.df-logo__tag { font-size: 6.5px; letter-spacing: .28em; }
+	.df-header__left { gap: 2px; }
+	.df-header__right { gap: 0; }
+	.df-iconbtn, .df-header__cats { min-width: 38px; width: 38px; padding: 0; }
 }
