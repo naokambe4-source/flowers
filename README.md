@@ -1,3 +1,14 @@
+# Depo içeriği
+
+| Tema | Klasör | Yüklenebilir paket |
+|---|---|---|
+| **Can Eloksal** — alüminyum eloksal ve yüzey kaplama firması için premium endüstriyel kurumsal tema | [`can-eloksal/`](can-eloksal/) · [Kurulum ve dokümantasyon](can-eloksal/README.md) | `can-eloksal.zip` |
+| Derin Flowers — WordPress + WooCommerce çiçekçi teması | [`derin-flowers/`](derin-flowers/) | `derin-flowers.zip` |
+
+Kurulum: **Görünüm → Temalar → Yeni ekle → Tema yükle** ile ilgili `.zip` dosyasını yükleyin (deponun tamamını değil). Can Eloksal için ardından **Can Eloksal → Kurulum & Araçlar → Kurulumu çalıştır**.
+
+---
+
 # Derin Flowers — Premium WordPress + WooCommerce Teması
 
 İzmir'deki premium çiçek butiği için geliştirilmiş, tüm içerik ve tasarımı **WordPress yönetim panelinden** yönetilen tema.

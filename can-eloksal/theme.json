@@ -1,0 +1,120 @@
+{
+	"$schema": "https://schemas.wp.org/wp/6.2/theme.json",
+	"version": 2,
+	"settings": {
+		"appearanceTools": true,
+		"color": {
+			"defaultPalette": false,
+			"defaultGradients": false,
+			"palette": [
+				{
+					"slug": "primary",
+					"name": "Koyu lacivert",
+					"color": "#101820"
+				},
+				{
+					"slug": "dark",
+					"name": "Koyu",
+					"color": "#0A1118"
+				},
+				{
+					"slug": "accent",
+					"name": "Turkuaz",
+					"color": "#00AFC1"
+				},
+				{
+					"slug": "accent-2",
+					"name": "Açık turkuaz",
+					"color": "#19C4D2"
+				},
+				{
+					"slug": "metal",
+					"name": "Metalik gri",
+					"color": "#87939D"
+				},
+				{
+					"slug": "border",
+					"name": "Çizgi",
+					"color": "#DCE3E7"
+				},
+				{
+					"slug": "light",
+					"name": "Açık zemin",
+					"color": "#F4F7F8"
+				},
+				{
+					"slug": "white",
+					"name": "Beyaz",
+					"color": "#FFFFFF"
+				},
+				{
+					"slug": "text",
+					"name": "Metin",
+					"color": "#17212B"
+				}
+			]
+		},
+		"typography": {
+			"customFontSize": true,
+			"fontFamilies": [
+				{
+					"slug": "heading",
+					"name": "Manrope (başlık)",
+					"fontFamily": "Manrope, 'Plus Jakarta Sans', system-ui, sans-serif"
+				},
+				{
+					"slug": "body",
+					"name": "Inter (metin)",
+					"fontFamily": "Inter, system-ui, sans-serif"
+				}
+			],
+			"fontSizes": [
+				{
+					"slug": "small",
+					"name": "Küçük",
+					"size": "0.9375rem"
+				},
+				{
+					"slug": "normal",
+					"name": "Normal",
+					"size": "1.0625rem"
+				},
+				{
+					"slug": "large",
+					"name": "Büyük",
+					"size": "1.375rem"
+				},
+				{
+					"slug": "x-large",
+					"name": "Çok büyük",
+					"size": "2rem"
+				}
+			]
+		},
+		"layout": {
+			"contentSize": "760px",
+			"wideSize": "1200px"
+		},
+		"spacing": {
+			"units": [
+				"px",
+				"em",
+				"rem",
+				"%",
+				"vw"
+			]
+		}
+	},
+	"styles": {
+		"elements": {
+			"link": {
+				"typography": {
+					"textDecoration": "none"
+				},
+				"color": {
+					"text": "inherit"
+				}
+			}
+		}
+	}
+}
