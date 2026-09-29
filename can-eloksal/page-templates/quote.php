@@ -20,6 +20,7 @@ while ( have_posts() ) :
 		null,
 		array(
 			'title'    => ce_page_title( $ce_id ),
+			'src'      => ce_page_hero_src( $ce_id ),
 			'subtitle' => ce_page_subtitle( $ce_id ),
 			'eyebrow'  => ce_meta( $ce_id, 'hero_eyebrow' ),
 			'image'    => ce_meta( $ce_id, 'hero_image' ),
@@ -32,7 +33,7 @@ while ( have_posts() ) :
 
 			<aside class="ce-quote__aside">
 				<div class="ce-aside-card">
-					<h2 class="ce-aside-card__title"><?php echo esc_html( ce_meta( $ce_id, 'aside_title', 'Teklif süreci' ) ); ?></h2>
+					<h2 class="ce-aside-card__title"<?php echo ce_ed( 'meta:' . $ce_id . ':aside_title' ); // phpcs:ignore ?>><?php echo esc_html( ce_meta( $ce_id, 'aside_title', 'Teklif süreci' ) ); ?></h2>
 					<?php $ce_steps = ce_lines( ce_meta( $ce_id, 'aside_steps' ) ); ?>
 					<?php if ( $ce_steps ) : ?>
 						<ol class="ce-mini-steps">
@@ -42,7 +43,7 @@ while ( have_posts() ) :
 						</ol>
 					<?php endif; ?>
 					<?php if ( ce_meta( $ce_id, 'aside_note' ) ) : ?>
-						<p class="ce-aside-card__note"><?php echo ce_icon( 'info', 18 ); // phpcs:ignore ?><span><?php echo esc_html( ce_meta( $ce_id, 'aside_note' ) ); ?></span></p>
+						<p class="ce-aside-card__note"><?php echo ce_icon( 'info', 18 ); // phpcs:ignore ?><span<?php echo ce_ed( 'meta:' . $ce_id . ':aside_note' ); // phpcs:ignore ?>><?php echo esc_html( ce_meta( $ce_id, 'aside_note' ) ); ?></span></p>
 					<?php endif; ?>
 					<?php if ( get_the_content() ) : ?>
 						<div class="ce-prose"><?php the_content(); ?></div>

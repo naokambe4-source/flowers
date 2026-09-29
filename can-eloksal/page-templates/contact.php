@@ -19,6 +19,7 @@ while ( have_posts() ) :
 		null,
 		array(
 			'title'    => ce_page_title( $ce_id ),
+			'src'      => ce_page_hero_src( $ce_id ),
 			'subtitle' => ce_page_subtitle( $ce_id ),
 			'eyebrow'  => ce_meta( $ce_id, 'hero_eyebrow' ),
 			'image'    => ce_meta( $ce_id, 'hero_image' ),
@@ -44,6 +45,7 @@ while ( have_posts() ) :
 					'title'    => ce_meta( $ce_id, 'form_title', 'Bize yazın' ),
 					'text'     => ce_meta( $ce_id, 'form_text' ),
 					'subjects' => $ce_subjects,
+					'src'      => array( 'title' => 'meta:' . $ce_id . ':form_title', 'text' => 'meta:' . $ce_id . ':form_text' ),
 				)
 			);
 			?>

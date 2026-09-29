@@ -311,6 +311,7 @@ function ce_options_schema() {
 						array( 'id' => 'footer_text', 'type' => 'textarea', 'label' => 'Firma açıklaması', 'default' => 'Savunma sanayi ve makine sanayi başta olmak üzere alüminyum parçalar için istenilen mikron, kalite ve renkte eloksal ve yüzey kaplama çözümleri.', 'rows' => 3 ),
 						array( 'id' => 'copyright', 'type' => 'text', 'label' => 'Telif metni ({year} = yıl)', 'default' => '© {year} Can Eloksal. Tüm Hakları Saklıdır.' ),
 						array( 'id' => 'footer_cta', 'type' => 'toggle', 'label' => 'Footer üstünde "Teklif Al" bandını göster', 'default' => 1 ),
+						array( 'id' => 'prefooter_title', 'type' => 'text', 'label' => 'Teklif bandı başlığı', 'default' => 'Parçalarınız için doğru yüzey çözümünü birlikte belirleyelim.' ),
 					),
 				),
 			),

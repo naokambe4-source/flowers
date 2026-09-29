@@ -28,6 +28,7 @@ if ( ! $ce_services ) {
 				'link'       => ce_services_url(),
 				'link_label' => 'Tüm hizmetler',
 				'id'         => ce_uid( $args, 'ce-services-title' ),
+				'src'        => array( 'eyebrow' => ce_src( $args, 'services_eyebrow' ), 'title' => ce_src( $args, 'services_title' ), 'text' => ce_src( $args, 'services_text' ) ),
 			)
 		);
 		?>

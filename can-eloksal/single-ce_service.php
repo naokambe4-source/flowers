@@ -29,6 +29,7 @@ while ( have_posts() ) :
 		null,
 		array(
 			'title'    => get_the_title(),
+			'src'      => array( 'title' => 'post:' . $ce_id . ':title', 'subtitle' => 'meta:' . $ce_id . ':summary', 'image' => 'meta:' . $ce_id . ':hero_image' ),
 			'subtitle' => ce_meta( $ce_id, 'summary' ),
 			'eyebrow'  => $ce_cat ? $ce_cat->name : 'Hizmet',
 			'image'    => $ce_hero,
@@ -42,7 +43,7 @@ while ( have_posts() ) :
 	<section class="ce-section">
 		<div class="ce-container ce-service">
 			<div class="ce-service__main">
-				<div class="ce-service__cover" data-reveal>
+				<div class="ce-service__cover" data-reveal<?php echo ce_edimg( 'thumb:' . $ce_id ); // phpcs:ignore ?>>
 					<?php echo ce_post_visual( $ce_id, 'ce-wide', $ce_tone, array( 'sizes' => '(min-width: 1024px) 60vw, 100vw', 'loading' => 'eager' ) ); // phpcs:ignore ?>
 				</div>
 				<article class="ce-prose ce-entry" data-reveal>
@@ -55,8 +56,8 @@ while ( have_posts() ) :
 							<div class="ce-listcard" data-reveal>
 								<h2 class="ce-listcard__title"><?php echo ce_icon( 'badge-check', 22 ); // phpcs:ignore ?>Avantajlar</h2>
 								<ul class="ce-checklist">
-									<?php foreach ( $ce_adv as $ce_a ) : ?>
-										<li><?php echo ce_icon( 'check', 16 ); // phpcs:ignore ?><span><?php echo esc_html( $ce_a ); ?></span></li>
+									<?php foreach ( $ce_adv as $ce_ai => $ce_a ) : ?>
+										<li><?php echo ce_icon( 'check', 16 ); // phpcs:ignore ?><span<?php echo ce_ed( 'meta:' . $ce_id . ':advantages@' . $ce_ai ); // phpcs:ignore ?>><?php echo esc_html( $ce_a ); ?></span></li>
 									<?php endforeach; ?>
 								</ul>
 							</div>
@@ -65,8 +66,8 @@ while ( have_posts() ) :
 							<div class="ce-listcard ce-listcard--dark" data-reveal>
 								<h2 class="ce-listcard__title"><?php echo ce_icon( 'factory', 22 ); // phpcs:ignore ?>Uygulama alanları</h2>
 								<ul class="ce-checklist">
-									<?php foreach ( $ce_app as $ce_a ) : ?>
-										<li><?php echo ce_icon( 'arrow-right', 16 ); // phpcs:ignore ?><span><?php echo esc_html( $ce_a ); ?></span></li>
+									<?php foreach ( $ce_app as $ce_ai => $ce_a ) : ?>
+										<li><?php echo ce_icon( 'arrow-right', 16 ); // phpcs:ignore ?><span<?php echo ce_ed( 'meta:' . $ce_id . ':applications@' . $ce_ai ); // phpcs:ignore ?>><?php echo esc_html( $ce_a ); ?></span></li>
 									<?php endforeach; ?>
 								</ul>
 							</div>
@@ -79,9 +80,9 @@ while ( have_posts() ) :
 						<h2 id="ce-specs-title" class="ce-specs__title">Teknik bilgiler</h2>
 						<?php if ( $ce_specs ) : ?>
 							<dl class="ce-specs__table">
-								<?php foreach ( $ce_specs as $ce_s ) : ?>
+								<?php foreach ( $ce_specs as $ce_si => $ce_s ) : ?>
 									<?php if ( ! empty( $ce_s['label'] ) ) : ?>
-										<div><dt><?php echo esc_html( $ce_s['label'] ); ?></dt><dd><?php echo esc_html( $ce_s['value'] ?? '' ); ?></dd></div>
+										<div><dt<?php echo ce_ed( 'meta:' . $ce_id . ':specs@' . $ce_si . '.label' ); // phpcs:ignore ?>><?php echo esc_html( $ce_s['label'] ); ?></dt><dd<?php echo ce_ed( 'meta:' . $ce_id . ':specs@' . $ce_si . '.value' ); // phpcs:ignore ?>><?php echo esc_html( $ce_s['value'] ?? '' ); ?></dd></div>
 									<?php endif; ?>
 								<?php endforeach; ?>
 							</dl>
@@ -103,7 +104,7 @@ while ( have_posts() ) :
 			<aside class="ce-service__aside">
 				<div class="ce-aside-card ce-aside-card--sticky">
 					<p class="ce-eyebrow">Teklif alın</p>
-					<h2 class="ce-aside-card__title"><?php echo esc_html( ce_meta( $ce_id, 'cta_title', ce_opt( 'service_cta_title' ) ) ); ?></h2>
+					<h2 class="ce-aside-card__title"<?php echo ce_ed( 'meta:' . $ce_id . ':cta_title' ); // phpcs:ignore ?>><?php echo esc_html( ce_meta( $ce_id, 'cta_title', ce_opt( 'service_cta_title' ) ) ); ?></h2>
 					<p>Parça bilgilerinizi ve varsa teknik resminizi paylaşın, size dönüş yapalım.</p>
 					<?php echo ce_button( 'Teklif Al', $ce_quote, 'primary', 'arrow-right' ); // phpcs:ignore ?>
 					<ul class="ce-aside-card__links">

@@ -22,6 +22,7 @@ get_template_part(
 		'subtitle' => $ce_is_tax && $ce_term->description ? $ce_term->description : ce_opt( 'services_page_sub' ),
 		'eyebrow'  => $ce_is_tax ? 'Hizmet Kategorisi' : 'Yüzey İşlem Çözümleri',
 		'image'    => ce_opt( 'services_page_image' ),
+		'src'      => $ce_is_tax ? array() : array( 'title' => 'opt:services_page_title', 'subtitle' => 'opt:services_page_sub', 'image' => 'opt:services_page_image' ),
 		'size'     => 'lg',
 	)
 );

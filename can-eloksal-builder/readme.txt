@@ -1,10 +1,32 @@
 === Can Eloksal Builder ===
 Requires at least: 6.2
 Requires PHP: 8.0
-Stable tag: 1.0.0
+Stable tag: 2.0.0
 License: GPLv2 or later
 
-Can Eloksal temasının tüm bölümlerini blok editöründe sürükle-bırak bloklar olarak kullanmanızı sağlar.
+Canlı Editör (sayfada tıkla-düzenle) + Can Eloksal temasının tüm bölümleri için sürükle-bırak bloklar.
+
+== Canlı Editör ==
+Açmak için: sitede üst çubuktaki "Canlı Düzenle", sayfa/hizmet/yazı listelerindeki "Canlı Düzenle"
+bağlantısı veya Can Eloksal → Canlı Editör.
+
+* Metinler: sayfada metne tıklayıp doğrudan yazın veya sol panelden düzenleyin. Değişiklik
+  gerçek kaynağına kaydedilir (Tema Ayarları, sayfa/hizmet alanları, blok ayarları, sayfa içeriği).
+  Sayfa sabit HTML'e dönüştürülmez; formlar, hizmet listeleri, blog kartları çalışmaya devam eder.
+* Görseller ve bağlantılar: panelden Ortam Kütüphanesi ile değiştirin.
+* Stil: arka plan rengi/görseli, kenarlık, köşe, gölge, opaklık; font, boyut, kalınlık, satır
+  yüksekliği, harf aralığı, hizalama, renk; iç/dış boşluklar, genişlik, yükseklik, flex yerleşimi,
+  gizle/göster; ek CSS.
+* Kapsam: "Bu sayfa" veya "Tüm site"; "Yalnızca bu öğe" veya "Benzerleri".
+* Cihaz: masaüstü / tablet / mobil önizleme; tablet ve mobilde yapılan stil değişiklikleri yalnızca
+  o ekran boyutunda geçerli olur.
+* Bölümler: taşı (yukarı/aşağı), çoğalt, sil (sayfa blokları) veya gizle (ana sayfa bölümleri).
+* Geri al / ileri al (Ctrl+Z / Ctrl+Y), Ctrl+S ile kaydet; kaydedilmemiş değişiklik uyarısı.
+* Güvenlik: metinler yetkiye göre (Tema Ayarları için "Site Yöneticisi", içerik için düzenleme
+  yetkisi), stiller "edit_theme_options" yetkisiyle kaydedilir. Tüm HTML/CSS sunucuda temizlenir;
+  kayıtlar audit log'a yazılır, sayfa içeriği değişiklikleri WordPress revizyonu oluşturur.
+* Stil geçmişi: Can Eloksal → Sayfa Oluşturucu'dan son 15 kayda geri dönün veya tüm canlı
+  stilleri sıfırlayın.
 
 == Gereksinim ==
 Can Eloksal teması etkin olmalıdır.

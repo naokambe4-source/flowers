@@ -133,7 +133,7 @@ function ce_elementor_editor_fonts() {
  * @param string $key Bölüm anahtarı.
  */
 function ce_section_edit_link( $key ) {
-	if ( ! is_user_logged_in() || is_customize_preview() ) {
+	if ( ! is_user_logged_in() || is_customize_preview() || ce_live() ) {
 		return;
 	}
 	$map = array(

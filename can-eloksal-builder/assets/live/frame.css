@@ -1,0 +1,23 @@
+/* Can Eloksal Canlı Editör — çerçeve katmanı */
+#ceb-ui { position: absolute; top: 0; left: 0; width: 0; height: 0; z-index: 2147483000; pointer-events: none; font: 600 11px/1.2 Inter, system-ui, sans-serif; }
+.ceb-box { position: absolute; display: none; box-sizing: border-box; border-radius: 3px; }
+.ceb-box--hover { outline: 1px dashed rgba(0, 175, 193, .9); outline-offset: 0; }
+.ceb-box--select { outline: 2px solid #00AFC1; outline-offset: 1px; box-shadow: 0 0 0 5px rgba(0, 175, 193, .14); }
+.ceb-box__label { position: absolute; left: -1px; top: -21px; padding: 3px 7px; border-radius: 4px 4px 4px 0; background: #00AFC1; color: #0A1118; white-space: nowrap; letter-spacing: .02em; }
+.ceb-box--hover .ceb-box__label { background: rgba(10, 17, 24, .85); color: #fff; }
+.ceb-box.is-top .ceb-box__label { top: 2px; left: 2px; border-radius: 4px; }
+.ceb-box--select .ceb-box__label { display: none; }
+.ceb-toolbar { position: absolute; display: none; gap: 2px; padding: 4px; border-radius: 10px; background: #0A1118; box-shadow: 0 12px 30px rgba(0, 0, 0, .35); pointer-events: auto; }
+.ceb-toolbar button { width: 30px; height: 28px; border: 0; border-radius: 7px; background: transparent; color: #fff; font: 700 13px/1 system-ui, sans-serif; cursor: pointer; display: grid; place-items: center; padding: 0; }
+.ceb-toolbar button:hover { background: #1b2833; color: #19C4D2; }
+.ceb-toolbar button.is-danger:hover { background: #c0392b; color: #fff; }
+.ceb-toolbar button[hidden] { display: none; }
+
+.ceb-editing [data-ce-edit]:hover { outline: 1px dashed rgba(0, 175, 193, .6); outline-offset: 2px; cursor: text; }
+.ceb-editing .ceb-is-editing { outline: 2px solid #19C4D2 !important; outline-offset: 3px; background-color: rgba(25, 196, 210, .06); cursor: text; caret-color: #00AFC1; }
+.ceb-editing .ceb-is-editing:focus { outline: 2px solid #19C4D2 !important; }
+.ceb-editing iframe, .ceb-editing video { pointer-events: none; }
+.ceb-editing .ce-cookie, .ceb-editing .ce-float-wa, .ceb-editing .ce-edit-link, .ceb-editing .ce-toasts { display: none !important; }
+.ceb-editing .ce-header { transform: none !important; }
+.ceb-editing * { cursor: default; }
+.ceb-editing [data-ce-edit], .ceb-editing [data-ce-edit] * { cursor: text; }

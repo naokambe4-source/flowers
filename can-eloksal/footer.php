@@ -15,7 +15,7 @@ $ce_is_quote = is_page_template( 'page-templates/quote.php' );
 		<div class="ce-container ce-prefooter__inner">
 			<div>
 				<p class="ce-eyebrow ce-eyebrow--light">Teklif Talebi</p>
-				<h2 id="ce-prefooter-title" class="ce-prefooter__title">Parçalarınız için doğru yüzey çözümünü birlikte belirleyelim.</h2>
+				<h2 id="ce-prefooter-title" class="ce-prefooter__title"<?php echo ce_ed( 'opt:prefooter_title' ); // phpcs:ignore ?>><?php echo esc_html( ce_opt( 'prefooter_title' ) ); ?></h2>
 			</div>
 			<div class="ce-prefooter__actions">
 				<?php echo ce_button( 'Teklif Al', ce_quote_url(), 'primary', 'arrow-right' ); // phpcs:ignore ?>
@@ -34,7 +34,7 @@ $ce_is_quote = is_page_template( 'page-templates/quote.php' );
 			<div class="ce-footer__brand">
 				<?php ce_logo( 'footer' ); ?>
 				<?php if ( ce_opt( 'footer_text' ) ) : ?>
-					<p class="ce-footer__text"><?php echo esc_html( ce_opt( 'footer_text' ) ); ?></p>
+					<p class="ce-footer__text"<?php echo ce_ed( 'opt:footer_text' ); // phpcs:ignore ?>><?php echo esc_html( ce_opt( 'footer_text' ) ); ?></p>
 				<?php endif; ?>
 				<?php $ce_socials = ce_socials(); ?>
 				<?php if ( $ce_socials ) : ?>
@@ -63,13 +63,13 @@ $ce_is_quote = is_page_template( 'page-templates/quote.php' );
 				<h2 class="ce-footer__title">İletişim</h2>
 				<ul class="ce-footer__info">
 					<?php if ( ce_opt( 'phone' ) ) : ?>
-						<li><?php echo ce_icon( 'phone', 18 ); // phpcs:ignore ?><a href="<?php echo esc_attr( ce_tel() ); ?>"><?php echo esc_html( ce_opt( 'phone' ) ); ?></a></li>
+						<li><?php echo ce_icon( 'phone', 18 ); // phpcs:ignore ?><a href="<?php echo esc_attr( ce_tel() ); ?>"<?php echo ce_ed( 'opt:phone' ); // phpcs:ignore ?>><?php echo esc_html( ce_opt( 'phone' ) ); ?></a></li>
 					<?php endif; ?>
 					<?php if ( ce_opt( 'email' ) ) : ?>
-						<li><?php echo ce_icon( 'mail', 18 ); // phpcs:ignore ?><a href="mailto:<?php echo esc_attr( ce_opt( 'email' ) ); ?>"><?php echo esc_html( ce_opt( 'email' ) ); ?></a></li>
+						<li><?php echo ce_icon( 'mail', 18 ); // phpcs:ignore ?><a href="mailto:<?php echo esc_attr( ce_opt( 'email' ) ); ?>"<?php echo ce_ed( 'opt:email' ); // phpcs:ignore ?>><?php echo esc_html( ce_opt( 'email' ) ); ?></a></li>
 					<?php endif; ?>
 					<?php if ( ce_opt( 'address' ) ) : ?>
-						<li><?php echo ce_icon( 'map-pin', 18 ); // phpcs:ignore ?><address><?php echo ce_nl2br( ce_opt( 'address' ) ); // phpcs:ignore ?></address></li>
+						<li><?php echo ce_icon( 'map-pin', 18 ); // phpcs:ignore ?><address<?php echo ce_ed( 'opt:address', 'nl' ); // phpcs:ignore ?>><?php echo ce_nl2br( ce_opt( 'address' ) ); // phpcs:ignore ?></address></li>
 					<?php endif; ?>
 					<?php if ( ce_opt( 'working_hours' ) ) : ?>
 						<li><?php echo ce_icon( 'clock', 18 ); // phpcs:ignore ?><span><?php echo esc_html( ce_opt( 'working_hours' ) ); ?></span></li>

@@ -3,7 +3,7 @@
 | Tema | Klasör | Yüklenebilir paket |
 |---|---|---|
 | **Can Eloksal** — alüminyum eloksal ve yüzey kaplama firması için premium endüstriyel kurumsal tema | [`can-eloksal/`](can-eloksal/) · [Kurulum ve dokümantasyon](can-eloksal/README.md) | `can-eloksal.zip` |
-| **Can Eloksal Builder** — Can Eloksal teması için sürükle-bırak sayfa blokları eklentisi | [`can-eloksal-builder/`](can-eloksal-builder/) | `can-eloksal-builder.zip` |
+| **Can Eloksal Builder** — Canlı Editör (sayfada tıkla-düzenle, cihaz bazlı stil, bölüm taşıma) + sürükle-bırak bloklar | [`can-eloksal-builder/`](can-eloksal-builder/) | `can-eloksal-builder.zip` |
 | Derin Flowers — WordPress + WooCommerce çiçekçi teması | [`derin-flowers/`](derin-flowers/) | `derin-flowers.zip` |
 
 Kurulum: **Görünüm → Temalar → Yeni ekle → Tema yükle** ile ilgili `.zip` dosyasını yükleyin (deponun tamamını değil). Can Eloksal için ardından **Can Eloksal → Kurulum & Araçlar → Kurulumu çalıştır**. Builder eklentisi **Eklentiler → Yeni ekle → Eklenti yükle** ile yüklenir.

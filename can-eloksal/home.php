@@ -14,6 +14,7 @@ get_template_part(
 	null,
 	array(
 		'title'    => $ce_blog ? ce_page_title( $ce_blog ) : 'Blog',
+		'src'      => $ce_blog ? ce_page_hero_src( $ce_blog ) : array(),
 		'subtitle' => $ce_blog ? ce_page_subtitle( $ce_blog ) : '',
 		'eyebrow'  => $ce_blog ? ce_meta( $ce_blog, 'hero_eyebrow', 'Teknik Bilgi Merkezi' ) : 'Teknik Bilgi Merkezi',
 		'image'    => $ce_blog ? ( ce_meta( $ce_blog, 'hero_image' ) ? ce_meta( $ce_blog, 'hero_image' ) : get_post_thumbnail_id( $ce_blog ) ) : 0,

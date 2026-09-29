@@ -97,6 +97,8 @@ Tüm listelerde WordPress'in arama, filtre, sayfalama, toplu işlem ve çöp kut
   - *Hazır düzenden yeni sayfa*: Kurumsal açılış, Hizmet tanıtım, İletişim, Duyuru/Kampanya, Boş.
 - Blok desenleri: editörde "+" → Desenler → Can Eloksal.
 
+**Canlı Editör (eklenti v2):** Sitede üst çubuktaki **Canlı Düzenle** ile sayfayı gerçek görünümüyle açın. Metne tıklayıp yazın; görsel ve bağlantıları değiştirin; renk, yazı, boşluk, kenarlık, gölge gibi stilleri **bu sayfa** veya **tüm site** için, **masaüstü / tablet / mobil** ayrı ayrı ayarlayın; bölümleri taşıyın, çoğaltın, gizleyin. Geri al / ileri al ve stil geçmişi vardır. Metinler kaynağına (Tema Ayarları, sayfa alanları, bloklar) yazıldığı için sayfa statik HTML'e dönüşmez. İçerik Editörü rolü metinleri, Site Yöneticisi ve Yönetici stilleri de düzenleyebilir.
+
 **Elementor ile kullanım:** Tema Elementor ile uyumludur (ücretsiz Elementor'u Eklentiler → Yeni ekle'den kurun). Elementor ile düzenlenen sayfalar otomatik olarak tam genişlikte, tema header/footer'ı ile çizilir; Elementor Pro Theme Builder ile header/footer/arşiv şablonları da değiştirilebilir. İstenirse sayfa şablonu olarak **Boş Tuval (Builder / Elementor)** seçilebilir.
 
 **Görünüm → Özelleştir → Can Eloksal Tasarım** (canlı önizleme): 7 marka rengi, başlık/metin fontu, yazı ölçeği, içerik genişliği, köşe yuvarlaklığı, buton şekli, bölüm boşlukları, header'ı kaydırırken gizleme ve kaydırma animasyonları. Ek CSS için Özelleştir → Ek CSS.

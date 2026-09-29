@@ -38,7 +38,7 @@ $ce_cta_url   = ce_opt( 'header_cta_url' ) ? ce_url( ce_opt( 'header_cta_url' ) 
 			<?php endif; ?>
 			<?php if ( $ce_cta_label ) : ?>
 				<a class="ce-btn ce-btn--primary ce-btn--sm ce-header__cta" href="<?php echo esc_url( $ce_cta_url ); ?>">
-					<span><?php echo esc_html( $ce_cta_label ); ?></span><?php echo ce_icon( 'arrow-up-right', 16, 'ce-btn__icon' ); // phpcs:ignore ?>
+					<span<?php echo ce_ed( 'opt:header_cta_label' ); // phpcs:ignore ?>><?php echo esc_html( $ce_cta_label ); ?></span><?php echo ce_icon( 'arrow-up-right', 16, 'ce-btn__icon' ); // phpcs:ignore ?>
 				</a>
 			<?php endif; ?>
 			<button class="ce-burger" type="button" aria-controls="ce-drawer" aria-expanded="false" data-drawer-open>

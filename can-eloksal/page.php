@@ -22,6 +22,7 @@ while ( have_posts() ) :
 		null,
 		array(
 			'title'    => ce_page_title( get_the_ID() ),
+			'src'      => ce_page_hero_src( get_the_ID() ),
 			'subtitle' => ce_page_subtitle( get_the_ID() ),
 			'eyebrow'  => ce_meta( get_the_ID(), 'hero_eyebrow' ),
 			'image'    => ce_meta( get_the_ID(), 'hero_image' ) ? ce_meta( get_the_ID(), 'hero_image' ) : get_post_thumbnail_id(),

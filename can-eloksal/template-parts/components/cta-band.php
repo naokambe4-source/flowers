@@ -18,9 +18,9 @@ if ( ! $ce_title ) {
 	<div class="ce-container">
 		<div class="ce-band" data-reveal>
 			<div>
-				<h2 class="ce-band__title"><?php echo esc_html( $ce_title ); ?></h2>
+				<h2 class="ce-band__title"<?php echo ce_ed( isset( $args['__src'] ) ? $args['__src'] . ':title' : '' ); // phpcs:ignore ?>><?php echo esc_html( $ce_title ); ?></h2>
 				<?php if ( ! empty( $args['text'] ) ) : ?>
-					<p class="ce-band__text"><?php echo esc_html( $args['text'] ); ?></p>
+					<p class="ce-band__text"<?php echo ce_ed( isset( $args['__src'] ) ? $args['__src'] . ':text' : '' ); // phpcs:ignore ?>><?php echo esc_html( $args['text'] ); ?></p>
 				<?php endif; ?>
 			</div>
 			<div class="ce-btn-row">

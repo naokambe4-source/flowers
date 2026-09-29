@@ -405,6 +405,11 @@ function ceb_render( $slug, $a, $content ) {
 	}
 	$args        = $a;
 	$args['uid'] = 'b' . $n;
+	// Canlı editör: blok içindeki metinler bu bloğun özniteliklerine yazılır.
+	$src            = ( ! empty( $a['__ceb_key'] ) && ! empty( $a['__ceb_post'] ) ) ? 'battr:' . (int) $a['__ceb_post'] . ':' . preg_replace( '/[^\w]/', '', $a['__ceb_key'] ) : 'none';
+	$args['__src']  = $src;
+	$a['__src']     = $src;
+	$bsrc           = static fn( $k ) => 'none' === $src ? '' : $src . ':' . $k;
 
 	// Satır alanlarını tema biçimine çevir.
 	if ( ! empty( $a['trust_items'] ) ) {
@@ -420,7 +425,7 @@ function ceb_render( $slug, $a, $content ) {
 	ob_start();
 	switch ( $slug ) {
 		case 'page-hero':
-			$meta = ce_button( $a['btn1_label'] ?? '', $a['btn1_url'] ?? '', 'primary', 'arrow-right' ) . ce_button( $a['btn2_label'] ?? '', $a['btn2_url'] ?? '', 'ghost-light', 'arrow-up-right' );
+			$meta = ce_button( $a['btn1_label'] ?? '', $a['btn1_url'] ?? '', 'primary', 'arrow-right', $bsrc( 'btn1_label' ), $bsrc( 'btn1_url' ) ) . ce_button( $a['btn2_label'] ?? '', $a['btn2_url'] ?? '', 'ghost-light', 'arrow-up-right', $bsrc( 'btn2_label' ), $bsrc( 'btn2_url' ) );
 			get_template_part(
 				'template-parts/components/page-hero',
 				null,
@@ -432,6 +437,7 @@ function ceb_render( $slug, $a, $content ) {
 					'tone'     => $a['tone'] ? $a['tone'] : 'steel',
 					'size'     => $a['size'] ?? 'lg',
 					'meta'     => $meta,
+					'src'      => array( 'title' => $bsrc( 'title' ), 'subtitle' => $bsrc( 'subtitle' ), 'eyebrow' => $bsrc( 'eyebrow' ), 'image' => $bsrc( 'image' ) ),
 				)
 			);
 			break;
@@ -453,7 +459,7 @@ function ceb_render( $slug, $a, $content ) {
 
 		case 'contact-form':
 			echo '<section class="ce-section"><div class="ce-container ce-container--narrow">';
-			get_template_part( 'template-parts/components/form-contact', null, array( 'title' => $a['title'] ?? '', 'text' => $a['text'] ?? '', 'subjects' => ce_lines( $a['subjects'] ?? '' ) ) );
+			get_template_part( 'template-parts/components/form-contact', null, array( 'title' => $a['title'] ?? '', 'text' => $a['text'] ?? '', 'subjects' => ce_lines( $a['subjects'] ?? '' ), 'src' => array( 'title' => $bsrc( 'title' ), 'text' => $bsrc( 'text' ) ) ) );
 			echo '</div></section>';
 			break;
 
@@ -479,6 +485,7 @@ function ceb_render( $slug, $a, $content ) {
 					'link'       => ! empty( $a['link'] ) ? ce_url( $a['link'] ) : '',
 					'link_label' => $a['link_label'] ?? '',
 					'align'      => $a['align'] ?? 'left',
+					'src'        => array( 'eyebrow' => $bsrc( 'eyebrow' ), 'title' => $bsrc( 'title' ), 'text' => $bsrc( 'text' ) ),
 				)
 			);
 			echo '</div>';

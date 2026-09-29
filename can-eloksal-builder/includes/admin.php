@@ -32,6 +32,7 @@ function ceb_render_admin() {
 		'converted' => 'Ana sayfa bloklara aktarıldı. Artık sayfayı blok editöründe istediğiniz gibi düzenleyebilirsiniz.',
 		'restored'  => 'Ana sayfa tema bölümlerine geri döndürüldü (Tema Ayarları → Ana Sayfa).',
 		'nofront'   => 'Önce Ayarlar → Okuma\'dan statik bir ana sayfa seçin (Kurulum aracı bunu otomatik yapar).',
+		'styles'    => 'Canlı editör stilleri güncellendi.',
 	);
 
 	echo '<div class="wrap ce-admin">';
@@ -41,6 +42,48 @@ function ceb_render_admin() {
 	}
 
 	echo '<div class="ce-dash__grid">';
+
+	// Canlı editör.
+	echo '<section class="ce-card"><header class="ce-card__head"><h2>Canlı Editör</h2></header><div class="ce-card__body">';
+	echo '<p>Sayfayı gerçek görünümüyle açın; metne tıklayıp yazın, görselleri değiştirin, renk / yazı / boşluk ayarlarını masaüstü, tablet ve mobil için ayrı ayrı yapın, bölümleri taşıyın. Değişiklikler kaynağına (Tema Ayarları, sayfa alanları, bloklar) kaydedilir.</p>';
+	echo '<p><a class="button button-primary button-hero" href="' . esc_url( ceb_live_url( home_url( '/' ) ) ) . '">Canlı Editörü aç</a></p>';
+	echo '<p class="description">Sitede gezinirken üst çubuktaki <strong>Canlı Düzenle</strong> düğmesiyle veya sayfa listelerindeki bağlantıyla da açabilirsiniz.</p>';
+	echo '</div></section>';
+
+	// Canlı stiller.
+	if ( current_user_can( 'edit_theme_options' ) ) {
+		$styles  = ceb_live_styles();
+		$history = get_option( 'ceb_live_styles_history', array() );
+		echo '<section class="ce-card"><header class="ce-card__head"><h2>Canlı editör stilleri</h2></header><div class="ce-card__body">';
+		if ( $styles ) {
+			echo '<ul class="ce-list">';
+			foreach ( $styles as $ctx => $devices ) {
+				$n = 0;
+				foreach ( (array) $devices as $sels ) {
+					$n += count( (array) $sels );
+				}
+				echo '<li><strong>' . esc_html( ceb_context_label( $ctx ) ) . '</strong><span>' . (int) $n . ' kural</span></li>';
+			}
+			echo '</ul>';
+		} else {
+			echo '<p>Henüz canlı editörle kaydedilmiş stil yok.</p>';
+		}
+		if ( $history ) {
+			echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" data-confirm="Seçilen kayıt geri yüklenecek. Devam edilsin mi?" style="margin-top:12px">';
+			wp_nonce_field( 'ceb_live_restore' );
+			echo '<input type="hidden" name="action" value="ceb_live_restore"><label for="ceb-hist"><strong>Geçmişten geri yükle</strong></label><br><select id="ceb-hist" name="index" class="ce-input">';
+			foreach ( $history as $i => $h ) {
+				echo '<option value="' . (int) $i . '">' . esc_html( wp_date( 'd.m.Y H:i', $h['time'] ) . ' — ' . $h['user'] ) . '</option>';
+			}
+			echo '</select> <button class="button">Geri yükle</button></form>';
+		}
+		if ( $styles ) {
+			echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" data-confirm="Canlı editörle yapılan TÜM stil değişiklikleri kaldırılacak (geçmişten geri alınabilir). Devam edilsin mi?" style="margin-top:12px">';
+			wp_nonce_field( 'ceb_live_restore' );
+			echo '<input type="hidden" name="action" value="ceb_live_restore"><input type="hidden" name="index" value="-1"><button class="button button-link-delete">Tüm canlı stilleri sıfırla</button></form>';
+		}
+		echo '</div></section>';
+	}
 
 	// Ana sayfa.
 	echo '<section class="ce-card"><header class="ce-card__head"><h2>Ana sayfa</h2></header><div class="ce-card__body">';

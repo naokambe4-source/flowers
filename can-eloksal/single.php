@@ -20,6 +20,7 @@ while ( have_posts() ) :
 		null,
 		array(
 			'title'   => get_the_title(),
+			'src'     => array( 'title' => 'post:' . $ce_id . ':title' ),
 			'eyebrow' => $ce_cats ? $ce_cats[0]->name : 'Blog',
 			'tone'    => ce_post_tone( $ce_id ),
 			'meta'    => $ce_meta,

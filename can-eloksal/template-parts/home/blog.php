@@ -23,6 +23,7 @@ $ce_blog = (int) get_option( 'page_for_posts' );
 				'link'       => $ce_blog ? get_permalink( $ce_blog ) : home_url( '/blog/' ),
 				'link_label' => 'Tüm yazılar',
 				'id'         => ce_uid( $args, 'ce-blog-title' ),
+				'src'        => array( 'eyebrow' => ce_src( $args, 'blog_eyebrow' ), 'title' => ce_src( $args, 'blog_title' ) ),
 			)
 		);
 		?>

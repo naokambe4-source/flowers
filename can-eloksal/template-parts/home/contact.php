@@ -11,9 +11,9 @@ defined( 'ABSPATH' ) || exit;
 	<div class="ce-container ce-contact-cta__inner">
 		<div class="ce-contact-cta__intro" data-reveal>
 			<p class="ce-eyebrow">İletişim</p>
-			<h2 id="<?php echo esc_attr( ce_uid( $args, 'ce-contact-title' ) ); ?>" class="ce-display ce-display--md"><?php echo esc_html( ce_hopt( $args, 'contact_title' ) ); ?></h2>
+			<h2 id="<?php echo esc_attr( ce_uid( $args, 'ce-contact-title' ) ); ?>" class="ce-display ce-display--md"<?php echo ce_ed( ce_src( $args, 'contact_title' ) ); // phpcs:ignore ?>><?php echo esc_html( ce_hopt( $args, 'contact_title' ) ); ?></h2>
 			<?php if ( ce_hopt( $args, 'contact_text' ) ) : ?>
-				<p class="ce-lead"><?php echo esc_html( ce_hopt( $args, 'contact_text' ) ); ?></p>
+				<p class="ce-lead"<?php echo ce_ed( ce_src( $args, 'contact_text' ) ); // phpcs:ignore ?>><?php echo esc_html( ce_hopt( $args, 'contact_text' ) ); ?></p>
 			<?php endif; ?>
 			<div class="ce-btn-row">
 				<?php echo ce_button( 'Teklif Al', ce_quote_url(), 'primary', 'arrow-right' ); // phpcs:ignore ?>

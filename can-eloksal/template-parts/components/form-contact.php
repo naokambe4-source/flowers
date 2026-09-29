@@ -14,9 +14,9 @@ $ce_errors   = $ce_flash && ! $ce_flash['ok'] ? (array) $ce_flash['errors'] : ar
 $ce_subjects = array_filter( (array) ( $args['subjects'] ?? array() ) );
 ?>
 <div class="ce-card-form" id="form">
-	<h2 class="ce-card-form__title"><?php echo esc_html( $args['title'] ?? 'Bize yazın' ); ?></h2>
+	<h2 class="ce-card-form__title"<?php echo ce_ed( $args['src']['title'] ?? '' ); // phpcs:ignore ?>><?php echo esc_html( $args['title'] ?? 'Bize yazın' ); ?></h2>
 	<?php if ( ! empty( $args['text'] ) ) : ?>
-		<p class="ce-card-form__text"><?php echo esc_html( $args['text'] ); ?></p>
+		<p class="ce-card-form__text"<?php echo ce_ed( $args['src']['text'] ?? '' ); // phpcs:ignore ?>><?php echo esc_html( $args['text'] ); ?></p>
 	<?php endif; ?>
 	<form class="ce-form" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" data-ajax-form novalidate>
 		<?php ce_form_status( $ce_flash ); ?>

@@ -26,6 +26,7 @@ if ( ! $ce_items ) {
 				'link'       => ce_template_url( 'gallery', '/galeri/' ),
 				'link_label' => 'Tüm Galeriyi Gör',
 				'id'         => ce_uid( $args, 'ce-gallery-title' ),
+				'src'        => array( 'eyebrow' => ce_src( $args, 'gallery_eyebrow' ), 'title' => ce_src( $args, 'gallery_title' ) ),
 			)
 		);
 		get_template_part( 'template-parts/components/gallery-grid', null, array( 'items' => $ce_items, 'group' => ce_uid( $args, 'home' ), 'filter' => ! empty( $args['filter'] ) ) );

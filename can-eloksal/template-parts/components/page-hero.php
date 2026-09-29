@@ -13,7 +13,7 @@ $ce_image = absint( $args['image'] ?? 0 );
 $ce_size  = $args['size'] ?? 'md';
 ?>
 <section class="ce-phero ce-phero--<?php echo esc_attr( $ce_size ); ?><?php echo $ce_image ? ' has-image' : ''; ?>">
-	<div class="ce-phero__media" aria-hidden="true">
+	<div class="ce-phero__media" aria-hidden="true"<?php echo ce_edimg( $args['src']['image'] ?? '' ); // phpcs:ignore ?>>
 		<?php if ( $ce_image ) : ?>
 			<?php echo ce_img( $ce_image, 'ce-hero', array( 'sizes' => '100vw', 'loading' => 'eager', 'alt' => '' ) ); // phpcs:ignore ?>
 		<?php else : ?>
@@ -23,11 +23,11 @@ $ce_size  = $args['size'] ?? 'md';
 	<div class="ce-container ce-phero__inner">
 		<?php ce_breadcrumbs( 'ce-breadcrumb--light' ); ?>
 		<?php if ( ! empty( $args['eyebrow'] ) ) : ?>
-			<p class="ce-eyebrow ce-eyebrow--light"><?php echo esc_html( $args['eyebrow'] ); ?></p>
+			<p class="ce-eyebrow ce-eyebrow--light"<?php echo ce_ed( $args['src']['eyebrow'] ?? '' ); // phpcs:ignore ?>><?php echo esc_html( $args['eyebrow'] ); ?></p>
 		<?php endif; ?>
-		<h1 class="ce-phero__title"><?php echo esc_html( $args['title'] ?? '' ); ?></h1>
+		<h1 class="ce-phero__title"<?php echo ce_ed( $args['src']['title'] ?? '' ); // phpcs:ignore ?>><?php echo esc_html( $args['title'] ?? '' ); ?></h1>
 		<?php if ( ! empty( $args['subtitle'] ) ) : ?>
-			<p class="ce-phero__sub"><?php echo esc_html( $args['subtitle'] ); ?></p>
+			<p class="ce-phero__sub"<?php echo ce_ed( $args['src']['subtitle'] ?? '' ); // phpcs:ignore ?>><?php echo esc_html( $args['subtitle'] ); ?></p>
 		<?php endif; ?>
 		<?php if ( ! empty( $args['meta'] ) ) : ?>
 			<div class="ce-phero__meta"><?php echo wp_kses_post( $args['meta'] ); ?></div>

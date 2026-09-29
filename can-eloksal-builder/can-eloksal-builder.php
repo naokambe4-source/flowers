@@ -2,8 +2,8 @@
 /**
  * Plugin Name:       Can Eloksal Builder
  * Plugin URI:        https://caneloksal.com
- * Description:       Can Eloksal temasının tüm bölümlerini (hero, hizmetler, sektörler, proses, CTA, galeri, blog, formlar, banka hesapları…) blok editöründe sürükle-bırak bloklar olarak kullanmanızı sağlar. Hazır sayfa düzenleri ve ana sayfayı düzenlenebilir bloklara aktarma aracı içerir.
- * Version:           1.0.0
+ * Description:       Canlı Editör (sayfada tıkla-düzenle: metin, görsel, renk, boşluk, yazı, cihaz bazlı stil, bölüm sıralama) ve sürükle-bırak bloklar. Can Eloksal temasının tüm bölümlerini (hero, hizmetler, sektörler, proses, CTA, galeri, blog, formlar, banka hesapları…) blok editöründe sürükle-bırak bloklar olarak kullanmanızı sağlar. Hazır sayfa düzenleri ve ana sayfayı düzenlenebilir bloklara aktarma aracı içerir.
+ * Version:           2.0.0
  * Requires at least: 6.2
  * Requires PHP:      8.0
  * Author:            Can Eloksal
@@ -15,7 +15,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'CEB_VERSION', '1.0.0' );
+define( 'CEB_VERSION', '2.0.0' );
 define( 'CEB_DIR', plugin_dir_path( __FILE__ ) );
 define( 'CEB_URL', plugin_dir_url( __FILE__ ) );
 
@@ -38,6 +38,7 @@ add_action(
 		require CEB_DIR . 'includes/blocks.php';
 		require CEB_DIR . 'includes/patterns.php';
 		require CEB_DIR . 'includes/converter.php';
+		require CEB_DIR . 'includes/live/live.php';
 		if ( is_admin() ) {
 			require CEB_DIR . 'includes/admin.php';
 		}

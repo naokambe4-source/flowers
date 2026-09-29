@@ -19,9 +19,9 @@ if ( ! $ce_items ) {
 				<li class="ce-trust__item" data-reveal style="--i:<?php echo (int) $ce_i; ?>">
 					<span class="ce-trust__icon"><?php echo ce_icon( $ce_item['icon'] ?? 'check', 22 ); // phpcs:ignore ?></span>
 					<span class="ce-trust__body">
-						<strong><?php echo esc_html( $ce_item['title'] ?? '' ); ?></strong>
+						<strong<?php echo ce_ed( ce_src( $args, 'trust_items' ) . '@' . $ce_i . '.title' ); // phpcs:ignore ?>><?php echo esc_html( $ce_item['title'] ?? '' ); ?></strong>
 						<?php if ( ! empty( $ce_item['text'] ) ) : ?>
-							<span><?php echo esc_html( $ce_item['text'] ); ?></span>
+							<span<?php echo ce_ed( ce_src( $args, 'trust_items' ) . '@' . $ce_i . '.text' ); // phpcs:ignore ?>><?php echo esc_html( $ce_item['text'] ); ?></span>
 						<?php endif; ?>
 					</span>
 				</li>

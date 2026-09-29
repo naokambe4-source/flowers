@@ -54,6 +54,67 @@ function ce_uid( $args, $base ) {
 }
 
 /**
+ * Canlı editör modu mu? (Can Eloksal Builder eklentisi bu filtreyi açar.)
+ *
+ * @return bool
+ */
+function ce_live() {
+	static $on = null;
+	if ( null === $on ) {
+		$on = (bool) apply_filters( 'ce_live_frame', false );
+	}
+	return $on;
+}
+
+/**
+ * Canlı editör için metin kaynağı işareti (yalnızca editör modunda çıktı verir).
+ *
+ * @param string $source Kaynak (opt:anahtar, meta:ID:anahtar, post:ID:title…).
+ * @param string $format text|nl|pipe|paras|lines.
+ * @return string
+ */
+function ce_ed( $source, $format = 'text' ) {
+	if ( ! $source || ! ce_live() ) {
+		return '';
+	}
+	return ' data-ce-edit="' . esc_attr( $source ) . '"' . ( 'text' !== $format ? ' data-ce-format="' . esc_attr( $format ) . '"' : '' );
+}
+
+/**
+ * Canlı editör için görsel kaynağı işareti.
+ *
+ * @param string $source Kaynak.
+ * @return string
+ */
+function ce_edimg( $source ) {
+	return $source && ce_live() ? ' data-ce-img="' . esc_attr( $source ) . '"' : '';
+}
+
+/**
+ * Canlı editör için bağlantı kaynağı işareti.
+ *
+ * @param string $source Kaynak.
+ * @return string
+ */
+function ce_edlink( $source ) {
+	return $source && ce_live() ? ' data-ce-link="' . esc_attr( $source ) . '"' : '';
+}
+
+/**
+ * Bölüm alanının kaynağı: blok içinden çizildiyse blok özniteliği, değilse Tema Ayarları.
+ *
+ * @param array  $args Argümanlar.
+ * @param string $key  Anahtar.
+ * @return string
+ */
+function ce_src( $args, $key ) {
+	if ( is_array( $args ) && ! empty( $args['__src'] ) ) {
+		return 'none' === $args['__src'] ? '' : $args['__src'] . ':' . $key;
+	}
+	return 'opt:' . $key;
+}
+
+/**
  * Tema meta alanı (_ce_ önekli).
  *
  * @param int    $post_id Yazı ID.
@@ -323,22 +384,24 @@ function ce_section_head( $args ) {
 			'align'      => 'split',
 			'tag'        => 'h2',
 			'id'         => '',
+			'src'        => array(),
 		)
 	);
+	$src = (array) $args['src'];
 	$tag = in_array( $args['tag'], array( 'h1', 'h2', 'h3' ), true ) ? $args['tag'] : 'h2';
 	echo '<header class="ce-head ce-head--' . esc_attr( $args['align'] ) . '" data-reveal>';
 	echo '<div class="ce-head__main">';
 	if ( $args['eyebrow'] ) {
-		echo '<p class="ce-eyebrow">' . esc_html( $args['eyebrow'] ) . '</p>';
+		echo '<p class="ce-eyebrow"' . ce_ed( $src['eyebrow'] ?? '' ) . '>' . esc_html( $args['eyebrow'] ) . '</p>'; // phpcs:ignore
 	}
 	if ( $args['title'] ) {
-		printf( '<%1$s class="ce-head__title"%3$s>%2$s</%1$s>', esc_html( $tag ), ce_nl2br( $args['title'] ), $args['id'] ? ' id="' . esc_attr( $args['id'] ) . '"' : '' );
+		printf( '<%1$s class="ce-head__title"%3$s%4$s>%2$s</%1$s>', esc_html( $tag ), ce_nl2br( $args['title'] ), $args['id'] ? ' id="' . esc_attr( $args['id'] ) . '"' : '', ce_ed( $src['title'] ?? '', 'nl' ) ); // phpcs:ignore
 	}
 	echo '</div>';
 	if ( $args['text'] || $args['link'] ) {
 		echo '<div class="ce-head__side">';
 		if ( $args['text'] ) {
-			echo '<p class="ce-head__text">' . esc_html( $args['text'] ) . '</p>';
+			echo '<p class="ce-head__text"' . ce_ed( $src['text'] ?? '' ) . '>' . esc_html( $args['text'] ) . '</p>'; // phpcs:ignore
 		}
 		if ( $args['link'] ) {
 			echo '<a class="ce-link-arrow" href="' . esc_url( $args['link'] ) . '">' . esc_html( $args['link_label'] ) . ce_icon( 'arrow-right', 18 ) . '</a>';
@@ -357,16 +420,18 @@ function ce_section_head( $args ) {
  * @param string $icon    İkon.
  * @return string
  */
-function ce_button( $label, $url, $variant = 'primary', $icon = 'arrow-right' ) {
+function ce_button( $label, $url, $variant = 'primary', $icon = 'arrow-right', $label_src = '', $link_src = '' ) {
 	if ( '' === trim( (string) $label ) || '' === trim( (string) $url ) ) {
 		return '';
 	}
 	return sprintf(
-		'<a class="ce-btn ce-btn--%3$s" href="%1$s"><span>%2$s</span>%4$s</a>',
+		'<a class="ce-btn ce-btn--%3$s" href="%1$s"%6$s><span%5$s>%2$s</span>%4$s</a>',
 		esc_url( ce_url( $url ) ),
 		esc_html( $label ),
 		esc_attr( $variant ),
-		$icon ? ce_icon( $icon, 18, 'ce-btn__icon' ) : ''
+		$icon ? ce_icon( $icon, 18, 'ce-btn__icon' ) : '',
+		ce_ed( $label_src ),
+		ce_edlink( $link_src )
 	);
 }
 
@@ -514,6 +579,21 @@ function ce_page_subtitle( $post_id ) {
 function ce_page_title( $post_id ) {
 	$title = ce_meta( $post_id, 'hero_title' );
 	return $title ? $title : get_the_title( $post_id );
+}
+
+/**
+ * Sayfa hero'sunun canlı editör kaynakları.
+ *
+ * @param int $post_id Sayfa.
+ * @return array
+ */
+function ce_page_hero_src( $post_id ) {
+	return array(
+		'title'    => 'meta:' . $post_id . ':hero_title',
+		'subtitle' => 'meta:' . $post_id . ':hero_subtitle',
+		'eyebrow'  => 'meta:' . $post_id . ':hero_eyebrow',
+		'image'    => 'meta:' . $post_id . ':hero_image',
+	);
 }
 
 /**

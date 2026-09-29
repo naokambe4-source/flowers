@@ -31,6 +31,17 @@ foreach ( $ce_posts as $ce_p ) {
 		'btn2'    => array( ce_meta( $ce_p->ID, 'btn2_label' ), ce_meta( $ce_p->ID, 'btn2_url' ) ),
 		'overlay' => (int) ce_meta( $ce_p->ID, 'overlay', 55 ),
 		'align'   => ce_meta( $ce_p->ID, 'align', 'left' ),
+		'src'     => array(
+			'title'   => 'post:' . $ce_p->ID . ':title',
+			'eyebrow' => 'meta:' . $ce_p->ID . ':eyebrow',
+			'text'    => 'meta:' . $ce_p->ID . ':description',
+			'image'   => 'thumb:' . $ce_p->ID,
+			'b1'      => 'meta:' . $ce_p->ID . ':btn1_label',
+			'b1u'     => 'meta:' . $ce_p->ID . ':btn1_url',
+			'b2'      => 'meta:' . $ce_p->ID . ':btn2_label',
+			'b2u'     => 'meta:' . $ce_p->ID . ':btn2_url',
+			'tags'    => 'meta:' . $ce_p->ID . ':tags',
+		),
 	);
 }
 
@@ -48,6 +59,13 @@ if ( ! $ce_slides ) {
 		'btn2'    => array( 'Teklif Al', ce_quote_url() ),
 		'overlay' => 55,
 		'align'   => 'left',
+		'src'     => array(
+			'title'   => 'opt:hero_title',
+			'eyebrow' => 'opt:hero_eyebrow',
+			'text'    => 'opt:hero_text',
+			'image'   => 'opt:hero_image',
+			'tags'    => 'opt:hero_tags',
+		),
 	);
 }
 
@@ -65,7 +83,7 @@ $ce_count = count( $ce_slides );
 				style="--ce-overlay:<?php echo esc_attr( (string) ( max( 0, min( 90, $ce_s['overlay'] ) ) / 100 ) ); ?>"
 				<?php echo $ce_count > 1 ? 'aria-roledescription="slide" aria-label="' . esc_attr( ( $ce_i + 1 ) . ' / ' . $ce_count ) . '"' : ''; ?>
 				<?php echo 0 === $ce_i ? '' : 'aria-hidden="true"'; ?>>
-				<div class="ce-hero__media">
+				<div class="ce-hero__media"<?php echo ce_edimg( $ce_s['src']['image'] ); // phpcs:ignore ?>>
 					<?php if ( $ce_s['image'] ) : ?>
 						<picture>
 							<?php if ( $ce_s['mobile'] ) : ?>
@@ -94,22 +112,22 @@ $ce_count = count( $ce_slides );
 
 				<div class="ce-hero__content">
 					<?php if ( $ce_s['eyebrow'] ) : ?>
-						<p class="ce-eyebrow ce-eyebrow--light ce-hero__eyebrow"><?php echo esc_html( $ce_s['eyebrow'] ); ?></p>
+						<p class="ce-eyebrow ce-eyebrow--light ce-hero__eyebrow"<?php echo ce_ed( $ce_s['src']['eyebrow'] ); // phpcs:ignore ?>><?php echo esc_html( $ce_s['eyebrow'] ); ?></p>
 					<?php endif; ?>
-					<<?php echo esc_html( $ce_tag ); ?> class="ce-hero__title">
+					<<?php echo esc_html( $ce_tag ); ?> class="ce-hero__title"<?php echo ce_ed( $ce_s['src']['title'], 0 === strpos( $ce_s['src']['title'], 'opt:' ) ? 'nl' : 'pipe' ); // phpcs:ignore ?>>
 						<?php foreach ( $ce_lines_t as $ce_li => $ce_line ) : ?>
 							<span class="ce-hero__line" style="--d:<?php echo (int) $ce_li; ?>"><?php echo esc_html( $ce_line ); ?></span>
 						<?php endforeach; ?>
 					</<?php echo esc_html( $ce_tag ); ?>>
 					<?php if ( $ce_s['text'] ) : ?>
-						<p class="ce-hero__text"><?php echo esc_html( $ce_s['text'] ); ?></p>
+						<p class="ce-hero__text"<?php echo ce_ed( $ce_s['src']['text'] ); // phpcs:ignore ?>><?php echo esc_html( $ce_s['text'] ); ?></p>
 					<?php endif; ?>
 					<div class="ce-hero__actions">
-						<?php echo ce_button( $ce_s['btn1'][0], $ce_s['btn1'][1], 'primary', 'arrow-right' ); // phpcs:ignore ?>
-						<?php echo ce_button( $ce_s['btn2'][0], $ce_s['btn2'][1], 'ghost-light', 'arrow-up-right' ); // phpcs:ignore ?>
+						<?php echo ce_button( $ce_s['btn1'][0], $ce_s['btn1'][1], 'primary', 'arrow-right', $ce_s['src']['b1'] ?? '', $ce_s['src']['b1u'] ?? '' ); // phpcs:ignore ?>
+						<?php echo ce_button( $ce_s['btn2'][0], $ce_s['btn2'][1], 'ghost-light', 'arrow-up-right', $ce_s['src']['b2'] ?? '', $ce_s['src']['b2u'] ?? '' ); // phpcs:ignore ?>
 					</div>
 					<?php if ( $ce_s['tags'] ) : ?>
-						<ul class="ce-hero__tags" aria-label="Sektörler">
+						<ul class="ce-hero__tags" aria-label="Sektörler"<?php echo ce_ed( $ce_s['src']['tags'], 'lines' ); // phpcs:ignore ?>>
 							<?php foreach ( $ce_s['tags'] as $ce_t ) : ?>
 								<li><?php echo esc_html( $ce_t ); ?></li>
 							<?php endforeach; ?>

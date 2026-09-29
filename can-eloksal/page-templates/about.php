@@ -22,6 +22,7 @@ while ( have_posts() ) :
 		null,
 		array(
 			'title'    => ce_page_title( $ce_id ),
+			'src'      => ce_page_hero_src( $ce_id ),
 			'subtitle' => ce_page_subtitle( $ce_id ),
 			'eyebrow'  => ce_meta( $ce_id, 'hero_eyebrow' ),
 			'image'    => ce_meta( $ce_id, 'hero_image' ) ? ce_meta( $ce_id, 'hero_image' ) : get_post_thumbnail_id(),
@@ -33,15 +34,15 @@ while ( have_posts() ) :
 		<div class="ce-container ce-split ce-split--reverse">
 			<div class="ce-split__content" data-reveal>
 				<p class="ce-eyebrow"><?php echo esc_html( get_the_title() ); ?></p>
-				<h2 class="ce-display ce-display--md"><?php echo ce_nl2br( ce_meta( $ce_id, 'intro_title', "HER YÜZEYDE\nÖZENLİ İŞÇİLİK." ) ); // phpcs:ignore ?></h2>
+				<h2 class="ce-display ce-display--md"<?php echo ce_ed( 'meta:' . $ce_id . ':intro_title', 'nl' ); // phpcs:ignore ?>><?php echo ce_nl2br( ce_meta( $ce_id, 'intro_title', "HER YÜZEYDE\nÖZENLİ İŞÇİLİK." ) ); // phpcs:ignore ?></h2>
 				<div class="ce-prose ce-entry"><?php the_content(); ?></div>
 			</div>
 			<div class="ce-split__media ce-about__media" data-reveal>
-				<div class="ce-about__frame">
+				<div class="ce-about__frame"<?php echo ce_edimg( 'meta:' . $ce_id . ':intro_image' ); // phpcs:ignore ?>>
 					<?php echo $ce_intro ? ce_img( $ce_intro, 'ce-tall', array( 'sizes' => '(min-width: 1024px) 45vw, 100vw', 'fallback_alt' => 'Can Eloksal tesisi' ) ) : ce_material( 'natural', 'Can Eloksal' ); // phpcs:ignore ?>
 				</div>
 				<?php if ( ce_meta( $ce_id, 'intro_badge' ) ) : ?>
-					<p class="ce-about__badge"><?php echo ce_icon( 'shield', 18 ); // phpcs:ignore ?><span><?php echo esc_html( ce_meta( $ce_id, 'intro_badge' ) ); ?></span></p>
+					<p class="ce-about__badge"><?php echo ce_icon( 'shield', 18 ); // phpcs:ignore ?><span<?php echo ce_ed( 'meta:' . $ce_id . ':intro_badge' ); // phpcs:ignore ?>><?php echo esc_html( ce_meta( $ce_id, 'intro_badge' ) ); ?></span></p>
 				<?php endif; ?>
 			</div>
 		</div>
@@ -60,11 +61,11 @@ while ( have_posts() ) :
 							</div>
 							<div class="ce-feature__body">
 								<?php if ( ! empty( $ce_b['eyebrow'] ) ) : ?>
-									<p class="ce-eyebrow"><?php echo esc_html( $ce_b['eyebrow'] ); ?></p>
+									<p class="ce-eyebrow"<?php echo ce_ed( 'meta:' . $ce_id . ':blocks@' . $ce_i . '.eyebrow' ); // phpcs:ignore ?>><?php echo esc_html( $ce_b['eyebrow'] ); ?></p>
 								<?php endif; ?>
-								<h2 class="ce-feature__title"><?php echo esc_html( $ce_b['title'] ?? '' ); ?></h2>
+								<h2 class="ce-feature__title"<?php echo ce_ed( 'meta:' . $ce_id . ':blocks@' . $ce_i . '.title' ); // phpcs:ignore ?>><?php echo esc_html( $ce_b['title'] ?? '' ); ?></h2>
 								<?php if ( ! empty( $ce_b['text'] ) ) : ?>
-									<div class="ce-feature__text"><?php echo ce_paragraphs( $ce_b['text'] ); // phpcs:ignore ?></div>
+									<div class="ce-feature__text"<?php echo ce_ed( 'meta:' . $ce_id . ':blocks@' . $ce_i . '.text', 'paras' ); // phpcs:ignore ?>><?php echo ce_paragraphs( $ce_b['text'] ); // phpcs:ignore ?></div>
 								<?php endif; ?>
 							</div>
 							<?php if ( $ce_bimg ) : ?>

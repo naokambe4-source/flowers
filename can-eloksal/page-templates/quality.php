@@ -20,6 +20,7 @@ while ( have_posts() ) :
 		null,
 		array(
 			'title'    => ce_page_title( $ce_id ),
+			'src'      => ce_page_hero_src( $ce_id ),
 			'subtitle' => ce_page_subtitle( $ce_id ),
 			'eyebrow'  => ce_meta( $ce_id, 'hero_eyebrow' ),
 			'image'    => ce_meta( $ce_id, 'hero_image' ) ? ce_meta( $ce_id, 'hero_image' ) : get_post_thumbnail_id(),
@@ -32,7 +33,7 @@ while ( have_posts() ) :
 		<div class="ce-container ce-quality-intro">
 			<div class="ce-quality-intro__lead" data-reveal>
 				<p class="ce-eyebrow">Yaklaşımımız</p>
-				<p class="ce-quote-mark"><?php echo esc_html( ce_page_subtitle( $ce_id ) ); ?></p>
+				<p class="ce-quote-mark"<?php echo ce_ed( 'meta:' . $ce_id . ':hero_subtitle' ); // phpcs:ignore ?>><?php echo esc_html( ce_page_subtitle( $ce_id ) ); ?></p>
 				<?php if ( $ce_img ) : ?>
 					<div class="ce-quality-intro__media"><?php echo ce_img( $ce_img, 'ce-card', array( 'sizes' => '(min-width: 1024px) 40vw, 100vw' ) ); // phpcs:ignore ?></div>
 				<?php endif; ?>
@@ -50,9 +51,9 @@ while ( have_posts() ) :
 						<li class="ce-bento__item" data-reveal style="--i:<?php echo (int) $ce_i; ?>">
 							<span class="ce-bento__num"><?php echo esc_html( sprintf( '%02d', $ce_i + 1 ) ); ?></span>
 							<span class="ce-bento__icon"><?php echo ce_icon( $ce_p['icon'] ?? 'check', 26 ); // phpcs:ignore ?></span>
-							<h3 class="ce-bento__title"><?php echo esc_html( $ce_p['title'] ?? '' ); ?></h3>
+							<h3 class="ce-bento__title"<?php echo ce_ed( 'meta:' . $ce_id . ':principles@' . $ce_i . '.title' ); // phpcs:ignore ?>><?php echo esc_html( $ce_p['title'] ?? '' ); ?></h3>
 							<?php if ( ! empty( $ce_p['text'] ) ) : ?>
-								<p class="ce-bento__text"><?php echo esc_html( $ce_p['text'] ); ?></p>
+								<p class="ce-bento__text"<?php echo ce_ed( 'meta:' . $ce_id . ':principles@' . $ce_i . '.text' ); // phpcs:ignore ?>><?php echo esc_html( $ce_p['text'] ); ?></p>
 							<?php endif; ?>
 						</li>
 					<?php endforeach; ?>
@@ -69,9 +70,9 @@ while ( have_posts() ) :
 					<?php foreach ( $ce_steps as $ce_i => $ce_s ) : ?>
 						<li class="ce-steps__item" data-reveal style="--i:<?php echo (int) $ce_i; ?>">
 							<span class="ce-steps__num"><?php echo esc_html( sprintf( '%02d', $ce_i + 1 ) ); ?></span>
-							<h3 class="ce-steps__title"><?php echo esc_html( $ce_s['title'] ?? '' ); ?></h3>
+							<h3 class="ce-steps__title"<?php echo ce_ed( 'meta:' . $ce_id . ':steps@' . $ce_i . '.title' ); // phpcs:ignore ?>><?php echo esc_html( $ce_s['title'] ?? '' ); ?></h3>
 							<?php if ( ! empty( $ce_s['text'] ) ) : ?>
-								<p class="ce-steps__text"><?php echo esc_html( $ce_s['text'] ); ?></p>
+								<p class="ce-steps__text"<?php echo ce_ed( 'meta:' . $ce_id . ':steps@' . $ce_i . '.text' ); // phpcs:ignore ?>><?php echo esc_html( $ce_s['text'] ); ?></p>
 							<?php endif; ?>
 						</li>
 					<?php endforeach; ?>
