@@ -51,26 +51,22 @@ if ( isset( $_POST['df_contact_nonce'] ) ) {
 wp_enqueue_style( 'df-pages', DF_URI . '/assets/css/pages.css', array( 'df-main' ), DF_VERSION );
 
 get_header();
-
-while ( have_posts() ) :
-	the_post();
-	$df_content = get_the_content();
-	$df_extra   = trim( wp_strip_all_tags( $df_content ) ) && ! has_shortcode( $df_content, 'derin_iletisim' );
-
-	get_template_part(
-		'template-parts/content/page-header',
-		null,
-		array(
-			'title'   => get_the_title(),
-			'eyebrow' => 'Bize Ulaşın',
-		)
-	);
-	?>
-	<div class="df-container df-page df-contactp">
-		<?php if ( $df_extra ) : ?>
-			<div class="df-prose df-contactp__intro"><?php the_content(); ?></div>
+?>
+<header class="df-pagehead">
+	<div class="df-container">
+		<?php if ( function_exists( 'woocommerce_breadcrumb' ) ) : ?>
+			<?php woocommerce_breadcrumb(); ?>
 		<?php endif; ?>
-
+		<?php if ( df_opt( 'contact_eyebrow' ) ) : ?>
+			<p class="df-eyebrow"<?php echo df_e( 'contact_eyebrow' ); // phpcs:ignore ?>><?php echo esc_html( df_opt( 'contact_eyebrow' ) ); ?></p>
+		<?php endif; ?>
+		<h1 class="df-pagehead__title"<?php echo df_e( 'contact_title' ); // phpcs:ignore ?>><?php echo esc_html( df_opt( 'contact_title', get_the_title() ) ); ?></h1>
+		<?php if ( df_opt( 'contact_lead' ) || df_live() ) : ?>
+			<p class="df-pagehead__sub"<?php echo df_e( 'contact_lead' ); // phpcs:ignore ?>><?php echo esc_html( df_opt( 'contact_lead' ) ); ?></p>
+		<?php endif; ?>
+	</div>
+</header>
+	<div class="df-container df-page df-contactp<?php echo df_opt( 'contact_form_on' ) ? '' : ' no-form'; ?>">
 		<div class="df-contactp__grid">
 			<ul class="df-contactp__info">
 				<?php foreach ( array( 'contact_phone1', 'contact_phone2' ) as $df_k ) : ?>
@@ -98,8 +94,9 @@ while ( have_posts() ) :
 				<?php endif; ?>
 			</ul>
 
+			<?php if ( df_opt( 'contact_form_on' ) ) : ?>
 			<form class="df-contactp__form" method="post" action="<?php echo esc_url( get_permalink() ); ?>#df-contact-form" id="df-contact-form">
-				<h2>Mesaj Gönderin</h2>
+				<h2<?php echo df_e( 'contact_form_title' ); // phpcs:ignore ?>><?php echo esc_html( df_opt( 'contact_form_title', 'Mesaj Gönderin' ) ); ?></h2>
 				<?php if ( $df_sent ) : ?>
 					<p class="df-contactp__alert is-ok" role="status">Teşekkürler! Mesajınız bize ulaştı, en kısa sürede dönüş yapacağız.</p>
 				<?php elseif ( $df_error ) : ?>
@@ -112,9 +109,9 @@ while ( have_posts() ) :
 				<p><label for="df_c_message">Mesajınız</label><textarea id="df_c_message" name="df_c_message" rows="4" required><?php echo esc_textarea( $df_val['message'] ); ?></textarea></p>
 				<button type="submit" class="df-btn df-btn--solid"><span>Gönder</span></button>
 			</form>
+			<?php endif; ?>
 		</div>
 	</div>
-	<?php
-endwhile;
+<?php
 
 get_footer();

@@ -16,9 +16,9 @@ $action = df_opt( 'nl_action' );
 <section class="df-newsletter" aria-labelledby="df-nl-title">
 	<div class="df-container df-newsletter__inner">
 		<div class="df-newsletter__text">
-			<h2 class="df-newsletter__title" id="df-nl-title"><?php echo esc_html( $title ); ?></h2>
+			<h2 class="df-newsletter__title" id="df-nl-title"<?php echo df_e( 'nl_title' ); // phpcs:ignore ?>><?php echo esc_html( $title ); ?></h2>
 			<?php if ( df_opt( 'nl_text' ) ) : ?>
-				<p><?php echo esc_html( df_opt( 'nl_text' ) ); ?></p>
+				<p<?php echo df_e( 'nl_text' ); // phpcs:ignore ?>><?php echo esc_html( df_opt( 'nl_text' ) ); ?></p>
 			<?php endif; ?>
 		</div>
 		<form class="df-newsletter__form" method="post" <?php echo $action ? 'action="' . esc_url( $action ) . '" target="_blank"' : 'data-df-newsletter'; ?>>

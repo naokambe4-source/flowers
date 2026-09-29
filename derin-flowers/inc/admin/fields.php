@@ -228,15 +228,8 @@ function df_sort_terms_hierarchically( $terms, $parent = 0, $depth = 0 ) {
 function df_render_sections_field( $value, $name ) {
 	$labels = df_home_section_labels();
 	$list   = array();
-	foreach ( (array) $value as $row ) {
-		if ( ! empty( $row['id'] ) && isset( $labels[ $row['id'] ] ) ) {
-			$list[ $row['id'] ] = ! empty( $row['on'] );
-		}
-	}
-	foreach ( $labels as $id => $l ) {
-		if ( ! isset( $list[ $id ] ) ) {
-			$list[ $id ] = true;
-		}
+	foreach ( df_all_sections_ordered() as $row ) {
+		$list[ $row['id'] ] = $row['on'];
 	}
 	echo '<ol class="df-sections" data-name="' . esc_attr( $name ) . '">';
 	$i = 0;

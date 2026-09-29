@@ -348,3 +348,90 @@
 	.df-newsletter__field { flex-direction: column; background: none; border: 0; gap: 10px; }
 	.df-newsletter__field input { background: #fff; height: 54px; border: 1px solid rgba(var(--df-text-rgb), .1); }
 }
+
+/* ==========================================================================
+   Popüler kategoriler (yuvarlak)
+   ========================================================================== */
+.df-popular { padding: clamp(36px, 4.5vw, 64px) 0 clamp(20px, 3vw, 40px); }
+.df-popular__title { font-size: calc(clamp(28px, 2.6vw, 38px) * var(--df-scale)); margin: 0 0 clamp(20px, 2.4vw, 32px); }
+.df-popular--center .df-popular__title { text-align: center; }
+.df-popular__list { list-style: none; display: flex; justify-content: space-between; gap: clamp(12px, 2vw, 28px); }
+.df-popular--center .df-popular__list { justify-content: center; }
+.df-popular__list > li { flex: 0 1 132px; min-width: 0; }
+.df-popular__item { display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; color: var(--df-text); }
+.df-popular__img { position: relative; display: block; width: 100%; max-width: 132px; aspect-ratio: 1; border-radius: 50%; overflow: hidden; background: var(--df-ivory); box-shadow: 0 0 0 1px var(--df-line); transition: transform .4s var(--df-ease), box-shadow .4s var(--df-ease); }
+.df-popular__img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.df-popular__img .df-ph__icon { width: 34px; height: 34px; }
+.df-popular__item:hover .df-popular__img { transform: translateY(-3px); box-shadow: 0 0 0 2px var(--df-accent); }
+.df-popular__name { font-size: 14.5px; font-weight: 500; line-height: 1.3; }
+
+/* ==========================================================================
+   Renkli kategori bannerları
+   ========================================================================== */
+.df-banners { padding-top: calc(var(--df-section) * .5); padding-bottom: calc(var(--df-section) * .5); }
+.df-banners__grid { display: grid; gap: clamp(14px, 1.6vw, 24px); }
+.df-banners__grid--1 { grid-template-columns: 1fr; }
+.df-banners__grid--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.df-banners__grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.df-banner { position: relative; display: block; overflow: hidden; border-radius: var(--df-ban-radius, 18px); isolation: isolate; }
+.df-banner--image img { display: block; width: 100%; height: auto; transition: transform 1s var(--df-ease); }
+.df-banner--image:hover img { transform: scale(1.02); }
+.df-banner--image .df-ph { position: relative; aspect-ratio: 2.4 / 1; }
+.df-banner--card { display: grid; grid-template-columns: 52% 48%; aspect-ratio: 2.4 / 1; background: var(--b-bg); color: var(--b-fg); }
+.df-banner--card:hover { color: var(--b-fg); }
+.df-banner__media { position: relative; overflow: hidden; }
+.df-banner__media img, .df-banner__media .df-ph { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 1.2s var(--df-ease); }
+.df-banner__media::after { content: ""; position: absolute; inset: 0 0 0 auto; width: 40%; background: linear-gradient(90deg, transparent, var(--b-bg)); pointer-events: none; }
+.df-banner--card:hover .df-banner__media img { transform: scale(1.04); }
+.df-banner__body { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 16px clamp(14px, 2vw, 28px); text-align: center; z-index: 1; }
+.df-banner__icon { opacity: .85; }
+.df-banner__title { font-family: var(--df-font-body); font-weight: 700; font-size: clamp(20px, 2.3vw, 38px); line-height: 1.04; letter-spacing: .01em; text-transform: uppercase; }
+.df-banners__grid--1 .df-banner__title { font-size: clamp(24px, 3.4vw, 52px); }
+.df-banners__grid--3 .df-banner__title { font-size: clamp(18px, 1.6vw, 28px); }
+.df-banner__rule { display: flex; align-items: center; gap: 8px; width: 70%; opacity: .6; }
+.df-banner__rule::before, .df-banner__rule::after { content: ""; flex: 1; height: 1px; background: currentColor; }
+.df-banner__text { font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; opacity: .85; }
+.df-banner__pill { display: inline-flex; align-items: center; gap: 10px; padding: 10px 18px; border-radius: 10px; background: var(--b-fg); color: #fff; font-size: clamp(11px, .95vw, 14px); font-weight: 700; letter-spacing: .03em; text-transform: uppercase; white-space: nowrap; box-shadow: 0 6px 16px -8px rgba(0, 0, 0, .4); transition: transform .3s var(--df-ease); }
+.df-banner--card:hover .df-banner__pill { transform: translateY(-2px); }
+.df-banner__badge { position: absolute; left: 14px; bottom: 14px; z-index: 2; display: grid; place-items: center; width: 74px; height: 74px; border-radius: 50%; background: var(--b-fg); color: #fff; font-size: 20px; font-weight: 800; box-shadow: 0 8px 20px -8px rgba(0, 0, 0, .45); }
+
+/* ==========================================================================
+   Özel günler — kart görünümü (metin solda, görsel sağda)
+   ========================================================================== */
+.df-occasions--card .df-occasion { display: grid; grid-template-columns: 1fr 1fr; align-items: stretch; min-height: 210px; background: var(--df-ivory); color: var(--df-text); border-radius: var(--df-radius); }
+.df-occasions--card .df-occasion:hover { color: var(--df-text); }
+.df-occasions--card .df-occasion__media { order: 2; aspect-ratio: auto; height: 100%; background: var(--df-sand); }
+.df-occasions--card .df-occasion__media::after { display: none; }
+.df-occasions--card .df-occasion__body { position: static; order: 1; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 10px; padding: clamp(20px, 2.2vw, 32px); }
+.df-occasions--card .df-occasion__title { font-family: var(--df-font-heading); font-size: calc(clamp(24px, 2vw, 32px) * var(--df-scale)); font-weight: 500; letter-spacing: 0; line-height: 1.1; }
+.df-occasions--card .df-occasion__text { font-family: var(--df-font-body); font-size: 14px; color: var(--df-muted); }
+.df-occasion__btn { display: inline-flex; align-items: center; gap: 8px; margin-top: 8px; padding: 9px 16px; border: 1px solid var(--df-text); font-size: 11px; font-weight: 500; letter-spacing: .16em; background: #fff; transition: background .25s, color .25s; }
+.df-occasions--card .df-occasion:hover .df-occasion__btn { background: var(--df-dark); border-color: var(--df-dark); color: #fff; }
+
+/* Editorial banner — ortalı metin */
+.df-editorial--center .df-editorial__content { justify-content: center; text-align: center; }
+.df-editorial--center .df-editorial__inner { max-width: 680px; }
+.df-editorial--center .df-editorial__text { margin-left: auto; margin-right: auto; }
+.df-editorial--center::before { background: radial-gradient(ellipse 50% 60% at 50% 50%, rgba(var(--df-ivory-rgb), .85), rgba(var(--df-ivory-rgb), 0) 80%); }
+.df-editorial--light.df-editorial--center::before { background: rgba(20, 14, 12, .35); }
+
+@media (max-width: 1100px) {
+	.df-banners__grid--3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+	.df-popular__list { justify-content: flex-start; overflow-x: auto; margin: 0 calc(var(--df-gutter) * -1); padding: 4px var(--df-gutter) 8px; scroll-snap-type: x mandatory; }
+	.df-popular__list > li { flex: 0 0 108px; scroll-snap-align: start; }
+	.df-occasions--card .df-occasions__grid { grid-template-columns: 1fr; }
+	.df-occasions--card .df-occasions__grid > :first-child { grid-column: auto; }
+	.df-occasions--card .df-occasions__grid > :first-child .df-occasion__media { aspect-ratio: auto; }
+}
+@media (max-width: 767px) {
+	.df-banners__grid--2, .df-banners__grid--3 { grid-template-columns: 1fr; }
+	.df-banner--card { aspect-ratio: 2.3 / 1; }
+	.df-banner__title { font-size: clamp(19px, 5.6vw, 26px) !important; }
+	.df-banner__pill { padding: 8px 12px; font-size: 10.5px; gap: 6px; }
+	.df-banner__pill .df-icon { width: 16px; height: 16px; }
+	.df-banner__badge { width: 56px; height: 56px; font-size: 15px; }
+	.df-popular__list > li { flex-basis: 92px; }
+	.df-popular__name { font-size: 13px; }
+	.df-occasions--card .df-occasions__grid { display: grid; overflow: visible; margin: 0; padding: 0; gap: 12px; }
+	.df-occasions--card .df-occasion { min-height: 170px; }
+}

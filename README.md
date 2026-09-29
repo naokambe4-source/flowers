@@ -42,6 +42,17 @@ Araçlar sayfasında ayarları **JSON dışa/içe aktarma** ve sıfırlama da va
 - **Üyelik**: sekmeli Giriş / Üye Ol, ad-soyad-telefon-KVKK alanları, Hesabım kısayol kartları.
 - **Favoriler** (üye + ziyaretçi), canlı ürün araması, mini sepet çekmecesi, ürün kategorisine ikon + kapak görseli, menü öğelerine ikon seçimi, bülten aboneleri + CSV.
 
+## v1.1 — Yönetim Paneli, Canlı Düzenleyici, yeni ana sayfa bölümleri
+
+- **Yönetim Paneli** (WordPress menüsünde en üstte; girişten sonra otomatik açılır): yeni / hazırlanıyor / kuryede / bugün teslim edilen sipariş kartları, son siparişler (teslimat bölgesi, tarih-saat, yazdırma durumu), hızlı işlemler, son 7 gün ciro grafiği (+ tablo görünümü), son 30 günün en çok satanları, sistem durumu, SEO & indeksleme kontrolleri, bildirimler.
+  - **İzmir Teslimat:** seçilen günün teslimatları saat aralığına göre, bölge özetiyle.
+  - **Yazdırma Merkezi:** günün not kartlarını (A6) ve teslimat fişlerini (A5) toplu yazdırır, siparişi "Yazdırıldı" olarak işaretler.
+  - **Kurye Yönetimi:** kurye atama (Teslimat & Ödeme → Kuryeler), adresi kuryeye tek dokunuşla WhatsApp ile gönderme; istenirse durum otomatik "Yolda".
+- **Canlı Düzenleyici:** ön yüzde admin çubuğundaki **✎ Canlı Düzenle** ile yazılara tıklayıp düzenleyin, görselleri değiştirin, bölümleri ▲▼ taşıyın / gizleyin, **Kaydet**. Değişiklikler ham HTML olarak değil tema ayarlarına yazılır; ürünler, fiyatlar, header ve footer hep canlı kalır.
+- **Yeni ana sayfa bölümleri:** yuvarlak **Popüler Kategoriler**, renkli **kategori bannerları** (fotoğraf + büyük başlık + "Aynı Gün Teslimat" etiketi ya da hazır banner görseli), kart tipi özel gün bannerları, 5'li Signature Collection (sepet ikonu + ürün kodu), ortalı Söz & Nişan banner'ı. **Araçlar → Hazır ana sayfa düzeni** tek tıkla bu kurguyu uygular.
+- **Hakkımızda & İletişim** artık panelden (Hakkımızda & İletişim sekmesi) ve canlı düzenleyiciden yönetilir; sayfa editörü içeriğini kullanmaz, bu yüzden başka eklentilerin sayfaya kaydettiği HTML header/footer'ı bozamaz.
+- **Markalı giriş ekranı** (Yönetim & Giriş sekmesi: logo, yan görsel, metin).
+
 ## Kısa kodlar
 
 `[derin_siparis_takip]` · `[derin_favoriler]` · `[derin_teslimat_bolgeleri]` · `[derin_iletisim]` · `[derin_sss]`

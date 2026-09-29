@@ -1,0 +1,39 @@
+/* Derin Flowers — Canlı Düzenleyici (yalnızca yöneticiye, ?df_live=1 modunda yüklenir) */
+.df-live-on { padding-bottom: 76px; }
+.df-live-on [data-df-edit] { outline: 1px dashed rgba(142, 94, 82, .45); outline-offset: 3px; cursor: text; border-radius: 2px; transition: outline-color .2s, background .2s; min-width: 30px; }
+.df-live-on [data-df-edit]:hover { outline-color: #8E5E52; background: rgba(255, 255, 255, .35); }
+.df-live-on [data-df-edit]:focus { outline: 2px solid #8E5E52; background: rgba(255, 255, 255, .6); }
+.df-live-on [data-df-edit]:empty::before { content: "Yazı ekleyin…"; opacity: .45; }
+
+.df-live-imgbtn { position: absolute; top: 12px; right: 12px; z-index: 20; padding: 8px 12px; border: 0; border-radius: 6px; background: rgba(43, 37, 34, .88); color: #fff; font: 600 12px/1 system-ui, sans-serif; cursor: pointer; opacity: .9; box-shadow: 0 4px 14px rgba(0, 0, 0, .25); }
+.df-live-imgbtn:hover { opacity: 1; background: #8E5E52; }
+.df-live-imgbtn--bg { top: 56px; right: 24px; padding: 10px 14px; font-size: 13px; }
+
+.df-live-section { position: relative; outline: 1px solid transparent; transition: outline-color .2s; }
+.df-live-section:hover { outline: 2px solid rgba(142, 94, 82, .5); outline-offset: -2px; }
+.df-live-section.is-off > :not(.df-live-tools) { opacity: .28; filter: grayscale(.8); }
+.df-live-section.is-off::after { content: "Gizli — sitede görünmüyor"; position: absolute; top: 14px; right: 16px; z-index: 30; padding: 6px 10px; background: #A2574A; color: #fff; font: 600 12px/1 system-ui, sans-serif; border-radius: 4px; }
+.df-live-tools { position: absolute; top: 10px; left: 10px; z-index: 40; display: flex; align-items: center; gap: 4px; padding: 4px; background: #2B2522; border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 0, 0, .25); opacity: 0; transform: translateY(-4px); transition: opacity .2s, transform .2s; }
+.df-live-section:hover > .df-live-tools, .df-live-section.is-off > .df-live-tools { opacity: 1; transform: none; }
+.df-live-tools__name { padding: 0 10px 0 8px; color: #F3C9B8; font: 600 12px/1 system-ui, sans-serif; white-space: nowrap; }
+.df-live-tools button, .df-live-tools a { height: 30px; min-width: 30px; padding: 0 10px; border: 0; border-radius: 6px; background: rgba(255, 255, 255, .1); color: #fff; font: 600 12px/30px system-ui, sans-serif; cursor: pointer; text-decoration: none; }
+.df-live-tools button:hover, .df-live-tools a:hover { background: #8E5E52; color: #fff; }
+.df-live-empty { padding: 40px 20px; text-align: center; color: #7A6E68; font: 14px/1.5 system-ui, sans-serif; background: repeating-linear-gradient(45deg, #faf7f2 0 12px, #f5efe8 12px 24px); }
+
+.df-live-bar { position: fixed; left: 50%; bottom: 16px; z-index: 9999; transform: translateX(-50%); display: flex; align-items: center; gap: 24px; width: min(920px, calc(100vw - 24px)); padding: 12px 12px 12px 22px; background: #1f1b19; color: #fff; border-radius: 14px; box-shadow: 0 20px 50px rgba(0, 0, 0, .35); font: 14px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif; }
+.df-live-bar__info { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.df-live-bar__info strong { color: #F3C9B8; font-size: 13px; letter-spacing: .04em; }
+.df-live-bar__info span { color: rgba(255, 255, 255, .75); font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.df-live-bar__actions { display: flex; gap: 8px; flex: none; }
+.df-live-btn { display: inline-flex; align-items: center; height: 40px; padding: 0 18px; border: 0; border-radius: 9px; background: #8E5E52; color: #fff; font: 600 13px/1 system-ui, sans-serif; cursor: pointer; text-decoration: none; }
+.df-live-btn:hover { background: #a86f61; color: #fff; }
+.df-live-btn:disabled { opacity: .45; cursor: default; }
+.df-live-btn--ghost { background: rgba(255, 255, 255, .1); }
+.df-live-btn--ghost:hover { background: rgba(255, 255, 255, .2); }
+
+@media (max-width: 700px) {
+	.df-live-bar { flex-direction: column; align-items: stretch; gap: 10px; padding: 12px; }
+	.df-live-bar__actions { justify-content: stretch; }
+	.df-live-btn { flex: 1; justify-content: center; padding: 0 8px; }
+	.df-live-tools { opacity: 1; transform: none; flex-wrap: wrap; }
+}

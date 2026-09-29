@@ -7,7 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'DF_VERSION', '1.0.0' );
+define( 'DF_VERSION', '1.1.0' );
 define( 'DF_DIR', get_template_directory() );
 define( 'DF_URI', get_template_directory_uri() );
 define( 'DF_OPTION', 'derin_options' );
@@ -22,6 +22,8 @@ require DF_DIR . '/inc/newsletter.php';
 require DF_DIR . '/inc/wishlist.php';
 require DF_DIR . '/inc/ajax.php';
 require DF_DIR . '/inc/shortcodes.php';
+require DF_DIR . '/inc/live-editor.php';
+require DF_DIR . '/inc/login.php';
 
 if ( is_admin() ) {
 	require DF_DIR . '/inc/admin/fields.php';
@@ -38,4 +40,7 @@ if ( class_exists( 'WooCommerce' ) ) {
 	require DF_DIR . '/inc/woocommerce/order-status.php';
 	require DF_DIR . '/inc/woocommerce/tracking.php';
 	require DF_DIR . '/inc/woocommerce/account.php';
+	if ( is_admin() ) {
+		require DF_DIR . '/inc/admin/dashboard.php';
+	}
 }

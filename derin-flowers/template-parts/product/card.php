@@ -104,6 +104,18 @@ $subtitle = get_post_meta( $product->get_id(), '_df_subtitle', true );
 		<?php if ( $subtitle ) : ?>
 			<p class="df-card__sub"><?php echo esc_html( $subtitle ); ?></p>
 		<?php endif; ?>
-		<div class="df-card__price"><?php echo wp_kses_post( $product->get_price_html() ); ?></div>
+		<?php if ( df_opt( 'card_show_sku' ) && $product->get_sku() ) : ?>
+			<span class="df-card__sku"><?php echo esc_html( $product->get_sku() ); ?></span>
+		<?php endif; ?>
+		<div class="df-card__foot">
+			<div class="df-card__price"><?php echo wp_kses_post( $product->get_price_html() ); ?></div>
+			<?php if ( df_opt( 'card_cart_icon' ) ) : ?>
+				<?php if ( df_quick_add_allowed( $product ) ) : ?>
+					<a href="<?php echo esc_url( $product->add_to_cart_url() ); ?>" data-quantity="1" data-product_id="<?php echo esc_attr( $product->get_id() ); ?>" class="df-card__cart add_to_cart_button ajax_add_to_cart" aria-label="<?php echo esc_attr( sprintf( '%s sepete ekle', $name ) ); ?>" rel="nofollow"><?php df_the_icon( 'bag', array( 'size' => 18 ) ); ?></a>
+				<?php else : ?>
+					<a href="<?php echo esc_url( $link ); ?>" class="df-card__cart" aria-label="<?php echo esc_attr( sprintf( '%s ürününü incele', $name ) ); ?>"><?php df_the_icon( 'bag', array( 'size' => 18 ) ); ?></a>
+				<?php endif; ?>
+			<?php endif; ?>
+		</div>
 	</div>
 </<?php echo esc_attr( $tag ); ?>>

@@ -39,10 +39,11 @@ $GLOBALS['df_signature_ids'] = array_map(
 				'title'   => df_opt( 'sig_title' ),
 				'sub'     => df_opt( 'sig_sub' ),
 				'id'      => 'df-sig-title',
+				'keys'    => array( 'title' => 'sig_title', 'sub' => 'sig_sub' ),
 			)
 		);
 		?>
-		<div class="df-grid df-grid--4 df-products-row">
+		<div class="df-grid df-grid--<?php echo in_array( (int) df_opt( 'sig_count', 4 ), array( 5, 10 ), true ) ? 5 : 4; ?> df-products-row">
 			<?php foreach ( $products as $product ) : ?>
 				<?php df_product_card( $product ); ?>
 			<?php endforeach; ?>

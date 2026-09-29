@@ -36,6 +36,7 @@ if ( ! $products ) {
 				'link'      => df_opt( 'best_url' ),
 				'link_text' => df_opt( 'best_btn' ),
 				'id'        => 'df-best-title',
+				'keys'      => array( 'title' => 'best_title', 'sub' => 'best_sub' ),
 			)
 		);
 		?>

@@ -36,3 +36,6 @@
 	.df-contactp__form .df-btn { width: 100%; }
 	.df-about__values { grid-template-columns: 1fr; }
 }
+.df-contactp.no-form .df-contactp__grid { grid-template-columns: 1fr; max-width: 520px; margin: 0 auto; }
+.df-about .df-page__content { white-space: normal; }
+.df-live-on .df-about .df-page__content { white-space: pre-wrap; }

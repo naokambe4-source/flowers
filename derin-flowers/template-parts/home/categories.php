@@ -66,6 +66,7 @@ $style = df_opt( 'cats_style', 'below' );
 				'title'   => df_opt( 'cats_title' ),
 				'sub'     => df_opt( 'cats_sub' ),
 				'id'      => 'df-cats-title',
+				'keys'    => array( 'eyebrow' => 'cats_eyebrow', 'title' => 'cats_title', 'sub' => 'cats_sub' ),
 			)
 		);
 		?>

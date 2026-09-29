@@ -20,15 +20,15 @@ if ( ! $items ) {
 <section class="df-trust" aria-label="Neden Derin Flowers">
 	<div class="df-container">
 		<ul class="df-trust__list">
-			<?php foreach ( $items as $item ) : ?>
+			<?php foreach ( $items as $ti => $item ) : ?>
 				<li class="df-trust__item">
 					<?php if ( ! empty( $item['icon'] ) ) : ?>
 						<span class="df-trust__icon"><?php df_the_icon( $item['icon'], array( 'size' => 26 ) ); ?></span>
 					<?php endif; ?>
 					<span class="df-trust__text">
-						<strong><?php echo esc_html( $item['title'] ); ?></strong>
+						<strong<?php echo df_e( 'trust_items.' . $ti . '.title' ); // phpcs:ignore ?>><?php echo esc_html( $item['title'] ); ?></strong>
 						<?php if ( ! empty( $item['text'] ) ) : ?>
-							<span><?php echo esc_html( $item['text'] ); ?></span>
+							<span<?php echo df_e( 'trust_items.' . $ti . '.text' ); // phpcs:ignore ?>><?php echo esc_html( $item['text'] ); ?></span>
 						<?php endif; ?>
 					</span>
 				</li>

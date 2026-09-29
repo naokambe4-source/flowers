@@ -667,6 +667,8 @@ function df_print_card() {
 	if ( ! $order ) {
 		wp_die( 'Sipariş bulunamadı.' );
 	}
+	$order->update_meta_data( '_df_printed', time() );
+	$order->save();
 	$note = $order->get_meta( '_df_note' );
 	$from = 'yes' === $order->get_meta( '_df_note_anon' ) ? '' : $order->get_meta( '_df_note_from' );
 	$fonts = df_fonts_url();

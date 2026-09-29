@@ -33,6 +33,7 @@ $blog_url = get_option( 'page_for_posts' ) ? get_permalink( get_option( 'page_fo
 				'link'      => $blog_url,
 				'link_text' => $blog_url ? 'Tüm yazılar' : '',
 				'id'        => 'df-blog-title',
+				'keys'      => array( 'title' => 'blog_title', 'sub' => 'blog_sub' ),
 			)
 		);
 		?>

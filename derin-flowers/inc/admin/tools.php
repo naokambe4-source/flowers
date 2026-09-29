@@ -386,6 +386,41 @@ function df_import_settings() {
 add_action( 'admin_post_df_import', 'df_import_settings' );
 
 /**
+ * Hazır düzen: görseldeki ana sayfa kurgusunu uygular (içerik ve görseller korunur).
+ */
+function df_apply_preset() {
+	if ( ! current_user_can( 'edit_theme_options' ) || ! check_admin_referer( 'df_preset' ) ) {
+		wp_die( 'Yetkiniz yok.' );
+	}
+	$opts  = array_merge( df_defaults(), (array) get_option( DF_OPTION, array() ) );
+	$order = array( 'hero', 'occasions', 'popular', 'banners', 'categories', 'signature', 'editorial', 'bestsellers', 'trust', 'duo', 'delivery', 'story', 'blog', 'instagram', 'newsletter' );
+	$on    = array();
+	foreach ( (array) $opts['home_sections'] as $row ) {
+		if ( ! empty( $row['id'] ) ) {
+			$on[ $row['id'] ] = ! empty( $row['on'] );
+		}
+	}
+	$list = array();
+	foreach ( $order as $id ) {
+		$list[] = array(
+			'id' => $id,
+			'on' => isset( $on[ $id ] ) ? (int) $on[ $id ] : 1,
+		);
+	}
+	$opts['home_sections']  = $list;
+	$opts['occ_style']      = 'card';
+	$opts['sig_count']      = '5';
+	$opts['card_cart_icon'] = 1;
+	$opts['card_show_sku']  = 1;
+	$opts['ed_align']       = 'center';
+	$opts['__df_clean']     = 1;
+	update_option( DF_OPTION, $opts );
+	wp_safe_redirect( admin_url( 'admin.php?page=derin-flowers-tools&preset=1' ) );
+	exit;
+}
+add_action( 'admin_post_df_preset', 'df_apply_preset' );
+
+/**
  * Araçlar sayfası.
  */
 function df_tools_page() {
@@ -407,6 +442,9 @@ function df_tools_page() {
 		<?php if ( isset( $_GET['import'] ) ) : ?>
 			<div class="notice <?php echo '1' === $_GET['import'] ? 'notice-success' : 'notice-error'; ?>"><p><?php echo '1' === $_GET['import'] ? 'Ayarlar içe aktarıldı.' : 'Geçersiz JSON dosyası.'; ?></p></div>
 		<?php endif; ?>
+		<?php if ( isset( $_GET['preset'] ) ) : ?>
+			<div class="notice notice-success"><p>Hazır ana sayfa düzeni uygulandı. <a href="<?php echo esc_url( home_url( '/' ) ); ?>" target="_blank">Siteyi görüntüle</a></p></div>
+		<?php endif; ?>
 		<?php if ( isset( $_GET['reset'] ) ) : ?>
 			<div class="notice notice-success"><p>Tüm tema ayarları varsayılana döndürüldü.</p></div>
 		<?php endif; ?>
@@ -425,6 +463,18 @@ function df_tools_page() {
 						<label class="df-check"><input type="checkbox" name="df_do[]" value="menus" checked> Ana menü ve footer menülerini oluştur</label>
 						<label class="df-check"><input type="checkbox" name="df_do[]" value="checkout" checked> Sepet/ödeme sayfalarını çiçekçi akışına çevir ve üyeliği aç</label>
 						<p><button class="button button-primary button-hero">Kurulumu çalıştır</button></p>
+					</form>
+				</div>
+			</div>
+
+			<div class="df-group">
+				<div class="df-group__head"><h3>Hazır ana sayfa düzeni</h3></div>
+				<div class="df-group__body">
+					<p class="df-group__desc">Gönderilen tasarımdaki kurguyu uygular: hero → kart tipi özel gün bannerları → yuvarlak popüler kategoriler → renkli kategori bannerları → kategoriler → 5'li Signature Collection (sepet ikonu + ürün kodu) → ortalı Söz & Nişan banner'ı → diğer bölümler. Yazılarınız, görselleriniz ve ürün seçimleriniz değişmez; kapattığınız bölümler kapalı kalır.</p>
+					<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" onsubmit="return confirm('Ana sayfa düzeni ve bölüm sırası değişecek. Devam edilsin mi?');">
+						<?php wp_nonce_field( 'df_preset' ); ?>
+						<input type="hidden" name="action" value="df_preset">
+						<p><button class="button button-primary">Düzeni uygula</button></p>
 					</form>
 				</div>
 			</div>

@@ -436,3 +436,18 @@ hr { border: 0; border-top: 1px solid var(--df-line); margin: 2em 0; }
 	.df-header__right { gap: 0; }
 	.df-iconbtn, .df-header__cats { min-width: 38px; width: 38px; padding: 0; }
 }
+
+/* Ürün kartı: sepet ikonu, ürün kodu, 5'li ızgara */
+.df-card__foot { display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; margin-top: auto; }
+.df-card__foot .df-card__price { margin-top: 0; }
+.df-card__body > .df-card__foot { padding-top: 10px; }
+.df-card__cart { display: grid; place-items: center; width: 38px; height: 38px; flex: none; border: 1px solid var(--df-line); color: var(--df-text); transition: background .25s, color .25s, border-color .25s; }
+.df-card__cart:hover { background: var(--df-dark); border-color: var(--df-dark); color: #fff; }
+.df-card__cart.added::after, .df-card__cart + .added_to_cart { display: none; }
+.df-card__sku { font-size: 11px; letter-spacing: .08em; color: var(--df-muted); }
+.df-grid--5 { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: clamp(24px, 2.6vw, 36px) clamp(12px, 1.4vw, 22px); }
+.df-grid--5 .df-card__title { font-size: 20px; }
+.df-grid--5 .df-card__body { padding: 16px 16px 18px; }
+@media (max-width: 1200px) { .df-grid--5 { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (max-width: 1024px) { .df-grid--5 { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 782px) { .df-grid--5 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 12px; } .df-card__cart { width: 34px; height: 34px; } }

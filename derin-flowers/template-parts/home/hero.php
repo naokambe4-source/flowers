@@ -77,7 +77,7 @@ $autoplay = df_opt( 'hero_autoplay' ) && $count > 1;
 				<?php if ( $count > 1 ) : ?>role="group" aria-roledescription="slide" aria-label="<?php echo esc_attr( ( $i + 1 ) . ' / ' . $count ); ?>"<?php endif; ?>
 				<?php echo 0 === $i ? '' : 'aria-hidden="true"'; ?>>
 
-				<div class="df-hero__bg"<?php echo $alt && $desk ? ' role="img" aria-label="' . esc_attr( $alt ) . '"' : ''; ?>>
+				<div class="df-hero__bg"<?php echo df_i( 'hero_slides.' . $i . '.image' ); // phpcs:ignore ?><?php echo $alt && $desk ? ' role="img" aria-label="' . esc_attr( $alt ) . '"' : ''; ?>>
 					<?php if ( ! $desk ) : ?>
 						<?php echo df_placeholder( 'Hero görseli ekleyin: Derin Flowers → Hero' ); // phpcs:ignore ?>
 					<?php endif; ?>
@@ -95,13 +95,13 @@ $autoplay = df_opt( 'hero_autoplay' ) && $count > 1;
 					<div class="df-hero__content">
 						<div class="df-hero__inner">
 							<?php if ( $s['eyebrow'] ) : ?>
-								<p class="df-hero__eyebrow"><?php echo esc_html( $s['eyebrow'] ); ?></p>
+								<p class="df-hero__eyebrow"<?php echo df_e( 'hero_slides.' . $i . '.eyebrow' ); // phpcs:ignore ?>><?php echo esc_html( $s['eyebrow'] ); ?></p>
 							<?php endif; ?>
 							<?php if ( $s['title'] ) : ?>
-								<<?php echo $title_tag; // phpcs:ignore ?> class="df-hero__title"><?php echo df_nl2br( $s['title'] ); // phpcs:ignore ?></<?php echo $title_tag; // phpcs:ignore ?>>
+								<<?php echo $title_tag; // phpcs:ignore ?> class="df-hero__title"<?php echo df_e( 'hero_slides.' . $i . '.title' ); // phpcs:ignore ?>><?php echo df_nl2br( $s['title'] ); // phpcs:ignore ?></<?php echo $title_tag; // phpcs:ignore ?>>
 							<?php endif; ?>
 							<?php if ( $s['text'] ) : ?>
-								<p class="df-hero__text"><?php echo df_nl2br( $s['text'] ); // phpcs:ignore ?></p>
+								<p class="df-hero__text"<?php echo df_e( 'hero_slides.' . $i . '.text' ); // phpcs:ignore ?>><?php echo df_nl2br( $s['text'] ); // phpcs:ignore ?></p>
 							<?php endif; ?>
 							<?php if ( ( $s['btn1_text'] && $s['btn1_url'] ) || ( $s['btn2_text'] && $s['btn2_url'] ) ) : ?>
 								<div class="df-hero__actions">

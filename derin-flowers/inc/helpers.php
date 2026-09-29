@@ -153,7 +153,8 @@ function df_lines( $text, $split = false ) {
  * @return string
  */
 function df_nl2br( $text ) {
-	return nl2br( esc_html( trim( (string) $text ) ), false );
+	// Satır sonu karakteri bırakılmaz: canlı düzenleyicide (pre-wrap) çift satır oluşmasın.
+	return str_replace( array( "\r\n", "\r", "\n" ), '<br>', esc_html( trim( (string) $text ) ) );
 }
 
 /**
@@ -227,8 +228,10 @@ function df_section_head( $args ) {
 			'link_text' => '',
 			'tag'       => 'h2',
 			'id'        => '',
+			'keys'      => array(),
 		)
 	);
+	$k = wp_parse_args( (array) $args['keys'], array( 'eyebrow' => '', 'title' => '', 'sub' => '' ) );
 	if ( ! $args['title'] && ! $args['eyebrow'] ) {
 		return;
 	}
@@ -237,13 +240,13 @@ function df_section_head( $args ) {
 	<header class="df-head df-head--<?php echo esc_attr( $args['align'] ); ?>">
 		<div class="df-head__text">
 			<?php if ( $args['eyebrow'] ) : ?>
-				<p class="df-eyebrow"><?php echo esc_html( $args['eyebrow'] ); ?></p>
+				<p class="df-eyebrow"<?php echo $k['eyebrow'] ? df_e( $k['eyebrow'] ) : ''; // phpcs:ignore ?>><?php echo esc_html( $args['eyebrow'] ); ?></p>
 			<?php endif; ?>
 			<?php if ( $args['title'] ) : ?>
-				<<?php echo $tag; // phpcs:ignore ?> class="df-head__title"<?php echo $args['id'] ? ' id="' . esc_attr( $args['id'] ) . '"' : ''; ?>><?php echo esc_html( $args['title'] ); ?></<?php echo $tag; // phpcs:ignore ?>>
+				<<?php echo $tag; // phpcs:ignore ?> class="df-head__title"<?php echo $args['id'] ? ' id="' . esc_attr( $args['id'] ) . '"' : ''; ?><?php echo $k['title'] ? df_e( $k['title'] ) : ''; // phpcs:ignore ?>><?php echo esc_html( $args['title'] ); ?></<?php echo $tag; // phpcs:ignore ?>>
 			<?php endif; ?>
 			<?php if ( $args['sub'] ) : ?>
-				<p class="df-head__sub"><?php echo esc_html( $args['sub'] ); ?></p>
+				<p class="df-head__sub"<?php echo $k['sub'] ? df_e( $k['sub'] ) : ''; // phpcs:ignore ?>><?php echo esc_html( $args['sub'] ); ?></p>
 			<?php endif; ?>
 		</div>
 		<?php if ( $args['link'] && $args['link_text'] ) : ?>
@@ -274,33 +277,152 @@ function df_button( $text, $url, $variant = 'solid' ) {
 }
 
 /**
+ * Ana sayfa bölümleri: kayıtlı sıra + sonradan eklenen bölümler varsayılan yerlerinde.
+ *
+ * @return array<int, array{id:string,on:bool}>
+ */
+function df_all_sections_ordered() {
+	$labels   = df_home_section_labels();
+	$sections = df_opt( 'home_sections', df_default_sections() );
+	$order    = array();
+	$on       = array();
+	if ( is_array( $sections ) ) {
+		foreach ( $sections as $s ) {
+			if ( empty( $s['id'] ) || ! isset( $labels[ $s['id'] ] ) || in_array( $s['id'], $order, true ) ) {
+				continue;
+			}
+			$order[]        = $s['id'];
+			$on[ $s['id'] ] = ! empty( $s['on'] );
+		}
+	}
+	// Temaya sonradan eklenen bölümler, varsayılan sıradaki bir önceki bölümün arkasına açık olarak eklenir.
+	$defaults = array_keys( $labels );
+	foreach ( $defaults as $i => $id ) {
+		if ( in_array( $id, $order, true ) ) {
+			continue;
+		}
+		$pos = 0;
+		for ( $j = $i - 1; $j >= 0; $j-- ) {
+			$k = array_search( $defaults[ $j ], $order, true );
+			if ( false !== $k ) {
+				$pos = $k + 1;
+				break;
+			}
+		}
+		array_splice( $order, $pos, 0, array( $id ) );
+		$on[ $id ] = true;
+	}
+	$out = array();
+	foreach ( $order as $id ) {
+		$out[] = array(
+			'id' => $id,
+			'on' => (bool) $on[ $id ],
+		);
+	}
+	return $out;
+}
+
+/**
  * Aktif ana sayfa bölümleri (sıralı).
  *
  * @return string[]
  */
 function df_active_sections() {
-	$labels   = df_home_section_labels();
-	$sections = df_opt( 'home_sections', df_default_sections() );
-	$out      = array();
-	$seen     = array();
-	if ( is_array( $sections ) ) {
-		foreach ( $sections as $s ) {
-			if ( empty( $s['id'] ) || ! isset( $labels[ $s['id'] ] ) ) {
-				continue;
-			}
-			$seen[] = $s['id'];
-			if ( ! empty( $s['on'] ) ) {
-				$out[] = $s['id'];
-			}
-		}
-	}
-	// Temaya sonradan eklenen bölümler varsayılan olarak açık gelir.
-	foreach ( array_keys( $labels ) as $id ) {
-		if ( ! in_array( $id, $seen, true ) ) {
-			$out[] = $id;
+	$out = array();
+	foreach ( df_all_sections_ordered() as $s ) {
+		if ( $s['on'] ) {
+			$out[] = $s['id'];
 		}
 	}
 	return apply_filters( 'df_active_sections', $out );
+}
+
+/**
+ * Canlı düzenleme modu açık mı? (?df_live=1, yalnızca tema yöneticileri)
+ *
+ * @return bool
+ */
+function df_live() {
+	static $live = null;
+	if ( null === $live ) {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- yalnızca görünüm modu.
+		$live = ! is_admin() && isset( $_GET['df_live'] ) && current_user_can( 'edit_theme_options' );
+	}
+	return $live;
+}
+
+/**
+ * Canlı düzenleyicide yazı alanı işareti. Örn: df_e( 'hero_slides.0.title' ).
+ *
+ * @param string $key Seçenek yolu.
+ * @return string
+ */
+function df_e( $key ) {
+	if ( ! df_live() ) {
+		return '';
+	}
+	$def  = df_field_def( $key );
+	$type = $def ? $def['type'] : 'text';
+	return ' data-df-edit="' . esc_attr( $key ) . '" data-df-type="' . esc_attr( $type ) . '"';
+}
+
+/**
+ * Seçenek yolundan (ör. "hero_slides.0.title") şema alan tanımını bulur.
+ *
+ * @param string $path Yol.
+ * @return array|null
+ */
+function df_field_def( $path ) {
+	static $map = null;
+	if ( null === $map ) {
+		$map = array();
+		foreach ( df_options_schema() as $tab ) {
+			foreach ( $tab['groups'] as $group ) {
+				foreach ( $group['fields'] as $field ) {
+					if ( ! empty( $field['id'] ) ) {
+						$map[ $field['id'] ] = $field;
+					}
+				}
+			}
+		}
+	}
+	$parts = explode( '.', (string) $path );
+	if ( empty( $map[ $parts[0] ] ) ) {
+		return null;
+	}
+	$field = $map[ $parts[0] ];
+	if ( 1 === count( $parts ) ) {
+		return 'repeater' === $field['type'] ? null : $field;
+	}
+	if ( 'repeater' !== $field['type'] || 3 !== count( $parts ) || ! ctype_digit( $parts[1] ) ) {
+		return null;
+	}
+	foreach ( $field['fields'] as $sub ) {
+		if ( $sub['id'] === $parts[2] ) {
+			return $sub;
+		}
+	}
+	return null;
+}
+
+/**
+ * Canlı düzenleyicide görsel alanı işareti.
+ *
+ * @param string $key Seçenek yolu (ek ID tutan alan).
+ * @return string
+ */
+function df_i( $key ) {
+	return df_live() ? ' data-df-img="' . esc_attr( $key ) . '"' : '';
+}
+
+/**
+ * Canlı düzenleyicide bölüm sarmalayıcısı işareti.
+ *
+ * @param string $id Bölüm.
+ * @return string
+ */
+function df_s( $id ) {
+	return df_live() ? ' data-df-section="' . esc_attr( $id ) . '"' : '';
 }
 
 /**

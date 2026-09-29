@@ -2,10 +2,10 @@
 /**
  * Template Name: Hakkımızda (Derin Flowers)
  *
- * Kısa adı "hakkimizda" olan sayfada otomatik kullanılır. Diğer sayfalarla aynı
- * başlık alanını ve beyaz zemini kullanır.
- * Metin: sayfa düzenleyicisine kendi metninizi yazarsanız o gösterilir; boşsa kısa hazır metin.
- * Görsel: sayfanın öne çıkan görseli (opsiyonel).
+ * Kısa adı "hakkimizda" olan sayfada otomatik kullanılır. İçerik Derin Flowers →
+ * Hakkımızda & İletişim sekmesinden (ya da ön yüzde "Canlı Düzenle") gelir.
+ * Sayfa editörü içeriği bilerek kullanılmaz: başka eklentilerin sayfaya kaydettiği
+ * HTML (kendi header/footer'ıyla) tema düzenini bozamaz.
  *
  * @package DerinFlowers
  */
@@ -16,43 +16,62 @@ wp_enqueue_style( 'df-pages', DF_URI . '/assets/css/pages.css', array( 'df-main'
 
 get_header();
 
-while ( have_posts() ) :
-	the_post();
-	$df_has_text = '' !== trim( wp_strip_all_tags( get_the_content() ) ) && mb_strlen( trim( wp_strip_all_tags( get_the_content() ) ) ) > 120;
-
-	get_template_part(
-		'template-parts/content/page-header',
-		null,
-		array(
-			'title'   => get_the_title(),
-			'eyebrow' => 'Hikayemiz',
-		)
-	);
-	?>
-	<div class="df-container df-container--narrow df-page df-about">
-		<?php if ( has_post_thumbnail() ) : ?>
-			<figure class="df-about__image">
-				<?php the_post_thumbnail( 'df-wide', array( 'sizes' => '(max-width: 900px) 100vw, 820px' ) ); ?>
-			</figure>
+$df_image  = absint( df_opt( 'about_image' ) );
+$df_values = array_filter(
+	(array) df_opt( 'about_values', array() ),
+	function ( $v ) {
+		return ! empty( $v['title'] );
+	}
+);
+$df_paras  = preg_split( '/\n\s*\n/', trim( (string) df_opt( 'about_text' ) ) );
+?>
+<header class="df-pagehead">
+	<div class="df-container">
+		<?php if ( function_exists( 'woocommerce_breadcrumb' ) ) : ?>
+			<?php woocommerce_breadcrumb(); ?>
 		<?php endif; ?>
-
-		<div class="df-prose df-page__content">
-			<?php if ( $df_has_text ) : ?>
-				<?php the_content(); ?>
-			<?php else : ?>
-				<p>Derin Flowers, İzmir Alsancak'taki atölyesinde her gün taze seçilen çiçeklerle özel anlarınız için tasarımlar hazırlar.</p>
-				<p>Her siparişi floristlerimiz elde hazırlar; renk uyumuna, tazeliğe ve sunuma aynı özeni gösteririz. Çiçekleriniz, seçtiğiniz gün ve saatte sevdiklerinize ulaştırılır.</p>
-				<p>Amacımız basit: Söylemek istediklerinizi en güzel haliyle çiçeklere emanet etmek.</p>
-			<?php endif; ?>
-		</div>
-
-		<ul class="df-about__values">
-			<li><?php df_the_icon( 'leaf', array( 'size' => 24 ) ); ?><strong>Taze Çiçek</strong><span>Her gün yeniden seçilir</span></li>
-			<li><?php df_the_icon( 'hand', array( 'size' => 24 ) ); ?><strong>El Yapımı</strong><span>Her tasarım özel hazırlanır</span></li>
-			<li><?php df_the_icon( 'truck', array( 'size' => 24 ) ); ?><strong>Zamanında Teslimat</strong><span>İzmir'in seçili bölgelerine</span></li>
-		</ul>
+		<?php if ( df_opt( 'about_eyebrow' ) ) : ?>
+			<p class="df-eyebrow"<?php echo df_e( 'about_eyebrow' ); // phpcs:ignore ?>><?php echo esc_html( df_opt( 'about_eyebrow' ) ); ?></p>
+		<?php endif; ?>
+		<h1 class="df-pagehead__title"<?php echo df_e( 'about_title' ); // phpcs:ignore ?>><?php echo esc_html( df_opt( 'about_title', get_the_title() ) ); ?></h1>
 	</div>
-	<?php
-endwhile;
+</header>
 
+<div class="df-container df-container--narrow df-page df-about">
+	<?php if ( $df_image || df_live() ) : ?>
+		<figure class="df-about__image"<?php echo df_i( 'about_image' ); // phpcs:ignore ?>>
+			<?php echo df_image( $df_image, 'df-wide', array( 'loading' => 'eager', 'sizes' => '(max-width: 900px) 100vw, 820px', 'alt' => df_opt( 'about_title' ) ), 'Hakkımızda görseli' ); // phpcs:ignore ?>
+		</figure>
+	<?php endif; ?>
+
+	<div class="df-prose df-page__content"<?php echo df_e( 'about_text' ); // phpcs:ignore ?>>
+		<?php
+		if ( df_live() ) {
+			// Canlı düzenlemede tek blok olarak düzenlenir (paragraflar boş satırla ayrılır).
+			echo esc_html( trim( (string) df_opt( 'about_text' ) ) );
+		} else {
+			foreach ( $df_paras as $df_p ) {
+				if ( trim( $df_p ) ) {
+					echo '<p>' . df_nl2br( $df_p ) . '</p>'; // phpcs:ignore
+				}
+			}
+		}
+		?>
+	</div>
+
+	<?php if ( $df_values ) : ?>
+		<ul class="df-about__values">
+			<?php foreach ( $df_values as $df_i => $df_v ) : ?>
+				<li>
+					<?php if ( ! empty( $df_v['icon'] ) ) : ?>
+						<?php df_the_icon( $df_v['icon'], array( 'size' => 24 ) ); ?>
+					<?php endif; ?>
+					<strong<?php echo df_e( 'about_values.' . $df_i . '.title' ); // phpcs:ignore ?>><?php echo esc_html( $df_v['title'] ); ?></strong>
+					<span<?php echo df_e( 'about_values.' . $df_i . '.text' ); // phpcs:ignore ?>><?php echo esc_html( isset( $df_v['text'] ) ? $df_v['text'] : '' ); ?></span>
+				</li>
+			<?php endforeach; ?>
+		</ul>
+	<?php endif; ?>
+</div>
+<?php
 get_footer();

@@ -252,9 +252,25 @@ function df_query_products( $source, $args = array() ) {
 
 	$products = wc_get_products( apply_filters( 'df_query_products_args', $query, $source, $args ) );
 
-	// Öne çıkan ürün yoksa en yenilerle doldur.
-	if ( ! $products && 'featured' === $source ) {
-		return df_query_products( 'newest', $args );
+	// Öne çıkan / kategori ürünleri satırı doldurmuyorsa en yenilerle tamamla (5'li satırda boşluk kalmasın).
+	if ( in_array( $source, array( 'featured', 'category' ), true ) && count( $products ) < (int) $args['limit'] ) {
+		$have  = array_map(
+			function ( $p ) {
+				return $p->get_id();
+			},
+			$products
+		);
+		$extra = df_query_products(
+			'newest',
+			array_merge(
+				$args,
+				array(
+					'limit'   => (int) $args['limit'] - count( $products ),
+					'exclude' => array_merge( (array) $args['exclude'], $have ),
+				)
+			)
+		);
+		$products = array_merge( $products, $extra );
 	}
 	return $products;
 }

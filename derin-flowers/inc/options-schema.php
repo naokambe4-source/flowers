@@ -19,8 +19,10 @@ function df_home_section_labels() {
 	return array(
 		'hero'        => 'Hero (tam genişlik)',
 		'trust'       => 'Güven şeridi',
+		'popular'     => 'Popüler kategoriler (yuvarlak)',
 		'categories'  => 'Ana kategoriler',
 		'occasions'   => 'Özel günler',
+		'banners'     => 'Renkli kategori bannerları',
 		'signature'   => 'Signature Collection',
 		'editorial'   => 'Tam genişlik editorial banner (Söz & Nişan)',
 		'bestsellers' => 'En Çok Sevilenler',
@@ -336,6 +338,28 @@ function df_options_schema() {
 					),
 				),
 				array(
+					'title'   => 'Popüler kategoriler (yuvarlak)',
+					'section' => 'popular',
+					'desc'    => 'Kategori seçin; görsel boşsa WooCommerce kategori görseli kullanılır. Hiç seçilmezse görseli olan ilk 8 kategori gösterilir.',
+					'fields'  => array(
+						array( 'id' => 'pop_title', 'type' => 'text', 'label' => 'Başlık', 'default' => 'Popüler Kategoriler', 'half' => true ),
+						array( 'id' => 'pop_align', 'type' => 'select', 'label' => 'Başlık hizası', 'default' => 'left', 'half' => true, 'options' => array( 'left' => 'Sol', 'center' => 'Orta' ) ),
+						array(
+							'id'          => 'pop_items',
+							'type'        => 'repeater',
+							'label'       => 'Kategoriler (8 önerilir)',
+							'add_label'   => 'Kategori ekle',
+							'title_field' => 'title',
+							'default'     => array(),
+							'fields'      => array(
+								array( 'id' => 'cat', 'type' => 'product_cat', 'label' => 'Ürün kategorisi', 'third' => true ),
+								array( 'id' => 'image', 'type' => 'image', 'label' => 'Yuvarlak görsel (kare)', 'third' => true ),
+								array( 'id' => 'title', 'type' => 'text', 'label' => 'Başlık (boşsa kategori adı)', 'third' => true ),
+							),
+						),
+					),
+				),
+				array(
 					'title'   => 'Ana kategoriler',
 					'section' => 'categories',
 					'desc'    => 'Kategori seçin. Görsel boş bırakılırsa WooCommerce kategori görseli kullanılır. Hiç kategori seçilmezse en çok ürünü olan 4 kategori gösterilir.',
@@ -372,6 +396,8 @@ function df_options_schema() {
 					'fields'  => array(
 						array( 'id' => 'occ_eyebrow', 'type' => 'text', 'label' => 'Üst küçük metin', 'default' => 'ÖZEL GÜNLER', 'half' => true ),
 						array( 'id' => 'occ_title', 'type' => 'text', 'label' => 'Başlık', 'default' => 'Her Özel Anın Bir Çiçeği Var', 'half' => true ),
+						array( 'id' => 'occ_style', 'type' => 'select', 'label' => 'Görünüm', 'default' => 'overlay', 'half' => true, 'options' => array( 'overlay' => 'Görsel üzerinde metin (geniş banner)', 'card' => 'Kart: metin solda, görsel sağda' ) ),
+						array( 'id' => 'occ_btn', 'type' => 'text', 'label' => 'Kart buton metni (kart görünümü)', 'default' => 'KEŞFET', 'half' => true ),
 						array(
 							'id'          => 'occ_items',
 							'type'        => 'repeater',
@@ -393,6 +419,42 @@ function df_options_schema() {
 					),
 				),
 				array(
+					'title'   => 'Renkli kategori bannerları',
+					'section' => 'banners',
+					'desc'    => 'İki kullanım: 1) Hazır banner görseli yükleyin (metin görselin içindeyse "Sadece görsel" seçin). 2) Renkli kart: fotoğraf solda, büyük başlık ve "Aynı Gün Teslimat" etiketi sağda — metinler buradan düzenlenir. Görseli olmayan bannerlar sitede gösterilmez.',
+					'fields'  => array(
+						array( 'id' => 'ban_title', 'type' => 'text', 'label' => 'Bölüm başlığı (opsiyonel)', 'default' => '', 'third' => true ),
+						array( 'id' => 'ban_cols', 'type' => 'select', 'label' => 'Masaüstü sütun', 'default' => '2', 'third' => true, 'options' => array( '1' => '1', '2' => '2', '3' => '3' ) ),
+						array( 'id' => 'ban_radius', 'type' => 'number', 'label' => 'Köşe yuvarlaklığı (px)', 'default' => 18, 'min' => 0, 'max' => 40, 'third' => true ),
+						array(
+							'id'          => 'ban_items',
+							'type'        => 'repeater',
+							'label'       => 'Bannerlar',
+							'add_label'   => 'Banner ekle',
+							'title_field' => 'title',
+							'default'     => array(
+								array( 'mode' => 'card', 'title' => "GEÇMİŞ OLSUN\nÇİÇEKLERİ", 'pill' => 'AYNI GÜN TESLİMAT', 'bg' => '#F8EDB9', 'color' => '#6E6A2E', 'url' => '/urun-kategori/ozel-gunler/gecmis-olsun/' ),
+								array( 'mode' => 'card', 'title' => "DOĞUM GÜNÜ\nÇİÇEKLERİ", 'pill' => 'AYNI GÜN TESLİMAT', 'bg' => '#D9E6DA', 'color' => '#35503E', 'url' => '/urun-kategori/ozel-gunler/dogum-gunu/' ),
+								array( 'mode' => 'card', 'title' => "YIL DÖNÜMÜ\nÇİÇEKLERİ", 'pill' => 'AYNI GÜN TESLİMAT', 'bg' => '#E5D9EC', 'color' => '#5E4470', 'url' => '/urun-kategori/ozel-gunler/yil-donumu/' ),
+								array( 'mode' => 'card', 'title' => "SAKSI\nÇİÇEKLERİ", 'pill' => 'AYNI GÜN TESLİMAT', 'bg' => '#D6E2E6', 'color' => '#2F4538', 'url' => '/magaza/' ),
+							),
+							'fields'      => array(
+								array( 'id' => 'mode', 'type' => 'select', 'label' => 'Tip', 'default' => 'card', 'half' => true, 'options' => array( 'card' => 'Renkli kart (fotoğraf + metin)', 'image' => 'Sadece görsel (hazır banner)' ) ),
+								array( 'id' => 'url', 'type' => 'url', 'label' => 'Bağlantı', 'half' => true ),
+								array( 'id' => 'image', 'type' => 'image', 'label' => 'Görsel (kart: fotoğraf / hazır banner)', 'half' => true ),
+								array( 'id' => 'image_mobile', 'type' => 'image', 'label' => 'Mobil görsel (opsiyonel, hazır banner)', 'half' => true ),
+								array( 'id' => 'title', 'type' => 'textarea', 'label' => 'Başlık (satır atlamak için Enter)', 'rows' => 2, 'half' => true ),
+								array( 'id' => 'text', 'type' => 'text', 'label' => 'Küçük açıklama (opsiyonel)', 'half' => true ),
+								array( 'id' => 'pill', 'type' => 'text', 'label' => 'Etiket butonu', 'default' => 'AYNI GÜN TESLİMAT', 'third' => true ),
+								array( 'id' => 'badge', 'type' => 'text', 'label' => 'Köşe rozeti (ör. %20)', 'third' => true ),
+								array( 'id' => 'icon', 'type' => 'icon', 'label' => 'Başlık üstü ikon', 'third' => true ),
+								array( 'id' => 'bg', 'type' => 'color', 'label' => 'Zemin rengi', 'default' => '#F3E7E1', 'half' => true ),
+								array( 'id' => 'color', 'type' => 'color', 'label' => 'Yazı / buton rengi', 'default' => '#6F463C', 'half' => true ),
+							),
+						),
+					),
+				),
+				array(
 					'title'   => 'Signature Collection',
 					'section' => 'signature',
 					'fields'  => array_merge(
@@ -401,7 +463,7 @@ function df_options_schema() {
 							array( 'id' => 'sig_sub', 'type' => 'text', 'label' => 'Alt metin', 'default' => 'Özel tasarımlar. Unutulmaz anlar.', 'half' => true ),
 							array( 'id' => 'sig_source', 'type' => 'select', 'label' => 'Ürün kaynağı', 'default' => 'featured', 'third' => true, 'options' => array( 'manual' => 'Elle seçilen ürünler', 'featured' => 'Öne çıkan ürünler', 'category' => 'Kategoriden', 'newest' => 'En yeniler' ) ),
 							array( 'id' => 'sig_cat', 'type' => 'product_cat', 'label' => 'Kategori (kaynak "Kategoriden" ise)', 'third' => true ),
-							array( 'id' => 'sig_count', 'type' => 'select', 'label' => 'Ürün sayısı', 'default' => '4', 'third' => true, 'options' => array( '4' => '4 (tek satır)', '8' => '8 (iki satır)' ) ),
+							array( 'id' => 'sig_count', 'type' => 'select', 'label' => 'Ürün sayısı', 'default' => '4', 'third' => true, 'options' => array( '4' => '4 (tek satır)', '5' => '5 (tek satır, dar kart)', '8' => '8 (iki satır)', '10' => '10 (iki satır, 5\'li)' ) ),
 							array( 'id' => 'sig_products', 'type' => 'products', 'label' => 'Elle seçilen ürünler (sıralı)' ),
 						),
 						$link_fields( 'sig', 'TÜM KOLEKSİYON', '/magaza/' )
@@ -415,7 +477,7 @@ function df_options_schema() {
 							array( 'id' => 'ed_image', 'type' => 'image', 'label' => 'Masaüstü görseli (lifestyle, geniş)', 'half' => true ),
 							array( 'id' => 'ed_image_mobile', 'type' => 'image', 'label' => 'Mobil görseli', 'half' => true ),
 							array( 'id' => 'ed_eyebrow', 'type' => 'text', 'label' => 'Üst küçük metin', 'default' => 'Söz & Nişan', 'third' => true ),
-							array( 'id' => 'ed_align', 'type' => 'select', 'label' => 'Metin tarafı', 'default' => 'left', 'third' => true, 'options' => array( 'left' => 'Sol', 'right' => 'Sağ' ) ),
+							array( 'id' => 'ed_align', 'type' => 'select', 'label' => 'Metin tarafı', 'default' => 'left', 'third' => true, 'options' => array( 'left' => 'Sol', 'center' => 'Orta', 'right' => 'Sağ' ) ),
 							array( 'id' => 'ed_theme', 'type' => 'select', 'label' => 'Metin rengi', 'default' => 'dark', 'third' => true, 'options' => array( 'dark' => 'Koyu', 'light' => 'Açık' ) ),
 							array( 'id' => 'ed_title', 'type' => 'textarea', 'label' => 'Başlık', 'default' => "En özel başlangıçları\nçiçeklerle anlatın.", 'rows' => 2 ),
 							array( 'id' => 'ed_text', 'type' => 'textarea', 'label' => 'Açıklama', 'default' => 'Söz ve nişan törenleriniz için size özel tasarlanan çiçek aranjmanları, çikolata sunumları ve masa süslemeleri.', 'rows' => 2 ),
@@ -541,6 +603,8 @@ function df_options_schema() {
 					'fields' => array(
 						array( 'id' => 'quick_add', 'type' => 'toggle', 'label' => 'Listelerde hızlı "Sepete Ekle"', 'default' => 0, 'desc' => 'Kapalıyken ürün kartları ürün detayına yönlendirir (teslimat & not seçimi için önerilir).', 'half' => true ),
 						array( 'id' => 'card_btn_text', 'type' => 'text', 'label' => 'Kart buton metni', 'default' => 'İncele', 'half' => true ),
+						array( 'id' => 'card_cart_icon', 'type' => 'toggle', 'label' => 'Kartta fiyat yanında sepet ikonu', 'default' => 0, 'half' => true, 'desc' => 'Hızlı sepete ekle kapalıysa ikon ürün detayına götürür.' ),
+						array( 'id' => 'card_show_sku', 'type' => 'toggle', 'label' => 'Kartta ürün kodu (SKU)', 'default' => 0, 'half' => true ),
 						array( 'id' => 'card_hover_image', 'type' => 'toggle', 'label' => 'Üzerine gelince 2. görseli göster', 'default' => 1, 'third' => true ),
 						array( 'id' => 'card_show_cat', 'type' => 'toggle', 'label' => 'Kategori etiketini göster', 'default' => 1, 'third' => true ),
 						array( 'id' => 'badge_new_days', 'type' => 'number', 'label' => '"Yeni" etiketi (gün)', 'default' => 14, 'min' => 0, 'max' => 90, 'third' => true ),
@@ -634,6 +698,14 @@ function df_options_schema() {
 					),
 				),
 				array(
+					'title'  => 'Kuryeler',
+					'desc'   => 'Her satır: Ad Soyad | Telefon (905xxxxxxxxx). Yönetim Paneli → Kurye Yönetimi ekranında siparişlere atanır; kuryeye WhatsApp ile adres gönderilebilir.',
+					'fields' => array(
+						array( 'id' => 'df_couriers', 'type' => 'lines', 'label' => 'Kurye listesi', 'default' => '', 'rows' => 4 ),
+						array( 'id' => 'courier_status', 'type' => 'toggle', 'label' => 'Kurye atanınca sipariş durumu "Yolda" olsun', 'default' => 0 ),
+					),
+				),
+				array(
 					'title'  => 'Çiçek notu',
 					'fields' => array(
 						array( 'id' => 'note_max', 'type' => 'number', 'label' => 'Not karakter sınırı', 'default' => 300, 'min' => 50, 'max' => 1000, 'half' => true ),
@@ -690,6 +762,74 @@ function df_options_schema() {
 		),
 
 		/* ------------------------------------------------------------------ */
+		'pages' => array(
+			'title'  => 'Hakkımızda & İletişim',
+			'icon'   => 'dashicons-media-document',
+			'groups' => array(
+				array(
+					'title'  => 'Hakkımızda sayfası',
+					'desc'   => 'Kısa adı "hakkimizda" olan sayfada kullanılır. Sayfa içeriği (editör) kullanılmaz; böylece başka eklentilerin kaydettiği HTML header/footer\'ı bozamaz. Ön yüzde "Canlı Düzenle" ile de değiştirebilirsiniz.',
+					'fields' => array(
+						array( 'id' => 'about_eyebrow', 'type' => 'text', 'label' => 'Üst küçük metin', 'default' => 'Hikayemiz', 'half' => true ),
+						array( 'id' => 'about_title', 'type' => 'text', 'label' => 'Başlık', 'default' => 'Hakkımızda', 'half' => true ),
+						array( 'id' => 'about_image', 'type' => 'image', 'label' => 'Görsel (opsiyonel, yatay)' ),
+						array( 'id' => 'about_text', 'type' => 'textarea', 'label' => 'Metin (paragraflar arasında boş satır bırakın)', 'rows' => 7, 'default' => "Derin Flowers, İzmir Alsancak'taki atölyesinde her gün taze seçilen çiçeklerle özel anlarınız için tasarımlar hazırlar.\n\nHer siparişi floristlerimiz elde hazırlar; renk uyumuna, tazeliğe ve sunuma aynı özeni gösteririz. Çiçekleriniz, seçtiğiniz gün ve saatte sevdiklerinize ulaştırılır.\n\nAmacımız basit: Söylemek istediklerinizi en güzel haliyle çiçeklere emanet etmek." ),
+						array(
+							'id'          => 'about_values',
+							'type'        => 'repeater',
+							'label'       => 'Maddeler',
+							'add_label'   => 'Madde ekle',
+							'title_field' => 'title',
+							'default'     => array(
+								array( 'icon' => 'leaf', 'title' => 'Taze Çiçek', 'text' => 'Her gün yeniden seçilir' ),
+								array( 'icon' => 'hand', 'title' => 'El Yapımı', 'text' => 'Her tasarım özel hazırlanır' ),
+								array( 'icon' => 'truck', 'title' => 'Zamanında Teslimat', 'text' => "İzmir'in seçili bölgelerine" ),
+							),
+							'fields'      => array(
+								array( 'id' => 'icon', 'type' => 'icon', 'label' => 'İkon', 'third' => true ),
+								array( 'id' => 'title', 'type' => 'text', 'label' => 'Başlık', 'third' => true ),
+								array( 'id' => 'text', 'type' => 'text', 'label' => 'Alt metin', 'third' => true ),
+							),
+						),
+					),
+				),
+				array(
+					'title'  => 'İletişim sayfası',
+					'desc'   => 'Kısa adı "iletisim" olan sayfada kullanılır. Telefon, adres ve saatler "Footer & İletişim" sekmesinden gelir.',
+					'fields' => array(
+						array( 'id' => 'contact_eyebrow', 'type' => 'text', 'label' => 'Üst küçük metin', 'default' => 'Bize Ulaşın', 'half' => true ),
+						array( 'id' => 'contact_title', 'type' => 'text', 'label' => 'Başlık', 'default' => 'İletişim', 'half' => true ),
+						array( 'id' => 'contact_lead', 'type' => 'textarea', 'label' => 'Kısa açıklama (opsiyonel)', 'rows' => 2, 'default' => '' ),
+						array( 'id' => 'contact_form_on', 'type' => 'toggle', 'label' => 'İletişim formu göster', 'default' => 1, 'half' => true ),
+						array( 'id' => 'contact_form_title', 'type' => 'text', 'label' => 'Form başlığı', 'default' => 'Mesaj Gönderin', 'half' => true ),
+					),
+				),
+			),
+		),
+
+		'admin' => array(
+			'title'  => 'Yönetim & Giriş',
+			'icon'   => 'dashicons-lock',
+			'groups' => array(
+				array(
+					'title'  => 'Yönetim paneli',
+					'fields' => array(
+						array( 'id' => 'admin_redirect', 'type' => 'toggle', 'label' => 'Girişten sonra Yönetim Paneli açılsın', 'default' => 1, 'half' => true ),
+						array( 'id' => 'admin_replace_dashboard', 'type' => 'toggle', 'label' => 'WordPress Başlangıç yerine Yönetim Paneli', 'default' => 1, 'half' => true ),
+					),
+				),
+				array(
+					'title'  => 'Giriş ekranı (wp-login)',
+					'fields' => array(
+						array( 'id' => 'admin_login_style', 'type' => 'toggle', 'label' => 'Markalı giriş ekranı', 'default' => 1, 'third' => true ),
+						array( 'id' => 'admin_login_logo', 'type' => 'image', 'label' => 'Giriş logosu (boşsa metin logo)', 'third' => true ),
+						array( 'id' => 'admin_login_image', 'type' => 'image', 'label' => 'Giriş yan görseli', 'third' => true ),
+						array( 'id' => 'admin_login_text', 'type' => 'text', 'label' => 'Giriş ekranı metni', 'default' => 'Yönetim paneline hoş geldiniz.' ),
+					),
+				),
+			),
+		),
+
 		'account' => array(
 			'title'  => 'Üyelik & Takip',
 			'icon'   => 'dashicons-id',
