@@ -22,8 +22,8 @@ do_action( 'woocommerce_before_customer_login_form' );
 
 	<div class="df-auth__panel">
 		<div class="df-auth__intro">
-			<h2><?php echo esc_html( df_opt( 'login_title', 'Hoş Geldiniz' ) ); ?></h2>
-			<p><?php echo esc_html( df_opt( 'login_text' ) ); ?></p>
+			<h2<?php echo df_e( 'login_title' ); // phpcs:ignore ?>><?php echo esc_html( df_opt( 'login_title', 'Hoş Geldiniz' ) ); ?></h2>
+			<p<?php echo df_e( 'login_text' ); // phpcs:ignore ?>><?php echo esc_html( df_opt( 'login_text' ) ); ?></p>
 		</div>
 
 		<?php if ( $df_reg ) : ?>

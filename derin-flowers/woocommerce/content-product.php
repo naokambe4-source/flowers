@@ -3,14 +3,14 @@
  * Liste ürün kartı — tema kartını kullanır (template-parts/product/card.php).
  *
  * @package DerinFlowers
- * @version 3.6.0
+ * @version 9.4.0
  */
 
 defined( 'ABSPATH' ) || exit;
 
 global $product;
 
-if ( empty( $product ) || ! $product->is_visible() ) {
+if ( ! is_a( $product, WC_Product::class ) || ! $product->is_visible() ) {
 	return;
 }
 df_product_card(

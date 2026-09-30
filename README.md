@@ -42,6 +42,12 @@ Araçlar sayfasında ayarları **JSON dışa/içe aktarma** ve sıfırlama da va
 - **Üyelik**: sekmeli Giriş / Üye Ol, ad-soyad-telefon-KVKK alanları, Hesabım kısayol kartları.
 - **Favoriler** (üye + ziyaretçi), canlı ürün araması, mini sepet çekmecesi, ürün kategorisine ikon + kapak görseli, menü öğelerine ikon seçimi, bülten aboneleri + CSV.
 
+## v1.3 — Sabit menü, sipariş kartı, her sayfa düzenlenebilir
+
+- **Sabit sol menü:** Yönetim Paneli sayfaları dahil her ekranda aynı, düzenli WordPress menüsü (Yönetim Paneli, Siparişler, Ürünler, Kullanıcılar, Tasarım Stüdyosu, Site Ayarları, Sayfalar, Blog, Görseller, WooCommerce). **Sade menü** müşteriye gerekmeyen öğeleri gizler; menünün altındaki *Tüm menüyü göster* ile (kullanıcı bazında) açılır. Yönetim & Giriş sekmesinden kapatılabilir.
+- **Çiçek Siparişi kartı:** sipariş ekranının en üstünde teslimat günü/saati (Bugün/Yarın rozeti), gönderici ve alıcı (Ara / WhatsApp), adres (Haritada aç), kart notu, kurye atama + adresi WhatsApp ile gönderme, kart/fiş yazdırma.
+- **Tasarım Stüdyosu:** önizleme arka planda yenilenir (kayma ve yanıp sönme yok); *Sayfa* sekmesi açık sayfaya göre değişir: ürün (ad, fiyat, indirim, stok, kısa açıklama, görsel), kategori (ad, açıklama, görsel), sayfa (başlık), ayrıca "tam düzenle" editörü stüdyo içinde açılır. Header, footer, giriş ve sipariş takip yazıları her sayfada tıklanarak düzenlenir.
+
 ## v1.2 — Tasarım Stüdyosu ve yeni yönetim görünümü
 
 - **Tasarım Stüdyosu** (menüde *Tasarım Stüdyosu*, sitede sol alttaki **✎ Düzenle** düğmesi ya da üst çubuk): solda koyu ayar paneli, sağda sitenin canlı önizlemesi.

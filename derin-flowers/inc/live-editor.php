@@ -125,6 +125,7 @@ function df_live_assets() {
 			'exitUrl'  => remove_query_arg( 'df_live' ),
 			'isHome'   => is_front_page(),
 			'studio'   => df_studio_url( df_current_url() ),
+			'context'  => df_live_context(),
 			'origin'   => untrailingslashit( home_url() ),
 		)
 	);
@@ -194,3 +195,87 @@ function df_live_save() {
 	);
 }
 add_action( 'wp_ajax_df_live_save', 'df_live_save' );
+
+/**
+ * Önizlenen sayfanın türü ve hızlı düzenleme verileri (Tasarım Stüdyosu "Sayfa" sekmesi).
+ *
+ * @return array
+ */
+function df_live_context() {
+	$ctx = array(
+		'type'  => 'other',
+		'title' => wp_get_document_title(),
+	);
+	if ( is_front_page() ) {
+		$ctx['type'] = 'home';
+		return $ctx;
+	}
+	if ( df_wc() ) {
+		if ( is_cart() || is_checkout() ) {
+			$ctx['type']     = 'wc';
+			$ctx['settings'] = 'delivery';
+			return $ctx;
+		}
+		if ( is_account_page() ) {
+			$ctx['type']     = 'wc';
+			$ctx['settings'] = 'account';
+			return $ctx;
+		}
+		if ( is_shop() ) {
+			$ctx['type']     = 'wc';
+			$ctx['settings'] = 'product-0';
+			return $ctx;
+		}
+	}
+	$obj = get_queried_object();
+	if ( $obj instanceof WP_Term ) {
+		$thumb = 'product_cat' === $obj->taxonomy ? absint( get_term_meta( $obj->term_id, 'thumbnail_id', true ) ) : 0;
+		return array(
+			'type'     => 'term',
+			'id'       => $obj->term_id,
+			'taxonomy' => $obj->taxonomy,
+			'title'    => $obj->name,
+			'desc'     => $obj->description,
+			'image'    => 'product_cat' === $obj->taxonomy ? $thumb : null,
+			'imageUrl' => $thumb ? wp_get_attachment_image_url( $thumb, 'thumbnail' ) : '',
+			'edit'     => get_edit_term_link( $obj->term_id, $obj->taxonomy ),
+			'settings' => 'product_cat' === $obj->taxonomy ? 'product-0' : '',
+		);
+	}
+	if ( $obj instanceof WP_Post ) {
+		$ctx = array(
+			'type'  => 'post',
+			'id'    => $obj->ID,
+			'title' => get_the_title( $obj ),
+			'kind'  => get_post_type_object( $obj->post_type ) ? get_post_type_object( $obj->post_type )->labels->singular_name : '',
+			'edit'  => get_edit_post_link( $obj->ID, 'raw' ),
+		);
+		$tpl = get_page_template_slug( $obj );
+		if ( 'page' === $obj->post_type && ( in_array( $obj->post_name, array( 'hakkimizda', 'iletisim' ), true ) || in_array( $tpl, array( 'page-hakkimizda.php', 'page-iletisim.php' ), true ) ) ) {
+			$ctx['settings'] = 'pages';
+			$ctx['managed']  = 1;
+		}
+		if ( df_wc() && 'product' === $obj->post_type ) {
+			$p = wc_get_product( $obj->ID );
+			if ( $p ) {
+				$img = $p->get_image_id();
+				$ctx = array_merge(
+					$ctx,
+					array(
+						'type'     => 'product',
+						'variable' => $p->is_type( 'variable' ) ? 1 : 0,
+						'regular'  => $p->get_regular_price( 'edit' ),
+						'sale'     => $p->get_sale_price( 'edit' ),
+						'short'    => $p->get_short_description( 'edit' ),
+						'stock'    => $p->get_stock_status( 'edit' ),
+						'image'    => $img,
+						'imageUrl' => $img ? wp_get_attachment_image_url( $img, 'thumbnail' ) : '',
+						'settings' => 'product',
+					)
+				);
+			}
+		}
+		return $ctx;
+	}
+	return $ctx;
+}

@@ -103,12 +103,14 @@ body.df-studio-screen #wpbody-content { margin: 0 !important; padding: 0 !import
 .dfs-group [hidden] { display: none !important; }
 
 /* Sahne */
-.dfs-stage { flex: 1; min-width: 0; position: relative; overflow: auto; background: #E4DED8; background-image: radial-gradient(#d7cfc8 1px, transparent 1px); background-size: 18px 18px; }
+.dfs-stage { flex: 1; min-width: 0; position: relative; overflow: hidden; background: #E4DED8; background-image: radial-gradient(#d7cfc8 1px, transparent 1px); background-size: 18px 18px; }
 .dfs-frame-wrap { position: relative; height: 100%; margin: 0 auto; background: #fff; transition: width .3s ease, margin .3s ease, height .3s ease; }
 .dfs-frame-wrap[data-device="desktop"] { width: 100%; }
 .dfs-frame-wrap[data-device="tablet"] { width: 820px; max-width: calc(100% - 40px); height: calc(100% - 40px); margin: 20px auto; border-radius: 18px; overflow: hidden; box-shadow: 0 25px 60px rgba(43, 37, 34, .25), 0 0 0 10px #2B2522; }
 .dfs-frame-wrap[data-device="mobile"] { width: 390px; height: calc(100% - 40px); max-height: 860px; margin: 20px auto; border-radius: 34px; overflow: hidden; box-shadow: 0 25px 60px rgba(43, 37, 34, .3), 0 0 0 10px #2B2522; }
-#dfs-frame { display: block; width: 100%; height: 100%; border: 0; background: #fff; }
+.dfs-frame-wrap iframe { display: block; width: 100%; height: 100%; border: 0; background: #fff; }
+.dfs-frame-wrap iframe.is-next { position: absolute; inset: 0; visibility: hidden; }
+.dfs-stage.is-refreshing::after { content: ""; position: absolute; top: 14px; right: 18px; z-index: 5; width: 18px; height: 18px; border: 2px solid rgba(43, 37, 34, .15); border-top-color: #B8664F; border-radius: 50%; animation: dfsSpin .8s linear infinite; }
 .dfs-loading { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; gap: 10px; background: rgba(255, 255, 255, .72); color: #6b5f59; font-weight: 600; backdrop-filter: blur(2px); }
 .dfs-loading.is-on { display: flex; }
 .dfs-loading span { width: 18px; height: 18px; border: 2px solid #d9cfc8; border-top-color: #B8664F; border-radius: 50%; animation: dfsSpin .8s linear infinite; }
@@ -127,3 +129,25 @@ body.df-studio-screen #wpbody-content { margin: 0 !important; padding: 0 !import
 	.dfs-side { width: 100%; height: 50%; }
 	.dfs-stage { height: 50%; flex: none; }
 }
+
+html:has(body.df-studio-screen) { overflow: hidden; }
+
+/* Sayfa sekmesi: bu sayfa */
+.dfs-ctx-head { margin: 0 0 12px; }
+.dfs-ctx-head span { display: inline-block; margin-bottom: 4px; padding: 2px 8px; border-radius: 999px; background: rgba(184, 102, 79, .2); color: #F3C9B8; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+.dfs-ctx-head h2 { margin: 0; color: #fff; font-size: 18px; font-weight: 600; line-height: 1.3; }
+.dfs-quick { margin-bottom: 16px; }
+.dfs-quick .df-media__preview { width: 96px; height: 96px; }
+.dfs-quick .df-media__preview img { width: 100%; height: 100%; object-fit: cover; }
+.dfs-btn--block { width: 100%; margin-top: 4px; }
+.dfs-note { margin: 8px 0 0; color: #7A6E68; font-size: 12px; }
+.dfs-note strong { color: #2B2522; }
+
+/* Tam editör penceresi */
+.dfs-modal { position: fixed; inset: 0; z-index: 100050; display: flex; padding: 24px; background: rgba(20, 17, 15, .6); backdrop-filter: blur(2px); }
+.dfs-modal[hidden] { display: none; }
+.dfs-modal__box { flex: 1; display: flex; flex-direction: column; overflow: hidden; border-radius: 14px; background: #fff; box-shadow: 0 30px 80px rgba(0, 0, 0, .4); }
+.dfs-modal__head { display: flex; align-items: center; gap: 14px; padding: 10px 12px 10px 20px; background: #1E1A18; color: #F4EEE9; }
+.dfs-modal__head strong { font-size: 14px; }
+.dfs-modal__hint { flex: 1; color: #A99E97; font-size: 12px; }
+#dfs-modal-frame { flex: 1; width: 100%; border: 0; }

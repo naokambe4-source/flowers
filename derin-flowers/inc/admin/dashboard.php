@@ -281,52 +281,9 @@ function df_app_courier_whatsapp( $order, $phone ) {
  * @param callable $content İçerik.
  */
 function df_app_shell( $current, $title, $sub, $content ) {
-	$user    = wp_get_current_user();
-	$pending = (int) wc_orders_count( 'processing' ) + (int) wc_orders_count( 'on-hold' );
-	$reviews_url = admin_url( 'edit.php?post_type=product&page=product-reviews' );
-	$menu    = array(
-		array( 'df-dashboard', 'dashicons-admin-home', 'Ana Sayfa', admin_url( 'admin.php?page=df-dashboard' ) ),
-		array( 'orders', 'dashicons-clipboard', 'Siparişler', df_app_orders_url(), $pending ),
-		array( 'products', 'dashicons-products', 'Ürünler', admin_url( 'edit.php?post_type=product' ) ),
-		array( 'cats', 'dashicons-category', 'Kategoriler', admin_url( 'edit-tags.php?taxonomy=product_cat&post_type=product' ) ),
-		array( 'customers', 'dashicons-groups', 'Müşteriler', admin_url( 'users.php?role=customer' ) ),
-		array( 'df-deliveries', 'dashicons-location', 'İzmir Teslimat', admin_url( 'admin.php?page=df-deliveries' ) ),
-		array( 'df-couriers', 'dashicons-car', 'Kurye Yönetimi', admin_url( 'admin.php?page=df-couriers' ) ),
-		array( 'df-print', 'dashicons-printer', 'Yazdırma Merkezi', admin_url( 'admin.php?page=df-print' ) ),
-		array( 'coupons', 'dashicons-tickets-alt', 'Kampanya / Kupon', admin_url( 'edit.php?post_type=shop_coupon' ) ),
-		array( 'blog', 'dashicons-edit', 'Blog', admin_url( 'edit.php' ) ),
-		array( 'media', 'dashicons-format-image', 'Görsel Yönetimi', admin_url( 'upload.php' ) ),
-		array( 'reviews', 'dashicons-testimonial', 'Yorumlar', $reviews_url ),
-		array( 'reports', 'dashicons-chart-bar', 'Raporlar', admin_url( 'admin.php?page=wc-reports' ) ),
-		array( 'studio', 'dashicons-art', 'Tasarım Stüdyosu', admin_url( 'admin.php?page=df-studio' ) ),
-		array( 'theme', 'dashicons-admin-appearance', 'Arayüz & Site Yönetimi', admin_url( 'admin.php?page=derin-flowers' ) ),
-		array( 'menus', 'dashicons-menu', 'Menüler', admin_url( 'nav-menus.php' ) ),
-		array( 'settings', 'dashicons-admin-settings', 'Mağaza Ayarları', admin_url( 'admin.php?page=wc-settings' ) ),
-		array( 'tools', 'dashicons-admin-tools', 'Araçlar', admin_url( 'admin.php?page=derin-flowers-tools' ) ),
-		array( 'df-system', 'dashicons-heart', 'Sistem Durumu', admin_url( 'admin.php?page=df-system' ) ),
-	);
+	$user = wp_get_current_user();
 	?>
 	<div class="df-app">
-		<aside class="df-app__side">
-			<a class="df-app__brand" href="<?php echo esc_url( admin_url( 'admin.php?page=df-dashboard' ) ); ?>">
-				<span class="df-app__logo"><?php df_the_icon( 'bouquet', array( 'size' => 28 ) ); ?></span>
-				<span><strong><?php echo esc_html( df_opt( 'logo_text', 'DERİN FLOWERS' ) ); ?></strong><small>Yönetim Paneli</small></span>
-			</a>
-			<nav class="df-app__nav" aria-label="Yönetim menüsü">
-				<?php foreach ( $menu as $m ) : ?>
-					<a class="df-app__link<?php echo $current === $m[0] ? ' is-active' : ''; ?>" href="<?php echo esc_url( $m[3] ); ?>">
-						<span class="dashicons <?php echo esc_attr( $m[1] ); ?>"></span><span class="df-app__label"><?php echo esc_html( $m[2] ); ?></span>
-						<?php if ( ! empty( $m[4] ) ) : ?>
-							<span class="df-app__badge"><?php echo (int) $m[4]; ?></span>
-						<?php endif; ?>
-					</a>
-				<?php endforeach; ?>
-			</nav>
-			<div class="df-app__side-foot">
-				<a class="df-app__site" href="<?php echo esc_url( home_url( '/' ) ); ?>" target="_blank" rel="noopener">Siteyi Gör →</a>
-				<a class="df-app__classic" href="<?php echo esc_url( admin_url( 'edit.php?post_type=page' ) ); ?>">WordPress menüsü</a>
-			</div>
-		</aside>
 		<main class="df-app__main">
 			<header class="df-app__top">
 				<div>

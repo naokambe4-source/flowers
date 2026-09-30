@@ -266,7 +266,7 @@ function df_studio_page() {
 		<div class="dfs-body">
 			<aside class="dfs-side df-panel" id="dfs-side">
 				<nav class="dfs-tabs" role="tablist">
-					<button type="button" class="is-active" data-view="sections"><span class="dashicons dashicons-layout"></span>Bölümler</button>
+					<button type="button" class="is-active" data-view="sections"><span class="dashicons dashicons-layout"></span>Sayfa</button>
 					<button type="button" data-view="edit"><span class="dashicons dashicons-edit"></span>Düzenle</button>
 					<button type="button" data-view="site"><span class="dashicons dashicons-admin-generic"></span>Site</button>
 				</nav>
@@ -274,8 +274,11 @@ function df_studio_page() {
 				<form id="dfs-form" autocomplete="off" onsubmit="return false">
 					<!-- Bölümler -->
 					<section class="dfs-view is-active" data-view="sections">
-						<p class="dfs-help">Ana sayfa bölümlerini <strong>sürükleyerek</strong> sıralayın, anahtarla gizleyin. <strong>Düzenle</strong> ile içeriğini ve tasarımını açın. Önizlemede yazılara tıklayıp doğrudan yazabilir, görsellerin üzerindeki düğmeyle değiştirebilirsiniz.</p>
-						<?php df_render_sections_field( $opts['home_sections'], DF_OPTION . '[home_sections]' ); ?>
+						<div id="dfs-context" class="dfs-context" hidden></div>
+						<div id="dfs-home">
+							<p class="dfs-help">Ana sayfa bölümlerini <strong>sürükleyerek</strong> sıralayın, anahtarla gizleyin. <strong>Düzenle</strong> ile içeriğini ve tasarımını açın. Önizlemede yazılara tıklayıp doğrudan yazabilir, görsellerin üzerindeki düğmeyle değiştirebilirsiniz.</p>
+							<?php df_render_sections_field( $opts['home_sections'], DF_OPTION . '[home_sections]' ); ?>
+						</div>
 						<div class="dfs-shortcuts">
 							<h3>Diğer alanlar</h3>
 							<button type="button" data-open="header">Header & menü</button>
@@ -293,7 +296,7 @@ function df_studio_page() {
 							<button type="button" class="dfs-back" id="dfs-back" title="Geri"><span class="dashicons dashicons-arrow-left-alt2"></span></button>
 							<h2 id="dfs-edit-title">Bir alan seçin</h2>
 						</div>
-						<p class="dfs-help" id="dfs-edit-empty">Önizlemede bir yazıya, görsele ya da bölüme tıklayın; ayarları burada açılır. Ya da <strong>Bölümler</strong> / <strong>Site</strong> sekmesinden seçin.</p>
+						<p class="dfs-help" id="dfs-edit-empty">Önizlemede bir yazıya, görsele ya da bölüme tıklayın; ayarları burada açılır. Ya da <strong>Sayfa</strong> / <strong>Site</strong> sekmesinden seçin.</p>
 						<div class="dfs-groups">
 							<?php df_studio_render_groups( $opts ); ?>
 						</div>
@@ -330,6 +333,16 @@ function df_studio_page() {
 					<div class="dfs-loading" id="dfs-loading"><span></span>Önizleme yükleniyor…</div>
 				</div>
 			</main>
+		</div>
+		<div class="dfs-modal" id="dfs-modal" hidden>
+			<div class="dfs-modal__box" role="dialog" aria-modal="true" aria-labelledby="dfs-modal-title">
+				<header class="dfs-modal__head">
+					<strong id="dfs-modal-title">Düzenle</strong>
+					<span class="dfs-modal__hint">Değişiklikleri editörün kendi <em>Güncelle</em> düğmesiyle kaydedin.</span>
+					<button type="button" class="dfs-btn" id="dfs-modal-close">Kapat ve önizlemeyi yenile</button>
+				</header>
+				<iframe id="dfs-modal-frame" title="Editör"></iframe>
+			</div>
 		</div>
 	</div>
 	<?php
@@ -433,3 +446,85 @@ function df_studio_row_action( $actions, $post ) {
 	return $actions;
 }
 add_filter( 'page_row_actions', 'df_studio_row_action', 10, 2 );
+
+/**
+ * Hızlı düzenleme (ürün / kategori / sayfa). Bu değişiklikler taslak değildir, hemen kaydedilir.
+ */
+function df_studio_ajax_quick() {
+	check_ajax_referer( 'df_studio', 'nonce' );
+	$type = isset( $_POST['type'] ) ? sanitize_key( wp_unslash( $_POST['type'] ) ) : '';
+	$id   = isset( $_POST['id'] ) ? absint( $_POST['id'] ) : 0;
+	$f    = isset( $_POST['f'] ) && is_array( $_POST['f'] ) ? wp_unslash( $_POST['f'] ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- alan alan temizlenir.
+
+	if ( 'product' === $type ) {
+		$p = df_wc() ? wc_get_product( $id ) : null;
+		if ( ! $p || ! current_user_can( 'edit_post', $id ) ) {
+			wp_send_json_error( array( 'message' => 'Yetkiniz yok.' ), 403 );
+		}
+		if ( isset( $f['title'] ) && '' !== trim( $f['title'] ) ) {
+			$p->set_name( sanitize_text_field( $f['title'] ) );
+		}
+		if ( ! $p->is_type( 'variable' ) ) {
+			if ( isset( $f['regular'] ) ) {
+				$p->set_regular_price( wc_format_decimal( sanitize_text_field( $f['regular'] ) ) );
+			}
+			if ( isset( $f['sale'] ) ) {
+				$sale = wc_format_decimal( sanitize_text_field( $f['sale'] ) );
+				if ( '' !== $sale && (float) $sale >= (float) $p->get_regular_price( 'edit' ) ) {
+					wp_send_json_error( array( 'message' => 'İndirimli fiyat normal fiyattan düşük olmalı.' ) );
+				}
+				$p->set_sale_price( $sale );
+			}
+		}
+		if ( isset( $f['short'] ) ) {
+			$p->set_short_description( wp_kses_post( $f['short'] ) );
+		}
+		if ( isset( $f['stock'] ) && array_key_exists( $f['stock'], wc_get_product_stock_status_options() ) ) {
+			$p->set_stock_status( $f['stock'] );
+		}
+		if ( isset( $f['image'] ) ) {
+			$p->set_image_id( absint( $f['image'] ) );
+		}
+		$p->save();
+		wp_send_json_success( array( 'message' => 'Ürün kaydedildi' ) );
+	}
+
+	if ( 'term' === $type ) {
+		$tax = isset( $_POST['taxonomy'] ) ? sanitize_key( wp_unslash( $_POST['taxonomy'] ) ) : '';
+		if ( ! taxonomy_exists( $tax ) || ! current_user_can( 'edit_term', $id ) ) {
+			wp_send_json_error( array( 'message' => 'Yetkiniz yok.' ), 403 );
+		}
+		$args = array();
+		if ( isset( $f['title'] ) && '' !== trim( $f['title'] ) ) {
+			$args['name'] = sanitize_text_field( $f['title'] );
+		}
+		if ( isset( $f['desc'] ) ) {
+			$args['description'] = wp_kses_post( $f['desc'] );
+		}
+		$res = wp_update_term( $id, $tax, $args );
+		if ( is_wp_error( $res ) ) {
+			wp_send_json_error( array( 'message' => $res->get_error_message() ) );
+		}
+		if ( 'product_cat' === $tax && isset( $f['image'] ) ) {
+			update_term_meta( $id, 'thumbnail_id', absint( $f['image'] ) );
+		}
+		wp_send_json_success( array( 'message' => 'Kategori kaydedildi' ) );
+	}
+
+	if ( 'post' === $type ) {
+		if ( ! current_user_can( 'edit_post', $id ) ) {
+			wp_send_json_error( array( 'message' => 'Yetkiniz yok.' ), 403 );
+		}
+		if ( isset( $f['title'] ) && '' !== trim( $f['title'] ) ) {
+			wp_update_post(
+				array(
+					'ID'         => $id,
+					'post_title' => sanitize_text_field( $f['title'] ),
+				)
+			);
+		}
+		wp_send_json_success( array( 'message' => 'Kaydedildi' ) );
+	}
+	wp_send_json_error( array( 'message' => 'Bilinmeyen içerik.' ) );
+}
+add_action( 'wp_ajax_df_studio_quick', 'df_studio_ajax_quick' );

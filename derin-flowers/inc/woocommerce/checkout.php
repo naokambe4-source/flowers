@@ -584,7 +584,11 @@ function df_render_order_delivery( $order, $context = 'front' ) {
 add_action(
 	'woocommerce_admin_order_data_after_shipping_address',
 	function ( $order ) {
-		df_render_order_delivery( $order, 'admin' );
+		// Ayrıntılar sayfanın üstündeki "Çiçek Siparişi" kartında; burada kısa özet.
+		$date = $order->get_meta( '_df_delivery_date' );
+		if ( $date ) {
+			echo '<p class="df-order-delivery-mini"><strong>Teslimat:</strong> ' . esc_html( wp_date( 'j F Y, l', strtotime( $date . ' 12:00:00' ) ) . ' · ' . $order->get_meta( '_df_delivery_slot' ) ) . '<br><a href="#df-flower-order">Çiçek siparişi ayrıntıları ↑</a></p>';
+		}
 	}
 );
 add_action(

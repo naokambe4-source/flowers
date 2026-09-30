@@ -1,0 +1,72 @@
+/* Derin Flowers — sipariş ekranı "Çiçek Siparişi" kartı */
+#df-flower-order { border: 0; border-radius: 14px; overflow: hidden; box-shadow: 0 1px 3px rgba(0, 0, 0, .06); }
+#df-flower-order .postbox-header { background: #1c1f24; border: 0; }
+#df-flower-order .postbox-header h2 { color: #fff; font-size: 14px; letter-spacing: .04em; }
+#df-flower-order .postbox-header .handle-actions button, #df-flower-order .postbox-header .order-higher-indicator::before, #df-flower-order .postbox-header .order-lower-indicator::before, #df-flower-order .postbox-header .toggle-indicator::before { color: #9ca3af; }
+#df-flower-order .inside { margin: 0; padding: 0; background: #f6f4f1; }
+.dfo { --ink: #1f2328; --muted: #6b7280; --line: #e7e5e2; --accent: #B8664F; padding: 16px; color: var(--ink); font-size: 13.5px; }
+.dfo .dashicons { font-size: 16px; width: 16px; height: 16px; }
+.dfo-empty { margin: 0; padding: 16px; }
+
+.dfo-hero { display: flex; align-items: center; gap: 20px; padding: 18px 20px; border-radius: 12px; background: #fff; border: 1px solid var(--line); border-left: 5px solid var(--accent); }
+.dfo-hero.is-today { border-left-color: #2f8f4e; background: linear-gradient(90deg, #eef7f0, #fff 60%); }
+.dfo-hero.is-past { border-left-color: #9ca3af; }
+.dfo-hero__date { display: flex; align-items: center; gap: 10px; flex: none; }
+.dfo-hero__day { font: 600 46px/1 Georgia, "Times New Roman", serif; color: var(--accent); }
+.dfo-hero.is-today .dfo-hero__day { color: #2f8f4e; }
+.dfo-hero__month { display: flex; flex-direction: column; font-size: 16px; font-weight: 600; text-transform: capitalize; }
+.dfo-hero__month small { color: var(--muted); font-size: 13px; font-weight: 400; }
+.dfo-hero__main { flex: 1; min-width: 0; padding-left: 20px; border-left: 1px solid var(--line); }
+.dfo-hero__slot { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; font-size: 20px; font-weight: 600; }
+.dfo-hero__slot .dashicons { font-size: 20px; width: 20px; height: 20px; color: var(--accent); }
+.dfo-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.dfo-chip { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 999px; background: #f3efeb; color: #4b4540; font-size: 12px; font-weight: 500; }
+.dfo-chip--when { background: var(--accent); color: #fff; }
+.dfo-hero.is-today .dfo-chip--when { background: #2f8f4e; }
+.dfo-chip.is-ok { background: #e7f3ea; color: #2f6b40; }
+.dfo-chip.is-warn { background: #fdf0e6; color: #9a5a1e; }
+.dfo-hero__acts { display: flex; flex-direction: column; gap: 6px; flex: none; }
+.dfo-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 14px; border-radius: 8px; background: var(--accent); color: #fff !important; font-weight: 600; font-size: 12.5px; text-decoration: none; }
+.dfo-btn:hover { background: #a4583f; }
+.dfo-btn--ghost { background: #fff; color: var(--ink) !important; border: 1px solid var(--line); }
+.dfo-btn--ghost:hover { background: #f6f4f1; }
+.dfo-btn--wa { margin-top: 10px; background: #25a55f; }
+.dfo-btn--wa:hover { background: #1d8a4e; }
+
+.dfo-grid { display: grid; grid-template-columns: 1fr 1fr 1.4fr; gap: 12px; margin-top: 12px; }
+.dfo-grid--2 { grid-template-columns: 1.6fr 1fr; }
+.dfo-card { padding: 14px 16px; border-radius: 12px; background: #fff; border: 1px solid var(--line); min-width: 0; }
+.dfo-card__label { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; color: var(--muted); font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.dfo-card__label .dashicons { color: var(--accent); }
+.dfo-card__name { font-size: 16px; font-weight: 600; word-break: break-word; }
+.dfo-card__phone { margin-top: 2px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.dfo-card__addr { font-size: 14.5px; font-weight: 500; line-height: 1.45; word-break: break-word; }
+.dfo-card__sub { margin-top: 4px; color: var(--accent); font-weight: 600; }
+.dfo-card__hint { display: flex; gap: 6px; margin-top: 8px; padding: 8px 10px; border-radius: 8px; background: #faf7f2; color: #4b4540; }
+.dfo-card__hint .dashicons { color: var(--accent); flex: none; }
+.dfo-card__acts { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.dfo-card__acts a { display: inline-flex; align-items: center; gap: 4px; padding: 5px 10px; border-radius: 7px; background: #f3efeb; color: var(--ink); font-size: 12px; font-weight: 500; text-decoration: none; }
+.dfo-card__acts a:hover { background: var(--accent); color: #fff; }
+
+.dfo-note { position: relative; padding: 16px 20px 18px; border-radius: 12px; background: #fffaf3; border: 1px solid #efe2d2; background-image: repeating-linear-gradient(transparent 0 27px, rgba(184, 102, 79, .07) 27px 28px); }
+.dfo-note blockquote { margin: 4px 0 0; font: italic 18px/1.55 Georgia, "Times New Roman", serif; color: #3a302b; }
+.dfo-note__from { margin-top: 10px; text-align: right; font: 600 15px/1.2 Georgia, serif; color: var(--accent); }
+.dfo-muted { margin: 0; color: var(--muted); }
+.dfo-courier select { width: 100%; max-width: none; }
+.dfo-courier__saved { display: inline-block; margin-left: 8px; color: #2f8f4e; font-weight: 600; }
+.dfo-customer-note { display: flex; gap: 10px; margin-top: 12px; padding: 12px 16px; border-radius: 12px; background: #fff; border: 1px dashed #d9c2b9; }
+.dfo-customer-note .dashicons { color: var(--accent); }
+.dfo-customer-note strong { display: block; margin-bottom: 2px; }
+.df-order-delivery-mini { margin-top: 12px; padding: 10px 12px; border-radius: 8px; background: #faf7f2; }
+
+@media (max-width: 1280px) {
+	.dfo-grid { grid-template-columns: 1fr 1fr; }
+	.dfo-card--wide { grid-column: 1 / -1; }
+}
+@media (max-width: 900px) {
+	.dfo-hero { flex-wrap: wrap; }
+	.dfo-hero__main { padding-left: 0; border-left: 0; flex-basis: 100%; }
+	.dfo-hero__acts { flex-direction: row; flex-wrap: wrap; }
+	.dfo-grid, .dfo-grid--2 { grid-template-columns: 1fr; }
+}
+.dfo [hidden] { display: none !important; }

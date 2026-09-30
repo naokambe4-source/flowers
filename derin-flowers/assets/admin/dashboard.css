@@ -1,12 +1,12 @@
 /* Derin Flowers — Yönetim Paneli (yalnızca panel sayfalarında) */
-.df-app-screen #adminmenumain, .df-app-screen #wpfooter { display: none; }
-.df-app-screen #wpcontent { margin-left: 0; padding-left: 0; }
+.df-app-screen #wpfooter { display: none; }
+.df-app-screen #wpcontent { padding-left: 0; }
 .df-app-screen, .df-app-screen #wpwrap, .df-app-screen #wpcontent, .df-app-screen #wpbody { background: #f6f4f1; }
 .df-app-screen #wpbody-content { padding-bottom: 0; }
-.df-app-screen .notice, .df-app-screen .update-nag, .df-app-screen .updated, .df-app-screen .error { margin: 12px 30px 0 290px; }
+.df-app-screen .notice, .df-app-screen .update-nag, .df-app-screen .updated, .df-app-screen .error { margin: 12px 30px 0 30px; }
 .df-app-screen #screen-meta-links { display: none; }
 
-.df-app { --ink: #1f2328; --muted: #6b7280; --line: #e7e5e2; --bg: #f6f4f1; --card: #fff; --side: #1c1f24; --side2: #262a31; --accent: #B8664F; --accent-soft: #fbeee9; display: block; padding-left: 260px; min-height: calc(100vh - 32px); background: var(--bg); color: var(--ink); font-size: 14px; }
+.df-app { --ink: #1f2328; --muted: #6b7280; --line: #e7e5e2; --bg: #f6f4f1; --card: #fff; --side: #1c1f24; --side2: #262a31; --accent: #B8664F; --accent-soft: #fbeee9; display: block; min-height: calc(100vh - 32px); background: var(--bg); color: var(--ink); font-size: 14px; }
 .df-app a { color: inherit; }
 
 /* Kenar menü */

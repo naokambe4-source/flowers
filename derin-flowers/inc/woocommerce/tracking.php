@@ -130,8 +130,8 @@ function df_tracking_shortcode() {
 	<div class="df-track">
 		<div class="df-track__intro">
 			<?php df_the_icon( 'package', array( 'size' => 34 ) ); ?>
-			<h2><?php echo esc_html( df_opt( 'track_title', 'Siparişim Nerede?' ) ); ?></h2>
-			<p><?php echo esc_html( df_opt( 'track_text' ) ); ?></p>
+			<h2<?php echo df_e( 'track_title' ); // phpcs:ignore ?>><?php echo esc_html( df_opt( 'track_title', 'Siparişim Nerede?' ) ); ?></h2>
+			<p<?php echo df_e( 'track_text' ); // phpcs:ignore ?>><?php echo esc_html( df_opt( 'track_text' ) ); ?></p>
 		</div>
 		<form class="df-track__form" method="post" action="">
 			<?php wp_nonce_field( 'df_track', 'df_track_nonce' ); ?>

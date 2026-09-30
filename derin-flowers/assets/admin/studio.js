@@ -6,6 +6,7 @@
 	var $side = $( '#dfs-side' );
 	var $form = $( '#dfs-form' );
 	var frame = document.getElementById( 'dfs-frame' );
+	var pending = null;
 	if ( ! S || ! $form.length || ! frame ) {
 		return;
 	}
@@ -51,10 +52,37 @@
 	}
 
 	/* ================= Önizleme ================= */
+	// Yenileme arka planda ikinci bir çerçevede yapılır; hazır olunca ve kaydırma
+	// konumu geri yüklenince yer değiştirilir. Böylece sayfa zıplamaz, beyaz yanıp sönmez.
 	function loadFrame( url, keepScroll ) {
 		restoreScroll = !! keepScroll;
-		$( '#dfs-loading' ).addClass( 'is-on' );
-		frame.src = withParams( url );
+		if ( ! frame.getAttribute( 'src' ) ) {
+			$( '#dfs-loading' ).addClass( 'is-on' );
+			frame.src = withParams( url );
+			return;
+		}
+		if ( pending ) {
+			pending.remove();
+		}
+		if ( ! keepScroll ) {
+			$( '#dfs-loading' ).addClass( 'is-on' );
+		} else {
+			$( '#dfs-stage' ).addClass( 'is-refreshing' );
+		}
+		pending = document.createElement( 'iframe' );
+		pending.className = 'dfs-frame is-next';
+		pending.title = 'Site önizlemesi';
+		pending.src = withParams( url );
+		frame.parentNode.insertBefore( pending, frame.nextSibling );
+	}
+	function swapFrame() {
+		var old = frame;
+		frame = pending;
+		pending = null;
+		frame.classList.remove( 'is-next' );
+		frame.id = 'dfs-frame';
+		old.remove();
+		$( '#dfs-stage' ).removeClass( 'is-refreshing' );
 	}
 	function reloadFrame() {
 		try {
@@ -260,10 +288,16 @@
 	}
 	$side.on( 'click', '.df-media__select, .df-media__preview', function ( e ) {
 		e.preventDefault();
+		if ( $( this ).closest( '.dfs-context' ).length ) {
+			return;
+		}
 		pickImage( $( this ).closest( '.df-media' ) );
 	} );
 	$side.on( 'click', '.df-media__remove', function ( e ) {
 		e.preventDefault();
+		if ( $( this ).closest( '.dfs-context' ).length ) {
+			return;
+		}
 		var $box = $( this ).closest( '.df-media' );
 		$box.find( '.df-media__input' ).val( '' );
 		$box.find( '.df-media__preview' ).html( '<span>Görsel seçilmedi</span>' );
@@ -335,7 +369,7 @@
 
 	/* ================= Değişiklik → taslak ================= */
 	var textTimer;
-	$form.on( 'input', 'input[type=text]:not(.df-color):not(.df-media__input), textarea', function () {
+	$form.on( 'input', 'input[type=text]:not(.df-color):not(.df-media__input):not([data-q]), textarea:not([data-q])', function () {
 		var key = keyOf( this.name );
 		post( { df: 'setText', key: key, value: this.value } );
 		clearTimeout( textTimer );
@@ -343,7 +377,7 @@
 			save( ! knownKeys[ key ] );
 		}, 900 );
 	} );
-	$form.on( 'change', 'input, select, textarea', function ( e ) {
+	$form.on( 'change', 'input:not([data-q]), select:not([data-q]), textarea:not([data-q])', function ( e ) {
 		if ( $( this ).is( 'input[type=text]:not(.df-color), textarea' ) ) {
 			return; // Yazı alanları "input" olayıyla kaydedilir.
 		}
@@ -497,37 +531,58 @@
 		}
 	} );
 
+	function onReady( m, swapped ) {
+		$( '#dfs-loading' ).removeClass( 'is-on' );
+		knownKeys = {};
+		try {
+			Array.prototype.forEach.call( frame.contentDocument.querySelectorAll( '[data-df-edit]' ), function ( el ) {
+				knownKeys[ el.getAttribute( 'data-df-edit' ) ] = true;
+			} );
+		} catch ( err ) {}
+		if ( restoreScroll && ! swapped ) {
+			post( { df: 'scrollTo', y: scrollY } );
+		} else if ( ! restoreScroll ) {
+			scrollY = 0;
+		}
+		restoreScroll = false;
+		var $sel = $( '#dfs-page' );
+		var match = $sel.find( 'option' ).filter( function () {
+			return this.value && this.value.replace( /\/$/, '' ) === m.url.replace( /\/$/, '' );
+		} );
+		if ( match.length ) {
+			$sel.val( match.val() );
+		} else {
+			$sel.find( '[data-custom]' ).text( 'Bu sayfa: ' + ( m.title || '' ).split( /[–|-]/ )[ 0 ].trim() ).val( m.url ).prop( 'selected', true );
+		}
+		$( '#dfs-open' ).attr( 'href', m.url );
+		renderContext( m.context || {} );
+	}
+
 	/* ================= Önizlemeden gelen mesajlar ================= */
 	window.addEventListener( 'message', function ( e ) {
 		if ( e.origin !== origin || ! e.data || ! e.data.df ) {
 			return;
 		}
 		var m = e.data;
+		if ( pending && e.source === pending.contentWindow ) {
+			if ( 'ready' !== m.df ) {
+				return;
+			}
+			if ( restoreScroll ) {
+				pending.contentWindow.postMessage( { df: 'scrollTo', y: scrollY }, origin );
+			}
+			setTimeout( function () {
+				swapFrame();
+				onReady( m, true );
+			}, restoreScroll ? 120 : 0 );
+			return;
+		}
+		if ( e.source !== frame.contentWindow ) {
+			return;
+		}
 		switch ( m.df ) {
 			case 'ready':
-				$( '#dfs-loading' ).removeClass( 'is-on' );
-				knownKeys = {};
-				try {
-					Array.prototype.forEach.call( frame.contentDocument.querySelectorAll( '[data-df-edit]' ), function ( el ) {
-						knownKeys[ el.getAttribute( 'data-df-edit' ) ] = true;
-					} );
-				} catch ( err ) {}
-				if ( restoreScroll ) {
-					post( { df: 'scrollTo', y: scrollY } );
-				} else {
-					scrollY = 0;
-				}
-				restoreScroll = false;
-				var $sel = $( '#dfs-page' );
-				var match = $sel.find( 'option' ).filter( function () {
-					return this.value && this.value.replace( /\/$/, '' ) === m.url.replace( /\/$/, '' );
-				} );
-				if ( match.length ) {
-					$sel.val( match.val() );
-				} else {
-					$sel.find( '[data-custom]' ).text( 'Bu sayfa: ' + ( m.title || '' ).split( /[–|-]/ )[ 0 ].trim() ).val( m.url ).prop( 'selected', true );
-				}
-				$( '#dfs-open' ).attr( 'href', m.url );
+				onReady( m, false );
 				break;
 			case 'scroll':
 				scrollY = m.y;
@@ -569,6 +624,105 @@
 				}
 				break;
 		}
+	} );
+
+	/* ================= Sayfa sekmesi: bu sayfa ================= */
+	var ctx = {};
+	function esc( v ) {
+		return $( '<div>' ).text( null === v || undefined === v ? '' : String( v ) ).html();
+	}
+	var kinds = { product: 'Ürün', term: 'Kategori', post: 'Sayfa', wc: 'Mağaza sayfası', other: 'Sayfa' };
+	function renderContext( c ) {
+		ctx = c || {};
+		var home = 'home' === ctx.type;
+		$( '#dfs-home' ).prop( 'hidden', ! home );
+		var $c = $( '#dfs-context' ).empty().prop( 'hidden', home );
+		if ( home ) {
+			return;
+		}
+		var html = '<div class="dfs-ctx-head"><span>' + esc( ctx.kind || kinds[ ctx.type ] || 'Sayfa' ) + '</span><h2>' + esc( ctx.title ) + '</h2></div>';
+		html += '<p class="dfs-help">Önizlemede <strong>kesik çizgili</strong> yazılara tıklayıp doğrudan yazabilirsiniz (header, footer ve bu sayfanın metinleri).</p>';
+		if ( 'product' === ctx.type || 'term' === ctx.type || ( 'post' === ctx.type && ! ctx.managed ) ) {
+			html += '<div class="dfs-group dfs-quick"><div class="df-fields">';
+			html += field( 'Başlık', '<input type="text" class="df-input" data-q="title" value="' + esc( ctx.title ) + '">' );
+			if ( 'product' === ctx.type ) {
+				if ( ctx.variable ) {
+					html += '<p class="df-group__desc">Seçenekli (varyasyonlu) ürün: fiyatları ürün düzenleyicisinden değiştirin.</p>';
+				} else {
+					html += field( 'Normal fiyat (₺)', '<input type="text" inputmode="decimal" class="df-input" data-q="regular" value="' + esc( ctx.regular ) + '">', 'half' );
+					html += field( 'İndirimli fiyat (₺)', '<input type="text" inputmode="decimal" class="df-input" data-q="sale" value="' + esc( ctx.sale ) + '" placeholder="Yok">', 'half' );
+				}
+				html += field( 'Stok durumu', '<select class="df-input" data-q="stock"><option value="instock"' + ( 'instock' === ctx.stock ? ' selected' : '' ) + '>Stokta</option><option value="outofstock"' + ( 'outofstock' === ctx.stock ? ' selected' : '' ) + '>Tükendi</option><option value="onbackorder"' + ( 'onbackorder' === ctx.stock ? ' selected' : '' ) + '>Siparişle</option></select>' );
+				html += field( 'Kısa açıklama', '<textarea class="df-input" rows="4" data-q="short">' + esc( ctx.short ) + '</textarea>' );
+			}
+			if ( 'term' === ctx.type ) {
+				html += field( 'Açıklama', '<textarea class="df-input" rows="4" data-q="desc">' + esc( ctx.desc ) + '</textarea>' );
+			}
+			if ( 'product' === ctx.type || ( 'term' === ctx.type && null !== ctx.image && undefined !== ctx.image ) ) {
+				html += field( 'product' === ctx.type ? 'Ana görsel' : 'Kategori görseli', '<div class="df-media' + ( ctx.imageUrl ? ' has-image' : '' ) + '" data-qmedia><input type="hidden" data-q="image" value="' + esc( ctx.image || '' ) + '"><div class="df-media__preview">' + ( ctx.imageUrl ? '<img src="' + esc( ctx.imageUrl ) + '" alt="">' : '<span>Görsel seçilmedi</span>' ) + '</div><div class="df-media__actions"><button type="button" class="button" data-qpick>' + ( ctx.imageUrl ? 'Değiştir' : 'Görsel seç' ) + '</button></div></div>' );
+			}
+			html += '</div><button type="button" class="dfs-btn dfs-btn--block" id="dfs-quick-save">Kaydet</button><p class="dfs-note">Ürün ve kategori değişiklikleri <strong>hemen</strong> yayına girer.</p></div>';
+		}
+		html += '<div class="dfs-nav">';
+		if ( ctx.edit ) {
+			html += '<button type="button" data-editor="' + esc( ctx.edit ) + '">' + ( 'product' === ctx.type ? 'Ürünü tam düzenle (galeri, video, SSS…)' : ( 'term' === ctx.type ? 'Kategoriyi tam düzenle' : 'Sayfa içeriğini düzenle' ) ) + '<span class="dashicons dashicons-edit"></span></button>';
+		}
+		if ( ctx.settings ) {
+			html += '<button type="button" data-open="' + esc( ctx.settings ) + '">' + ( ctx.managed ? 'Bu sayfanın yazıları ve görselleri' : 'Bu sayfa türünün tema ayarları' ) + '<span class="dashicons dashicons-arrow-right-alt2"></span></button>';
+		}
+		html += '<button type="button" data-open="header">Header & menü<span class="dashicons dashicons-arrow-right-alt2"></span></button>';
+		html += '<button type="button" data-open="footer">Footer & iletişim<span class="dashicons dashicons-arrow-right-alt2"></span></button>';
+		html += '</div>';
+		$c.html( html );
+	}
+	function field( label, input, width ) {
+		return '<div class="df-field' + ( width ? ' df-field--' + width : '' ) + '"><label class="df-field__label">' + label + '</label>' + input + '</div>';
+	}
+	$side.on( 'click', '[data-qpick]', function ( e ) {
+		e.preventDefault();
+		var $box = $( this ).closest( '[data-qmedia]' );
+		var fr = wp.media( { title: 'Görsel seç', button: { text: 'Bu görseli kullan' }, library: { type: 'image' }, multiple: false } );
+		fr.on( 'select', function () {
+			var a = fr.state().get( 'selection' ).first().toJSON();
+			var url = a.sizes && a.sizes.thumbnail ? a.sizes.thumbnail.url : a.url;
+			$box.find( '[data-q="image"]' ).val( a.id ).attr( 'data-dirty', '1' );
+			$box.addClass( 'has-image' ).find( '.df-media__preview' ).html( '<img src="' + url + '" alt="">' );
+		} );
+		fr.open();
+	} );
+	$side.on( 'click', '#dfs-quick-save', function () {
+		var $b = $( this );
+		var f = {};
+		$( '#dfs-context [data-q]' ).each( function () {
+			if ( 'image' !== $( this ).data( 'q' ) || $( this ).attr( 'data-dirty' ) ) {
+				f[ $( this ).data( 'q' ) ] = $( this ).val();
+			}
+		} );
+		$b.prop( 'disabled', true ).text( 'Kaydediliyor…' );
+		$.post( S.ajax, { action: 'df_studio_quick', nonce: S.nonce, type: ctx.type, id: ctx.id, taxonomy: ctx.taxonomy || '', f: f } ).done( function ( res ) {
+			if ( res && res.success ) {
+				status( res.data.message + ' ✓', 'ok' );
+				reloadFrame();
+			} else {
+				status( ( res && res.data && res.data.message ) || 'Kaydedilemedi', 'err' );
+			}
+		} ).fail( function () {
+			status( 'Kaydedilemedi', 'err' );
+		} ).always( function () {
+			$b.prop( 'disabled', false ).text( 'Kaydet' );
+		} );
+	} );
+
+	/* Tam editör: stüdyodan çıkmadan pencere içinde */
+	$side.on( 'click', '[data-editor]', function () {
+		$( '#dfs-modal-title' ).text( $( this ).clone().children().remove().end().text().trim() );
+		$( '#dfs-modal-frame' ).attr( 'src', $( this ).data( 'editor' ) );
+		$( '#dfs-modal' ).prop( 'hidden', false );
+	} );
+	$( '#dfs-modal-close' ).on( 'click', function () {
+		$( '#dfs-modal' ).prop( 'hidden', true );
+		$( '#dfs-modal-frame' ).attr( 'src', 'about:blank' );
+		reloadFrame();
 	} );
 
 	/* ================= Başlangıç ================= */

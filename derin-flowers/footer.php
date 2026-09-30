@@ -17,7 +17,7 @@ $social = df_social_links();
 			<div class="df-footer__brand">
 				<?php df_logo( 'footer' ); ?>
 				<?php if ( df_opt( 'footer_about' ) ) : ?>
-					<p class="df-footer__about"><?php echo esc_html( df_opt( 'footer_about' ) ); ?></p>
+					<p class="df-footer__about"<?php echo df_e( 'footer_about' ); // phpcs:ignore ?>><?php echo esc_html( df_opt( 'footer_about' ) ); ?></p>
 				<?php endif; ?>
 				<?php if ( $social ) : ?>
 					<ul class="df-social">
@@ -30,7 +30,7 @@ $social = df_social_links();
 
 			<?php foreach ( array( 'footer_1' => 'footer_col2_title', 'footer_2' => 'footer_col3_title' ) as $loc => $title_key ) : ?>
 				<div class="df-footer__col">
-					<h2 class="df-footer__title"><?php echo esc_html( df_opt( $title_key ) ); ?></h2>
+					<h2 class="df-footer__title"<?php echo df_e( $title_key ); // phpcs:ignore ?>><?php echo esc_html( df_opt( $title_key ) ); ?></h2>
 					<?php
 					if ( has_nav_menu( $loc ) ) {
 						wp_nav_menu(
@@ -54,7 +54,7 @@ $social = df_social_links();
 			<?php endforeach; ?>
 
 			<div class="df-footer__col df-footer__contact">
-				<h2 class="df-footer__title"><?php echo esc_html( df_opt( 'footer_col4_title' ) ); ?></h2>
+				<h2 class="df-footer__title"<?php echo df_e( 'footer_col4_title' ); // phpcs:ignore ?>><?php echo esc_html( df_opt( 'footer_col4_title' ) ); ?></h2>
 				<ul class="df-footer__list">
 					<?php foreach ( array( 'contact_phone1', 'contact_phone2' ) as $k ) : ?>
 						<?php if ( df_opt( $k ) ) : ?>
@@ -75,7 +75,7 @@ $social = df_social_links();
 					</address>
 				<?php endif; ?>
 				<?php if ( df_opt( 'contact_hours' ) ) : ?>
-					<p class="df-footer__hours"><?php echo df_nl2br( df_opt( 'contact_hours' ) ); // phpcs:ignore ?></p>
+					<p class="df-footer__hours"<?php echo df_e( 'contact_hours' ); // phpcs:ignore ?>><?php echo df_nl2br( df_opt( 'contact_hours' ) ); // phpcs:ignore ?></p>
 				<?php endif; ?>
 			</div>
 		</div>

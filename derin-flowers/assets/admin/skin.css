@@ -37,7 +37,6 @@ body.wp-admin, body.wp-admin #wpwrap { background: var(--dfk-bg); }
 .df-skin-brand__text small { color: #8b929c; font-size: 11px; }
 .folded .df-skin-brand__text { display: none; }
 .folded .df-skin-brand { padding: 12px 1px; justify-content: center; }
-.df-app-screen .df-skin-brand { display: none; }
 
 /* Üst çubuk */
 #wpadminbar { background: #16181c; }
@@ -62,3 +61,5 @@ a:hover, a:active { color: var(--dfk-accent); }
 input[type=checkbox]:checked::before { filter: hue-rotate(-190deg) saturate(1.2); }
 input[type=text]:focus, input[type=search]:focus, input[type=email]:focus, input[type=number]:focus, input[type=password]:focus, input[type=url]:focus, select:focus, textarea:focus { border-color: var(--dfk-accent); box-shadow: 0 0 0 1px var(--dfk-accent); }
 #wpfooter { color: #8b929c; }
+#adminmenu li.menu-top[id^="toplevel_page_admin-post"] { margin-top: 14px; opacity: .7; }
+#adminmenu li.menu-top[id^="toplevel_page_admin-post"] .wp-menu-name { font-size: 12px; }

@@ -23,12 +23,12 @@ defined( 'ABSPATH' ) || exit;
 		<div class="df-container df-topbar__inner">
 			<p class="df-topbar__left">
 				<?php if ( df_opt( 'topbar_link' ) ) : ?>
-					<a href="<?php echo esc_url( df_url( df_opt( 'topbar_link' ) ) ); ?>"><?php echo esc_html( df_opt( 'topbar_left' ) ); ?></a>
+					<a href="<?php echo esc_url( df_url( df_opt( 'topbar_link' ) ) ); ?>"><span<?php echo df_e( 'topbar_left' ); // phpcs:ignore ?>><?php echo esc_html( df_opt( 'topbar_left' ) ); ?></span></a>
 				<?php else : ?>
-					<?php echo esc_html( df_opt( 'topbar_left' ) ); ?>
+					<span<?php echo df_e( 'topbar_left' ); // phpcs:ignore ?>><?php echo esc_html( df_opt( 'topbar_left' ) ); ?></span>
 				<?php endif; ?>
 			</p>
-			<p class="df-topbar__right"><?php df_the_icon( 'clock', array( 'size' => 14 ) ); ?><span><?php echo esc_html( df_opt( 'topbar_right' ) ); ?></span></p>
+			<p class="df-topbar__right"><?php df_the_icon( 'clock', array( 'size' => 14 ) ); ?><span<?php echo df_e( 'topbar_right' ); // phpcs:ignore ?>><?php echo esc_html( df_opt( 'topbar_right' ) ); ?></span></p>
 		</div>
 	</div>
 <?php endif; ?>
@@ -43,7 +43,7 @@ defined( 'ABSPATH' ) || exit;
 				<?php if ( df_opt( 'header_cat_btn' ) && df_wc() ) : ?>
 					<button type="button" class="df-header__cats" data-df-open="df-cat-drawer" aria-controls="df-cat-drawer" aria-expanded="false">
 						<?php df_the_icon( 'grid', array( 'size' => 18 ) ); ?>
-						<span><?php echo esc_html( df_opt( 'header_cat_label', 'Kategoriler' ) ); ?></span>
+						<span<?php echo df_e( 'header_cat_label' ); // phpcs:ignore ?>><?php echo esc_html( df_opt( 'header_cat_label', 'Kategoriler' ) ); ?></span>
 					</button>
 				<?php endif; ?>
 				<?php if ( df_opt( 'header_phone_on' ) && df_opt( 'contact_phone1' ) ) : ?>

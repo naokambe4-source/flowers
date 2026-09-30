@@ -185,7 +185,10 @@
 		} else if ( 'show' === m.df ) {
 			var t = document.querySelector( '[data-df-section="' + m.id + '"]' ) || document.querySelector( '[data-df-sec="' + m.id + '"]' );
 			if ( t ) {
-				t.scrollIntoView( { behavior: 'smooth', block: 'start' } );
+				// scrollIntoView üst pencereyi de kaydırır; yalnızca önizlemeyi kaydır.
+				var head = document.querySelector( '.df-header' );
+				var off = head && 'sticky' === getComputedStyle( head ).position ? head.offsetHeight : 0;
+				window.scrollTo( { top: Math.max( 0, t.getBoundingClientRect().top + window.scrollY - off ), behavior: 'smooth' } );
 				t.classList.add( 'df-live-flash' );
 				setTimeout( function () {
 					t.classList.remove( 'df-live-flash' );
@@ -206,6 +209,7 @@
 		df: 'ready',
 		url: window.location.href.replace( /([?&])df_(live|preview)=1&?/g, '$1' ).replace( /[?&]$/, '' ),
 		title: document.title,
-		home: !! L.isHome
+		home: !! L.isHome,
+		context: L.context || {}
 	} );
 }() );
