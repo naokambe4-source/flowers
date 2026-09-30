@@ -48,6 +48,8 @@ add_action( 'admin_init', 'df_admin_register_setting' );
  * @param mixed $new Yeni.
  */
 function df_sync_wc_settings( $old, $new ) {
+	// Yayındaki ayar değişti: Tasarım Stüdyosu'ndaki eski taslak geçersiz.
+	delete_option( DF_OPTION_DRAFT );
 	if ( ! is_array( $new ) || ! df_wc() ) {
 		return;
 	}
@@ -123,6 +125,7 @@ function df_admin_page() {
 				</div>
 			</div>
 			<div class="df-panel__links">
+				<a class="button button-primary" href="<?php echo esc_url( admin_url( 'admin.php?page=df-studio' ) ); ?>">Tasarım Stüdyosu'nda aç</a>
 				<a class="button" href="<?php echo esc_url( home_url( '/' ) ); ?>" target="_blank" rel="noopener">Siteyi görüntüle</a>
 				<a class="button" href="<?php echo esc_url( admin_url( 'nav-menus.php' ) ); ?>">Menüler</a>
 				<a class="button" href="<?php echo esc_url( admin_url( 'admin.php?page=derin-flowers-tools' ) ); ?>">Araçlar & Kurulum</a>

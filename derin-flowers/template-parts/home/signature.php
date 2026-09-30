@@ -30,7 +30,7 @@ $GLOBALS['df_signature_ids'] = array_map(
 	$products
 );
 ?>
-<section class="df-section df-signature" aria-labelledby="df-sig-title">
+<section data-df-sec="signature" class="df-section df-signature" aria-labelledby="df-sig-title">
 	<div class="df-container">
 		<?php
 		df_section_head(

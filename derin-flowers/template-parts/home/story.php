@@ -13,7 +13,7 @@ if ( ! $title ) {
 }
 $second = absint( df_opt( 'story_image2' ) );
 ?>
-<section class="df-section df-story" aria-labelledby="df-story-title">
+<section data-df-sec="story" class="df-section df-story" aria-labelledby="df-story-title">
 	<div class="df-container df-story__grid<?php echo $second ? ' has-second' : ''; ?>">
 		<div class="df-story__media">
 			<div class="df-story__main"<?php echo df_i( 'story_image' ); // phpcs:ignore ?>>

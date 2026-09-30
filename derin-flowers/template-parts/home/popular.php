@@ -62,7 +62,7 @@ if ( ! $items ) {
 }
 $align = 'center' === df_opt( 'pop_align' ) ? 'center' : 'left';
 ?>
-<section class="df-popular df-popular--<?php echo esc_attr( $align ); ?>" aria-labelledby="df-pop-title">
+<section data-df-sec="popular" class="df-popular df-popular--<?php echo esc_attr( $align ); ?>" aria-labelledby="df-pop-title">
 	<div class="df-container">
 		<?php if ( df_opt( 'pop_title' ) ) : ?>
 			<h2 class="df-popular__title" id="df-pop-title"<?php echo df_e( 'pop_title' ); // phpcs:ignore ?>><?php echo esc_html( df_opt( 'pop_title' ) ); ?></h2>

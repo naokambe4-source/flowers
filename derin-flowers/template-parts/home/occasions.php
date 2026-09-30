@@ -18,7 +18,7 @@ if ( ! $items ) {
 }
 $style = 'card' === df_opt( 'occ_style' ) ? 'card' : 'overlay';
 ?>
-<section class="df-section df-occasions df-occasions--<?php echo esc_attr( $style ); ?>" aria-labelledby="df-occ-title">
+<section data-df-sec="occasions" class="df-section df-occasions df-occasions--<?php echo esc_attr( $style ); ?>" aria-labelledby="df-occ-title">
 	<div class="df-container">
 		<?php
 		df_section_head(

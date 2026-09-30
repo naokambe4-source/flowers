@@ -22,7 +22,7 @@ if ( ! $query->have_posts() ) {
 }
 $blog_url = get_option( 'page_for_posts' ) ? get_permalink( get_option( 'page_for_posts' ) ) : '';
 ?>
-<section class="df-section df-blog" aria-labelledby="df-blog-title">
+<section data-df-sec="blog" class="df-section df-blog" aria-labelledby="df-blog-title">
 	<div class="df-container">
 		<?php
 		df_section_head(

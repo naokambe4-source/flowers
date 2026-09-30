@@ -27,7 +27,7 @@ if ( ! $cards ) {
 	return;
 }
 ?>
-<section class="df-section df-duo" aria-label="Koleksiyonlar">
+<section data-df-sec="duo" class="df-section df-duo" aria-label="Koleksiyonlar">
 	<div class="df-container">
 		<div class="df-duo__grid">
 			<?php foreach ( $cards as $n => $card ) : ?>

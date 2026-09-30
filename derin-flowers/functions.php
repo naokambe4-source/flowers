@@ -7,10 +7,11 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'DF_VERSION', '1.1.0' );
+define( 'DF_VERSION', '1.2.0' );
 define( 'DF_DIR', get_template_directory() );
 define( 'DF_URI', get_template_directory_uri() );
 define( 'DF_OPTION', 'derin_options' );
+define( 'DF_OPTION_DRAFT', 'derin_options_draft' );
 
 require DF_DIR . '/inc/icons.php';
 require DF_DIR . '/inc/options-schema.php';
@@ -29,6 +30,8 @@ if ( is_admin() ) {
 	require DF_DIR . '/inc/admin/fields.php';
 	require DF_DIR . '/inc/admin/panel.php';
 	require DF_DIR . '/inc/admin/tools.php';
+	require DF_DIR . '/inc/admin/studio.php';
+	require DF_DIR . '/inc/admin/skin.php';
 }
 
 if ( class_exists( 'WooCommerce' ) ) {

@@ -14,7 +14,7 @@ if ( ! $title ) {
 $points = array_slice( df_lines( df_opt( 'del_points' ) ), 0, 3 );
 $left   = function_exists( 'df_delivery_same_day_seconds_left' ) ? df_delivery_same_day_seconds_left() : 0;
 ?>
-<section class="df-section df-delivery" aria-labelledby="df-del-title">
+<section data-df-sec="delivery" class="df-section df-delivery" aria-labelledby="df-del-title">
 	<div class="df-container df-delivery__grid">
 		<div class="df-delivery__text">
 			<?php if ( df_opt( 'del_eyebrow' ) ) : ?>

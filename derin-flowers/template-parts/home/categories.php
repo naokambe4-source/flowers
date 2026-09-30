@@ -57,7 +57,7 @@ if ( ! $cards ) {
 }
 $style = df_opt( 'cats_style', 'below' );
 ?>
-<section class="df-section df-cats df-cats--<?php echo esc_attr( $style ); ?>" aria-labelledby="df-cats-title">
+<section data-df-sec="categories" class="df-section df-cats df-cats--<?php echo esc_attr( $style ); ?>" aria-labelledby="df-cats-title">
 	<div class="df-container">
 		<?php
 		df_section_head(

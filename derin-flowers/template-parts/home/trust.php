@@ -17,7 +17,7 @@ if ( ! $items ) {
 	return;
 }
 ?>
-<section class="df-trust" aria-label="Neden Derin Flowers">
+<section data-df-sec="trust" class="df-trust" aria-label="Neden Derin Flowers">
 	<div class="df-container">
 		<ul class="df-trust__list">
 			<?php foreach ( $items as $ti => $item ) : ?>

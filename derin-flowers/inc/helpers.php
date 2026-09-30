@@ -59,10 +59,36 @@ function df_default_sections() {
 function df_options() {
 	global $df_options_cache;
 	if ( null === $df_options_cache ) {
-		$saved            = get_option( DF_OPTION, array() );
+		// Tasarım Stüdyosu önizlemesi: yayınlanmamış taslak yalnızca yöneticinin önizleme penceresinde görünür.
+		if ( ! did_action( 'init' ) && df_preview_requested() ) {
+			$saved = get_option( DF_OPTION, array() );
+			return array_merge( df_defaults(), is_array( $saved ) ? $saved : array() );
+		}
+		$saved = df_preview_mode() ? get_option( DF_OPTION_DRAFT, null ) : null;
+		if ( ! is_array( $saved ) ) {
+			$saved = get_option( DF_OPTION, array() );
+		}
 		$df_options_cache = array_merge( df_defaults(), is_array( $saved ) ? $saved : array() );
 	}
 	return $df_options_cache;
+}
+
+/**
+ * İstek önizleme parametresi taşıyor mu?
+ *
+ * @return bool
+ */
+function df_preview_requested() {
+	return ! is_admin() && isset( $_GET['df_preview'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+}
+
+/**
+ * Tasarım Stüdyosu önizleme penceresi mi? (taslak ayarlar gösterilir)
+ *
+ * @return bool
+ */
+function df_preview_mode() {
+	return df_preview_requested() && did_action( 'init' ) && current_user_can( 'edit_theme_options' );
 }
 
 /**
@@ -346,7 +372,7 @@ function df_live() {
 	static $live = null;
 	if ( null === $live ) {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- yalnızca görünüm modu.
-		$live = ! is_admin() && isset( $_GET['df_live'] ) && current_user_can( 'edit_theme_options' );
+		$live = ! is_admin() && ( isset( $_GET['df_live'] ) || isset( $_GET['df_preview'] ) ) && current_user_can( 'edit_theme_options' );
 	}
 	return $live;
 }
@@ -596,7 +622,71 @@ function df_css_variables() {
 	foreach ( $vars as $k => $v ) {
 		$css .= $k . ':' . wp_strip_all_tags( (string) $v ) . ';';
 	}
-	return $css . '}';
+	$css .= '}' . df_section_design_css( $o );
+	if ( ! empty( $o['custom_css'] ) ) {
+		$css .= "\n/* Özel CSS */\n" . str_ireplace( '</style', '', wp_strip_all_tags( (string) $o['custom_css'] ) );
+	}
+	return $css;
+}
+
+/**
+ * Bölüm tasarımı (Tasarım Stüdyosu → Bölüm tasarımı) CSS'i.
+ *
+ * @param array $o Seçenekler.
+ * @return string
+ */
+function df_section_design_css( $o ) {
+	$space  = array(
+		'none' => 0,
+		's'    => 40,
+		'm'    => 80,
+		'l'    => 140,
+		'xl'   => 200,
+	);
+	$css    = '';
+	$mobile = '';
+	foreach ( array_keys( df_home_section_labels() ) as $id ) {
+		$d = isset( $o[ 'sd_' . $id ] ) && is_array( $o[ 'sd_' . $id ] ) ? $o[ 'sd_' . $id ] : array();
+		if ( ! $d ) {
+			continue;
+		}
+		$sel  = '[data-df-sec="' . $id . '"]';
+		$rule = '';
+		if ( ! empty( $d['bg'] ) ) {
+			$rule .= 'background:' . $d['bg'] . ';';
+		}
+		if ( ! empty( $d['color'] ) ) {
+			$rule .= 'color:' . $d['color'] . ';--df-text:' . $d['color'] . ';--df-muted:' . $d['color'] . ';';
+		}
+		foreach ( array( 'pt' => 'padding-top', 'pb' => 'padding-bottom' ) as $k => $prop ) {
+			if ( ! empty( $d[ $k ] ) && isset( $space[ $d[ $k ] ] ) ) {
+				$rule   .= $prop . ':' . $space[ $d[ $k ] ] . 'px!important;';
+				$mobile .= $sel . '{' . $prop . ':' . round( $space[ $d[ $k ] ] * 0.6 ) . 'px!important}';
+			}
+		}
+		if ( ! empty( $d['align'] ) ) {
+			$rule .= 'text-align:' . $d['align'] . ';';
+			$flex  = array(
+				'left'   => 'flex-start',
+				'center' => 'center',
+				'right'  => 'flex-end',
+			);
+			$css  .= $sel . ' .df-head{flex-direction:column;align-items:' . $flex[ $d['align'] ] . ';text-align:' . $d['align'] . '}';
+		}
+		if ( ! empty( $d['title'] ) ) {
+			$css .= $sel . ' h2{font-size:' . (int) $d['title'] . 'px}';
+		}
+		if ( $rule ) {
+			$css .= $sel . '{' . $rule . '}';
+		}
+		if ( ! empty( $d['hide_m'] ) ) {
+			$mobile .= $sel . '{display:none!important}';
+		}
+		if ( ! empty( $d['hide_d'] ) ) {
+			$css .= '@media(min-width:761px){' . $sel . '{display:none!important}}';
+		}
+	}
+	return $css . ( $mobile ? '@media(max-width:760px){' . $mobile . '}' : '' );
 }
 
 /**

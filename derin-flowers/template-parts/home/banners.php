@@ -25,7 +25,7 @@ if ( ! $items ) {
 $cols   = max( 1, min( 3, (int) df_opt( 'ban_cols', 2 ) ) );
 $radius = absint( df_opt( 'ban_radius', 18 ) );
 ?>
-<section class="df-section df-banners" style="--df-ban-radius:<?php echo (int) $radius; ?>px" aria-label="Kategoriler">
+<section data-df-sec="banners" class="df-section df-banners" style="--df-ban-radius:<?php echo (int) $radius; ?>px" aria-label="Kategoriler">
 	<div class="df-container">
 		<?php if ( df_opt( 'ban_title' ) ) : ?>
 			<?php df_section_head( array( 'title' => df_opt( 'ban_title' ), 'keys' => array( 'title' => 'ban_title' ) ) ); ?>

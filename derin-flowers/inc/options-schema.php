@@ -859,5 +859,23 @@ function df_options_schema() {
 		),
 	);
 
+	// Her ana sayfa bölümüne "Bölüm tasarımı" (zemin, yazı rengi, boşluklar, hizalama, cihazda gizleme).
+	foreach ( $schema['home']['groups'] as $gi => $group ) {
+		if ( ! empty( $group['section'] ) ) {
+			$schema['home']['groups'][ $gi ]['fields'][] = array( 'id' => 'sd_' . $group['section'], 'type' => 'design', 'label' => 'Bölüm tasarımı' );
+		}
+	}
+	$schema['hero']['groups'][0]['fields'][] = array( 'id' => 'sd_hero', 'type' => 'design', 'label' => 'Bölüm tasarımı' );
+
+	$schema['appearance']['groups'][] = array(
+		'title'  => 'Gelişmiş: özel CSS',
+		'desc'   => 'İleri düzey kullanıcılar için. Buraya yazılan CSS tüm sitede, tema stillerinden sonra yüklenir.',
+		'fields' => array(
+			array( 'id' => 'custom_css', 'type' => 'lines', 'label' => 'Özel CSS', 'rows' => 8 ),
+		),
+	);
+	$schema['admin']['groups'][0]['fields'][] = array( 'id' => 'admin_skin', 'type' => 'toggle', 'label' => 'Yönetim ekranında Derin Flowers görünümü (koyu menü)', 'default' => 1, 'half' => true );
+	$schema['admin']['groups'][0]['fields'][] = array( 'id' => 'admin_fab', 'type' => 'toggle', 'label' => 'Sitede yöneticiye "Tasarım Stüdyosu" düğmesi göster', 'default' => 1, 'half' => true );
+
 	return apply_filters( 'df_options_schema', $schema );
 }

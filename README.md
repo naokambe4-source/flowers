@@ -42,6 +42,17 @@ Araçlar sayfasında ayarları **JSON dışa/içe aktarma** ve sıfırlama da va
 - **Üyelik**: sekmeli Giriş / Üye Ol, ad-soyad-telefon-KVKK alanları, Hesabım kısayol kartları.
 - **Favoriler** (üye + ziyaretçi), canlı ürün araması, mini sepet çekmecesi, ürün kategorisine ikon + kapak görseli, menü öğelerine ikon seçimi, bülten aboneleri + CSV.
 
+## v1.2 — Tasarım Stüdyosu ve yeni yönetim görünümü
+
+- **Tasarım Stüdyosu** (menüde *Tasarım Stüdyosu*, sitede sol alttaki **✎ Düzenle** düğmesi ya da üst çubuk): solda koyu ayar paneli, sağda sitenin canlı önizlemesi.
+  - Önizlemede yazılara tıklayıp yazın, **Görseli değiştir** ile medya kütüphanesinden seçin.
+  - **Bölümler** sekmesi: sürükle-bırak sıralama, aç/kapat, her bölüm için **Düzenle** (içerik + *Bölüm tasarımı*: zemin/yazı rengi, üst/alt boşluk, başlık hizası ve boyutu, mobilde/masaüstünde gizle).
+  - **Site** sekmesi: header, footer, renkler, yazı tipleri, ürün sayfası, teslimat, Hakkımızda/İletişim dahil tüm tema ayarları; özel CSS.
+  - Masaüstü / tablet / mobil önizleme, geri al / ileri al (Ctrl+Z / Ctrl+Y), sayfa seçici (ana sayfa, Hakkımızda, İletişim, mağaza, kategori, ürün, sepet, hesap…).
+  - Değişiklikler önce **taslak** olarak kaydedilir; ziyaretçiler görmez. **Yayınla** ile canlıya alınır (LiteSpeed / WP Rocket önbelleği temizlenir), **Vazgeç** ile silinir.
+- **Yönetim görünümü:** tüm WordPress yönetimi koyu menü + marka başlığıyla Derin Flowers görünümünde (Yönetim & Giriş sekmesinden kapatılabilir).
+- Sayfalar listesinde **Tasarım Stüdyosu'nda aç** bağlantısı.
+
 ## v1.1 — Yönetim Paneli, Canlı Düzenleyici, yeni ana sayfa bölümleri
 
 - **Yönetim Paneli** (WordPress menüsünde en üstte; girişten sonra otomatik açılır): yeni / hazırlanıyor / kuryede / bugün teslim edilen sipariş kartları, son siparişler (teslimat bölgesi, tarih-saat, yazdırma durumu), hızlı işlemler, son 7 gün ciro grafiği (+ tablo görünümü), son 30 günün en çok satanları, sistem durumu, SEO & indeksleme kontrolleri, bildirimler.

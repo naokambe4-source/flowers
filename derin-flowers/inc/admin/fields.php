@@ -33,6 +33,10 @@ function df_render_field( $field, $value, $name, $uid ) {
 		df_render_repeater_field( $field, $value, $name, $uid );
 		return;
 	}
+	if ( 'design' === $type ) {
+		df_render_design_field( $field, $value, $name, $uid );
+		return;
+	}
 	echo '<div class="df-field df-field--' . esc_attr( $type ) . esc_attr( $width ) . '">';
 	if ( 'toggle' !== $type && $label ) {
 		echo '<label class="df-field__label" for="' . esc_attr( $uid ) . '">' . esc_html( $label ) . '</label>';
@@ -393,6 +397,28 @@ function df_sanitize_field( $field, $raw ) {
 				);
 			}
 			return $out ? $out : df_default_sections();
+		case 'design':
+			$raw   = is_array( $raw ) ? $raw : array();
+			$opts  = df_design_choices();
+			$clean = array();
+			foreach ( array( 'bg', 'color' ) as $k ) {
+				$c = isset( $raw[ $k ] ) ? sanitize_hex_color( (string) $raw[ $k ] ) : '';
+				if ( $c ) {
+					$clean[ $k ] = $c;
+				}
+			}
+			foreach ( array( 'pt', 'pb', 'align', 'title' ) as $k ) {
+				$v = isset( $raw[ $k ] ) ? (string) $raw[ $k ] : '';
+				if ( '' !== $v && isset( $opts[ $k ][ $v ] ) ) {
+					$clean[ $k ] = $v;
+				}
+			}
+			foreach ( array( 'hide_m', 'hide_d' ) as $k ) {
+				if ( ! empty( $raw[ $k ] ) ) {
+					$clean[ $k ] = 1;
+				}
+			}
+			return $clean;
 		case 'repeater':
 			$out = array();
 			foreach ( (array) $raw as $row ) {
@@ -437,4 +463,80 @@ function df_sanitize_options( $input ) {
 		}
 	}
 	return $out;
+}
+
+/**
+ * Bölüm tasarımı seçenekleri.
+ *
+ * @return array
+ */
+function df_design_choices() {
+	$space = array(
+		''     => 'Varsayılan',
+		'none' => 'Yok',
+		's'    => 'Az',
+		'm'    => 'Orta',
+		'l'    => 'Geniş',
+		'xl'   => 'Çok geniş',
+	);
+	$title = array( '' => 'Varsayılan' );
+	foreach ( array( 24, 28, 32, 36, 40, 46, 52, 60, 72 ) as $px ) {
+		$title[ (string) $px ] = $px . ' px';
+	}
+	return array(
+		'pt'    => $space,
+		'pb'    => $space,
+		'align' => array(
+			''       => 'Varsayılan',
+			'left'   => 'Sola',
+			'center' => 'Ortaya',
+			'right'  => 'Sağa',
+		),
+		'title' => $title,
+	);
+}
+
+/**
+ * Bölüm tasarımı alanı.
+ *
+ * @param array  $field Alan.
+ * @param mixed  $value Değer.
+ * @param string $name  Ad.
+ * @param string $uid   Id.
+ */
+function df_render_design_field( $field, $value, $name, $uid ) {
+	$v      = is_array( $value ) ? $value : array();
+	$opts   = df_design_choices();
+	$labels = array(
+		'pt'    => 'Üst boşluk',
+		'pb'    => 'Alt boşluk',
+		'align' => 'Başlık hizası',
+		'title' => 'Başlık boyutu',
+	);
+	echo '<div class="df-field df-field--design"><div class="df-field__label">' . esc_html( $field['label'] ) . '</div><div class="df-design">';
+	foreach ( array( 'bg' => 'Zemin rengi', 'color' => 'Yazı rengi' ) as $k => $l ) {
+		printf(
+			'<div class="df-design__cell"><label for="%1$s">%4$s</label><input type="text" class="df-color" id="%1$s" name="%2$s" value="%3$s" data-default-color=""></div>',
+			esc_attr( $uid . '_' . $k ),
+			esc_attr( $name . '[' . $k . ']' ),
+			esc_attr( isset( $v[ $k ] ) ? $v[ $k ] : '' ),
+			esc_html( $l )
+		);
+	}
+	foreach ( $labels as $k => $l ) {
+		echo '<div class="df-design__cell"><label for="' . esc_attr( $uid . '_' . $k ) . '">' . esc_html( $l ) . '</label><select class="df-input" id="' . esc_attr( $uid . '_' . $k ) . '" name="' . esc_attr( $name . '[' . $k . ']' ) . '">';
+		foreach ( $opts[ $k ] as $ok => $ol ) {
+			printf( '<option value="%s" %s>%s</option>', esc_attr( $ok ), selected( isset( $v[ $k ] ) ? (string) $v[ $k ] : '', (string) $ok, false ), esc_html( $ol ) );
+		}
+		echo '</select></div>';
+	}
+	foreach ( array( 'hide_m' => 'Mobilde gizle', 'hide_d' => 'Masaüstünde gizle' ) as $k => $l ) {
+		printf(
+			'<div class="df-design__cell df-design__cell--check"><label><input type="checkbox" name="%1$s" value="1" %2$s> %3$s</label></div>',
+			esc_attr( $name . '[' . $k . ']' ),
+			checked( ! empty( $v[ $k ] ), true, false ),
+			esc_html( $l )
+		);
+	}
+	echo '</div></div>';
 }

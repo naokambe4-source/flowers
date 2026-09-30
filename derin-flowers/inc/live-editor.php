@@ -19,33 +19,69 @@ function df_live_supported_page() {
 }
 
 /**
+ * Tasarım Stüdyosu bağlantısı.
+ *
+ * @param string $url Açılacak sayfa.
+ * @return string
+ */
+function df_studio_url( $url = '' ) {
+	$link = admin_url( 'admin.php?page=df-studio' );
+	return $url ? $link . '&url=' . rawurlencode( $url ) : $link;
+}
+
+/**
+ * Şu anki ön yüz adresi.
+ *
+ * @return string
+ */
+function df_current_url() {
+	$uri = isset( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '/';
+	return remove_query_arg( array( 'df_live', 'df_preview' ), home_url( $uri ) );
+}
+
+/**
  * Admin çubuğu düğmesi.
  *
  * @param WP_Admin_Bar $bar Çubuk.
  */
 function df_live_admin_bar( $bar ) {
-	if ( is_admin() || ! current_user_can( 'edit_theme_options' ) || ! df_live_supported_page() ) {
-		return;
-	}
-	if ( df_live() ) {
-		$bar->add_node(
-			array(
-				'id'    => 'df-live',
-				'title' => '✕ Canlı düzenlemeden çık',
-				'href'  => remove_query_arg( 'df_live' ),
-			)
-		);
+	if ( is_admin() || ! current_user_can( 'edit_theme_options' ) ) {
 		return;
 	}
 	$bar->add_node(
 		array(
 			'id'    => 'df-live',
-			'title' => '<span style="color:#f3c9b8">✎ Canlı Düzenle</span>',
-			'href'  => add_query_arg( 'df_live', '1' ),
+			'title' => '<span style="color:#f3c9b8">✎ Tasarım Stüdyosu</span>',
+			'href'  => df_studio_url( df_current_url() ),
 		)
 	);
 }
 add_action( 'admin_bar_menu', 'df_live_admin_bar', 70 );
+
+/**
+ * Önizleme penceresinde admin çubuğu gösterilmez.
+ *
+ * @param bool $show Göster.
+ * @return bool
+ */
+function df_live_hide_admin_bar( $show ) {
+	return df_preview_requested() ? false : $show;
+}
+add_filter( 'show_admin_bar', 'df_live_hide_admin_bar', 99 );
+
+/**
+ * Admin çubuğu kapalı olsa da yöneticiye sitede küçük bir "Tasarım Stüdyosu" düğmesi.
+ */
+function df_live_fab() {
+	if ( df_live() || ! df_opt( 'admin_fab', 1 ) || ! current_user_can( 'edit_theme_options' ) ) {
+		return;
+	}
+	printf(
+		'<a class="df-studio-fab" href="%s" title="Bu sayfayı Tasarım Stüdyosu\'nda düzenle"><span aria-hidden="true">✎</span> Düzenle</a><style>.df-studio-fab{position:fixed;left:16px;bottom:16px;z-index:9990;display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 18px;border-radius:999px;background:#2B2522;color:#fff!important;font:600 13px/1 system-ui,-apple-system,sans-serif;text-decoration:none;box-shadow:0 10px 30px rgba(0,0,0,.25);opacity:.92}.df-studio-fab:hover{background:#8E5E52;opacity:1}.df-studio-fab span{font-size:16px}@media print{.df-studio-fab{display:none}}</style>',
+		esc_url( df_studio_url( df_current_url() ) )
+	);
+}
+add_action( 'wp_footer', 'df_live_fab', 50 );
 
 /**
  * Canlı modda önbelleği kapat.
@@ -67,10 +103,9 @@ add_action( 'template_redirect', 'df_live_nocache', 1 );
  * Canlı mod varlıkları.
  */
 function df_live_assets() {
-	if ( ! df_live() || ! df_live_supported_page() ) {
+	if ( ! df_live() ) {
 		return;
 	}
-	wp_enqueue_media();
 	wp_enqueue_style( 'df-live', DF_URI . '/assets/css/live-editor.css', array( 'df-main' ), DF_VERSION );
 	wp_enqueue_script( 'df-live', DF_URI . '/assets/js/live-editor.js', array( 'jquery' ), DF_VERSION, true );
 	$labels = df_home_section_labels();
@@ -89,6 +124,8 @@ function df_live_assets() {
 			'panelUrl' => admin_url( 'admin.php?page=derin-flowers' ),
 			'exitUrl'  => remove_query_arg( 'df_live' ),
 			'isHome'   => is_front_page(),
+			'studio'   => df_studio_url( df_current_url() ),
+			'origin'   => untrailingslashit( home_url() ),
 		)
 	);
 }

@@ -24,7 +24,7 @@ if ( ! $images && ! current_user_can( 'edit_theme_options' ) ) {
 }
 $url = df_opt( 'ig_url' );
 ?>
-<section class="df-section df-insta" aria-labelledby="df-ig-title">
+<section data-df-sec="instagram" class="df-section df-insta" aria-labelledby="df-ig-title">
 	<div class="df-container">
 		<header class="df-head df-head--center">
 			<div class="df-head__text">

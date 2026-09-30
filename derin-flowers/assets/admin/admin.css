@@ -124,3 +124,11 @@
 	.df-tools__grid { grid-template-columns: 1fr; }
 	.df-meta-grid { grid-template-columns: 1fr; }
 }
+
+/* Bölüm tasarımı alanı */
+.df-field--design { flex: 1 1 100%; }
+.df-design { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px 16px; padding: 14px; background: #faf7f2; border: 1px solid #ece4dd; border-radius: 8px; }
+.df-design__cell label { display: block; margin-bottom: 4px; font-size: 12px; color: #6b5f59; }
+.df-design__cell .df-input { width: 100%; }
+.df-design__cell--check { align-self: end; }
+.df-design__cell--check label { display: flex; gap: 6px; align-items: center; font-size: 13px; color: #2b2522; }

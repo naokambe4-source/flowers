@@ -15,7 +15,7 @@ if ( ! $desk && ! $title ) {
 }
 $vars = $desk ? '--df-ed-d:url(' . esc_url( $desk ) . ');--df-ed-m:url(' . esc_url( $mob ) . ');' : '';
 ?>
-<section class="df-editorial df-editorial--<?php echo esc_attr( df_opt( 'ed_align', 'left' ) ); ?> df-editorial--<?php echo esc_attr( df_opt( 'ed_theme', 'dark' ) ); ?><?php echo $desk ? '' : ' is-empty'; ?>" style="<?php echo esc_attr( $vars ); ?>" aria-labelledby="df-ed-title">
+<section data-df-sec="editorial" class="df-editorial df-editorial--<?php echo esc_attr( df_opt( 'ed_align', 'left' ) ); ?> df-editorial--<?php echo esc_attr( df_opt( 'ed_theme', 'dark' ) ); ?><?php echo $desk ? '' : ' is-empty'; ?>" style="<?php echo esc_attr( $vars ); ?>" aria-labelledby="df-ed-title">
 	<div class="df-editorial__bg" aria-hidden="true"<?php echo df_i( 'ed_image' ); // phpcs:ignore ?>>
 		<?php if ( ! $desk ) : ?>
 			<?php echo df_placeholder( 'Editorial banner görseli (2400×1100)' ); // phpcs:ignore ?>

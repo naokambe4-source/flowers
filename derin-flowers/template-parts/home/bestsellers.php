@@ -25,7 +25,7 @@ if ( ! $products ) {
 	return;
 }
 ?>
-<section class="df-section df-bestsellers" aria-labelledby="df-best-title">
+<section data-df-sec="bestsellers" class="df-section df-bestsellers" aria-labelledby="df-best-title">
 	<div class="df-container">
 		<?php
 		df_section_head(

@@ -1,0 +1,129 @@
+/* Derin Flowers — Tasarım Stüdyosu */
+body.df-studio-screen #wpadminbar,
+body.df-studio-screen #adminmenumain,
+body.df-studio-screen #wpfooter,
+body.df-studio-screen #screen-meta-links,
+body.df-studio-screen .notice,
+body.df-studio-screen .update-nag { display: none !important; }
+html.wp-toolbar:has(body.df-studio-screen) { padding-top: 0; }
+body.df-studio-screen { overflow: hidden; background: #ECE7E2; }
+body.df-studio-screen #wpcontent,
+body.df-studio-screen #wpbody-content { margin: 0 !important; padding: 0 !important; }
+
+.dfs {
+	--ink: #F4EEE9; --muted: #A99E97; --line: rgba(255, 255, 255, .09);
+	--side: #1E1A18; --side2: #27221F; --side3: #312A26; --accent: #B8664F; --accent2: #CF7C64;
+	position: fixed; inset: 0; z-index: 9990; display: flex; flex-direction: column;
+	font: 13px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: #2B2522;
+}
+
+/* Üst çubuk */
+.dfs-top { flex: none; display: flex; align-items: center; gap: 14px; height: 58px; padding: 0 14px 0 0; background: var(--side); color: var(--ink); border-bottom: 1px solid var(--line); }
+.dfs-brand { display: flex; align-items: center; gap: 10px; width: 366px; flex: none; height: 100%; padding: 0 18px; color: var(--ink); text-decoration: none; border-right: 1px solid var(--line); box-sizing: border-box; }
+.dfs-brand:hover, .dfs-brand:focus { color: #fff; box-shadow: none; }
+.dfs-brand__logo { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: var(--accent); color: #fff; }
+.dfs-brand strong { display: block; font-size: 14px; letter-spacing: .02em; }
+.dfs-brand small { display: block; color: var(--muted); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
+.dfs-page { display: flex; align-items: center; gap: 6px; padding: 0 4px 0 10px; height: 36px; border-radius: 9px; background: var(--side3); color: var(--muted); }
+.dfs-page select { min-width: 210px; max-width: 280px; height: 34px; border: 0; background: transparent; color: var(--ink); box-shadow: none; font-size: 13px; }
+.dfs-page select option { color: #2B2522; }
+.dfs-devices, .dfs-history { display: flex; gap: 2px; padding: 3px; border-radius: 9px; background: var(--side3); }
+.dfs-devices button, .dfs-history button { display: grid; place-items: center; width: 34px; height: 30px; border: 0; border-radius: 7px; background: transparent; color: var(--muted); cursor: pointer; }
+.dfs-devices button:hover, .dfs-history button:hover:not(:disabled) { color: #fff; background: rgba(255, 255, 255, .08); }
+.dfs-devices button.is-active { background: var(--accent); color: #fff; }
+.dfs-history button:disabled { opacity: .35; cursor: default; }
+.dfs-status { flex: 1; min-width: 0; color: var(--muted); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dfs-status::before { content: ""; display: inline-block; width: 8px; height: 8px; margin-right: 7px; border-radius: 50%; background: #6d625c; vertical-align: 0; }
+.dfs-status.is-busy::before { background: #E3B34C; }
+.dfs-status.is-draft::before { background: var(--accent2); }
+.dfs-status.is-ok::before { background: #6FAE7A; }
+.dfs-status.is-err { color: #F2A89A; }
+.dfs-status.is-err::before { background: #E0604A; }
+.dfs-actions { display: flex; align-items: center; gap: 8px; }
+.dfs-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 38px; padding: 0 20px; border: 0; border-radius: 9px; background: var(--accent); color: #fff; font-weight: 600; font-size: 13px; cursor: pointer; text-decoration: none; }
+.dfs-btn:hover, .dfs-btn:focus { background: var(--accent2); color: #fff; }
+.dfs-btn:disabled { background: #3B6E47; opacity: 1; cursor: default; }
+.dfs-btn--ghost { background: var(--side3); color: var(--ink); padding: 0 14px; }
+.dfs-btn--ghost:hover, .dfs-btn--ghost:focus { background: #3d3530; color: #fff; }
+.dfs-btn--icon { width: 38px; padding: 0; background: transparent; color: var(--muted); }
+.dfs-btn--icon:hover { background: var(--side3); }
+
+/* Gövde */
+.dfs-body { flex: 1; min-height: 0; display: flex; }
+.dfs-side { flex: none; width: 366px; display: flex; flex-direction: column; background: var(--side); color: var(--ink); border-right: 1px solid var(--line); }
+.dfs-side.df-panel { --ink: #F4EEE9; --a: #B8664F; --line: rgba(255, 255, 255, .09); max-width: none; margin: 0; }
+.dfs-side .dfs-group { --ink: #2B2522; --line: #E6DDD5; }
+.dfs .df-sections .ui-sortable-placeholder { background: rgba(184, 102, 79, .12); border-radius: 10px; }
+.dfs-tabs { flex: none; display: flex; padding: 8px 10px 0; gap: 4px; border-bottom: 1px solid var(--line); background: var(--side); }
+.dfs-tabs button { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 8px 0 10px; border: 0; border-bottom: 2px solid transparent; background: transparent; color: var(--muted); font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; cursor: pointer; }
+.dfs-tabs button:hover { color: #fff; }
+.dfs-tabs button.is-active { color: #fff; border-bottom-color: var(--accent); }
+#dfs-form { flex: 1; min-height: 0; display: flex; }
+.dfs-view { display: none; flex: 1; overflow-y: auto; padding: 16px 16px 60px; scrollbar-width: thin; scrollbar-color: #4a403b transparent; }
+.dfs-view.is-active { display: block; }
+.dfs-help { margin: 0 0 14px; padding: 12px 14px; border-radius: 10px; background: var(--side2); color: var(--muted); font-size: 12.5px; line-height: 1.55; }
+.dfs-help strong { color: var(--ink); }
+
+/* Bölüm listesi (koyu) */
+.dfs .df-sections { margin: 0; padding: 0; list-style: none; }
+.dfs .df-sections__item { display: flex; align-items: center; gap: 8px; margin: 0 0 6px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--side2); color: var(--ink); }
+.dfs .df-sections__item:hover { border-color: rgba(184, 102, 79, .6); }
+.dfs .df-sections__item.is-off { opacity: .55; }
+.dfs .df-sections__handle { color: var(--muted); cursor: grab; }
+.dfs .df-sections__num { color: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+.dfs .df-sections__label { flex: 1; min-width: 0; font-weight: 600; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dfs .df-sections__item .df-switch__label { display: none; }
+.dfs .df-sections__edit { padding: 4px 10px; border-radius: 6px; background: var(--accent); color: #fff; font-size: 11.5px; font-weight: 600; text-decoration: none; }
+.dfs .df-sections__edit:hover { background: var(--accent2); color: #fff; }
+.dfs .ui-sortable-helper { box-shadow: 0 12px 30px rgba(0, 0, 0, .4); }
+.dfs-shortcuts { margin-top: 22px; }
+.dfs-shortcuts h3, .dfs-nav h3 { display: flex; align-items: center; gap: 8px; margin: 0 0 8px; color: var(--muted); font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.dfs-shortcuts button, .dfs-nav button, .dfs-nav a { display: flex; justify-content: space-between; align-items: center; width: 100%; margin: 0 0 4px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 9px; background: var(--side2); color: var(--ink); font-size: 13px; text-align: left; text-decoration: none; cursor: pointer; }
+.dfs-shortcuts button:hover, .dfs-nav button:hover, .dfs-nav a:hover { border-color: var(--accent); color: #fff; }
+.dfs-nav { margin-bottom: 20px; }
+.dfs-nav .dashicons { font-size: 16px; width: 16px; height: 16px; color: var(--muted); }
+
+/* Düzenle görünümü: alanlar açık zeminde okunaklı */
+.dfs-edit-head { position: sticky; top: -16px; z-index: 5; display: flex; align-items: center; gap: 8px; margin: -16px -16px 14px; padding: 12px 16px; background: var(--side); border-bottom: 1px solid var(--line); }
+.dfs-edit-head h2 { margin: 0; color: #fff; font-size: 15px; font-weight: 600; }
+.dfs-back { display: grid; place-items: center; width: 32px; height: 32px; border: 0; border-radius: 8px; background: var(--side3); color: var(--ink); cursor: pointer; }
+.dfs-back:hover { background: var(--accent); }
+.dfs-group { margin: 0 0 12px; padding: 14px; border-radius: 12px; background: #FBF8F5; color: #2B2522; }
+.dfs-group + .dfs-group { margin-top: 12px; }
+.dfs-group .df-group__desc { margin: 0 0 12px; color: #7A6E68; font-size: 12px; }
+.dfs-group .df-fields { gap: 0 12px; }
+.dfs-group .df-field--half, .dfs-group .df-field--third, .dfs-group .df-field--quarter { flex: 1 1 calc(50% - 12px); }
+.dfs-group .df-field__label { font-size: 12px; }
+.dfs-group .df-input { font-size: 13px; }
+.dfs-group .df-field.is-target { margin-left: -8px; margin-right: -8px; padding: 8px; border-radius: 8px; background: #F5E4DD; box-shadow: inset 3px 0 0 var(--accent); transition: background .3s; }
+.dfs-group .df-design { grid-template-columns: 1fr 1fr; padding: 10px; }
+.dfs-group .df-repeater__item { border-radius: 8px; }
+.dfs-group .wp-picker-container .wp-color-result.button { min-height: 28px; }
+.dfs-group .df-media__preview { max-height: 150px; }
+.dfs-group [hidden] { display: none !important; }
+
+/* Sahne */
+.dfs-stage { flex: 1; min-width: 0; position: relative; overflow: auto; background: #E4DED8; background-image: radial-gradient(#d7cfc8 1px, transparent 1px); background-size: 18px 18px; }
+.dfs-frame-wrap { position: relative; height: 100%; margin: 0 auto; background: #fff; transition: width .3s ease, margin .3s ease, height .3s ease; }
+.dfs-frame-wrap[data-device="desktop"] { width: 100%; }
+.dfs-frame-wrap[data-device="tablet"] { width: 820px; max-width: calc(100% - 40px); height: calc(100% - 40px); margin: 20px auto; border-radius: 18px; overflow: hidden; box-shadow: 0 25px 60px rgba(43, 37, 34, .25), 0 0 0 10px #2B2522; }
+.dfs-frame-wrap[data-device="mobile"] { width: 390px; height: calc(100% - 40px); max-height: 860px; margin: 20px auto; border-radius: 34px; overflow: hidden; box-shadow: 0 25px 60px rgba(43, 37, 34, .3), 0 0 0 10px #2B2522; }
+#dfs-frame { display: block; width: 100%; height: 100%; border: 0; background: #fff; }
+.dfs-loading { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; gap: 10px; background: rgba(255, 255, 255, .72); color: #6b5f59; font-weight: 600; backdrop-filter: blur(2px); }
+.dfs-loading.is-on { display: flex; }
+.dfs-loading span { width: 18px; height: 18px; border: 2px solid #d9cfc8; border-top-color: #B8664F; border-radius: 50%; animation: dfsSpin .8s linear infinite; }
+@keyframes dfsSpin { to { transform: rotate(360deg); } }
+
+@media (max-width: 1100px) {
+	.dfs-brand, .dfs-side { width: 320px; }
+	.dfs-brand small, .dfs-devices { display: none; }
+	.dfs-page select { min-width: 140px; }
+}
+@media (max-width: 782px) {
+	.dfs-top { flex-wrap: wrap; height: auto; padding: 8px; gap: 8px; }
+	.dfs-brand { width: auto; border: 0; padding: 0 8px; }
+	.dfs-status { order: 9; flex-basis: 100%; }
+	.dfs-body { flex-direction: column-reverse; }
+	.dfs-side { width: 100%; height: 50%; }
+	.dfs-stage { height: 50%; flex: none; }
+}

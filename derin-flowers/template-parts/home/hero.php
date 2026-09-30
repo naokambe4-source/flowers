@@ -16,7 +16,7 @@ $count    = count( $slides );
 $height   = df_opt( 'hero_height', 'tall' );
 $autoplay = df_opt( 'hero_autoplay' ) && $count > 1;
 ?>
-<section class="df-hero df-hero--<?php echo esc_attr( $height ); ?><?php echo $count > 1 ? ' is-slider' : ''; ?>"
+<section data-df-sec="hero" class="df-hero df-hero--<?php echo esc_attr( $height ); ?><?php echo $count > 1 ? ' is-slider' : ''; ?>"
 	data-df-hero
 	data-autoplay="<?php echo $autoplay ? '1' : '0'; ?>"
 	data-interval="<?php echo esc_attr( max( 3, (int) df_opt( 'hero_interval', 7 ) ) * 1000 ); ?>"

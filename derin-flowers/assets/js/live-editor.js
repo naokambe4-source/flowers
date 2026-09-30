@@ -1,42 +1,48 @@
-/* Derin Flowers — Canlı Düzenleyici */
-( function ( $ ) {
+/* Derin Flowers — Tasarım Stüdyosu önizleme penceresi (iframe içinde çalışır) */
+( function () {
 	'use strict';
 
 	var L = window.DFLive;
 	if ( ! L ) {
 		return;
 	}
-	var changes = {};
-	var sectionsDirty = false;
+	// Stüdyo dışında açıldıysa (eski ?df_live=1 bağlantısı) stüdyoya yönlendir.
+	if ( window.parent === window ) {
+		window.location.replace( L.studio );
+		return;
+	}
+
 	var body = document.body;
 	body.classList.add( 'df-live-on' );
 
-	/* ---------- Alt araç çubuğu ---------- */
-	var bar = document.createElement( 'div' );
-	bar.className = 'df-live-bar';
-	bar.innerHTML =
-		'<div class="df-live-bar__info"><strong>Canlı Düzenleme</strong><span data-count>Yazılara tıklayıp düzenleyin, görsellerin üzerindeki düğmeyle değiştirin.</span></div>' +
-		'<div class="df-live-bar__actions">' +
-		'<a class="df-live-btn df-live-btn--ghost" href="' + L.panelUrl + '" target="_blank" rel="noopener">Tüm ayarlar</a>' +
-		'<button type="button" class="df-live-btn df-live-btn--ghost" data-live-cancel>Vazgeç</button>' +
-		'<button type="button" class="df-live-btn" data-live-save disabled>Kaydet</button>' +
-		'</div>';
-	body.appendChild( bar );
-	var saveBtn = bar.querySelector( '[data-live-save]' );
-	var countEl = bar.querySelector( '[data-count]' );
-
-	function dirtyCount() {
-		return Object.keys( changes ).length + ( sectionsDirty ? 1 : 0 );
+	function send( msg ) {
+		msg.df = msg.df || 'x';
+		window.parent.postMessage( msg, window.location.origin );
 	}
-	function refresh() {
-		var n = dirtyCount();
-		saveBtn.disabled = ! n;
-		countEl.textContent = n ? n + ' değişiklik kaydedilmeyi bekliyor.' : 'Yazılara tıklayıp düzenleyin, görsellerin üzerindeki düğmeyle değiştirin.';
+
+	function withParams( url ) {
+		try {
+			var u = new URL( url, window.location.href );
+			u.searchParams.set( 'df_live', '1' );
+			u.searchParams.set( 'df_preview', '1' );
+			return u.toString();
+		} catch ( e ) {
+			return url;
+		}
 	}
 
 	/* ---------- Yazı alanları ---------- */
-	var editables = document.querySelectorAll( '[data-df-edit]' );
-	Array.prototype.forEach.call( editables, function ( el ) {
+	function textOf( el ) {
+		var multi = /^(textarea|lines)$/.test( el.getAttribute( 'data-df-type' ) );
+		var val = el.innerText.replace( / /g, ' ' );
+		if ( ! multi ) {
+			val = val.replace( /\s*\n\s*/g, ' ' );
+		}
+		return val.replace( /\n$/, '' );
+	}
+
+	Array.prototype.forEach.call( document.querySelectorAll( '[data-df-edit]' ), function ( el ) {
+		var key = el.getAttribute( 'data-df-edit' );
 		var multi = /^(textarea|lines)$/.test( el.getAttribute( 'data-df-type' ) );
 		try {
 			el.setAttribute( 'contenteditable', 'plaintext-only' );
@@ -47,13 +53,10 @@
 			el.setAttribute( 'contenteditable', 'true' );
 		}
 		el.setAttribute( 'spellcheck', 'true' );
-		el.setAttribute( 'title', multi ? 'Düzenlemek için tıklayın (Enter: yeni satır)' : 'Düzenlemek için tıklayın' );
+		el.setAttribute( 'title', multi ? 'Yazmak için tıklayın (Enter: yeni satır)' : 'Yazmak için tıklayın' );
 		el.addEventListener( 'keydown', function ( e ) {
-			if ( 'Enter' === e.key && ! multi ) {
+			if ( ( 'Enter' === e.key && ! multi ) || 'Escape' === e.key ) {
 				e.preventDefault();
-				el.blur();
-			}
-			if ( 'Escape' === e.key ) {
 				el.blur();
 			}
 		} );
@@ -65,40 +68,26 @@
 			}
 			document.execCommand( 'insertText', false, text );
 		} );
+		el.addEventListener( 'focus', function () {
+			send( { df: 'focus', key: key } );
+		} );
 		el.addEventListener( 'input', function () {
-			var val = el.innerText.replace( / /g, ' ' );
-			if ( ! multi ) {
-				val = val.replace( /\s*\n\s*/g, ' ' );
-			}
-			changes[ el.getAttribute( 'data-df-edit' ) ] = val.replace( /\n$/, '' );
-			// Aynı alanı gösteren diğer öğeleri eşitle.
-			Array.prototype.forEach.call( document.querySelectorAll( '[data-df-edit="' + el.getAttribute( 'data-df-edit' ) + '"]' ), function ( o ) {
+			var val = textOf( el );
+			Array.prototype.forEach.call( document.querySelectorAll( '[data-df-edit="' + key + '"]' ), function ( o ) {
 				if ( o !== el ) {
 					o.innerText = el.innerText;
 				}
 			} );
-			refresh();
+			send( { df: 'edit', key: key, value: val } );
 		} );
 	} );
-
-	/* ---------- Bağlantılar düzenleme sırasında çalışmasın ---------- */
-	document.addEventListener( 'click', function ( e ) {
-		var a = e.target.closest( 'a' );
-		if ( ! a || e.target.closest( '.df-live-bar, .df-live-tools, #wpadminbar, .df-drawer, .df-search' ) ) {
-			return;
-		}
-		if ( a.closest( 'main' ) ) {
-			e.preventDefault();
-		}
-	}, true );
 
 	/* ---------- Görseller ---------- */
 	Array.prototype.forEach.call( document.querySelectorAll( '[data-df-img]' ), function ( el ) {
 		var btn = document.createElement( 'button' );
 		btn.type = 'button';
 		btn.className = 'df-live-imgbtn';
-		btn.textContent = 'Görseli değiştir';
-		// Arka plan katmanları metnin altında kalır; düğme üst kapsayıcıya eklenir.
+		btn.innerHTML = '<span aria-hidden="true">🖼</span> Görseli değiştir';
 		var host = el.closest( '.df-hero__slide' ) || ( el.classList.contains( 'df-editorial__bg' ) ? el.closest( '.df-editorial' ) : null ) || el;
 		if ( host !== el ) {
 			btn.classList.add( 'df-live-imgbtn--bg' );
@@ -110,134 +99,113 @@
 		btn.addEventListener( 'click', function ( e ) {
 			e.preventDefault();
 			e.stopPropagation();
-			var frame = wp.media( { title: 'Görsel seç', library: { type: 'image' }, multiple: false, button: { text: 'Bu görseli kullan' } } );
-			frame.on( 'select', function () {
-				var at = frame.state().get( 'selection' ).first().toJSON();
-				var url = at.sizes && at.sizes.large ? at.sizes.large.url : at.url;
-				changes[ el.getAttribute( 'data-df-img' ) ] = String( at.id );
-				var img = el.querySelector( 'img' );
-				var ph = el.querySelector( '.df-ph' );
-				if ( img ) {
-					img.removeAttribute( 'srcset' );
-					img.removeAttribute( 'sizes' );
-					img.src = url;
-				} else if ( ph ) {
-					var ni = document.createElement( 'img' );
-					ni.src = url;
-					ni.alt = '';
-					ph.replaceWith( ni );
-				} else {
-					el.style.backgroundImage = 'url("' + url + '")';
-				}
-				// Hero / banner arka planları CSS değişkeniyle çizilir.
-				var slide = el.closest( '.df-hero__slide' );
-				if ( slide ) {
-					slide.style.setProperty( '--df-hero-d', 'url("' + url + '")' );
-					slide.style.setProperty( '--df-hero-m', 'url("' + url + '")' );
-					var p = slide.querySelector( '.df-ph' );
-					if ( p ) {
-						p.remove();
-					}
-				}
-				var ed = el.closest( '.df-editorial' );
-				if ( ed ) {
-					ed.style.setProperty( '--df-ed-d', 'url("' + url + '")' );
-					ed.style.setProperty( '--df-ed-m', 'url("' + url + '")' );
-					var q = ed.querySelector( '.df-ph' );
-					if ( q ) {
-						q.remove();
-					}
-				}
-				refresh();
-			} );
-			frame.open();
+			send( { df: 'image', key: el.getAttribute( 'data-df-img' ) } );
 		} );
 	} );
 
-	/* ---------- Bölümler: sırala / gizle ---------- */
-	var sections = Array.prototype.slice.call( document.querySelectorAll( '[data-df-section]' ) );
-	sections.forEach( function ( sec ) {
+	/* ---------- Bölüm araçları ---------- */
+	Array.prototype.forEach.call( document.querySelectorAll( '[data-df-section]' ), function ( sec ) {
 		var id = sec.getAttribute( 'data-df-section' );
 		var tools = document.createElement( 'div' );
 		tools.className = 'df-live-tools';
 		tools.innerHTML =
 			'<span class="df-live-tools__name">' + ( L.labels[ id ] || id ) + '</span>' +
+			'<button type="button" data-act="edit" title="İçerik ve tasarım">✎ Düzenle</button>' +
 			'<button type="button" data-act="up" title="Yukarı taşı">▲</button>' +
 			'<button type="button" data-act="down" title="Aşağı taşı">▼</button>' +
-			'<button type="button" data-act="toggle" title="Göster / gizle"></button>' +
-			'<a href="' + ( L.panel[ id ] || L.panelUrl ) + '" target="_blank" rel="noopener" title="Bu bölümün tüm ayarları">Ayarlar</a>';
+			'<button type="button" data-act="toggle">' + ( '1' === sec.getAttribute( 'data-df-on' ) ? 'Gizle' : 'Göster' ) + '</button>';
 		sec.insertBefore( tools, sec.firstChild );
-		paintToggle( sec );
 		tools.addEventListener( 'click', function ( e ) {
 			var b = e.target.closest( 'button' );
-			if ( ! b ) {
-				return;
+			if ( b ) {
+				e.preventDefault();
+				send( { df: 'section', id: id, act: b.getAttribute( 'data-act' ) } );
 			}
-			var act = b.getAttribute( 'data-act' );
-			if ( 'up' === act && sec.previousElementSibling && sec.previousElementSibling.hasAttribute( 'data-df-section' ) ) {
-				sec.parentNode.insertBefore( sec, sec.previousElementSibling );
-			} else if ( 'down' === act && sec.nextElementSibling && sec.nextElementSibling.hasAttribute( 'data-df-section' ) ) {
-				sec.parentNode.insertBefore( sec.nextElementSibling, sec );
-			} else if ( 'toggle' === act ) {
-				sec.setAttribute( 'data-df-on', '1' === sec.getAttribute( 'data-df-on' ) ? '0' : '1' );
-				paintToggle( sec );
-			} else {
-				return;
-			}
-			sectionsDirty = true;
-			refresh();
-			sec.scrollIntoView( { block: 'nearest', behavior: 'smooth' } );
 		} );
+		sec.classList.toggle( 'is-off', '1' !== sec.getAttribute( 'data-df-on' ) );
 	} );
-	function paintToggle( sec ) {
-		var on = '1' === sec.getAttribute( 'data-df-on' );
-		sec.classList.toggle( 'is-off', ! on );
-		var b = sec.querySelector( '.df-live-tools [data-act="toggle"]' );
-		if ( b ) {
-			b.textContent = on ? 'Gizle' : 'Göster';
-		}
-	}
 
-	/* ---------- Kaydet / vazgeç ---------- */
-	saveBtn.addEventListener( 'click', function () {
-		saveBtn.disabled = true;
-		saveBtn.textContent = 'Kaydediliyor…';
-		var data = { action: 'df_live_save', nonce: L.nonce, fields: JSON.stringify( changes ) };
-		if ( sectionsDirty ) {
-			data.sections = JSON.stringify( Array.prototype.map.call( document.querySelectorAll( '[data-df-section]' ), function ( s ) {
-				return { id: s.getAttribute( 'data-df-section' ), on: '1' === s.getAttribute( 'data-df-on' ) ? 1 : 0 };
-			} ) );
-		}
-		$.post( L.ajax, data ).done( function ( res ) {
-			if ( res && res.success ) {
-				changes = {};
-				sectionsDirty = false;
-				countEl.textContent = 'Kaydedildi ✓ Sitede yayında.';
-				saveBtn.textContent = 'Kaydet';
-				saveBtn.disabled = true;
-			} else {
-				fail( res && res.data && res.data.message );
+	/* ---------- Bağlantılar: önizleme içinde gezin ---------- */
+	document.addEventListener( 'click', function ( e ) {
+		if ( e.target.closest( '[data-df-edit], .df-live-tools, .df-live-imgbtn' ) ) {
+			var inLink = e.target.closest( 'a' );
+			if ( inLink ) {
+				e.preventDefault();
 			}
-		} ).fail( function () {
-			fail();
-		} );
-	} );
-	function fail( msg ) {
-		saveBtn.disabled = false;
-		saveBtn.textContent = 'Kaydet';
-		countEl.textContent = msg || 'Kaydedilemedi, lütfen tekrar deneyin.';
-	}
-	bar.querySelector( '[data-live-cancel]' ).addEventListener( 'click', function () {
-		if ( ! dirtyCount() || window.confirm( 'Kaydedilmemiş değişiklikler silinsin mi?' ) ) {
-			changes = {};
-			sectionsDirty = false;
-			window.location.reload();
+			return;
 		}
-	} );
-	window.addEventListener( 'beforeunload', function ( e ) {
-		if ( dirtyCount() ) {
+		var a = e.target.closest( 'a[href]' );
+		if ( ! a || a.target === '_blank' || e.defaultPrevented ) {
+			return;
+		}
+		var href = a.getAttribute( 'href' );
+		if ( ! href || '#' === href.charAt( 0 ) || /^(mailto|tel|javascript|whatsapp):/i.test( href ) ) {
+			return;
+		}
+		var u;
+		try {
+			u = new URL( a.href );
+		} catch ( err ) {
+			return;
+		}
+		if ( u.origin !== window.location.origin || /\/wp-(admin|login)/.test( u.pathname ) ) {
 			e.preventDefault();
-			e.returnValue = '';
+			return;
+		}
+		e.preventDefault();
+		window.location.href = withParams( a.href );
+	}, true );
+	// Arama gibi GET formları önizlemede kalsın.
+	Array.prototype.forEach.call( document.querySelectorAll( 'form' ), function ( f ) {
+		if ( ( f.getAttribute( 'method' ) || 'get' ).toLowerCase() === 'get' ) {
+			[ 'df_live', 'df_preview' ].forEach( function ( n ) {
+				var i = document.createElement( 'input' );
+				i.type = 'hidden';
+				i.name = n;
+				i.value = '1';
+				f.appendChild( i );
+			} );
 		}
 	} );
-}( jQuery ) );
+
+	/* ---------- Stüdyodan gelen mesajlar ---------- */
+	window.addEventListener( 'message', function ( e ) {
+		if ( e.origin !== window.location.origin || ! e.data || ! e.data.df ) {
+			return;
+		}
+		var m = e.data;
+		if ( 'scrollTo' === m.df ) {
+			window.scrollTo( 0, m.y || 0 );
+		} else if ( 'setText' === m.df ) {
+			Array.prototype.forEach.call( document.querySelectorAll( '[data-df-edit="' + m.key + '"]' ), function ( o ) {
+				if ( document.activeElement !== o ) {
+					o.innerText = m.value;
+				}
+			} );
+		} else if ( 'show' === m.df ) {
+			var t = document.querySelector( '[data-df-section="' + m.id + '"]' ) || document.querySelector( '[data-df-sec="' + m.id + '"]' );
+			if ( t ) {
+				t.scrollIntoView( { behavior: 'smooth', block: 'start' } );
+				t.classList.add( 'df-live-flash' );
+				setTimeout( function () {
+					t.classList.remove( 'df-live-flash' );
+				}, 1400 );
+			}
+		}
+	} );
+
+	var st;
+	window.addEventListener( 'scroll', function () {
+		clearTimeout( st );
+		st = setTimeout( function () {
+			send( { df: 'scroll', y: window.scrollY } );
+		}, 120 );
+	}, { passive: true } );
+
+	send( {
+		df: 'ready',
+		url: window.location.href.replace( /([?&])df_(live|preview)=1&?/g, '$1' ).replace( /[?&]$/, '' ),
+		title: document.title,
+		home: !! L.isHome
+	} );
+}() );

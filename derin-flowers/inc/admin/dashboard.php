@@ -298,7 +298,7 @@ function df_app_shell( $current, $title, $sub, $content ) {
 		array( 'media', 'dashicons-format-image', 'Görsel Yönetimi', admin_url( 'upload.php' ) ),
 		array( 'reviews', 'dashicons-testimonial', 'Yorumlar', $reviews_url ),
 		array( 'reports', 'dashicons-chart-bar', 'Raporlar', admin_url( 'admin.php?page=wc-reports' ) ),
-		array( 'live', 'dashicons-welcome-write-blog', 'Canlı Düzenle', add_query_arg( 'df_live', '1', home_url( '/' ) ) ),
+		array( 'studio', 'dashicons-art', 'Tasarım Stüdyosu', admin_url( 'admin.php?page=df-studio' ) ),
 		array( 'theme', 'dashicons-admin-appearance', 'Arayüz & Site Yönetimi', admin_url( 'admin.php?page=derin-flowers' ) ),
 		array( 'menus', 'dashicons-menu', 'Menüler', admin_url( 'nav-menus.php' ) ),
 		array( 'settings', 'dashicons-admin-settings', 'Mağaza Ayarları', admin_url( 'admin.php?page=wc-settings' ) ),
@@ -314,7 +314,7 @@ function df_app_shell( $current, $title, $sub, $content ) {
 			</a>
 			<nav class="df-app__nav" aria-label="Yönetim menüsü">
 				<?php foreach ( $menu as $m ) : ?>
-					<a class="df-app__link<?php echo $current === $m[0] ? ' is-active' : ''; ?>" href="<?php echo esc_url( $m[3] ); ?>"<?php echo 'live' === $m[0] ? ' target="_blank" rel="noopener"' : ''; ?>>
+					<a class="df-app__link<?php echo $current === $m[0] ? ' is-active' : ''; ?>" href="<?php echo esc_url( $m[3] ); ?>">
 						<span class="dashicons <?php echo esc_attr( $m[1] ); ?>"></span><span class="df-app__label"><?php echo esc_html( $m[2] ); ?></span>
 						<?php if ( ! empty( $m[4] ) ) : ?>
 							<span class="df-app__badge"><?php echo (int) $m[4]; ?></span>
@@ -718,7 +718,7 @@ function df_app_dashboard() {
 							array( 'plus-alt2', 'Yeni Ürün Ekle', admin_url( 'post-new.php?post_type=product' ) ),
 							array( 'printer', 'Toplu Yazdırma', admin_url( 'admin.php?page=df-print' ) ),
 							array( 'tickets-alt', 'Kupon Oluştur', admin_url( 'post-new.php?post_type=shop_coupon' ) ),
-							array( 'welcome-write-blog', 'Ana Sayfayı Düzenle', add_query_arg( 'df_live', '1', home_url( '/' ) ) ),
+							array( 'art', 'Siteyi Tasarla', admin_url( 'admin.php?page=df-studio' ) ),
 							array( 'location', 'İlçe / Saat Ayarları', admin_url( 'admin.php?page=derin-flowers#delivery' ) ),
 							array( 'edit', 'Blog Yazısı Ekle', admin_url( 'post-new.php' ) ),
 							array( 'car', 'Kurye Ata', admin_url( 'admin.php?page=df-couriers' ) ),
@@ -726,7 +726,7 @@ function df_app_dashboard() {
 						);
 						foreach ( $quick as $q ) :
 							?>
-							<a href="<?php echo esc_url( $q[2] ); ?>"<?php echo false !== strpos( $q[2], 'df_live' ) ? ' target="_blank" rel="noopener"' : ''; ?>><span class="dashicons dashicons-<?php echo esc_attr( $q[0] ); ?>"></span><?php echo esc_html( $q[1] ); ?></a>
+							<a href="<?php echo esc_url( $q[2] ); ?>"><span class="dashicons dashicons-<?php echo esc_attr( $q[0] ); ?>"></span><?php echo esc_html( $q[1] ); ?></a>
 						<?php endforeach; ?>
 					</div>
 				</section>
