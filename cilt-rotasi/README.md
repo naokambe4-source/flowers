@@ -1,0 +1,57 @@
+# Cilt Rotası — WordPress Teması
+
+Cilt Rotası için hazırlanmış premium skincare bilgi platformu teması. SEO, AEO (yanıt motorları) ve GEO (üretken yapay zekâ motorları) odaklıdır. Her şey özel yönetim panelinden ve sitedeki canlı düzenleyiciden yönetilir.
+
+## Kurulum
+
+1. Depodaki **`cilt-rotasi.zip`** dosyasını **Görünüm → Temalar → Yeni ekle → Tema yükle** ile yükle ve etkinleştir.
+   (FTP ile kuruyorsan `cilt-rotasi` klasörünü `wp-content/themes/` içine kopyala.)
+2. **Ayarlar → Genel**: Site dili **Türkçe** olsun (tarihler ve büyük harfler için).
+3. **Cilt Rotası → Araçlar & Kurulum → Kurulumu çalıştır**. Tek tıkla şunları kurar:
+   - kategoriler (Cilt Yapısı, Cilt Problemleri, Cilt Bakım Rutini, İçerikler, Ürünler),
+   - cilt sorunları, cilt tipleri, içerik grupları ve ürün türleri,
+   - sayfalar: Ana Sayfa, Rehberler, Cilt Testi, Kaydedilenler, Hakkımızda, Yayın İlkeleri, İletişim, Gizlilik, Çerez Politikası, Kullanım Koşulları,
+   - ana menü (Cilt Problemleri mega menüsüyle) ve 3 footer menüsü,
+   - `/%postname%/` kalıcı bağlantıları,
+   - isteğe bağlı örnek içerikler: 9 rehber, 8 sözlük içeriği, 4 ürün incelemesi (kısa cevap, SSS, adımlar ve kaynaklarıyla).
+4. Görseller varsayılan olarak mevcut tasarımındaki hizliresim adreslerinden gelir. Kalıcı olması için **Tema Ayarları** veya canlı düzenleyicideki **Görseli değiştir** ile medya kütüphanene yükle.
+5. Yasal sayfalar şablon metinlerdir; yayınlamadan önce bir hukukçuyla gözden geçir. Örnek içeriklerdeki kaynak bağlantılarını da kontrol et.
+
+## Yönetim paneli
+
+Girişten sonra doğrudan **Cilt Rotası → Kontrol Paneli** açılır. Üstte kocaman **“Aslı, seni seviyorum ♥”** yazar; her girişte rastgele bir sevgi notu gösterilir, arkada kalpler uçuşur. Metinler **Tema Ayarları → Yönetim Paneli** sekmesinden değiştirilebilir.
+
+| Sayfa | İçerik |
+|---|---|
+| Kontrol Paneli | Karşılama, istatistikler (rehber, sözlük, ürün, taslak, abone, okunma), SEO·AEO·GEO sağlık skoru, son düzenlenenler, en çok okunanlar, içerik fırsatları (sonuçsuz aramalar), GEO durumu, kurulum kontrol listesi |
+| Tema Ayarları | 10 sekme: Marka & Görünüm, Header & Menü, Hero, Ana Sayfa, Makale & Sayfalar, Cilt Testi, SEO·AEO·GEO, Footer & Sosyal, Yönetim Paneli, Özel Kod. Ayar arama kutusu, sürükle-bırak bölüm sıralama, tekrarlayıcı alanlar |
+| SEO Denetimi | Her içerik 0–100 puanlanır; eksikler SEO / AEO / GEO olarak etiketlenir |
+| ✎ Canlı Düzenle | Sitede metne tıkla-yaz, görsel değiştir, bölümleri ▲▼ taşı / gizle, renk-yazı tipi-köşe paneli |
+| Bülten Aboneleri | Liste, silme, CSV indirme |
+| Arama Analitiği | En çok arananlar, sonuçsuz aramalar → tek tıkla yazı oluştur |
+| Araçlar & Kurulum | Kurulum sihirbazı, JSON dışa/içe aktarma, sıfırlama, son 15 kaydın geçmişi (geri yükleme) |
+
+Ayrıca: markalı giriş ekranı, tüm yönetime Cilt Rotası görünümü, üst çubukta karşılama, yazı listelerinde SEO skoru ve okunma sütunu.
+
+## SEO · AEO · GEO
+
+- **SEO:** başlık, meta açıklama, canonical, robots (noindex kuralları), Open Graph, Twitter kartı, önceki/sonraki bağlantılar, doğrulama kodları (Google, Bing, Yandex, Pinterest), noindex içerikleri dışlayan ve `lastmod` ekleyen site haritası, breadcrumb, otomatik alt metin, ek sayfası yönlendirmesi, gecikmeli GA4.
+- **Yapılandırılmış veri (@graph):** Organization, WebSite + SearchAction, WebPage / MedicalWebPage (reviewedBy, lastReviewed, speakable), BlogPosting / Article (citation, about, keywords), Person (E-E-A-T), BreadcrumbList, FAQPage, HowTo, DefinedTerm + DefinedTermSet, Product + Review, CollectionPage + ItemList.
+- **AEO:** her yazıda *Kısa cevap* kutusu, *Akılda kalsın* maddeleri, SSS, adım adım bölümü; ana sayfada SSS.
+- **GEO:** `/llms.txt`, `/llms-full.txt`, her yazının Markdown sürümü (`?format=md`), yapay zekâ botları için robots.txt kuralları (izin ver / yalnızca arama botları / engelle), kaynak listesi, yazar ve uzman kontrolü bilgileri.
+- Yazı düzenleme ekranında canlı Google önizlemesi, karakter sayaçları ve anlık kontrol listesi bulunan **SEO · AEO · GEO** kutusu vardır.
+- Yoast, Rank Math, AIOSEO veya SEOPress etkinse tema meta etiketlerini kendiliğinden kapatır; sözlük, SSS, HowTo, ürün şemaları ve GEO dosyaları çalışmaya devam eder.
+
+## Ön yüz
+
+- Ana sayfa (12 bölüm, sıralanabilir): hero, hızlı keşif, en çok okunanlar, cilt problemleri şeridi, cilt testi çağrısı, filtreli rehber ızgarası, ürün rehberi, içerik sözlüğü araması, manifesto, yayın ilkeleri, SSS, bülten.
+- Global arama paneli (`/` veya Ctrl+K): Makaleler, İçerikler, Problemler, Ürün rehberleri; klavyeyle gezinme, son aramalar.
+- Kaydedilenler (üyelik gerekmez), paylaş, okuma ilerleme çubuğu, sağda sabit içindekiler, sonraki rehber, ilgili içerikler.
+- İçerik sözlüğü: A–Z dizini, anlık filtre, grup filtreleri; her içerikte INCI adı, etkili oran, kanıt düzeyi, tahriş potansiyeli, hamilelik bilgisi ve uyumlu içerikler.
+- Cilt testi: sorular ve sonuç metinleri panelden düzenlenir.
+- Mobilde alt gezinme çubuğu (iPhone güvenli alan uyumlu), yatay kaydırmalı şeritler, 48px dokunma alanları.
+- Performans: Tailwind CDN veya ikon fontu yok (satır içi SVG), `defer` betikler, LCP görseli ön yükleme, tembel yükleme, `aspect-ratio`, emoji betikleri kapalı. `prefers-reduced-motion` desteklenir.
+
+## Kısa kodlar
+
+`[cr_kisa_cevap]…[/cr_kisa_cevap]`, `[cr_bilgi]`, `[cr_not]`, `[cr_ipucu]`, `[cr_uyari]`, `[cr_icerik ad="niasinamid"]`, `[cilt_testi]`, `[cr_bulten]`. Blok ekleyicide **Desenler → Cilt Rotası** altında bilgi kutusu, karşılaştırma tablosu, uzman görüşü ve kontrol listesi desenleri bulunur.

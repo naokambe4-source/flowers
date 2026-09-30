@@ -1,3 +1,5 @@
+> **Yeni:** Cilt Rotası teması için [`cilt-rotasi/`](cilt-rotasi/) klasörüne ve kurulum notlarına ([`cilt-rotasi/README.md`](cilt-rotasi/README.md)) bakın. Doğrudan yüklenebilir dosya: `cilt-rotasi.zip`.
+
 # Derin Flowers — Premium WordPress + WooCommerce Teması
 
 İzmir'deki premium çiçek butiği için geliştirilmiş, tüm içerik ve tasarımı **WordPress yönetim panelinden** yönetilen tema.

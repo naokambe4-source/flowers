@@ -1,0 +1,42 @@
+/* Cilt Rotası — markalı giriş ekranı */
+body.login {
+	display: flex; min-height: 100vh; margin: 0;
+	background: #FBF8F2; font-family: 'Manrope', system-ui, sans-serif; color: #28322E;
+}
+.cr-login-art {
+	position: relative; display: none; flex: 1 1 55%; min-height: 100vh;
+	background: #24483F center / cover no-repeat;
+}
+.cr-login-art::before { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(22, 36, 31, .15), rgba(22, 36, 31, .75)); }
+.cr-login-art__inner { position: absolute; left: 56px; right: 56px; bottom: 64px; color: #fff; }
+.cr-login-art__heart { display: inline-block; font-size: 34px; color: #E88A9A; animation: crl-beat 1.8s ease-in-out infinite; }
+.cr-login-art__quote { margin: 14px 0 20px; font-family: 'DM Serif Display', Georgia, serif; font-style: italic; font-size: clamp(30px, 3.2vw, 52px); line-height: 1.08; }
+.cr-login-art__brand { font-size: 12px; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; color: #C9A06B; }
+@media (min-width: 900px) { .cr-login-art { display: block; } }
+@keyframes crl-beat { 0%, 100% { transform: scale(1); } 15% { transform: scale(1.2); } 30% { transform: scale(1); } 45% { transform: scale(1.12); } }
+
+#login { flex: 1 1 45%; display: flex; flex-direction: column; justify-content: center; width: auto; max-width: 420px; margin: 0 auto; padding: 40px 24px; }
+#login h1 a {
+	width: auto; height: auto; margin: 0 0 28px; background: none; text-indent: 0;
+	font-family: 'DM Serif Display', Georgia, serif; font-size: 38px; line-height: 1.1; color: #24483F; text-align: left;
+}
+#login h1 a::after { display: block; margin-top: 8px; font-family: 'Manrope', sans-serif; font-size: 14px; font-weight: 700; color: #C9A06B; }
+.login form { margin: 0; padding: 28px; border: 1px solid rgba(40, 50, 46, .1); border-radius: 22px; background: #FFFDFC; box-shadow: 0 20px 50px -24px rgba(36, 72, 63, .35); }
+.login label { font-weight: 700; font-size: 13.5px; color: #28322E; }
+.login form .input, .login input[type="text"], .login input[type="password"] {
+	min-height: 48px; margin-top: 6px; padding: 0 14px; border: 1.5px solid #d9e0db; border-radius: 14px; background: #fff; font-size: 16px; box-shadow: none;
+}
+.login form .input:focus, .login input[type="text"]:focus, .login input[type="password"]:focus { border-color: #24483F; box-shadow: 0 0 0 3px rgba(36, 72, 63, .12); }
+.login .button.wp-hide-pw { height: 48px; margin-top: 6px; color: #24483F; }
+.wp-core-ui .button-primary {
+	min-height: 46px; padding: 0 24px; border: 0; border-radius: 999px; background: #24483F; box-shadow: none; text-shadow: none; font-weight: 700; font-size: 15px;
+}
+.wp-core-ui .button-primary:hover, .wp-core-ui .button-primary:focus { background: #3B5E53; }
+.login #nav, .login #backtoblog { padding: 0; margin: 16px 0 0; text-align: left; }
+.login #nav a, .login #backtoblog a { color: #3B5E53; font-weight: 600; }
+.login #nav a:hover, .login #backtoblog a:hover { color: #8C6A3C; }
+.login .message, .login .notice, .login .success { border-left-color: #C9A06B; border-radius: 14px; box-shadow: none; background: #fff; }
+.login #login_error { border-left-color: #C0714F; border-radius: 14px; }
+.language-switcher { display: none; }
+input[type="checkbox"]:checked::before { content: none; }
+.login input[type="checkbox"]:checked { background: #24483F; border-color: #24483F; }

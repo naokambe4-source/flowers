@@ -1,0 +1,19 @@
+/* Blok düzenleyici görünümü — sitedeki makale tipografisine yakın. */
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Manrope:wght@400;500;600;700&display=swap&subset=latin-ext');
+
+body {
+	font-family: 'Manrope', system-ui, sans-serif;
+	font-size: 18px;
+	line-height: 1.75;
+	color: #28322E;
+	background: #FBF8F2;
+}
+.editor-post-title__input, .wp-block-post-title, h1, h2, h3 { font-family: 'DM Serif Display', Georgia, serif; font-weight: 400; color: #24483F; line-height: 1.15; }
+h4 { font-weight: 800; }
+a { color: #24483F; text-decoration-color: #C9A06B; }
+blockquote { border-left: 3px solid #C9A06B; padding-left: 24px; font-family: 'DM Serif Display', Georgia, serif; font-style: italic; color: #24483F; }
+.is-style-cr-green { background: #E6ECE1; border-left: 4px solid #24483F; padding: 22px 24px; border-radius: 14px; }
+.is-style-cr-cream { background: #F4ECE0; border-left: 4px solid #C9A06B; padding: 22px 24px; border-radius: 14px; }
+.is-style-cr-warn { background: #FBEDE7; border-left: 4px solid #C0714F; padding: 22px 24px; border-radius: 14px; }
+.is-style-cr-table th { background: #E6ECE1; color: #24483F; }
+.is-style-cr-expert { background: #fff; box-shadow: inset 4px 0 0 #24483F; padding: 24px; border-radius: 14px; border-left: 0; }
