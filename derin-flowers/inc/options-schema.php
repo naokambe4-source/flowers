@@ -32,6 +32,30 @@ function df_home_section_labels() {
 		'blog'        => 'Çiçek Rehberi (blog)',
 		'instagram'   => 'Instagram',
 		'newsletter'  => 'Bülten',
+		'social'      => 'Instagram · Blog · Sosyal şeridi',
+	);
+}
+
+/**
+ * Hazır kampanya bannerları (renkli kart). Fotoğrafları eklenene kadar sitede görünmezler.
+ *
+ * @return array
+ */
+function df_campaign_banners() {
+	$b = function ( $title, $text, $icon, $bg, $fg, $ac, $font, $size, $url, $badge = '' ) {
+		return array( 'mode' => 'card', 'title' => $title, 'text' => $text, 'pill' => 'AYNI GÜN TESLİMAT', 'badge' => $badge, 'icon' => $icon, 'font' => $font, 'size' => $size, 'bg' => $bg, 'color' => $fg, 'accent' => $ac, 'url' => $url, 'image' => '', 'image_mobile' => '' );
+	};
+	return array(
+		$b( "SEVGİLİYE\nÇİÇEK", 'AŞKINIZI EN GÜZEL ÇİÇEKLERLE ANLATIN…', 'heart', '#F8DCDD', '#A5202F', '#A5202F', 'sans', 'l', '/urun-kategori/ozel-gunler/sevgiliye/' ),
+		$b( "SÖZ/NİŞAN/DÜĞÜN\nÇİÇEKLERİ", 'EN ÖZEL ANLARINIZI, EN GÜZEL ÇİÇEKLERLE TAÇLANDIRIN.', 'rings', '#F7EFEA', '#7C4A5A', '#8C2E40', 'serif', 's', '/urun-kategori/soz-nisan/' ),
+		$b( "AÇILIŞ\nÇİÇEKLERİ", 'YENİ BAŞLANGIÇLAR İÇİN EN GÜZEL TEBRİKLER', 'bow', '#F8EFE5', '#9A2B2B', '#9A2B2B', 'serif', 'm', '/urun-kategori/ozel-gunler/acilis/' ),
+		$b( "EV HEDİYESİ\nÇİÇEKLERİ", 'SEVDİKLERİNİZE EN GÜZEL HEDİYE', 'house', '#DDE4D3', '#3D4A32', '#93A47C', 'serif', 'm', '/urun-kategori/ozel-gunler/ev-hediyesi/' ),
+		$b( "ÖZÜR\nÇİÇEKLERİ", 'KALPTEN BİR ÖZÜR, EN GÜZEL ÇİÇEKLERLE ANLATILIR.', 'heart-mend', '#E4D9EF', '#4A2D62', '#7B5B9B', 'serif', 'l', '/urun-kategori/ozel-gunler/ozur/' ),
+		$b( "GEÇMİŞ OLSUN\nÇİÇEKLERİ", '', 'heart-plus', '#F8EDBA', '#6E6A2E', '#6E6A2E', 'sans', 'm', '/urun-kategori/ozel-gunler/gecmis-olsun/' ),
+		$b( "ANNELER GÜNÜ\nÇİÇEKLERİ", '', 'mother', '#D7E6F3', '#2F5F8F', '#2F5F8F', 'sans', 'm', '/urun-kategori/ozel-gunler/anneler-gunu/' ),
+		$b( "MEVSİM\nÇİÇEKLERİ", 'DOĞANIN EN GÜZEL RENKLERİ, HER MEVSİM TAZE ÇİÇEKLER', 'flower', '#FBDDC8', '#B35E35', '#B35E35', 'sans', 'l', '/urun-kategori/mevsim-cicekleri/' ),
+		$b( "SAKSI\nÇİÇEKLERİ", '', 'pot', '#D6E2E6', '#2F4538', '#2F4538', 'sans', 'l', '/urun-kategori/saksi-cicekleri/' ),
+		$b( "İNDİRİMLİ\nÇİÇEKLER", '', 'tag', '#F9D5DE', '#C0275E', '#C0275E', 'sans', 'l', '/magaza/?orderby=price', "SEÇİLİ ÜRÜNLERDE\n%20" ),
 	);
 }
 
@@ -179,6 +203,7 @@ function df_options_schema() {
 								'Nunito Sans'=> 'Nunito Sans',
 							),
 						),
+						array( 'id' => 'font_script', 'type' => 'select', 'label' => 'El yazısı fontu (hero notu vb.)', 'default' => 'Great Vibes', 'half' => true, 'options' => array( 'Great Vibes' => 'Great Vibes', 'Allura' => 'Allura', 'Parisienne' => 'Parisienne', 'Pinyon Script' => 'Pinyon Script', '' => 'Kullanma' ) ),
 						array( 'id' => 'font_scale', 'type' => 'select', 'label' => 'Başlık ölçeği', 'default' => '1', 'half' => true, 'options' => array( '0.9' => 'Küçük', '1' => 'Standart', '1.1' => 'Büyük' ) ),
 					),
 				),
@@ -188,7 +213,7 @@ function df_options_schema() {
 						array( 'id' => 'container_width', 'type' => 'number', 'label' => 'İçerik genişliği (px)', 'default' => 1440, 'min' => 1080, 'max' => 1800, 'half' => true ),
 						array( 'id' => 'btn_radius', 'type' => 'number', 'label' => 'Buton köşe yuvarlaklığı (px)', 'default' => 0, 'min' => 0, 'max' => 40, 'half' => true ),
 						array( 'id' => 'card_radius', 'type' => 'number', 'label' => 'Kart köşe yuvarlaklığı (px)', 'default' => 2, 'min' => 0, 'max' => 24, 'half' => true ),
-						array( 'id' => 'section_space', 'type' => 'number', 'label' => 'Bölüm dikey boşluğu (px, masaüstü)', 'default' => 120, 'min' => 60, 'max' => 180, 'half' => true ),
+						array( 'id' => 'section_space', 'type' => 'number', 'label' => 'Bölüm dikey boşluğu (px, masaüstü — sıkı görünüm için 56)', 'default' => 120, 'min' => 32, 'max' => 180, 'half' => true ),
 					),
 				),
 			),
@@ -216,6 +241,8 @@ function df_options_schema() {
 						array( 'id' => 'header_bg', 'type' => 'color', 'label' => 'Header zemini', 'default' => '#FFFFFF', 'half' => true ),
 						array( 'id' => 'header_sticky', 'type' => 'toggle', 'label' => 'Kaydırınca header sabit kalsın', 'default' => 1, 'half' => true ),
 						array( 'id' => 'header_cat_btn', 'type' => 'toggle', 'label' => 'Solda "Kategoriler" menüsü (ikonlu)', 'default' => 1, 'half' => true ),
+						array( 'id' => 'header_search_bar', 'type' => 'toggle', 'label' => 'Solda arama kutusu', 'default' => 0, 'half' => true ),
+						array( 'id' => 'header_search_ph', 'type' => 'text', 'label' => 'Arama kutusu yazısı', 'default' => 'Çiçek, buket, özel gün ara…', 'half' => true ),
 						array( 'id' => 'header_cat_label', 'type' => 'text', 'label' => 'Kategori butonu metni', 'default' => 'Kategoriler', 'half' => true ),
 						array( 'id' => 'header_phone_on', 'type' => 'toggle', 'label' => 'Kategori butonu yanında telefon', 'default' => 0, 'half' => true ),
 						array( 'id' => 'header_show_search', 'type' => 'toggle', 'label' => 'Arama', 'default' => 1, 'quarter' => true ),
@@ -290,6 +317,7 @@ function df_options_schema() {
 								array( 'id' => 'btn1_url', 'type' => 'url', 'label' => '1. buton bağlantısı', 'half' => true ),
 								array( 'id' => 'btn2_text', 'type' => 'text', 'label' => '2. buton metni', 'half' => true ),
 								array( 'id' => 'btn2_url', 'type' => 'url', 'label' => '2. buton bağlantısı', 'half' => true ),
+								array( 'id' => 'script', 'type' => 'textarea', 'label' => 'El yazısı not (sağ tarafta, ör. "Çiçeklerle" Enter "daha güzel bir İzmir")', 'rows' => 2 ),
 								array( 'id' => 'align', 'type' => 'select', 'label' => 'Metin konumu', 'default' => 'left', 'quarter' => true, 'options' => array( 'left' => 'Sol', 'center' => 'Orta', 'right' => 'Sağ' ) ),
 								array( 'id' => 'overlay', 'type' => 'select', 'label' => 'Okunabilirlik gradyanı', 'default' => 'soft', 'quarter' => true, 'options' => array( 'none' => 'Yok', 'soft' => 'Hafif', 'strong' => 'Belirgin' ) ),
 								array( 'id' => 'theme', 'type' => 'select', 'label' => 'Metin rengi', 'default' => 'dark', 'quarter' => true, 'options' => array( 'dark' => 'Koyu (açık görseller)', 'light' => 'Açık (koyu görseller)' ) ),
@@ -367,7 +395,8 @@ function df_options_schema() {
 						array( 'id' => 'cats_eyebrow', 'type' => 'text', 'label' => 'Üst küçük metin', 'default' => 'ALIŞVERİŞE BAŞLAYIN', 'third' => true ),
 						array( 'id' => 'cats_title', 'type' => 'text', 'label' => 'Başlık', 'default' => 'Anınıza Uygun Çiçeği Bulun', 'third' => true ),
 						array( 'id' => 'cats_sub', 'type' => 'text', 'label' => 'Alt metin', 'default' => 'Her an için özenle seçilmiş koleksiyonlar.', 'third' => true ),
-						array( 'id' => 'cats_style', 'type' => 'select', 'label' => 'Kart stili', 'default' => 'below', 'half' => true, 'options' => array( 'below' => 'Metin görselin altında', 'overlay' => 'Metin görselin üzerinde' ) ),
+						array( 'id' => 'cats_style', 'type' => 'select', 'label' => 'Kart stili', 'default' => 'below', 'half' => true, 'options' => array( 'below' => 'Metin görselin altında', 'overlay' => 'Metin görselin üzerinde', 'banner' => 'Yatay banner (metin solda, görsel sağda)' ) ),
+						array( 'id' => 'cats_bg', 'type' => 'color', 'label' => 'Yatay banner zemin rengi', 'default' => '#F6E7E4', 'half' => true ),
 						array( 'id' => 'cats_cta', 'type' => 'text', 'label' => 'Kart link metni', 'default' => 'KEŞFET', 'half' => true ),
 						array(
 							'id'          => 'cats_items',
@@ -398,6 +427,7 @@ function df_options_schema() {
 						array( 'id' => 'occ_title', 'type' => 'text', 'label' => 'Başlık', 'default' => 'Her Özel Anın Bir Çiçeği Var', 'half' => true ),
 						array( 'id' => 'occ_style', 'type' => 'select', 'label' => 'Görünüm', 'default' => 'overlay', 'half' => true, 'options' => array( 'overlay' => 'Görsel üzerinde metin (geniş banner)', 'card' => 'Kart: metin solda, görsel sağda' ) ),
 						array( 'id' => 'occ_btn', 'type' => 'text', 'label' => 'Kart buton metni (kart görünümü)', 'default' => 'KEŞFET', 'half' => true ),
+						array( 'id' => 'occ_bg', 'type' => 'color', 'label' => 'Kart zemin rengi (kart görünümü)', 'default' => '#F6E7E4', 'half' => true ),
 						array(
 							'id'          => 'occ_items',
 							'type'        => 'repeater',
@@ -421,7 +451,7 @@ function df_options_schema() {
 				array(
 					'title'   => 'Renkli kategori bannerları',
 					'section' => 'banners',
-					'desc'    => 'İki kullanım: 1) Hazır banner görseli yükleyin (metin görselin içindeyse "Sadece görsel" seçin). 2) Renkli kart: fotoğraf solda, büyük başlık ve "Aynı Gün Teslimat" etiketi sağda — metinler buradan düzenlenir. Görseli olmayan bannerlar sitede gösterilmez.',
+					'desc'    => 'İki kullanım: 1) Hazır banner görseli yükleyin (metin görselin içindeyse "Sadece görsel" seçin). 2) Renkli kart: fotoğraf solda; ikon, iki satırlı başlık (son satır ayrı renk), alt metin ve "Aynı Gün Teslimat" düğmesi sağda. Görseli olmayan bannerlar sitede gösterilmez. 10 hazır kampanya bannerı için: Araçlar & Kurulum → Hazır kampanya bannerları.',
 					'fields'  => array(
 						array( 'id' => 'ban_title', 'type' => 'text', 'label' => 'Bölüm başlığı (opsiyonel)', 'default' => '', 'third' => true ),
 						array( 'id' => 'ban_cols', 'type' => 'select', 'label' => 'Masaüstü sütun', 'default' => '2', 'third' => true, 'options' => array( '1' => '1', '2' => '2', '3' => '3' ) ),
@@ -432,12 +462,7 @@ function df_options_schema() {
 							'label'       => 'Bannerlar',
 							'add_label'   => 'Banner ekle',
 							'title_field' => 'title',
-							'default'     => array(
-								array( 'mode' => 'card', 'title' => "GEÇMİŞ OLSUN\nÇİÇEKLERİ", 'pill' => 'AYNI GÜN TESLİMAT', 'bg' => '#F8EDB9', 'color' => '#6E6A2E', 'url' => '/urun-kategori/ozel-gunler/gecmis-olsun/' ),
-								array( 'mode' => 'card', 'title' => "DOĞUM GÜNÜ\nÇİÇEKLERİ", 'pill' => 'AYNI GÜN TESLİMAT', 'bg' => '#D9E6DA', 'color' => '#35503E', 'url' => '/urun-kategori/ozel-gunler/dogum-gunu/' ),
-								array( 'mode' => 'card', 'title' => "YIL DÖNÜMÜ\nÇİÇEKLERİ", 'pill' => 'AYNI GÜN TESLİMAT', 'bg' => '#E5D9EC', 'color' => '#5E4470', 'url' => '/urun-kategori/ozel-gunler/yil-donumu/' ),
-								array( 'mode' => 'card', 'title' => "SAKSI\nÇİÇEKLERİ", 'pill' => 'AYNI GÜN TESLİMAT', 'bg' => '#D6E2E6', 'color' => '#2F4538', 'url' => '/magaza/' ),
-							),
+							'default'     => df_campaign_banners(),
 							'fields'      => array(
 								array( 'id' => 'mode', 'type' => 'select', 'label' => 'Tip', 'default' => 'card', 'half' => true, 'options' => array( 'card' => 'Renkli kart (fotoğraf + metin)', 'image' => 'Sadece görsel (hazır banner)' ) ),
 								array( 'id' => 'url', 'type' => 'url', 'label' => 'Bağlantı', 'half' => true ),
@@ -446,10 +471,13 @@ function df_options_schema() {
 								array( 'id' => 'title', 'type' => 'textarea', 'label' => 'Başlık (satır atlamak için Enter)', 'rows' => 2, 'half' => true ),
 								array( 'id' => 'text', 'type' => 'text', 'label' => 'Küçük açıklama (opsiyonel)', 'half' => true ),
 								array( 'id' => 'pill', 'type' => 'text', 'label' => 'Etiket butonu', 'default' => 'AYNI GÜN TESLİMAT', 'third' => true ),
-								array( 'id' => 'badge', 'type' => 'text', 'label' => 'Köşe rozeti (ör. %20)', 'third' => true ),
+								array( 'id' => 'badge', 'type' => 'textarea', 'label' => 'Köşe rozeti (ör. "SEÇİLİ ÜRÜNLERDE" Enter "%20")', 'rows' => 2, 'third' => true ),
 								array( 'id' => 'icon', 'type' => 'icon', 'label' => 'Başlık üstü ikon', 'third' => true ),
-								array( 'id' => 'bg', 'type' => 'color', 'label' => 'Zemin rengi', 'default' => '#F3E7E1', 'half' => true ),
-								array( 'id' => 'color', 'type' => 'color', 'label' => 'Yazı / buton rengi', 'default' => '#6F463C', 'half' => true ),
+								array( 'id' => 'font', 'type' => 'select', 'label' => 'Başlık yazı tipi', 'default' => 'sans', 'half' => true, 'options' => array( 'sans' => 'Kalın düz (GEÇMİŞ OLSUN tarzı)', 'serif' => 'Tırnaklı zarif (SÖZ / NİŞAN tarzı)' ) ),
+								array( 'id' => 'size', 'type' => 'select', 'label' => 'Başlık boyutu', 'default' => 'm', 'half' => true, 'options' => array( 's' => 'Küçük (uzun başlıklar)', 'm' => 'Orta', 'l' => 'Büyük (kısa başlıklar)' ) ),
+								array( 'id' => 'bg', 'type' => 'color', 'label' => 'Zemin rengi', 'default' => '#F3E7E1', 'third' => true ),
+								array( 'id' => 'color', 'type' => 'color', 'label' => 'Yazı / buton rengi', 'default' => '#6F463C', 'third' => true ),
+								array( 'id' => 'accent', 'type' => 'color', 'label' => 'Başlığın son satırı rengi (boşsa aynı)', 'default' => '', 'third' => true ),
 							),
 						),
 					),
@@ -588,6 +616,19 @@ function df_options_schema() {
 						array( 'id' => 'nl_btn', 'type' => 'text', 'label' => 'Buton', 'default' => 'Kaydol', 'third' => true ),
 						array( 'id' => 'nl_action', 'type' => 'url', 'label' => 'Harici form adresi (Mailchimp vb., opsiyonel)', 'third' => true, 'desc' => 'Boş bırakılırsa aboneler WordPress içinde (Derin Flowers → Aboneler) saklanır.' ),
 						array( 'id' => 'nl_consent', 'type' => 'text', 'label' => 'Onay metni', 'default' => 'Kaydolarak KVKK Aydınlatma Metni\'ni okuduğumu kabul ederim.' ),
+					),
+				),
+				array(
+					'title'   => 'Instagram · Blog · Sosyal şeridi',
+					'section' => 'social',
+					'desc'    => 'Footer\'ın hemen üstünde üç kart: Instagram, Blog ve sosyal medya ikonları. Bağlantılar Footer & İletişim → Sosyal medya alanlarından gelir.',
+					'fields'  => array(
+						array( 'id' => 'soc_ig_title', 'type' => 'text', 'label' => 'Instagram başlığı', 'default' => 'Instagram', 'third' => true ),
+						array( 'id' => 'soc_ig_text', 'type' => 'text', 'label' => 'Instagram metni', 'default' => 'En özel anlarımız', 'third' => true ),
+						array( 'id' => 'soc_bg', 'type' => 'color', 'label' => 'Kart zemin rengi', 'default' => '#F6E7E4', 'third' => true ),
+						array( 'id' => 'soc_blog_title', 'type' => 'text', 'label' => 'Blog başlığı', 'default' => 'Blog', 'third' => true ),
+						array( 'id' => 'soc_blog_text', 'type' => 'text', 'label' => 'Blog metni', 'default' => 'Çiçek ve yaşam rehberi', 'third' => true ),
+						array( 'id' => 'soc_follow', 'type' => 'text', 'label' => 'Sosyal kart başlığı', 'default' => 'Bizi takip edin', 'third' => true ),
 					),
 				),
 			),

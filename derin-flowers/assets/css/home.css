@@ -355,7 +355,8 @@
 .df-popular { padding: clamp(36px, 4.5vw, 64px) 0 clamp(20px, 3vw, 40px); }
 .df-popular__title { font-size: calc(clamp(28px, 2.6vw, 38px) * var(--df-scale)); margin: 0 0 clamp(20px, 2.4vw, 32px); }
 .df-popular--center .df-popular__title { text-align: center; }
-.df-popular__list { list-style: none; display: flex; justify-content: space-between; gap: clamp(12px, 2vw, 28px); }
+.df-popular__list { list-style: none; display: flex; justify-content: flex-start; gap: clamp(12px, 2vw, 28px); }
+.df-popular__list:has(> li:nth-child(8)) { justify-content: space-between; }
 .df-popular--center .df-popular__list { justify-content: center; }
 .df-popular__list > li { flex: 0 1 132px; min-width: 0; }
 .df-popular__item { display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; color: var(--df-text); }
@@ -377,28 +378,42 @@
 .df-banner--image img { display: block; width: 100%; height: auto; transition: transform 1s var(--df-ease); }
 .df-banner--image:hover img { transform: scale(1.02); }
 .df-banner--image .df-ph { position: relative; aspect-ratio: 2.4 / 1; }
-.df-banner--card { display: grid; grid-template-columns: 52% 48%; aspect-ratio: 2.4 / 1; background: var(--b-bg); color: var(--b-fg); }
+.df-banner--card { container-type: inline-size; overflow: clip; display: grid; grid-template-columns: 50% 50%; aspect-ratio: 2.45 / 1; background: var(--b-bg); color: var(--b-fg); box-shadow: 0 1px 2px rgba(43, 37, 34, .05), 0 10px 30px -18px rgba(43, 37, 34, .25); }
 .df-banner--card:hover { color: var(--b-fg); }
 .df-banner__media { position: relative; overflow: hidden; }
 .df-banner__media img, .df-banner__media .df-ph { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 1.2s var(--df-ease); }
-.df-banner__media::after { content: ""; position: absolute; inset: 0 0 0 auto; width: 40%; background: linear-gradient(90deg, transparent, var(--b-bg)); pointer-events: none; }
+.df-banner__media::after { content: ""; position: absolute; inset: 0 0 0 auto; width: 45%; background: linear-gradient(90deg, transparent, var(--b-bg) 92%); pointer-events: none; }
 .df-banner--card:hover .df-banner__media img { transform: scale(1.04); }
-.df-banner__body { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 16px clamp(14px, 2vw, 28px); text-align: center; z-index: 1; }
-.df-banner__icon { opacity: .85; }
-.df-banner__title { font-family: var(--df-font-body); font-weight: 700; font-size: clamp(20px, 2.3vw, 38px); line-height: 1.04; letter-spacing: .01em; text-transform: uppercase; }
-.df-banners__grid--1 .df-banner__title { font-size: clamp(24px, 3.4vw, 52px); }
-.df-banners__grid--3 .df-banner__title { font-size: clamp(18px, 1.6vw, 28px); }
-.df-banner__rule { display: flex; align-items: center; gap: 8px; width: 70%; opacity: .6; }
-.df-banner__rule::before, .df-banner__rule::after { content: ""; flex: 1; height: 1px; background: currentColor; }
-.df-banner__text { font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; opacity: .85; }
-.df-banner__pill { display: inline-flex; align-items: center; gap: 10px; padding: 10px 18px; border-radius: 10px; background: var(--b-fg); color: #fff; font-size: clamp(11px, .95vw, 14px); font-weight: 700; letter-spacing: .03em; text-transform: uppercase; white-space: nowrap; box-shadow: 0 6px 16px -8px rgba(0, 0, 0, .4); transition: transform .3s var(--df-ease); }
-.df-banner--card:hover .df-banner__pill { transform: translateY(-2px); }
-.df-banner__badge { position: absolute; left: 14px; bottom: 14px; z-index: 2; display: grid; place-items: center; width: 74px; height: 74px; border-radius: 50%; background: var(--b-fg); color: #fff; font-size: 20px; font-weight: 800; box-shadow: 0 8px 20px -8px rgba(0, 0, 0, .45); }
+.df-banner__body { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .8cqi; padding: 2.2cqi 3cqi 2.2cqi 0; text-align: center; z-index: 1; min-width: 0; }
+.df-banner__icon { display: flex; align-items: flex-end; gap: 1.2cqi; color: var(--b-ac); }
+.df-banner__icon > .df-icon:not(.df-banner__sprig) { width: 6.4cqi; height: 6.4cqi; stroke-width: 1.3; }
+.df-banner__sprig { width: 3.4cqi; height: 3.4cqi; opacity: .75; stroke-width: 1.2; }
+.df-banner__sprig.is-flip { transform: scaleX(-1); }
+.df-banner__head { display: flex; align-items: flex-end; justify-content: center; gap: 1.2cqi; max-width: 100%; }
+.df-banner__sprig--side { flex: none; margin-bottom: .6cqi; }
+.df-banner__title { display: flex; flex-direction: column; align-items: center; min-width: 0; font-family: var(--df-font-body); font-weight: 800; line-height: 1.02; letter-spacing: .01em; text-transform: uppercase; }
+.df-banner__line { display: block; white-space: nowrap; font-size: var(--b-ts, 5.6cqi); }
+.df-banner__line--ac { color: var(--b-ac); }
+.df-banner--size-s { --b-ts: 4.3cqi; }
+.df-banner--size-l { --b-ts: 7cqi; }
+.df-banner--serif .df-banner__title { font-family: var(--df-font-heading); font-weight: 700; letter-spacing: 0; line-height: 1.05; }
+.df-banner--serif .df-banner__line { font-size: calc(var(--b-ts, 5.6cqi) * 1.08); }
+.df-banner__rule { display: flex; align-items: center; gap: 1.2cqi; width: 76%; color: var(--b-ac); opacity: .7; }
+.df-banner__rule .df-icon { width: 2cqi; height: 2cqi; fill: currentColor; }
+.df-banner__rule::before, .df-banner__rule::after { content: ""; flex: 1; height: 1px; background: currentColor; opacity: .6; }
+.df-banner__text { max-width: 92%; font-size: 1.65cqi; font-weight: 600; line-height: 1.35; letter-spacing: .04em; text-transform: uppercase; opacity: .9; }
+.df-banner__pill { display: inline-flex; align-items: center; gap: 1.6cqi; margin-top: .3cqi; padding: 1.3cqi 3.2cqi; border-radius: 1.2cqi; background: var(--b-fg); color: #fff; font-size: 2.45cqi; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; white-space: nowrap; box-shadow: 0 .8cqi 2cqi -1cqi rgba(0, 0, 0, .45); transition: transform .3s var(--df-ease), filter .3s; }
+.df-banner__pill .df-icon { width: 4cqi; height: 4cqi; stroke-width: 1.5; }
+.df-banner--card:hover .df-banner__pill { transform: translateY(-2px); filter: brightness(1.08); }
+.df-banner__badge { position: absolute; left: 2.4cqi; bottom: 2.4cqi; z-index: 2; display: grid; place-items: center; align-content: center; width: 15cqi; height: 15cqi; padding: 1cqi; border-radius: 50%; background: var(--b-fg); color: #fff; font-size: 1.5cqi; font-weight: 700; line-height: 1.15; text-align: center; box-shadow: 0 1cqi 2.4cqi -1cqi rgba(0, 0, 0, .45); border: .4cqi solid rgba(255, 255, 255, .85); }
+.df-banner__badge-sm { display: block; font-size: 1.35cqi; letter-spacing: .02em; }
+.df-banner__badge-big { display: block; font-size: 4.6cqi; font-weight: 800; line-height: 1; }
+.df-banner--serif.df-banner--size-l { --b-ts: 6.2cqi; }
 
 /* ==========================================================================
    Özel günler — kart görünümü (metin solda, görsel sağda)
    ========================================================================== */
-.df-occasions--card .df-occasion { display: grid; grid-template-columns: 1fr 1fr; align-items: stretch; min-height: 210px; background: var(--df-ivory); color: var(--df-text); border-radius: var(--df-radius); }
+.df-occasions--card .df-occasion { display: grid; grid-template-columns: 1fr 1fr; align-items: stretch; min-height: 210px; background: var(--occ-bg, var(--df-ivory)); color: var(--df-text); border-radius: 14px; }
 .df-occasions--card .df-occasion:hover { color: var(--df-text); }
 .df-occasions--card .df-occasion__media { order: 2; aspect-ratio: auto; height: 100%; background: var(--df-sand); }
 .df-occasions--card .df-occasion__media::after { display: none; }
@@ -425,13 +440,47 @@
 }
 @media (max-width: 767px) {
 	.df-banners__grid--2, .df-banners__grid--3 { grid-template-columns: 1fr; }
-	.df-banner--card { aspect-ratio: 2.3 / 1; }
-	.df-banner__title { font-size: clamp(19px, 5.6vw, 26px) !important; }
-	.df-banner__pill { padding: 8px 12px; font-size: 10.5px; gap: 6px; }
-	.df-banner__pill .df-icon { width: 16px; height: 16px; }
-	.df-banner__badge { width: 56px; height: 56px; font-size: 15px; }
 	.df-popular__list > li { flex-basis: 92px; }
 	.df-popular__name { font-size: 13px; }
 	.df-occasions--card .df-occasions__grid { display: grid; overflow: visible; margin: 0; padding: 0; gap: 12px; }
 	.df-occasions--card .df-occasion { min-height: 170px; }
 }
+
+/* Hero: el yazısı not */
+.df-hero__script { position: absolute; right: max(var(--df-gutter), 5%); top: 16%; z-index: 2; margin: 0; transform: rotate(-4deg); font-family: var(--df-font-script); font-size: clamp(28px, 3.4vw, 54px); line-height: 1.15; color: var(--df-accent); text-align: center; pointer-events: none; }
+.df-hero__slide--light .df-hero__script { color: #fff; }
+.df-live-on .df-hero__script { pointer-events: auto; }
+@media (max-width: 767px) { .df-hero__script { top: auto; bottom: 22%; right: var(--df-gutter); font-size: 26px; } }
+
+/* Özel gün kartları (kart görünümü): mockup'taki gibi yumuşak pembe, yuvarlak */
+.df-occasions--card .df-occasion__media { border-radius: 0 14px 14px 0; }
+.df-occasions--card .df-occasion__btn { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; background: var(--df-dark); color: #fff; font-size: 11px; font-weight: 600; letter-spacing: .14em; }
+
+/* Kategoriler: yatay banner */
+.df-cats--banner .df-cats__grid, .df-cats--banner .df-cats__grid[data-count] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.df-cats--banner .df-cats__grid[data-count="2"], .df-cats--banner .df-cats__grid[data-count="4"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.df-cats--banner .df-cat { display: grid; grid-template-columns: 1fr 1fr; align-items: stretch; min-height: 180px; overflow: hidden; border-radius: 14px; background: var(--cats-bg, var(--df-ivory)); }
+.df-cats--banner .df-cat__media { order: 2; aspect-ratio: auto; height: 100%; margin: 0; }
+.df-cats--banner .df-cat__media img, .df-cats--banner .df-cat__media .df-ph { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.df-cats--banner .df-cat__body { order: 1; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 10px; padding: clamp(18px, 2vw, 28px); }
+.df-cats--banner .df-cat__title { font-size: calc(clamp(22px, 1.9vw, 30px) * var(--df-scale)); line-height: 1.1; }
+.df-cats--banner .df-cat__cta { padding: 8px 14px; border: 1px solid currentColor; font-size: 11px; letter-spacing: .14em; }
+@media (max-width: 767px) { .df-cats--banner .df-cat { min-height: 150px; } }
+
+/* Instagram · Blog · Sosyal şeridi */
+.df-sstrip { padding: clamp(24px, 3vw, 40px) 0; }
+.df-sstrip__grid { display: grid; grid-template-columns: 1fr 1fr 1.3fr; gap: clamp(12px, 1.6vw, 20px); }
+.df-sstrip__card { display: flex; align-items: center; gap: 16px; padding: 18px 22px; border-radius: 14px; background: var(--soc-bg, var(--df-ivory)); color: var(--df-text); transition: transform .3s var(--df-ease), box-shadow .3s; }
+a.df-sstrip__card:hover { color: var(--df-text); transform: translateY(-2px); box-shadow: 0 12px 30px -20px rgba(43, 37, 34, .5); }
+.df-sstrip__icon { display: grid; place-items: center; flex: none; width: 52px; height: 52px; border-radius: 14px; color: #fff; }
+.df-sstrip__icon--ig { background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fd5949 45%, #d6249f 60%, #285AEB 90%); }
+.df-sstrip__icon--blog { background: var(--df-accent); }
+.df-sstrip__body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.df-sstrip__body strong, .df-sstrip__card--follow strong { font-family: var(--df-font-heading); font-size: calc(22px * var(--df-scale)); font-weight: 500; line-height: 1.2; }
+.df-sstrip__body span { color: var(--df-muted); font-size: 14px; }
+.df-sstrip__arrow { color: var(--df-muted); }
+.df-sstrip__card--follow { justify-content: space-between; flex-wrap: wrap; }
+.df-sstrip__nets { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.df-sstrip__nets a { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 64px; padding: 8px 6px; border-radius: 10px; color: var(--df-text); font-size: 11.5px; }
+.df-sstrip__nets a:hover { background: rgba(255, 255, 255, .6); color: var(--df-accent); }
+@media (max-width: 900px) { .df-sstrip__grid { grid-template-columns: 1fr; } }

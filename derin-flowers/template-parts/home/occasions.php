@@ -18,7 +18,7 @@ if ( ! $items ) {
 }
 $style = 'card' === df_opt( 'occ_style' ) ? 'card' : 'overlay';
 ?>
-<section data-df-sec="occasions" class="df-section df-occasions df-occasions--<?php echo esc_attr( $style ); ?>" aria-labelledby="df-occ-title">
+<section data-df-sec="occasions" class="df-section df-occasions df-occasions--<?php echo esc_attr( $style ); ?>" style="--occ-bg:<?php echo esc_attr( sanitize_hex_color( df_opt( 'occ_bg', '#F6E7E4' ) ) ? sanitize_hex_color( df_opt( 'occ_bg', '#F6E7E4' ) ) : '#F6E7E4' ); ?>" aria-labelledby="df-occ-title">
 	<div class="df-container">
 		<?php
 		df_section_head(

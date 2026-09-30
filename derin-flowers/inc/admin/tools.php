@@ -393,7 +393,7 @@ function df_apply_preset() {
 		wp_die( 'Yetkiniz yok.' );
 	}
 	$opts  = array_merge( df_defaults(), (array) get_option( DF_OPTION, array() ) );
-	$order = array( 'hero', 'occasions', 'popular', 'banners', 'categories', 'signature', 'editorial', 'bestsellers', 'trust', 'duo', 'delivery', 'story', 'blog', 'instagram', 'newsletter' );
+	$order = array( 'hero', 'occasions', 'popular', 'categories', 'signature', 'editorial', 'banners', 'bestsellers', 'trust', 'duo', 'delivery', 'story', 'blog', 'instagram', 'newsletter', 'social' );
 	$on    = array();
 	foreach ( (array) $opts['home_sections'] as $row ) {
 		if ( ! empty( $row['id'] ) ) {
@@ -413,12 +413,48 @@ function df_apply_preset() {
 	$opts['card_cart_icon'] = 1;
 	$opts['card_show_sku']  = 1;
 	$opts['ed_align']       = 'center';
+	$opts['cats_style']        = 'banner';
+	$opts['header_search_bar'] = 1;
+	$opts['section_space']     = 64;
+	$opts['pop_align']         = 'left';
+	if ( ! empty( $opts['hero_slides'][0] ) && is_array( $opts['hero_slides'][0] ) && empty( $opts['hero_slides'][0]['script'] ) ) {
+		$opts['hero_slides'][0]['script'] = "Çiçeklerle\ndaha güzel bir İzmir";
+	}
 	$opts['__df_clean']     = 1;
 	update_option( DF_OPTION, $opts );
 	wp_safe_redirect( admin_url( 'admin.php?page=derin-flowers-tools&preset=1' ) );
 	exit;
 }
 add_action( 'admin_post_df_preset', 'df_apply_preset' );
+
+/**
+ * Hazır kampanya bannerlarını ekle (var olanlar korunur, aynı başlıklı olan tekrar eklenmez).
+ */
+function df_apply_campaign_banners() {
+	if ( ! current_user_can( 'edit_theme_options' ) || ! check_admin_referer( 'df_campaign' ) ) {
+		wp_die( 'Yetkiniz yok.' );
+	}
+	$opts  = array_merge( df_defaults(), (array) get_option( DF_OPTION, array() ) );
+	$items = is_array( $opts['ban_items'] ) ? $opts['ban_items'] : array();
+	$have  = array();
+	foreach ( $items as $row ) {
+		$have[] = isset( $row['title'] ) ? mb_strtoupper( preg_replace( '/\s+/', ' ', $row['title'] ) ) : '';
+	}
+	$added = 0;
+	foreach ( df_campaign_banners() as $row ) {
+		if ( ! in_array( mb_strtoupper( preg_replace( '/\s+/', ' ', $row['title'] ) ), $have, true ) ) {
+			$items[] = $row;
+			++$added;
+		}
+	}
+	$opts['ban_items']  = $items;
+	$opts['ban_cols']   = '2';
+	$opts['__df_clean'] = 1;
+	update_option( DF_OPTION, $opts );
+	wp_safe_redirect( admin_url( 'admin.php?page=derin-flowers-tools&campaign=' . $added ) );
+	exit;
+}
+add_action( 'admin_post_df_campaign', 'df_apply_campaign_banners' );
 
 /**
  * Araçlar sayfası.
@@ -445,6 +481,9 @@ function df_tools_page() {
 		<?php if ( isset( $_GET['preset'] ) ) : ?>
 			<div class="notice notice-success"><p>Hazır ana sayfa düzeni uygulandı. <a href="<?php echo esc_url( home_url( '/' ) ); ?>" target="_blank">Siteyi görüntüle</a></p></div>
 		<?php endif; ?>
+		<?php if ( isset( $_GET['campaign'] ) ) : ?>
+			<div class="notice notice-success"><p><?php echo (int) $_GET['campaign']; ?> kampanya bannerı eklendi. Fotoğraflarını <a href="<?php echo esc_url( admin_url( 'admin.php?page=df-studio' ) ); ?>">Tasarım Stüdyosu</a>'nda "Renkli kategori bannerları" bölümünden ekleyin; fotoğrafı olmayan banner sitede görünmez.</p></div>
+		<?php endif; ?>
 		<?php if ( isset( $_GET['reset'] ) ) : ?>
 			<div class="notice notice-success"><p>Tüm tema ayarları varsayılana döndürüldü.</p></div>
 		<?php endif; ?>
@@ -470,11 +509,23 @@ function df_tools_page() {
 			<div class="df-group">
 				<div class="df-group__head"><h3>Hazır ana sayfa düzeni</h3></div>
 				<div class="df-group__body">
-					<p class="df-group__desc">Gönderilen tasarımdaki kurguyu uygular: hero → kart tipi özel gün bannerları → yuvarlak popüler kategoriler → renkli kategori bannerları → kategoriler → 5'li Signature Collection (sepet ikonu + ürün kodu) → ortalı Söz & Nişan banner'ı → diğer bölümler. Yazılarınız, görselleriniz ve ürün seçimleriniz değişmez; kapattığınız bölümler kapalı kalır.</p>
+					<p class="df-group__desc">Gönderilen tasarımdaki kurguyu uygular: hero (el yazısı notlu) → pembe özel gün kartları → yuvarlak popüler kategoriler → yatay kategori bannerları → 5'li Signature Collection (sepet ikonu + ürün kodu) → ortalı Söz & Nişan banner'ı → renkli kampanya bannerları → diğer bölümler → Instagram · Blog · Sosyal şeridi. Header'a arama kutusu eklenir, bölüm boşlukları sıkılaştırılır. Yazılarınız, görselleriniz ve ürün seçimleriniz değişmez; kapattığınız bölümler kapalı kalır.</p>
 					<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" onsubmit="return confirm('Ana sayfa düzeni ve bölüm sırası değişecek. Devam edilsin mi?');">
 						<?php wp_nonce_field( 'df_preset' ); ?>
 						<input type="hidden" name="action" value="df_preset">
 						<p><button class="button button-primary">Düzeni uygula</button></p>
+					</form>
+				</div>
+			</div>
+
+			<div class="df-group">
+				<div class="df-group__head"><h3>Hazır kampanya bannerları</h3></div>
+				<div class="df-group__body">
+					<p class="df-group__desc">10 renkli banner ekler: Sevgiliye, Söz/Nişan/Düğün, Açılış, Ev Hediyesi, Özür, Geçmiş Olsun, Anneler Günü, Mevsim, Saksı, İndirimli. Renkler, ikonlar, başlıklar ve "Aynı Gün Teslimat" düğmesi hazır gelir; sadece fotoğraflarını eklersiniz. Mevcut bannerlarınız silinmez, aynı başlıklı olan tekrar eklenmez. Fotoğrafı eklenmemiş banner sitede görünmez.</p>
+					<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+						<?php wp_nonce_field( 'df_campaign' ); ?>
+						<input type="hidden" name="action" value="df_campaign">
+						<p><button class="button button-primary">Bannerları ekle</button></p>
 					</form>
 				</div>
 			</div>

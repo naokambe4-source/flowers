@@ -155,6 +155,11 @@ hr { border: 0; border-top: 1px solid var(--df-line); margin: 2em 0; }
 .df-header__cats { display: inline-flex; align-items: center; gap: 10px; height: 42px; padding: 0 16px; background: none; border: 1px solid var(--df-line); font-size: 12px; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; transition: border-color .2s, color .2s; }
 .df-header__cats:hover { border-color: var(--df-text); color: var(--df-text); }
 .df-header__phone { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--df-muted); }
+.df-header__search { position: relative; display: flex; align-items: center; width: min(260px, 22vw); }
+.df-header__search .df-icon { position: absolute; left: 14px; color: var(--df-muted); pointer-events: none; }
+.df-header__search input { width: 100%; height: 42px; padding: 0 14px 0 40px; border: 1px solid var(--df-line); border-radius: 999px; background: var(--df-ivory); font-size: 13.5px; color: var(--df-text); }
+.df-header__search input:focus { outline: 0; border-color: var(--df-text); background: #fff; }
+@media (max-width: 1024px) { .df-header__search { display: none; } }
 .df-header.is-scrolled .df-header__inner { min-height: 70px; }
 
 .df-logo { margin: 0; line-height: 1; }

@@ -42,6 +42,7 @@ $autoplay = df_opt( 'hero_autoplay' ) && $count > 1;
 					'btn1_url'     => '',
 					'btn2_text'    => '',
 					'btn2_url'     => '',
+					'script'       => '',
 					'align'        => 'left',
 					'overlay'      => 'soft',
 					'theme'        => 'dark',
@@ -110,6 +111,9 @@ $autoplay = df_opt( 'hero_autoplay' ) && $count > 1;
 								</div>
 							<?php endif; ?>
 						</div>
+						<?php if ( $s['script'] ) : ?>
+							<p class="df-hero__script"<?php echo df_e( 'hero_slides.' . $i . '.script' ); // phpcs:ignore ?>><?php echo df_nl2br( $s['script'] ); // phpcs:ignore ?></p>
+						<?php endif; ?>
 					</div>
 				<?php endif; ?>
 			</div>

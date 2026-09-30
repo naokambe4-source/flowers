@@ -33,7 +33,7 @@ $radius = absint( df_opt( 'ban_radius', 18 ) );
 		<div class="df-banners__grid df-banners__grid--<?php echo (int) $cols; ?>">
 			<?php foreach ( $items as $b ) : ?>
 				<?php
-				$b    = wp_parse_args( $b, array( 'mode' => 'card', 'url' => '', 'image' => 0, 'image_mobile' => 0, 'title' => '', 'text' => '', 'pill' => '', 'badge' => '', 'icon' => '', 'bg' => '#F3E7E1', 'color' => '#6F463C' ) );
+				$b    = wp_parse_args( $b, array( 'mode' => 'card', 'url' => '', 'image' => 0, 'image_mobile' => 0, 'title' => '', 'text' => '', 'pill' => '', 'badge' => '', 'icon' => '', 'bg' => '#F3E7E1', 'color' => '#6F463C', 'accent' => '', 'font' => 'sans', 'size' => 'm' ) );
 				$k    = 'ban_items.' . $b['_i'];
 				$url  = $b['url'] ? df_url( $b['url'] ) : '';
 				$tag  = $url ? 'a' : 'div';
@@ -53,25 +53,36 @@ $radius = absint( df_opt( 'ban_radius', 18 ) );
 						<?php endif; ?>
 					</<?php echo $tag; // phpcs:ignore ?>>
 				<?php else : ?>
-					<<?php echo $tag . $href; // phpcs:ignore ?> class="df-banner df-banner--card" style="--b-bg:<?php echo esc_attr( $bg ); ?>;--b-fg:<?php echo esc_attr( $fg ); ?>">
+					<?php
+					$ac    = sanitize_hex_color( $b['accent'] ) ? sanitize_hex_color( $b['accent'] ) : $fg;
+					$lines = preg_split( '/\r\n|\r|\n/', trim( (string) $b['title'] ) );
+					$last  = count( $lines ) > 1 ? array_pop( $lines ) : '';
+					$cls   = 'df-banner df-banner--card df-banner--' . ( 'serif' === $b['font'] ? 'serif' : 'sans' ) . ' df-banner--size-' . sanitize_key( $b['size'] ? $b['size'] : 'm' );
+					?>
+					<<?php echo $tag . $href; // phpcs:ignore ?> class="<?php echo esc_attr( $cls ); ?>" style="--b-bg:<?php echo esc_attr( $bg ); ?>;--b-fg:<?php echo esc_attr( $fg ); ?>;--b-ac:<?php echo esc_attr( $ac ); ?>">
 						<span class="df-banner__media"<?php echo df_i( $k . '.image' ); // phpcs:ignore ?>>
-							<?php echo df_image( $b['image'], 'df-portrait', array( 'sizes' => '(max-width: 767px) 50vw, 25vw', 'alt' => '' ), 'Fotoğraf' ); // phpcs:ignore ?>
+							<?php echo df_image( $b['image'], 'df-portrait', array( 'sizes' => '(max-width: 767px) 55vw, 30vw', 'alt' => '' ), 'Fotoğraf' ); // phpcs:ignore ?>
 						</span>
 						<span class="df-banner__body">
 							<?php if ( $b['icon'] ) : ?>
-								<span class="df-banner__icon"><?php df_the_icon( $b['icon'], array( 'size' => 34 ) ); ?></span>
+								<span class="df-banner__icon" aria-hidden="true"><?php df_the_icon( 'sprig', array( 'class' => 'df-banner__sprig' ) ); ?><?php df_the_icon( $b['icon'], array( 'size' => 40 ) ); ?><?php df_the_icon( 'sprig', array( 'class' => 'df-banner__sprig is-flip' ) ); ?></span>
 							<?php endif; ?>
-							<span class="df-banner__title"<?php echo df_e( $k . '.title' ); // phpcs:ignore ?>><?php echo df_nl2br( $b['title'] ); // phpcs:ignore ?></span>
+							<span class="df-banner__head">
+								<?php df_the_icon( 'sprig', array( 'class' => 'df-banner__sprig df-banner__sprig--side' ) ); ?>
+								<span class="df-banner__title"<?php echo df_e( $k . '.title' ); // phpcs:ignore ?>><?php foreach ( $lines as $line ) : ?><span class="df-banner__line"><?php echo esc_html( $line ); ?></span><?php endforeach; ?><?php if ( '' !== $last ) : ?><span class="df-banner__line df-banner__line--ac"><?php echo esc_html( $last ); ?></span><?php endif; ?></span>
+								<?php df_the_icon( 'sprig', array( 'class' => 'df-banner__sprig df-banner__sprig--side is-flip' ) ); ?>
+							</span>
 							<span class="df-banner__rule" aria-hidden="true"><?php df_the_icon( 'heart', array( 'size' => 12 ) ); ?></span>
 							<?php if ( $b['text'] || df_live() ) : ?>
 								<span class="df-banner__text"<?php echo df_e( $k . '.text' ); // phpcs:ignore ?>><?php echo esc_html( $b['text'] ); ?></span>
 							<?php endif; ?>
 							<?php if ( $b['pill'] ) : ?>
-								<span class="df-banner__pill"><?php df_the_icon( 'truck', array( 'size' => 20 ) ); ?><span<?php echo df_e( $k . '.pill' ); // phpcs:ignore ?>><?php echo esc_html( $b['pill'] ); ?></span></span>
+								<span class="df-banner__pill"><?php df_the_icon( 'truck', array( 'size' => 22 ) ); ?><span<?php echo df_e( $k . '.pill' ); // phpcs:ignore ?>><?php echo esc_html( $b['pill'] ); ?></span></span>
 							<?php endif; ?>
 						</span>
 						<?php if ( $b['badge'] ) : ?>
-							<span class="df-banner__badge"><?php echo esc_html( $b['badge'] ); ?></span>
+							<?php $bl = preg_split( '/\r\n|\r|\n/', trim( (string) $b['badge'] ) ); ?>
+							<span class="df-banner__badge"><?php foreach ( $bl as $bi => $line ) : ?><span class="<?php echo count( $bl ) - 1 === $bi ? 'df-banner__badge-big' : 'df-banner__badge-sm'; ?>"><?php echo esc_html( $line ); ?></span><?php endforeach; ?></span>
 						<?php endif; ?>
 					</<?php echo $tag; // phpcs:ignore ?>>
 				<?php endif; ?>

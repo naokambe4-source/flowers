@@ -42,6 +42,13 @@ Araçlar sayfasında ayarları **JSON dışa/içe aktarma** ve sıfırlama da va
 - **Üyelik**: sekmeli Giriş / Üye Ol, ad-soyad-telefon-KVKK alanları, Hesabım kısayol kartları.
 - **Favoriler** (üye + ziyaretçi), canlı ürün araması, mini sepet çekmecesi, ürün kategorisine ikon + kapak görseli, menü öğelerine ikon seçimi, bülten aboneleri + CSV.
 
+## v1.4 — Kampanya bannerları ve yeni ana sayfa görünümü
+
+- **Kampanya bannerları:** solda fotoğraf, sağda renkli zemin; başlık üstü ikon, yaprak süsleri, iki satırlı başlık (son satır ayrı renk), alt metin ve kamyon ikonlu "Aynı Gün Teslimat" düğmesi, istenirse köşe rozeti (ör. "SEÇİLİ ÜRÜNLERDE %20"). Her şey banner genişliğine göre ölçeklenir; mobilde de oranlar aynı kalır. Başlık yazı tipi (kalın düz / tırnaklı zarif) ve boyutu banner başına seçilir.
+- **Araçlar → Hazır kampanya bannerları:** 10 hazır banner (Sevgiliye, Söz/Nişan/Düğün, Açılış, Ev Hediyesi, Özür, Geçmiş Olsun, Anneler Günü, Mevsim, Saksı, İndirimli); sadece fotoğraf eklenir.
+- **Hazır ana sayfa düzeni** gönderilen tasarıma göre: el yazısı notlu hero, pembe özel gün kartları, yuvarlak popüler kategoriler, yatay kategori bannerları, 5'li Signature, Söz & Nişan banner'ı, footer üstünde Instagram · Blog · Sosyal şeridi; header'da arama kutusu, sıkı bölüm aralıkları.
+- Yeni ikonlar: alyans, fiyonk, ev, geçmiş olsun, özür, indirim, çiçek, saksı, anneler günü, yaprak süsü.
+
 ## v1.3 — Sabit menü, sipariş kartı, her sayfa düzenlenebilir
 
 - **Sabit sol menü:** Yönetim Paneli sayfaları dahil her ekranda aynı, düzenli WordPress menüsü (Yönetim Paneli, Siparişler, Ürünler, Kullanıcılar, Tasarım Stüdyosu, Site Ayarları, Sayfalar, Blog, Görseller, WooCommerce). **Sade menü** müşteriye gerekmeyen öğeleri gizler; menünün altındaki *Tüm menüyü göster* ile (kullanıcı bazında) açılır. Yönetim & Giriş sekmesinden kapatılabilir.

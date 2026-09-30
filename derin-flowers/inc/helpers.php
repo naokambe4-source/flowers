@@ -558,20 +558,25 @@ function df_fonts_url() {
 	$body    = df_opt( 'font_body', 'Jost' );
 	$families = array();
 	$map      = array(
-		'Cormorant Garamond' => 'ital,wght@0,400;0,500;0,600;1,400;1,500',
-		'Playfair Display'   => 'ital,wght@0,400;0,500;0,600;1,400',
-		'Bodoni Moda'        => 'ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400',
+		'Cormorant Garamond' => 'ital,wght@0,400;0,500;0,600;0,700;1,400;1,500',
+		'Playfair Display'   => 'ital,wght@0,400;0,500;0,600;0,700;1,400',
+		'Bodoni Moda'        => 'ital,opsz,wght@0,6..96,400;0,6..96,500;0,6..96,700;1,6..96,400',
 		'Marcellus'          => 'wght@400',
 		'Gilda Display'      => 'wght@400',
-		'Lora'               => 'ital,wght@0,400;0,500;1,400',
-		'Jost'               => 'wght@300;400;500;600',
-		'Manrope'            => 'wght@300;400;500;600',
-		'DM Sans'            => 'opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600',
-		'Inter'              => 'wght@300;400;500;600',
-		'Montserrat'         => 'wght@300;400;500;600',
-		'Nunito Sans'        => 'wght@300;400;600',
+		'Lora'               => 'ital,wght@0,400;0,500;0,700;1,400',
+		'Jost'               => 'wght@300;400;500;600;700;800',
+		'Manrope'            => 'wght@300;400;500;600;700;800',
+		'DM Sans'            => 'opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700;9..40,800',
+		'Inter'              => 'wght@300;400;500;600;700;800',
+		'Montserrat'         => 'wght@300;400;500;600;700;800',
+		'Nunito Sans'        => 'wght@300;400;600;700;800',
+		'Great Vibes'        => 'wght@400',
+		'Allura'             => 'wght@400',
+		'Parisienne'         => 'wght@400',
+		'Pinyon Script'      => 'wght@400',
 	);
-	foreach ( array_unique( array( $heading, $body ) ) as $font ) {
+	$script = df_opt( 'font_script', 'Great Vibes' );
+	foreach ( array_unique( array_filter( array( $heading, $body, $script ) ) ) as $font ) {
 		if ( isset( $map[ $font ] ) ) {
 			$families[] = 'family=' . str_replace( ' ', '+', $font ) . ':' . $map[ $font ];
 		}
@@ -610,6 +615,7 @@ function df_css_variables() {
 		'--df-footer'       => $o['footer_bg'],
 		'--df-font-heading' => '"' . $o['font_heading'] . '", "Times New Roman", serif',
 		'--df-font-body'    => '"' . $o['font_body'] . '", system-ui, -apple-system, "Segoe UI", sans-serif',
+		'--df-font-script'  => '"' . ( $o['font_script'] ? $o['font_script'] : 'Great Vibes' ) . '", "Brush Script MT", cursive',
 		'--df-scale'        => (float) $o['font_scale'],
 		'--df-container'    => absint( $o['container_width'] ) . 'px',
 		'--df-radius-btn'   => absint( $o['btn_radius'] ) . 'px',

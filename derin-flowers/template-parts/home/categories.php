@@ -57,7 +57,7 @@ if ( ! $cards ) {
 }
 $style = df_opt( 'cats_style', 'below' );
 ?>
-<section data-df-sec="categories" class="df-section df-cats df-cats--<?php echo esc_attr( $style ); ?>" aria-labelledby="df-cats-title">
+<section data-df-sec="categories" class="df-section df-cats df-cats--<?php echo esc_attr( $style ); ?>" style="--cats-bg:<?php echo esc_attr( sanitize_hex_color( df_opt( 'cats_bg', '#F6E7E4' ) ) ? sanitize_hex_color( df_opt( 'cats_bg', '#F6E7E4' ) ) : '#F6E7E4' ); ?>" aria-labelledby="df-cats-title">
 	<div class="df-container">
 		<?php
 		df_section_head(
@@ -91,7 +91,7 @@ $style = df_opt( 'cats_style', 'below' );
 						<?php if ( $card['text'] ) : ?>
 							<span class="df-cat__text"><?php echo esc_html( $card['text'] ); ?></span>
 						<?php endif; ?>
-						<span class="df-cat__cta"><?php echo esc_html( df_opt( 'cats_cta', 'KEŞFET' ) ); ?><?php df_the_icon( 'arrow-right', array( 'size' => 16 ) ); ?></span>
+						<span class="df-cat__cta"><?php echo esc_html( 'banner' === $style ? df_opt( 'cats_cta_banner', 'İNCELE' ) : df_opt( 'cats_cta', 'KEŞFET' ) ); ?><?php df_the_icon( 'arrow-right', array( 'size' => 16 ) ); ?></span>
 					</span>
 				</a>
 			<?php endforeach; ?>

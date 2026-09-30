@@ -46,6 +46,16 @@ defined( 'ABSPATH' ) || exit;
 						<span<?php echo df_e( 'header_cat_label' ); // phpcs:ignore ?>><?php echo esc_html( df_opt( 'header_cat_label', 'Kategoriler' ) ); ?></span>
 					</button>
 				<?php endif; ?>
+				<?php if ( df_opt( 'header_search_bar' ) ) : ?>
+					<form class="df-header__search" role="search" method="get" action="<?php echo esc_url( home_url( '/' ) ); ?>">
+						<?php df_the_icon( 'search', array( 'size' => 17 ) ); ?>
+						<label class="screen-reader-text" for="df-header-s">Ara</label>
+						<input type="search" id="df-header-s" name="s" placeholder="<?php echo esc_attr( df_opt( 'header_search_ph', 'Çiçek, buket, özel gün ara…' ) ); ?>" value="<?php echo esc_attr( get_search_query() ); ?>">
+						<?php if ( df_wc() ) : ?>
+							<input type="hidden" name="post_type" value="product">
+						<?php endif; ?>
+					</form>
+				<?php endif; ?>
 				<?php if ( df_opt( 'header_phone_on' ) && df_opt( 'contact_phone1' ) ) : ?>
 					<a class="df-header__phone" href="<?php echo esc_url( df_tel( df_opt( 'contact_phone1' ) ) ); ?>"><?php df_the_icon( 'phone', array( 'size' => 16 ) ); ?><span><?php echo esc_html( df_opt( 'contact_phone1' ) ); ?></span></a>
 				<?php endif; ?>
