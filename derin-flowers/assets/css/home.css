@@ -610,7 +610,8 @@ a.df-sstrip__card:hover { color: var(--df-text); transform: translateY(-2px); bo
 .df-banner--focus-fit .df-banner__media img { object-fit: contain; object-position: left center; }
 
 /* Vitrin: görsel oranı ve eşit kart yüksekliği */
-.df-vitrin .df-card__media { aspect-ratio: 1 / 1; background: #fff; }
+.df-vitrin .df-card__media { aspect-ratio: 4 / 5; background: #fff; }
+.df-vitrin--r1-1 .df-card__media { aspect-ratio: 1 / 1; }
 .df-vitrin--r4-5 .df-card__media { aspect-ratio: 4 / 5; }
 .df-vitrin--r3-4 .df-card__media { aspect-ratio: 3 / 4; }
 .df-vitrin .df-card__media img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
@@ -627,3 +628,26 @@ a.df-sstrip__card:hover { color: var(--df-text); transform: translateY(-2px); bo
 	.df-vitrin .df-card__price { font-size: 14.5px; }
 	.df-vitrin .df-card__view { justify-content: center; width: 100%; }
 }
+
+/* Vitrin sütunları */
+.df-vitrin--c3 .df-vitrin__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; }
+.df-vitrin--c5 .df-vitrin__grid { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 14px; }
+@media (max-width: 1100px) { .df-vitrin--c5 .df-vitrin__grid, .df-vitrin--c3 .df-vitrin__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 767px) { .df-vitrin--c5 .df-vitrin__grid, .df-vitrin--c3 .df-vitrin__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; } }
+
+/* Renkli banner: fotoğraf alanı genişliği (yazı alanı daralır) */
+.df-banner--split-50 { grid-template-columns: 50% 50%; }
+.df-banner--split-58 { grid-template-columns: 58% 42%; }
+.df-banner--split-65 { grid-template-columns: 65% 35%; }
+.df-banner--split-72 { grid-template-columns: 72% 28%; }
+.df-banner--split-65 .df-banner__body, .df-banner--split-72 .df-banner__body { --b-ts: 4.4cqi; }
+.df-banner--split-72 .df-banner__text { display: none; }
+.df-banner__media::after { width: 26%; }
+
+/* Instagram & Blog: yazı taşmasın */
+.df-sstrip__tile { min-height: clamp(190px, 16vw, 240px); align-items: stretch; }
+.df-sstrip__txt { justify-content: center; padding-top: 22px; padding-bottom: 22px; max-width: 52%; }
+.df-sstrip__tile--right .df-sstrip__txt { margin-left: auto; }
+.df-sstrip__txt strong { font-size: calc(clamp(22px, 1.9vw, 30px) * var(--df-scale)); }
+.df-sstrip__txt > span:not(.df-sstrip__handle):not(.df-sstrip__btn) { font-size: 14px; line-height: 1.45; }
+@media (max-width: 767px) { .df-sstrip__txt { max-width: 72%; } }

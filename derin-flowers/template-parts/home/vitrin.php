@@ -17,7 +17,7 @@ $products = df_query_products( $cat ? 'category' : 'newest', array( 'cat' => $ca
 if ( ! $products ) {
 	return;
 }
-$cols   = 4;
+$cols   = max( 3, min( 5, (int) df_opt( 'vit_cols', 4 ) ) );
 $promos = array();
 foreach ( df_opt( 'vit_promos_on', 1 ) ? (array) df_opt( 'vit_promos', array() ) : array() as $i => $row ) {
 	if ( is_array( $row ) && ( ! empty( $row['image'] ) || df_live() ) && ! empty( $row['title'] ) ) {
@@ -30,7 +30,7 @@ $all_url = ( $term && ! is_wp_error( $term ) ) ? get_term_link( $term ) : wc_get
 $first   = array_slice( $products, 0, $cols );
 $rest    = array_slice( $products, $cols );
 ?>
-<section data-df-sec="vitrin" class="df-section df-vitrin df-vitrin--r<?php echo esc_attr( sanitize_key( df_opt( 'vit_ratio', '1-1' ) ) ); ?>" aria-labelledby="df-vit-title">
+<section data-df-sec="vitrin" class="df-section df-vitrin df-vitrin--r<?php echo esc_attr( sanitize_key( df_opt( 'vit_ratio', '4-5' ) ) ); ?> df-vitrin--c<?php echo (int) df_opt( 'vit_cols', 4 ); ?>" aria-labelledby="df-vit-title">
 	<div class="df-container">
 		<header class="df-vitrin__head">
 			<h2 id="df-vit-title"<?php echo df_e( 'vit_title' ); // phpcs:ignore ?>><?php echo esc_html( df_opt( 'vit_title', 'Vitrin Koleksiyonu' ) ); ?></h2>
@@ -46,7 +46,7 @@ $rest    = array_slice( $products, $cols );
 				<?php foreach ( $promos as $row ) : ?>
 					<?php $k = 'vit_promos.' . $row['_i']; ?>
 					<a class="df-promo" href="<?php echo esc_url( ! empty( $row['url'] ) ? df_url( $row['url'] ) : $all_url ); ?>">
-						<span class="df-promo__media"<?php echo df_i( $k . '.image' ); // phpcs:ignore ?>><?php echo df_image( isset( $row['image'] ) ? $row['image'] : 0, 'df-wide', array( 'sizes' => '(max-width: 900px) 100vw, 34vw', 'alt' => '' ), 'Banner görseli' ); // phpcs:ignore ?></span>
+						<span class="df-promo__media"<?php echo df_i( $k . '.image' ); // phpcs:ignore ?>><?php echo df_image( isset( $row['image'] ) ? $row['image'] : 0, 'large', array( 'sizes' => '(max-width: 900px) 100vw, 34vw', 'alt' => '' ), 'Banner görseli' ); // phpcs:ignore ?></span>
 						<span class="df-promo__body">
 							<span class="df-promo__title"<?php echo df_e( $k . '.title' ); // phpcs:ignore ?>><?php echo df_nl2br( $row['title'] ); // phpcs:ignore ?></span>
 							<span class="df-promo__btn"><?php echo esc_html( ! empty( $row['btn'] ) ? $row['btn'] : 'Keşfet' ); ?><?php df_the_icon( 'arrow-right', array( 'size' => 14 ) ); ?></span>

@@ -21,7 +21,7 @@ if ( 'image' === df_opt( 'soc_style' ) ) :
 		<div class="df-container df-sstrip__duo">
 			<?php if ( $ig_url ) : ?>
 				<a class="df-sstrip__tile<?php echo df_opt( 'soc_ig_dark' ) ? ' df-sstrip__tile--dark' : ''; ?>" href="<?php echo esc_url( $ig_url ); ?>" target="_blank" rel="noopener">
-					<span class="df-sstrip__bg"<?php echo df_i( 'soc_ig_image' ); // phpcs:ignore ?>><?php echo df_image( df_opt( 'soc_ig_image' ), 'df-wide', array( 'sizes' => '(max-width: 900px) 100vw, 50vw', 'alt' => '' ), 'Instagram görseli' ); // phpcs:ignore ?></span>
+					<span class="df-sstrip__bg"<?php echo df_i( 'soc_ig_image' ); // phpcs:ignore ?>><?php echo df_image( df_opt( 'soc_ig_image' ), 'large', array( 'sizes' => '(max-width: 900px) 100vw, 50vw', 'alt' => '' ), 'Instagram görseli' ); // phpcs:ignore ?></span>
 					<span class="df-sstrip__txt">
 						<strong<?php echo df_e( 'soc_ig_title' ); // phpcs:ignore ?>><?php echo df_nl2br( df_opt( 'soc_ig_title' ) ); // phpcs:ignore ?></strong>
 						<span class="df-sstrip__handle"><?php df_the_icon( 'instagram', array( 'size' => 22 ) ); ?><?php echo esc_html( $handle ); ?></span>
@@ -30,7 +30,7 @@ if ( 'image' === df_opt( 'soc_style' ) ) :
 			<?php endif; ?>
 			<?php if ( $blog ) : ?>
 				<a class="df-sstrip__tile df-sstrip__tile--right" href="<?php echo esc_url( $blog ); ?>">
-					<span class="df-sstrip__bg"<?php echo df_i( 'soc_blog_image' ); // phpcs:ignore ?>><?php echo df_image( df_opt( 'soc_blog_image' ), 'df-wide', array( 'sizes' => '(max-width: 900px) 100vw, 50vw', 'alt' => '' ), 'Blog görseli' ); // phpcs:ignore ?></span>
+					<span class="df-sstrip__bg"<?php echo df_i( 'soc_blog_image' ); // phpcs:ignore ?>><?php echo df_image( df_opt( 'soc_blog_image' ), 'large', array( 'sizes' => '(max-width: 900px) 100vw, 50vw', 'alt' => '' ), 'Blog görseli' ); // phpcs:ignore ?></span>
 					<span class="df-sstrip__txt">
 						<strong<?php echo df_e( 'soc_blog_title' ); // phpcs:ignore ?>><?php echo esc_html( df_opt( 'soc_blog_title' ) ); ?></strong>
 						<span<?php echo df_e( 'soc_blog_text' ); // phpcs:ignore ?>><?php echo esc_html( df_opt( 'soc_blog_text' ) ); ?></span>

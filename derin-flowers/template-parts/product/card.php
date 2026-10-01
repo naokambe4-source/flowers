@@ -27,7 +27,7 @@ if ( ! $product->is_in_stock() ) {
 }
 $subtitle = get_post_meta( $product->get_id(), '_df_subtitle', true );
 // Vitrinde kırpılmamış görsel: kare/dikey fotoğraflar kesilmeden sığar.
-$img_size = ( ! empty( $args['variant'] ) && 'vitrin' === $args['variant'] && '4-5' !== df_opt( 'vit_ratio', '1-1' ) ) ? 'medium_large' : 'df-card';
+$img_size = ( ! empty( $args['variant'] ) && 'vitrin' === $args['variant'] ) ? 'large' : 'df-card';
 ?>
 <<?php echo esc_attr( $tag ); ?> <?php wc_product_class( $classes, $product ); ?>>
 	<div class="df-card__media">
