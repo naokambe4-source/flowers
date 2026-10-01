@@ -15,6 +15,15 @@
     </div>
     <button type="submit" class="btn btn-lg btn-block">GİRİŞ YAP</button>
 </form>
+<?php $regMode = App\Services\MembershipService::registrationMode(); ?>
+<?php if ($regMode === 'open'): ?>
+<div class="divider-text">Henüz hesabınız yok mu?</div>
+<a class="btn btn-secondary btn-block" href="<?= e(url('/kayit-ol')) ?>"><?= icon('user') ?> HESAP OLUŞTUR</a>
+<?php elseif ($regMode === 'application'): ?>
 <div class="divider-text">Henüz hesabınız yok mu?</div>
 <a class="btn btn-secondary btn-block" href="<?= e(url('/erisim-talebi')) ?>"><?= icon('user') ?> ERİŞİM TALEBİ OLUŞTUR</a>
+<?php else: ?>
+<div class="divider-text">Hesabınız yok mu?</div>
+<p class="muted small" style="text-align:center">Hesaplar kurum yöneticiniz veya platform yönetimi tarafından açılır.</p>
+<?php endif; ?>
 <p class="muted small" style="margin-top:16px">Bu platform yalnızca yetkilendirilmiş kurum üyelerine açıktır. Otel bilgileri ve fiyatlar giriş yapmadan görüntülenemez.</p>

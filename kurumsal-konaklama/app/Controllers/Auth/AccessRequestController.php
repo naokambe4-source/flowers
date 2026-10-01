@@ -13,14 +13,29 @@ use App\Services\RateLimiter;
 
 final class AccessRequestController extends Controller
 {
+    private function closedRedirect(): ?Response
+    {
+        $mode = MembershipService::registrationMode();
+        if ($mode === 'application') {
+            return null;
+        }
+        return $this->redirect($mode === 'open' ? '/kayit-ol' : '/giris');
+    }
+
     public function show(): Response
     {
+        if ($r = $this->closedRedirect()) {
+            return $r;
+        }
         $institutions = App::db()->fetchAll('SELECT id, name FROM institutions WHERE is_active = 1 ORDER BY name');
         return $this->view('auth/access_request', ['title' => 'Erişim talebi', 'split' => true, 'institutions' => $institutions], 'guest');
     }
 
     public function store(): Response
     {
+        if ($r = $this->closedRedirect()) {
+            return $r;
+        }
         if ((string) ($this->request->post['website'] ?? '') !== '') {
             return $this->redirect('/giris'); // bot tuzağı
         }

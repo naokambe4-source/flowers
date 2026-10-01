@@ -6,7 +6,7 @@ $img = hotel_image_url($h['cover_image_id'] ? (int) $h['cover_image_id'] : null,
 ?>
 <article class="hotel-card<?= !empty($horizontal) ? ' horizontal' : '' ?>">
     <div class="hotel-media">
-        <?php if ($img): ?><img src="<?= e($img) ?>" alt="<?= e($h['name']) ?> otel fotoğrafı" loading="lazy" decoding="async">
+        <?php if ($img): ?><img src="<?= e($img) ?>" alt="<?= e($h['name']) ?> otel fotoğrafı" loading="lazy" decoding="async"><?php if (!empty($h['is_demo'])): ?><span class="img-note">Temsili görsel</span><?php endif; ?>
         <?php else: ?><div class="no-photo"><div><?= icon('image') ?>Bu otel için henüz fotoğraf eklenmedi</div></div><?php endif; ?>
         <form method="post" action="<?= e(url('/favoriler/' . (int) $h['id'])) ?>" data-fav data-no-lock>
             <?= csrf_field() ?>

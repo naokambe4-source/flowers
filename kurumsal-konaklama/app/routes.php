@@ -25,6 +25,8 @@ return static function (Router $r): void {
     $r->post('/sifre-olustur/{token}', [Auth\PasswordController::class, 'reset']);
     $r->get('/erisim-talebi', [Auth\AccessRequestController::class, 'show'], ['guest'], 'access.request');
     $r->post('/erisim-talebi', [Auth\AccessRequestController::class, 'store'], ['guest']);
+    $r->get('/kayit-ol', [Auth\RegisterController::class, 'show'], ['guest'], 'register');
+    $r->post('/kayit-ol', [Auth\RegisterController::class, 'store'], ['guest']);
     $r->get('/iletisim', [Site\PageController::class, 'contact'], [], 'contact');
     $r->post('/iletisim', [Site\PageController::class, 'sendContact']);
     $r->get('/kvkk', [Site\PageController::class, 'kvkk']);
@@ -187,6 +189,9 @@ return static function (Router $r): void {
 
         $r->get('/ayarlar', [Admin\SettingsController::class, 'index'], ['can:settings.manage'], 'admin.settings');
         $r->post('/ayarlar', [Admin\SettingsController::class, 'save'], ['can:settings.manage']);
+        $r->get('/demo-mod', [Admin\DemoController::class, 'index'], ['can:settings.manage'], 'admin.demo');
+        $r->post('/demo-mod/yukle', [Admin\DemoController::class, 'install'], ['can:settings.manage']);
+        $r->post('/demo-mod/kaldir', [Admin\DemoController::class, 'remove'], ['can:settings.manage']);
         $r->get('/guncelleme', [Admin\SettingsController::class, 'updates'], ['can:settings.manage']);
         $r->post('/guncelleme', [Admin\SettingsController::class, 'runUpdates'], ['can:settings.manage']);
         $r->get('/yetkiler', [Admin\RoleController::class, 'index'], ['can:roles.manage|settings.manage'], 'admin.roles');

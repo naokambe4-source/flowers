@@ -46,6 +46,7 @@ $iconClose = e(icon('close'));
         </div>
     </div>
 </header>
+<?php if (setting('demo.active') === '1'): ?><div class="demo-banner" role="note"><div><?= icon('info', 'icon-s') ?> <strong>DEMO MODU</strong><span class="demo-more"> — Oteller kurgusal, fiyatlar örnek, görseller temsilidir.</span><?php if (can('settings.manage')): ?> <a href="<?= e(url('/yonetim/demo-mod')) ?>">Canlı moda geç</a><?php endif; ?></div></div><?php endif; ?>
 <div class="mobile-panel" id="mobile-panel">
     <div class="mobile-panel-inner">
         <nav aria-label="Mobil menü">

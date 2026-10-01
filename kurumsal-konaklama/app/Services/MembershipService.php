@@ -37,6 +37,72 @@ final class MembershipService
         return $id;
     }
 
+    public static function registrationMode(): string
+    {
+        $m = SettingsService::get('membership.registration_mode', 'application');
+        return in_array($m, ['application', 'open', 'closed'], true) ? $m : 'application';
+    }
+
+    /** @return string[] küçük harfli izinli alan adları (boş: tümü serbest) */
+    public static function allowedDomains(): array
+    {
+        $parts = preg_split('/[\s,;]+/', mb_strtolower(SettingsService::get('membership.allowed_domains'))) ?: [];
+        return array_values(array_filter(array_map(static fn ($d) => ltrim(trim($d), '@'), $parts)));
+    }
+
+    public static function emailAllowed(string $email): bool
+    {
+        $domains = self::allowedDomains();
+        if (!$domains) {
+            return true;
+        }
+        $host = mb_strtolower((string) substr(strrchr($email, '@') ?: '', 1));
+        foreach ($domains as $d) {
+            if ($host === $d || str_ends_with($host, '.' . $d)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Açık kayıt: yönetimin açtığı modda kullanıcı kendi hesabını oluşturur; hesap Standart Üye rolüyle hemen aktiftir.
+     * @return array kullanıcı satırı
+     */
+    public function register(array $d, string $ip): array
+    {
+        if (self::registrationMode() !== 'open') {
+            throw new DomainException('Üyelik kaydı şu anda kapalıdır.');
+        }
+        $email = mb_strtolower(trim((string) $d['email']));
+        if (!self::emailAllowed($email)) {
+            throw new \App\Exceptions\ValidationException(['email' => 'Kayıt yalnız şu alan adlarındaki e-posta adresleriyle yapılabilir: ' . implode(', ', self::allowedDomains())]);
+        }
+        $institutionId = !empty($d['institution_id']) ? (int) $d['institution_id'] : null;
+        if ($institutionId !== null && !$this->db->value('SELECT 1 FROM institutions WHERE id = ? AND is_active = 1', [$institutionId])) {
+            $institutionId = null;
+        }
+        if ($institutionId === null && SettingsService::bool('membership.require_institution')) {
+            throw new \App\Exceptions\ValidationException(['institution_id' => 'Listeden kurumunuzu seçin.']);
+        }
+        $user = $this->db->transaction(function (Database $db) use ($d, $email, $institutionId) {
+            if ($db->value('SELECT 1 FROM users WHERE email = ?', [$email])) {
+                throw new DomainException('Bu e-posta adresiyle işlem yapılamıyor. Hesabınız varsa giriş yapın veya “Şifremi unuttum” bağlantısını kullanın.');
+            }
+            $roleId = (int) $db->value("SELECT id FROM roles WHERE slug = 'member'");
+            $id = $db->insert('users', [
+                'first_name' => $d['first_name'], 'last_name' => $d['last_name'], 'email' => $email, 'phone' => $d['phone'],
+                'institution_id' => $institutionId, 'department' => ($d['department'] ?? '') ?: null, 'membership_type' => 'uye',
+                'role_id' => $roleId, 'status' => 'active', 'password_hash' => password_hash((string) $d['password'], PASSWORD_DEFAULT),
+                'password_changed_at' => date('Y-m-d H:i:s'),
+            ]);
+            return $db->fetch('SELECT * FROM users WHERE id = ?', [$id]);
+        });
+        AuditService::log('user.register', 'user', (int) $user['id'], null, ['email' => $email, 'institution_id' => $institutionId, 'ip' => $ip]);
+        NotificationService::notifyStaff('users.view', 'Yeni üye kaydı', $user['first_name'] . ' ' . $user['last_name'] . ' — ' . $email, '/yonetim/uyeler');
+        return $user;
+    }
+
     /**
      * Başvuruyu onaylar: kullanıcı oluşturulur (aktif), parola oluşturma bağlantısı gönderilir.
      * @return array{user_id:int, link:array}

@@ -493,6 +493,84 @@ $tests['sodium olmayan sunucuda OpenSSL (AES-256-GCM) ile şifreleme'] = functio
     T::ok($C::available(), 'kurulum kontrolü şifreleme desteğini görür');
 };
 
+$tests['Demo modu: yükleme, arama, kaldırma (gerçek kayıtlar korunur)'] = function () use ($db, $fx, $crit, $user) {
+    $svc = new \App\Services\DemoDataService($db);
+    T::ok($svc->available(), 'demo veri dosyaları pakette');
+    $realBefore = (int) $db->value('SELECT COUNT(*) FROM hotels WHERE is_demo = 0');
+    $n = $svc->install(null, 120);
+    T::eq(14, $n, '14 demo otel yüklendi');
+    T::ok($svc->isActive() && SettingsService::get('demo.active') === '1', 'demo modu etkin');
+    T::throws(\App\Exceptions\DomainException::class, fn () => $svc->install(null, 120), 'ikinci kez yüklenemez');
+    $st = $svc->stats();
+    T::ok($st['rooms'] >= 28 && $st['images'] >= 50, 'oda ve görseller');
+    $key = (string) $db->value('SELECT i.storage_key FROM hotel_images i JOIN hotels h ON h.id = i.hotel_id WHERE h.is_demo = 1 LIMIT 1');
+    T::ok(\App\Services\ImageService::path('hotels', $key, 'thumb') !== null, 'görsel dosyaları üç boyutta saklandı');
+    T::eq(0, (int) $db->value('SELECT COUNT(*) FROM hotels h WHERE h.is_demo = 1 AND h.cover_image_id IS NULL'), 'her demo otelin kapağı var');
+    $instant = (int) $db->value("SELECT id FROM hotels WHERE slug = 'mavi-kumsal-resort-spa'");
+    $request = (int) $db->value("SELECT id FROM hotels WHERE slug = 'belek-cam-bahcesi-golf-resort'");
+    $res = (new SearchService($db))->search($user('uye@test.local'), $crit(40, 3), ['ids' => [$instant, $request]], 'onerilen', 1);
+    T::eq('firm', $res['quotes'][$instant]->kind ?? null, 'anında onaylı demo otel kesin fiyat verir');
+    T::eq('target', $res['quotes'][$request]->kind ?? null, 'otel onaylı demo otel hedef teklif verir');
+    T::ok($res['quotes'][$instant]->discountTotal > 0, 'kurum/üye indirimi uygulanır');
+    TestEnv::actingAs('uye@test.local');
+    $page = TestEnv::request('GET', '/oteller/mavi-kumsal-resort-spa');
+    T::eq(200, $page->status(), 'demo otel detay sayfası');
+    T::ok(str_contains($page->body(), 'temsili'), 'görseller temsili olarak etiketlenir');
+    TestEnv::logout();
+    // Demo otelde deneme rezervasyonu → canlıya geçişte silinir
+    $room = (int) $db->value('SELECT id FROM rooms WHERE hotel_id = ? ORDER BY id LIMIT 1', [$instant]);
+    $u = $user('uye@test.local');
+    $bid = $db->insert('bookings', ['code' => 'DEMO-TEST-1', 'user_id' => $u['id'], 'hotel_id' => $instant, 'check_in' => date('Y-m-d', strtotime('+40 day')), 'check_out' => date('Y-m-d', strtotime('+42 day')), 'nights' => 2, 'adults' => 2, 'status' => 'confirmed', 'mode' => 'instant', 'source' => 'contract', 'total_minor' => 100000, 'currency' => 'TRY']);
+    $r = $svc->remove();
+    T::eq(14, $r['hotels'], 'demo oteller silindi');
+    T::eq(1, $r['bookings'], 'demo otele yapılan deneme rezervasyonu silindi');
+    T::eq(0, (int) $db->value('SELECT COUNT(*) FROM bookings WHERE id = ?', [$bid]), 'rezervasyon kaydı yok');
+    T::eq($realBefore, (int) $db->value('SELECT COUNT(*) FROM hotels'), 'gerçek oteller korunur');
+    T::ok(\App\Services\ImageService::path('hotels', $key, 'thumb') === null, 'demo görsel dosyaları silindi');
+    T::eq('0', SettingsService::get('demo.active'), 'canlı mod');
+    T::eq('', SettingsService::get('home.hero_image'), 'demo karşılama görseli geri alındı');
+};
+
+$tests['Üyelik kayıt modu: başvuru / açık kayıt / kapalı'] = function () use ($db) {
+    $form = ['first_name' => 'Ali', 'last_name' => 'Kayıt', 'email' => 'ali.kayit@kurum.gov.tr', 'phone' => '05551234567', 'password' => 'GucluParola2026', 'password_confirmation' => 'GucluParola2026', 'kvkk' => '1'];
+    SettingsService::set('membership.registration_mode', 'application');
+    $r = TestEnv::request('GET', '/kayit-ol');
+    T::eq(302, $r->status(), 'başvuru modunda kayıt sayfası kapalı');
+    T::eq(200, TestEnv::request('GET', '/erisim-talebi')->status(), 'erişim talebi açık');
+    TestEnv::request('POST', '/kayit-ol', $form);
+    T::eq(0, (int) $db->value('SELECT COUNT(*) FROM users WHERE email = ?', [$form['email']]), 'başvuru modunda doğrudan kayıt yapılamaz');
+
+    SettingsService::set('membership.registration_mode', 'open');
+    $page = TestEnv::request('GET', '/kayit-ol');
+    T::eq(200, $page->status(), 'açık kayıt sayfası');
+    T::ok(str_contains(TestEnv::request('GET', '/giris')->body(), 'HESAP OLUŞTUR'), 'giriş sayfasında hesap oluştur düğmesi');
+    T::eq(302, TestEnv::request('GET', '/erisim-talebi')->status(), 'açık kayıtta erişim talebi kayda yönlenir');
+    SettingsService::set('membership.allowed_domains', 'antalya.gov.tr, ornek.edu.tr');
+    TestEnv::request('POST', '/kayit-ol', $form);
+    T::eq(0, (int) $db->value('SELECT COUNT(*) FROM users WHERE email = ?', [$form['email']]), 'izinli olmayan alan adı reddedilir');
+    T::ok(\App\Services\MembershipService::emailAllowed('x@birim.antalya.gov.tr'), 'alt alan adı kabul edilir');
+    SettingsService::set('membership.allowed_domains', '');
+    $resp = TestEnv::request('POST', '/kayit-ol', $form);
+    $u = $db->fetch('SELECT u.*, r.slug FROM users u JOIN roles r ON r.id = u.role_id WHERE email = ?', [$form['email']]);
+    T::ok($u !== null && $u['status'] === 'active' && $u['slug'] === 'member', 'hesap Standart Üye olarak hemen aktif');
+    T::ok(password_verify('GucluParola2026', (string) $u['password_hash']), 'parola özetlenerek saklanır');
+    T::eq(302, $resp->status(), 'kayıt sonrası panele yönlenir');
+    T::eq((int) $u['id'], \App\Core\Auth::id(), 'kayıt sonrası oturum açılır');
+    TestEnv::logout();
+    TestEnv::request('POST', '/kayit-ol', $form);
+    T::eq(1, (int) $db->value('SELECT COUNT(*) FROM users WHERE email = ?', [$form['email']]), 'aynı e-postayla ikinci hesap açılmaz');
+    SettingsService::set('membership.require_institution', '1');
+    TestEnv::request('POST', '/kayit-ol', ['email' => 'kurumsuz@kurum.gov.tr'] + $form);
+    T::eq(0, (int) $db->value("SELECT COUNT(*) FROM users WHERE email = 'kurumsuz@kurum.gov.tr'"), 'kurum zorunluyken kurumsuz kayıt reddedilir');
+    SettingsService::set('membership.require_institution', '0');
+
+    SettingsService::set('membership.registration_mode', 'closed');
+    T::eq(302, TestEnv::request('GET', '/kayit-ol')->status(), 'kapalı modda kayıt yok');
+    T::eq(302, TestEnv::request('GET', '/erisim-talebi')->status(), 'kapalı modda başvuru yok');
+    T::ok(!str_contains(TestEnv::request('GET', '/giris')->body(), 'ERİŞİM TALEBİ'), 'giriş sayfasında başvuru düğmesi gizli');
+    SettingsService::set('membership.registration_mode', 'application');
+};
+
 $tests['Sayfa render (üye ve yönetim) — taşma riski olmayan HTML üretimi'] = function () use ($fx, $crit) {
     TestEnv::actingAs('uye@test.local');
     $c = $crit(15, 2);

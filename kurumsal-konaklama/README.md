@@ -2,7 +2,7 @@
 
 Antalya ve ilçelerindeki anlaşmalı otelleri **yalnızca yetkilendirilmiş kurum üyelerine** özel fiyatlarla sunan kapalı B2B/B2E konaklama platformu. Standart cPanel hosting üzerinde (PHP 8.3 + MySQL/MariaDB) çalışır; Node.js, Docker veya sürekli çalışan servis gerektirmez.
 
-**Teslim paketi:** `../kurumsal-konaklama-1.0.0.zip` (vendor dahil, cPanel’e doğrudan yüklenir).
+**Teslim paketi:** `../kurumsal-konaklama-1.1.0.zip` (vendor dahil, cPanel’e doğrudan yüklenir).
 
 ## Dokümanlar
 | Doküman | İçerik |
@@ -15,6 +15,8 @@ Antalya ve ilçelerindeki anlaşmalı otelleri **yalnızca yetkilendirilmiş kur
 | [docs/TEST-SONUCLARI.md](docs/TEST-SONUCLARI.md) | Otomatik, uçtan uca, kurulum yolu ve responsive test sonuçları; yapılamayan testler |
 
 ## Öne çıkanlar
+- **Demo / Canlı mod:** tek tıkla 14 kurgusal Antalya oteli (fiyat, kontenjan, temsili görsellerle) yükleyip sistemi deneyin; canlıya geçişte yalnız demo kayıtları silinir.
+- **Üyelik kayıt modu:** erişim talebi (onaylı) / açık kayıt (alan adı kısıtlamalı olabilir) / kapalı — yönetimden seçilir.
 - **Kapalı üyelik:** girişsiz kullanıcı otel, fiyat, görsel veya JSON verisine sunucu tarafında erişemez; otel fotoğrafları herkese açık klasörde değil, yetkili uç noktadan sunulur.
 - **Kurulum yolu bağımsız:** `/`, `/oteller/`, `/kurumsal/konaklama/` — tüm bağlantılar `base_url()`, `url()`, `asset_url()`, `route_url()` ile üretilir; rewrite kapalıysa kurulum engellenir.
 - **Fiyat motoru:** kuruş bazlı hesap; anlaşmalı / kampanya / doğrulanmış referans / sağlayıcı fiyatları ayrı; kural önceliği ve birlikte uygulanma, kurum → fiyat grubu → genel (%10, yönetimden) üye indirimi, azami indirim sınırı, promosyon, vergi; **kesin fiyat ↔ onaya bağlı hedef teklif** ayrımı; yalnız aynı koşullarda doğrulanmış tasarruf.
@@ -28,6 +30,8 @@ Antalya ve ilçelerindeki anlaşmalı otelleri **yalnızca yetkilendirilmiş kur
 composer install                 # bağımlılıklar
 php bin/migrate.php [--status]   # migration
 php bin/cron.php                 # kuyruk + periyodik işler
+php bin/demo.php durum|yukle|kaldir   # demo içerik
+node tools/demo-images/generate.mjs  # (geliştirici) demo görsellerini yeniden üret — Playwright gerekir
 php tests/run.php                # test paketi (KK_TEST_DB_* ile test veritabanı)
 bash bin/build-zip.sh            # üretim ZIP'i → build/
 ```
@@ -35,7 +39,8 @@ bash bin/build-zip.sh            # üretim ZIP'i → build/
 ## Açık sınırlamalar
 - Harici API adaptörleri canlı servislerle test edilmedi (anahtar ve ağ erişimi yok); canlıya almadan önce yönetimdeki bağlantı testi ve sözleşme/izin doğrulaması gereklidir.
 - Online ödeme alınmaz; ödeme durumu (otelde ödeme, kurum faturası vb.) yönetici tarafından işaretlenir.
-- Giriş, ana sayfa, destek ve bölge görselleri olarak **temsili illüstrasyonlar** gelir ve “Temsili” etiketiyle gösterilir; gerçek fotoğraflar yönetimden yüklenir. Otel/oda fotoğrafı yüklenmemiş tesislerde başka görsel kullanılmaz.
+- Giriş, ana sayfa, destek, bölge ve demo otel görselleri bu proje için çizilmiş **temsili illüstrasyonlardır** ve “Temsili” etiketiyle gösterilir; gerçek fotoğraflar yönetimden yüklenir. Gerçek (demo olmayan) otellerde fotoğraf yüklenmemişse başka görsel kullanılmaz.
+- Demo oteller kurgusaldır; isimleri gerçek işletmeleri temsil etmez, fiyatları örnektir.
 - KVKK, gizlilik ve kullanım koşulları metinleri boş gelir; kurumunuzun hukuk birimi tarafından hazırlanıp yönetimden girilmelidir (uydurma şirket bilgisi eklenmemiştir).
 
 ## Lisanslar

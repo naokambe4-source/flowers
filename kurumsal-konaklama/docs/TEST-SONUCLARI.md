@@ -1,13 +1,13 @@
 # Test Sonuçları
 
-Test tarihi: 1 Ekim 2026 · Ortam: PHP 8.3.6, MariaDB 10.11, Apache 2.4.58 + mod_php, Chromium 141 (Playwright ile).
+Test tarihi: 1 Ekim 2026 (sürüm 1.1.0) · Ortam: PHP 8.3.6, MariaDB 10.11, Apache 2.4.58 + mod_php, Chromium 141 (Playwright ile).
 
 ## 1. Otomatik test paketi (`php tests/run.php`)
 
 Gerçek veritabanı üzerinde çalışır (test veritabanı her çalıştırmada sıfırlanır; test verisi yalnız `tests/fixtures` içindedir). Son çalıştırma çıktısı:
 
 ```
-  ✔ URL üretimi: kök, tek ve iç içe alt klasör
+✔ URL üretimi: kök, tek ve iç içe alt klasör
   ✔ Para: kuruş hesabı, ayrıştırma, biçim
   ✔ Girişsiz otel, fiyat, görsel ve JSON erişimi engellenir
   ✔ Pasif, onaysız, askıdaki ve pasif kurumlu kullanıcı giriş yapamaz
@@ -28,14 +28,17 @@ Gerçek veritabanı üzerinde çalışır (test veritabanı her çalıştırmada
   ✔ Dışa aktarım formül enjeksiyonuna karşı korunur
   ✔ CSV aktarımı: zorunlu alan, mükerrer e-posta ve hata raporu
   ✔ Gizli anahtarlar şifreli saklanır ve maskelenir
+  ✔ sodium olmayan sunucuda OpenSSL (AES-256-GCM) ile şifreleme
+  ✔ Demo modu: yükleme, arama, kaldırma (gerçek kayıtlar korunur)
+  ✔ Üyelik kayıt modu: başvuru / açık kayıt / kapalı
   ✔ Sayfa render (üye ve yönetim) — taşma riski olmayan HTML üretimi
   ✔ Cron kuyruğu: süresi dolan teklifler, tamamlanan rezervasyonlar, başarısız iş tekrar denemesi
   ✔ Tüm PHP dosyaları sözdizimi kontrolü (php -l)
 
-211 doğrulama başarılı, 0 başarısız (6.5 sn)
+254 doğrulama başarılı, 0 başarısız (15.3 sn)
 ```
 
-Kapsam: kapalı üyelik (girişsiz HTML/JSON/görsel erişimi), pasif/onaysız/askıdaki/pasif kurumlu kullanıcı, giriş hız sınırı, CSRF, rol bazlı yönetim erişimi, kurumlar arası veri izolasyonu (üye ve kurum yöneticisi), fiyat motoru (varsayılan %10, kurum %15, çocuk/ek yetişkin, kural önceliği ve birlikte uygulanma, azami indirim, vergi), süresi dolmuş/koşulları farklı referans fiyat, hedef teklif, anlaşma süresi, sağlayıcı hatasında fallback + kontrollü retry + önbellek + anahtar maskeleme, desteklenmeyen işlem, rezervasyonun stok düşürmesi/iptalin geri vermesi, tekrarlı POST, fiyat değişince yeniden kabul, **6 eşzamanlı süreçle double booking**, teklif sürümü ve süresi, promosyon limiti, sunucu tarafı tarih/kapasite doğrulaması, formül enjeksiyonu, CSV/XLSX aktarım hata raporu, şifreli ayarlar, cron kuyruğu, PDF voucher ve QR doğrulama sayfası, URL üretimi (kök / tek / iç içe alt klasör), tüm PHP dosyalarının sözdizimi.
+Kapsam: kapalı üyelik (girişsiz HTML/JSON/görsel erişimi), pasif/onaysız/askıdaki/pasif kurumlu kullanıcı, giriş hız sınırı, CSRF, rol bazlı yönetim erişimi, kurumlar arası veri izolasyonu (üye ve kurum yöneticisi), fiyat motoru (varsayılan %10, kurum %15, çocuk/ek yetişkin, kural önceliği ve birlikte uygulanma, azami indirim, vergi), süresi dolmuş/koşulları farklı referans fiyat, hedef teklif, anlaşma süresi, sağlayıcı hatasında fallback + kontrollü retry + önbellek + anahtar maskeleme, desteklenmeyen işlem, rezervasyonun stok düşürmesi/iptalin geri vermesi, tekrarlı POST, fiyat değişince yeniden kabul, **6 eşzamanlı süreçle double booking**, teklif sürümü ve süresi, promosyon limiti, sunucu tarafı tarih/kapasite doğrulaması, formül enjeksiyonu, CSV/XLSX aktarım hata raporu, şifreli ayarlar, cron kuyruğu, **demo modu** (yükleme, kesin fiyat / hedef teklif, temsili etiket, deneme rezervasyonuyla birlikte kaldırma, gerçek kayıtların korunması, görsel dosyalarının silinmesi), **üyelik kayıt modları** (başvuru / açık kayıt / kapalı, alan adı kısıtı, zorunlu kurum, mükerrer e-posta, kayıt sonrası oturum), **sodium olmayan sunucuda OpenSSL şifreleme**, PDF voucher ve QR doğrulama sayfası, URL üretimi (kök / tek / iç içe alt klasör), tüm PHP dosyalarının sözdizimi.
 
 ## 2. Kurulum yolları (gerçek Apache + .htaccess)
 
@@ -70,6 +73,17 @@ Doğrudan erişim denetimi (alt klasör kurulumu): `app/`, `config/config.php`, 
 | JavaScript hatası | 0 |
 
 Testler sırasında bulunup düzeltilen hatalar: hero yığın bağlamı nedeniyle mobil takvim arka planının paneli örtmesi, grid sütunlarının içerikle genişleyip taşması, tablo içi `sr-only` etiketlerin taşma yaratması, voucher doğrulama ve cron rotalarında `{n,m}` regex’inin rota ayrıştırıcısını bozması, `bin/cron.php` yorumundaki `*/5` ifadesinin sözdizimi hatası, audit kaydında dizi karşılaştırma hatası, eşzamanlı ikinci onay isteğinin mevcut sonuç yerine hata göstermesi.
+
+## 4b. Sürüm 1.1.0 ek doğrulamaları
+| Kontrol | Sonuç |
+|---|---|
+| ZIP (1.1.0) ile Apache’ye temiz kurulum, sihirbazda “Demo otelleri yükle” + “Açık kayıt” | Kurulum 7,5 sn’de tamamlandı; 14 demo otel, 61 otel görseli yüklendi; giriş ekranında “Hesap oluştur” göründü |
+| Demo görsellerine / demo veri klasörüne misafir erişimi | `/medya/...` → girişe yönlendirme; `database/demo/hotels.json` → 403 |
+| Yönetim → Demo / Canlı Mod → *Canlı moda geç* (tarayıcıdan) | 14 demo otel ve tüm görsel dosyaları silindi; gerçek kayıtlar korundu |
+| Sodium kapalı Apache’de kurulum | Kurulum tamamlandı; gizli ayarlar OpenSSL (AES-256-GCM, `v2:`) ile şifrelendi |
+| Mobil (390 px) uçtan uca: ana sayfa takvimi → arama → demo otel → misafir → onay → PDF voucher | Başarılı; takvim alttan açılan sayfa olarak göründü, çıkış tarihi seçilince otomatik uygulandı |
+| Masaüstü (1366 px) takvim | Panel `position: fixed` ile body’ye taşındı; üst öğelerin `overflow` kesmesi yok; ekrana sığmıyorsa üstte açılıyor veya sayfa kaydırılıyor |
+| Yatay taşma: 10 üye/yönetim sayfası + giriş/başvuru × 360/390/768/1024/1440 px | Taşma yok |
 
 ## 5. Yapılamayan / doğrulanamayan testler (açıkça)
 

@@ -42,6 +42,7 @@ $menu = [
         ['/yonetim/raporlar', 'Raporlar', 'chart', 'reports.view'],
         ['/yonetim/icerik', 'İçerik Yönetimi', 'document', 'content.manage'],
         ['/yonetim/ayarlar', 'Sistem Ayarları', 'settings', 'settings.manage'],
+        ['/yonetim/demo-mod', 'Demo / Canlı Mod', 'sparkle', 'settings.manage'],
         ['/yonetim/guncelleme', 'Sistem Güncellemesi', 'download', 'settings.manage'],
         ['/yonetim/yetkiler', 'Yetkiler', 'shield', 'roles.manage'],
         ['/yonetim/audit-log', 'Audit Log', 'history', 'audit.view'],
@@ -85,6 +86,7 @@ $menu = [
                 </div>
             </div>
         </header>
+        <?php if (setting('demo.active') === '1'): ?><div class="demo-banner" role="note"><div><?= icon('info', 'icon-s') ?> <strong>DEMO MODU</strong><span class="demo-more"> açık — demo oteller üyelere görünür.</span> <a href="<?= e(url('/yonetim/demo-mod')) ?>">Demo / Canlı mod</a></div></div><?php endif; ?>
         <main id="icerik" class="admin-content">
             <?= App\Core\View::partial('partials/flash') ?>
             <?= $content ?>

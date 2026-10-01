@@ -31,6 +31,17 @@ final class ImageService
     /** @return array{key:string, mime:string, width:int, height:int, bytes:int, original:string} */
     public static function store(array $file, string $kind): array
     {
+        return self::process($file, $kind, false);
+    }
+
+    /** Sunucudaki güvenilir bir dosyayı (ör. paketle gelen demo görselleri) aynı doğrulama ve yeniden kodlama ile saklar. */
+    public static function storeLocal(string $path, string $kind, string $originalName): array
+    {
+        return self::process(['error' => UPLOAD_ERR_OK, 'tmp_name' => $path, 'name' => $originalName], $kind, true);
+    }
+
+    private static function process(array $file, string $kind, bool $local): array
+    {
         if (($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
             throw new DomainException(match ($file['error'] ?? 0) {
                 UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE => 'Dosya boyutu sunucu sınırını aşıyor.',
@@ -39,7 +50,7 @@ final class ImageService
             });
         }
         $tmp = (string) $file['tmp_name'];
-        if (!is_uploaded_file($tmp) && !(defined('KK_TESTING') && is_file($tmp))) {
+        if (!($local && is_file($tmp)) && !is_uploaded_file($tmp) && !(defined('KK_TESTING') && is_file($tmp))) {
             throw new DomainException('Geçersiz yükleme.');
         }
         $size = (int) filesize($tmp);
@@ -69,6 +80,11 @@ final class ImageService
             $w = imagesx($src);
             $h = imagesy($src);
             foreach (self::SIZES as $name => $maxW) {
+                // Güvenilir yerel JPEG zaten hedef boyuttaysa yeniden kodlanmadan kopyalanır (demo yüklemesini hızlandırır)
+                if ($local && $mime === 'image/jpeg' && $w <= $maxW) {
+                    copy($tmp, "$dir/$key-$name.jpg");
+                    continue;
+                }
                 $nw = min($w, $maxW);
                 $nh = (int) round($h * ($nw / $w));
                 $dst = imagecreatetruecolor($nw, $nh);
@@ -121,6 +137,21 @@ final class ImageService
             }
         }
         return null;
+    }
+
+    /** Saklanan bir görselin tüm boyutlarını yeni anahtarla kopyalar. */
+    public static function duplicate(string $kind, string $key): ?string
+    {
+        if (!preg_match('/^[a-f0-9]{32}$/', $key)) {
+            return null;
+        }
+        $new = bin2hex(random_bytes(16));
+        $dir = self::dir($kind);
+        $ok = false;
+        foreach (glob("$dir/$key-*") ?: [] as $f) {
+            $ok = copy($f, $dir . '/' . $new . substr(basename($f), 32)) || $ok;
+        }
+        return $ok ? $new : null;
     }
 
     public static function delete(string $kind, string $key): void

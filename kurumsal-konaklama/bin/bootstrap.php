@@ -16,3 +16,4 @@ if (!App\Core\Config::load()) {
 date_default_timezone_set((string) App\Core\Config::get('app.timezone', 'Europe/Istanbul'));
 mb_internal_encoding('UTF-8');
 App\Core\App::detectInstalled();
+App\Core\Session::useArrayStorage(); // CLI: tarayıcı oturumu yok

@@ -1,0 +1,1263 @@
+{
+ "hotels": [
+  {
+   "name": "Mavi Kumsal Resort & Spa",
+   "slug": "mavi-kumsal-resort-spa",
+   "region": "lara",
+   "stars": 5,
+   "concept": "UAI",
+   "booking_mode": "instant",
+   "base_price": 1150000,
+   "lat": 36.8512,
+   "lng": 30.8402,
+   "district": "Muratpaşa",
+   "images": [
+    [
+     "resort",
+     "day",
+     101,
+     "Ana bina ve havuz"
+    ],
+    [
+     "beach",
+     "day",
+     102,
+     "Özel plaj"
+    ],
+    [
+     "pool",
+     "day",
+     103,
+     "Relax havuzu"
+    ],
+    [
+     "spa",
+     null,
+     104,
+     "Spa ve kapalı havuz"
+    ],
+    [
+     "restaurant",
+     "golden",
+     105,
+     "Akşam yemeği terası"
+    ]
+   ],
+   "rooms": [
+    {
+     "name": "Standart Kara Manzaralı Oda",
+     "max_adults": 2,
+     "max_children": 1,
+     "max_occupancy": 3,
+     "size_m2": 26,
+     "bed_type": "Çift kişilik yatak",
+     "view_type": "Kara / bahçe",
+     "factor": 1.0,
+     "units": 20,
+     "image": 1
+    },
+    {
+     "name": "Superior Deniz Manzaralı Oda",
+     "max_adults": 3,
+     "max_children": 1,
+     "max_occupancy": 4,
+     "size_m2": 32,
+     "bed_type": "Çift kişilik yatak",
+     "view_type": "Deniz",
+     "factor": 1.22,
+     "units": 14,
+     "image": 2
+    },
+    {
+     "name": "Aile Odası (2 yatak odalı)",
+     "max_adults": 4,
+     "max_children": 2,
+     "max_occupancy": 6,
+     "size_m2": 46,
+     "bed_type": "1 çift + 2 tek yatak",
+     "view_type": "Deniz / havuz",
+     "factor": 1.65,
+     "units": 8,
+     "image": 5
+    }
+   ],
+   "amenities": [
+    "Özel plaj",
+    "Denize sıfır",
+    "Açık havuz",
+    "Spa & Wellness",
+    "Çocuk kulübü",
+    "Ücretsiz Wi-Fi",
+    "Otopark",
+    "Restoran",
+    "Animasyon",
+    "Fitness merkezi",
+    "Hamam",
+    "Aquapark",
+    "Havalimanı transferi",
+    "Toplantı salonu"
+   ],
+   "sea_distance_m": 0,
+   "beach_type": "kum",
+   "description": "Lara sahil şeridinde, denize sıfır konumda ultra her şey dahil hizmet veren büyük ölçekli bir tatil köyü. Kum plajı, aquaparkı ve geniş havuz alanlarıyla özellikle aileler için tasarlanmıştır. Kurum üyelerine özel fiyatlar anlaşmalı kontenjan üzerinden anında onaylanır.",
+   "short_description": "Lara’da denize sıfır, aquaparklı ultra her şey dahil tatil köyü.",
+   "airport_distance_km": 14.0,
+   "center_distance_km": 12.0,
+   "is_featured": 1
+  },
+  {
+   "name": "Akdeniz Yıldızı Beach Hotel",
+   "slug": "akdeniz-yildizi-beach-hotel",
+   "region": "kundu",
+   "stars": 5,
+   "concept": "AI",
+   "booking_mode": "instant",
+   "base_price": 980000,
+   "lat": 36.8538,
+   "lng": 30.8861,
+   "district": "Aksu",
+   "images": [
+    [
+     "resort",
+     "golden",
+     201,
+     "Gün batımında otel"
+    ],
+    [
+     "pool",
+     "day",
+     202,
+     "Ana havuz"
+    ],
+    [
+     "beach",
+     "golden",
+     203,
+     "Plaj ve iskele"
+    ],
+    [
+     "lobby",
+     null,
+     204,
+     "Lobi"
+    ],
+    [
+     "restaurant",
+     "dusk",
+     205,
+     "A la carte restoran"
+    ]
+   ],
+   "rooms": [
+    {
+     "name": "Standart Oda",
+     "max_adults": 2,
+     "max_children": 1,
+     "max_occupancy": 3,
+     "size_m2": 25,
+     "bed_type": "Çift kişilik yatak",
+     "view_type": "Kısmi deniz",
+     "factor": 1.0,
+     "units": 24,
+     "image": 3
+    },
+    {
+     "name": "Deniz Manzaralı Oda",
+     "max_adults": 2,
+     "max_children": 2,
+     "max_occupancy": 4,
+     "size_m2": 28,
+     "bed_type": "Çift kişilik yatak",
+     "view_type": "Deniz",
+     "factor": 1.15,
+     "units": 16,
+     "image": 1
+    },
+    {
+     "name": "Junior Suit",
+     "max_adults": 3,
+     "max_children": 2,
+     "max_occupancy": 5,
+     "size_m2": 40,
+     "bed_type": "Çift kişilik yatak + çekyat",
+     "view_type": "Deniz",
+     "factor": 1.5,
+     "units": 6,
+     "image": 6
+    }
+   ],
+   "amenities": [
+    "Özel plaj",
+    "Denize sıfır",
+    "Açık havuz",
+    "Spa & Wellness",
+    "Çocuk kulübü",
+    "Ücretsiz Wi-Fi",
+    "Otopark",
+    "Restoran",
+    "Animasyon",
+    "Fitness merkezi",
+    "Hamam",
+    "Aquapark"
+   ],
+   "sea_distance_m": 0,
+   "beach_type": "kum",
+   "description": "Kundu’da uzun kum plajı ve iskelesiyle öne çıkan, her şey dahil konseptte bir sahil oteli. Yetişkinler için sessiz havuz, çocuklar için mini kulüp ve animasyon programı bulunur.",
+   "short_description": "Kundu’da iskeleli plajı olan her şey dahil sahil oteli.",
+   "airport_distance_km": 15.0,
+   "center_distance_km": 18.0,
+   "is_featured": 1
+  },
+  {
+   "name": "Belek Çam Bahçesi Golf Resort",
+   "slug": "belek-cam-bahcesi-golf-resort",
+   "region": "belek",
+   "stars": 5,
+   "concept": "UAI",
+   "booking_mode": "request",
+   "base_price": 1350000,
+   "lat": 36.8571,
+   "lng": 31.0681,
+   "district": "Serik",
+   "images": [
+    [
+     "pool",
+     "golden",
+     302,
+     "Havuz alanı"
+    ],
+    [
+     "resort",
+     "day",
+     301,
+     "Çam ormanı içinde resort"
+    ],
+    [
+     "beach",
+     "day",
+     303,
+     "Plaj"
+    ],
+    [
+     "spa",
+     null,
+     304,
+     "Wellness merkezi"
+    ],
+    [
+     "lobby",
+     null,
+     305,
+     "Lobi"
+    ]
+   ],
+   "rooms": [
+    {
+     "name": "Deluxe Oda",
+     "max_adults": 2,
+     "max_children": 1,
+     "max_occupancy": 3,
+     "size_m2": 34,
+     "bed_type": "Çift kişilik yatak",
+     "view_type": "Bahçe / golf",
+     "factor": 1.0,
+     "units": 18,
+     "image": 4
+    },
+    {
+     "name": "Deluxe Deniz Manzaralı",
+     "max_adults": 3,
+     "max_children": 1,
+     "max_occupancy": 4,
+     "size_m2": 36,
+     "bed_type": "Çift kişilik yatak",
+     "view_type": "Deniz",
+     "factor": 1.18,
+     "units": 12,
+     "image": 2
+    },
+    {
+     "name": "Villa Suit",
+     "max_adults": 4,
+     "max_children": 2,
+     "max_occupancy": 6,
+     "size_m2": 70,
+     "bed_type": "2 yatak odası",
+     "view_type": "Bahçe",
+     "factor": 2.1,
+     "units": 4,
+     "image": 7
+    }
+   ],
+   "amenities": [
+    "Özel plaj",
+    "Denize sıfır",
+    "Açık havuz",
+    "Spa & Wellness",
+    "Çocuk kulübü",
+    "Ücretsiz Wi-Fi",
+    "Otopark",
+    "Restoran",
+    "Animasyon",
+    "Fitness merkezi",
+    "Hamam",
+    "Toplantı salonu",
+    "Havalimanı transferi"
+   ],
+   "sea_distance_m": 120,
+   "beach_type": "kum",
+   "description": "Belek’te çam ormanı içinde, golf sahalarına yakın ultra her şey dahil resort. Bu otelde fiyatlar onaya bağlı hedef teklif olarak gösterilir; talebiniz otel tarafından teyit edildikten sonra kesinleşir.",
+   "short_description": "Belek’te çam ormanı içinde, golf sahalarına yakın resort (otel onaylı).",
+   "airport_distance_km": 30.0,
+   "center_distance_km": 35.0,
+   "is_featured": 1
+  },
+  {
+   "name": "Kadriye Lotus Garden Hotel",
+   "slug": "kadriye-lotus-garden-hotel",
+   "region": "kadriye",
+   "stars": 4,
+   "concept": "AI",
+   "booking_mode": "instant",
+   "base_price": 720000,
+   "lat": 36.8722,
+   "lng": 31.011,
+   "district": "Serik",
+   "images": [
+    [
+     "pool",
+     "day",
+     402,
+     "Havuz"
+    ],
+    [
+     "resort",
+     "day",
+     401,
+     "Bahçe ve ana bina"
+    ],
+    [
+     "restaurant",
+     "golden",
+     403,
+     "Restoran terası"
+    ],
+    [
+     "beach",
+     "day",
+     404,
+     "Plaj"
+    ]
+   ],
+   "rooms": [
+    {
+     "name": "Standart Oda",
+     "max_adults": 2,
+     "max_children": 2,
+     "max_occupancy": 4,
+     "size_m2": 24,
+     "bed_type": "Çift kişilik yatak",
+     "view_type": "Bahçe",
+     "factor": 1.0,
+     "units": 30,
+     "image": 3
+    },
+    {
+     "name": "Aile Odası",
+     "max_adults": 4,
+     "max_children": 2,
+     "max_occupancy": 6,
+     "size_m2": 38,
+     "bed_type": "1 çift + 2 tek yatak",
+     "view_type": "Bahçe / havuz",
+     "factor": 1.45,
+     "units": 10,
+     "image": 5
+    }
+   ],
+   "amenities": [
+    "Özel plaj",
+    "Açık havuz",
+    "Çocuk kulübü",
+    "Ücretsiz Wi-Fi",
+    "Otopark",
+    "Restoran",
+    "Animasyon"
+   ],
+   "sea_distance_m": 350,
+   "beach_type": "kum",
+   "description": "Kadriye’de geniş bahçeler içinde, plaja kısa yürüme mesafesinde her şey dahil aile oteli. Uygun fiyatlı, çocuklu aileler için ideal bir seçenek.",
+   "short_description": "Kadriye’de geniş bahçeli, uygun fiyatlı her şey dahil aile oteli.",
+   "airport_distance_km": 28.0,
+   "center_distance_km": 32.0,
+   "is_featured": 0
+  },
+  {
+   "name": "Side Antik Liman Hotel",
+   "slug": "side-antik-liman-hotel",
+   "region": "side",
+   "stars": 4,
+   "concept": "HB",
+   "booking_mode": "instant",
+   "base_price": 560000,
+   "lat": 36.7701,
+   "lng": 31.3922,
+   "district": "Manavgat",
+   "images": [
+    [
+     "oldtown",
+     "golden",
+     501,
+     "Antik kente yürüme mesafesi"
+    ],
+    [
+     "beach",
+     "golden",
+     502,
+     "Plaj"
+    ],
+    [
+     "pool",
+     "day",
+     503,
+     "Havuz"
+    ],
+    [
+     "restaurant",
+     "dusk",
+     504,
+     "Akşam yemeği"
+    ]
+   ],
+   "rooms": [
+    {
+     "name": "Standart Oda",
+     "max_adults": 2,
+     "max_children": 1,
+     "max_occupancy": 3,
+     "size_m2": 22,
+     "bed_type": "Çift kişilik yatak",
+     "view_type": "Şehir",
+     "factor": 1.0,
+     "units": 16,
+     "image": 1
+    },
+    {
+     "name": "Deniz Manzaralı Oda",
+     "max_adults": 2,
+     "max_children": 1,
+     "max_occupancy": 3,
+     "size_m2": 24,
+     "bed_type": "Çift kişilik yatak",
+     "view_type": "Deniz",
+     "factor": 1.2,
+     "units": 10,
+     "image": 2
+    }
+   ],
+   "amenities": [
+    "Özel plaj",
+    "Açık havuz",
+    "Ücretsiz Wi-Fi",
+    "Restoran",
+    "Hamam"
+   ],
+   "sea_distance_m": 80,
+   "beach_type": "kum",
+   "description": "Side antik kentine ve limanına yürüme mesafesinde, yarım pansiyon hizmet veren butik ölçekli bir otel. Akşamları antik tiyatro ve liman çevresinde yürüyüş için ideal konumdadır.",
+   "short_description": "Side antik kentine yürüme mesafesinde yarım pansiyon otel.",
+   "airport_distance_km": 62.0,
+   "center_distance_km": 4.0,
+   "is_featured": 0
+  },
+  {
+   "name": "Manavgat Nehir Kıyısı Otel",
+   "slug": "manavgat-nehir-kiyisi-otel",
+   "region": "manavgat",
+   "stars": 4,
+   "concept": "AI",
+   "booking_mode": "instant",
+   "base_price": 620000,
+   "lat": 36.7798,
+   "lng": 31.4321,
+   "district": "Manavgat",
+   "images": [
+    [
+     "pool",
+     "golden",
+     602,
+     "Havuz"
+    ],
+    [
+     "resort",
+     "golden",
+     601,
+     "Otel ve bahçe"
+    ],
+    [
+     "lodge",
+     "day",
+     603,
+     "Çevredeki doğa"
+    ],
+    [
+     "restaurant",
+     "golden",
+     604,
+     "Restoran"
+    ]
+   ],
+   "rooms": [
+    {
+     "name": "Standart Oda",
+     "max_adults": 2,
+     "max_children": 2,
+     "max_occupancy": 4,
+     "size_m2": 25,
+     "bed_type": "Çift kişilik yatak",
+     "view_type": "Bahçe",
+     "factor": 1.0,
+     "units": 22,
+     "image": 3
+    },
+    {
+     "name": "Nehir Manzaralı Oda",
+     "max_adults": 3,
+     "max_children": 1,
+     "max_occupancy": 4,
+     "size_m2": 28,
+     "bed_type": "Çift kişilik yatak",
+     "view_type": "Nehir",
+     "factor": 1.12,
+     "units": 10,
+     "image": 4
+    }
+   ],
+   "amenities": [
+    "Açık havuz",
+    "Çocuk kulübü",
+    "Ücretsiz Wi-Fi",
+    "Otopark",
+    "Restoran",
+    "Animasyon",
+    "Fitness merkezi"
+   ],
+   "sea_distance_m": 1500,
+   "beach_type": "yok",
+   "description": "Manavgat Irmağı kıyısında, sakin bir konumda her şey dahil otel. Plaja ücretsiz servis ile ulaşılır; şelale ve tekne turlarına yakındır.",
+   "short_description": "Manavgat Irmağı kıyısında sakin, her şey dahil otel.",
+   "airport_distance_km": 70.0,
+   "center_distance_km": 3.0,
+   "is_featured": 0
+  },
+  {
+   "name": "Alanya Kale Manzara Resort",
+   "slug": "alanya-kale-manzara-resort",
+   "region": "alanya",
+   "stars": 5,
+   "concept": "AI",
+   "booking_mode": "instant",
+   "base_price": 890000,
+   "lat": 36.5482,
+   "lng": 31.986,
+   "district": "Alanya",
+   "images": [
+    [
+     "resort",
+     "dusk",
+     701,
+     "Akşam ışıklarıyla otel"
+    ],
+    [
+     "beach",
+     "golden",
+     702,
+     "Kleopatra tarafı plaj"
+    ],
+    [
+     "pool",
+     "day",
+     703,
+     "Havuz"
+    ],
+    [
+     "restaurant",
+     "golden",
+     704,
+     "Kale manzaralı teras"
+    ],
+    [
+     "spa",
+     null,
+     705,
+     "Spa"
+    ]
+   ],
+   "rooms": [
+    {
+     "name": "Standart Oda",
+     "max_adults": 2,
+     "max_children": 1,
+     "max_occupancy": 3,
+     "size_m2": 24,
+     "bed_type": "Çift kişilik yatak",
+     "view_type": "Kısmi deniz",
+     "factor": 1.0,
+     "units": 26,
+     "image": 1
+    },
+    {
+     "name": "Kale Manzaralı Superior",
+     "max_adults": 3,
+     "max_children": 1,
+     "max_occupancy": 4,
+     "size_m2": 30,
+     "bed_type": "Çift kişilik yatak",
+     "view_type": "Deniz / kale",
+     "factor": 1.25,
+     "units": 12,
+     "image": 2
+    }
+   ],
+   "amenities": [
+    "Özel plaj",
+    "Denize sıfır",
+    "Açık havuz",
+    "Spa & Wellness",
+    "Çocuk kulübü",
+    "Ücretsiz Wi-Fi",
+    "Otopark",
+    "Restoran",
+    "Animasyon",
+    "Fitness merkezi",
+    "Hamam"
+   ],
+   "sea_distance_m": 0,
+   "beach_type": "kum",
+   "description": "Alanya Kalesi manzaralı, denize sıfır konumda her şey dahil resort. Şehir merkezine yakınlığı sayesinde hem plaj hem çarşı tatili bir arada yapılabilir.",
+   "short_description": "Alanya Kalesi manzaralı, denize sıfır her şey dahil resort.",
+   "airport_distance_km": 120.0,
+   "center_distance_km": 2.5,
+   "is_featured": 1
+  },
+  {
+   "name": "Kemer Toros Koyu Resort",
+   "slug": "kemer-toros-koyu-resort",
+   "region": "kemer",
+   "stars": 5,
+   "concept": "UAI",
+   "booking_mode": "instant",
+   "base_price": 1090000,
+   "lat": 36.605,
+   "lng": 30.562,
+   "district": "Kemer",
+   "images": [
+    [
+     "beach",
+     "day",
+     802,
+     "Çakıl plaj ve iskele"
+    ],
+    [
+     "resort",
+     "day",
+     801,
+     "Toros dağları önünde resort"
+    ],
+    [
+     "pool",
+     "day",
+     803,
+     "Havuz"
+    ],
+    [
+     "lodge",
+     "day",
+     804,
+     "Dağ ve orman çevresi"
+    ],
+    [
+     "restaurant",
+     "golden",
+     805,
+     "Restoran"
+    ]
+   ],
+   "rooms": [
+    {
+     "name": "Standart Oda",
+     "max_adults": 2,
+     "max_children": 1,
+     "max_occupancy": 3,
+     "size_m2": 27,
+     "bed_type": "Çift kişilik yatak",
+     "view_type": "Dağ",
+     "factor": 1.0,
+     "units": 22,
+     "image": 4
+    },
+    {
+     "name": "Deniz Manzaralı Superior",
+     "max_adults": 3,
+     "max_children": 2,
+     "max_occupancy": 5,
+     "size_m2": 33,
+     "bed_type": "Çift kişilik yatak",
+     "view_type": "Deniz",
+     "factor": 1.2,
+     "units": 14,
+     "image": 2
+    },
+    {
+     "name": "Aile Odası",
+     "max_adults": 4,
+     "max_children": 2,
+     "max_occupancy": 6,
+     "size_m2": 45,
+     "bed_type": "1 çift + 2 tek yatak",
+     "view_type": "Bahçe",
+     "factor": 1.6,
+     "units": 8,
+     "image": 5
+    }
+   ],
+   "amenities": [
+    "Özel plaj",
+    "Denize sıfır",
+    "Açık havuz",
+    "Spa & Wellness",
+    "Çocuk kulübü",
+    "Ücretsiz Wi-Fi",
+    "Otopark",
+    "Restoran",
+    "Animasyon",
+    "Fitness merkezi",
+    "Hamam",
+    "Aquapark"
+   ],
+   "sea_distance_m": 0,
+   "beach_type": "cakil",
+   "description": "Toros Dağları ile Akdeniz arasında, Kemer’in berrak koylarından birinde ultra her şey dahil resort. Çakıl plajı ve iskelesiyle deniz keyfi, arka planda çam ormanlarıyla doğa yürüyüşleri sunar.",
+   "short_description": "Kemer’de dağ ile deniz arasında ultra her şey dahil resort.",
+   "airport_distance_km": 55.0,
+   "center_distance_km": 2.0,
+   "is_featured": 1
+  },
+  {
+   "name": "Beldibi Çam ve Deniz Club",
+   "slug": "beldibi-cam-ve-deniz-club",
+   "region": "beldibi",
+   "stars": 4,
+   "concept": "AI",
+   "booking_mode": "instant",
+   "base_price": 690000,
+   "lat": 36.712,
+   "lng": 30.566,
+   "district": "Kemer",
+   "images": [
+    [
+     "beach",
+     "day",
+     902,
+     "Plaj"
+    ],
+    [
+     "resort",
+     "golden",
+     901,
+     "Otel"
+    ],
+    [
+     "pool",
+     "day",
+     903,
+     "Havuz"
+    ],
+    [
+     "restaurant",
+     "dusk",
+     904,
+     "Restoran"
+    ]
+   ],
+   "rooms": [
+    {
+     "name": "Standart Oda",
+     "max_adults": 2,
+     "max_children": 1,
+     "max_occupancy": 3,
+     "size_m2": 23,
+     "bed_type": "Çift kişilik yatak",
+     "view_type": "Bahçe",
+     "factor": 1.0,
+     "units": 24,
+     "image": 3
+    },
+    {
+     "name": "Deniz Manzaralı Oda",
+     "max_adults": 3,
+     "max_children": 1,
+     "max_occupancy": 4,
+     "size_m2": 26,
+     "bed_type": "Çift kişilik yatak",
+     "view_type": "Deniz",
+     "factor": 1.15,
+     "units": 12,
+     "image": 1
+    }
+   ],
+   "amenities": [
+    "Özel plaj",
+    "Denize sıfır",
+    "Açık havuz",
+    "Çocuk kulübü",
+    "Ücretsiz Wi-Fi",
+    "Restoran",
+    "Animasyon"
+   ],
+   "sea_distance_m": 0,
+   "beach_type": "cakil",
+   "description": "Beldibi’nde çam ağaçlarıyla çevrili, denize sıfır her şey dahil club otel. Antalya merkeze ve havalimanına yakın konumuyla kısa tatiller için uygundur.",
+   "short_description": "Beldibi’nde denize sıfır her şey dahil club otel.",
+   "airport_distance_km": 40.0,
+   "center_distance_km": 25.0,
+   "is_featured": 0
+  },
+  {
+   "name": "Tekirova Orman Lodge",
+   "slug": "tekirova-orman-lodge",
+   "region": "tekirova",
+   "stars": 4,
+   "concept": "HB",
+   "booking_mode": "request",
+   "base_price": 520000,
+   "lat": 36.511,
+   "lng": 30.519,
+   "district": "Kemer",
+   "images": [
+    [
+     "lodge",
+     "day",
+     1001,
+     "Orman içinde lodge"
+    ],
+    [
+     "lodge",
+     "dusk",
+     1002,
+     "Akşam"
+    ],
+    [
+     "pool",
+     "day",
+     1003,
+     "Havuz"
+    ],
+    [
+     "restaurant",
+     "golden",
+     1004,
+     "Restoran"
+    ]
+   ],
+   "rooms": [
+    {
+     "name": "Lodge Oda",
+     "max_adults": 2,
+     "max_children": 1,
+     "max_occupancy": 3,
+     "size_m2": 28,
+     "bed_type": "Çift kişilik yatak",
+     "view_type": "Orman",
+     "factor": 1.0,
+     "units": 10,
+     "image": 4
+    },
+    {
+     "name": "Aile Bungalovu",
+     "max_adults": 4,
+     "max_children": 2,
+     "max_occupancy": 6,
+     "size_m2": 48,
+     "bed_type": "1 çift + 2 tek yatak",
+     "view_type": "Orman",
+     "factor": 1.55,
+     "units": 6,
+     "image": 7
+    }
+   ],
+   "amenities": [
+    "Açık havuz",
+    "Ücretsiz Wi-Fi",
+    "Otopark",
+    "Restoran",
+    "Hamam"
+   ],
+   "sea_distance_m": 600,
+   "beach_type": "cakil",
+   "description": "Tekirova’da çam ormanı içinde ahşap mimarili, yarım pansiyon bir doğa oteli. Sessiz ortam, yürüyüş parkurları ve Phaselis antik kentine yakınlık sunar. Fiyatlar otel onayına bağlıdır.",
+   "short_description": "Tekirova’da orman içinde ahşap mimarili doğa oteli (otel onaylı).",
+   "airport_distance_km": 65.0,
+   "center_distance_km": 12.0,
+   "is_featured": 1
+  },
+  {
+   "name": "Kaleiçi Begonvil Butik Otel",
+   "slug": "kaleici-begonvil-butik-otel",
+   "region": "antalya-merkez",
+   "stars": 3,
+   "concept": "BB",
+   "booking_mode": "instant",
+   "base_price": 430000,
+   "lat": 36.8846,
+   "lng": 30.7056,
+   "district": "Muratpaşa",
+   "images": [
+    [
+     "oldtown",
+     "golden",
+     1101,
+     "Tarihi sokak ve giriş"
+    ],
+    [
+     "oldtown",
+     "day",
+     1102,
+     "Avlu"
+    ],
+    [
+     "restaurant",
+     "golden",
+     1103,
+     "Kahvaltı terası"
+    ],
+    [
+     "lobby",
+     null,
+     1104,
+     "Resepsiyon"
+    ]
+   ],
+   "rooms": [
+    {
+     "name": "Standart Oda",
+     "max_adults": 2,
+     "max_children": 0,
+     "max_occupancy": 2,
+     "size_m2": 18,
+     "bed_type": "Çift kişilik yatak",
+     "view_type": "Avlu",
+     "factor": 1.0,
+     "units": 8,
+     "image": 6
+    },
+    {
+     "name": "Deluxe Oda",
+     "max_adults": 2,
+     "max_children": 1,
+     "max_occupancy": 3,
+     "size_m2": 24,
+     "bed_type": "Çift kişilik yatak",
+     "view_type": "Sokak / avlu",
+     "factor": 1.25,
+     "units": 4,
+     "image": 8
+    }
+   ],
+   "amenities": [
+    "Ücretsiz Wi-Fi",
+    "Restoran"
+   ],
+   "sea_distance_m": 900,
+   "beach_type": "yok",
+   "description": "Kaleiçi’nde restore edilmiş tarihi bir konakta, oda kahvaltı hizmet veren butik otel. Yat limanı, Hadrian Kapısı ve tarihi çarşıya yürüme mesafesindedir.",
+   "short_description": "Kaleiçi’nde tarihi konakta oda kahvaltı butik otel.",
+   "airport_distance_km": 13.0,
+   "center_distance_km": 0.5,
+   "is_featured": 1
+  },
+  {
+   "name": "Antalya Kent Business Hotel",
+   "slug": "antalya-kent-business-hotel",
+   "region": "antalya-merkez",
+   "stars": 4,
+   "concept": "BB",
+   "booking_mode": "instant",
+   "base_price": 390000,
+   "lat": 36.896,
+   "lng": 30.701,
+   "district": "Muratpaşa",
+   "images": [
+    [
+     "city",
+     "dusk",
+     1201,
+     "Otel binası"
+    ],
+    [
+     "lobby",
+     null,
+     1202,
+     "Lobi"
+    ],
+    [
+     "restaurant",
+     "golden",
+     1203,
+     "Restoran"
+    ],
+    [
+     "spa",
+     null,
+     1204,
+     "Kapalı havuz"
+    ]
+   ],
+   "rooms": [
+    {
+     "name": "Standart Oda",
+     "max_adults": 2,
+     "max_children": 1,
+     "max_occupancy": 3,
+     "size_m2": 24,
+     "bed_type": "Çift kişilik yatak",
+     "view_type": "Şehir",
+     "factor": 1.0,
+     "units": 40,
+     "image": 3
+    },
+    {
+     "name": "Executive Oda",
+     "max_adults": 2,
+     "max_children": 1,
+     "max_occupancy": 3,
+     "size_m2": 30,
+     "bed_type": "Çift kişilik yatak",
+     "view_type": "Şehir / deniz",
+     "factor": 1.3,
+     "units": 12,
+     "image": 8
+    }
+   ],
+   "amenities": [
+    "Kapalı havuz",
+    "Fitness merkezi",
+    "Ücretsiz Wi-Fi",
+    "Otopark",
+    "Restoran",
+    "Toplantı salonu",
+    "Havalimanı transferi"
+   ],
+   "sea_distance_m": 1200,
+   "beach_type": "yok",
+   "description": "Antalya şehir merkezinde, iş seyahatleri ve resmi görevler için konumlandırılmış bir şehir oteli. Toplantı salonları, kapalı otopark ve havalimanı transferi sunar.",
+   "short_description": "Şehir merkezinde iş seyahatlerine uygun, toplantı salonlu otel.",
+   "airport_distance_km": 11.0,
+   "center_distance_km": 1.0,
+   "is_featured": 0
+  },
+  {
+   "name": "Kaş Mavi Yamaç Butik",
+   "slug": "kas-mavi-yamac-butik",
+   "region": "kas",
+   "stars": 4,
+   "concept": "BB",
+   "booking_mode": "instant",
+   "base_price": 580000,
+   "lat": 36.199,
+   "lng": 29.642,
+   "district": "Kaş",
+   "images": [
+    [
+     "beach",
+     "golden",
+     1301,
+     "Koy manzarası"
+    ],
+    [
+     "oldtown",
+     "day",
+     1302,
+     "Kaş sokakları"
+    ],
+    [
+     "pool",
+     "golden",
+     1303,
+     "Sonsuzluk havuzu"
+    ],
+    [
+     "restaurant",
+     "dusk",
+     1304,
+     "Teras"
+    ]
+   ],
+   "rooms": [
+    {
+     "name": "Deniz Manzaralı Oda",
+     "max_adults": 2,
+     "max_children": 1,
+     "max_occupancy": 3,
+     "size_m2": 22,
+     "bed_type": "Çift kişilik yatak",
+     "view_type": "Deniz",
+     "factor": 1.0,
+     "units": 10,
+     "image": 2
+    },
+    {
+     "name": "Teraslı Suit",
+     "max_adults": 3,
+     "max_children": 1,
+     "max_occupancy": 4,
+     "size_m2": 35,
+     "bed_type": "Çift kişilik yatak + çekyat",
+     "view_type": "Deniz",
+     "factor": 1.4,
+     "units": 4,
+     "image": 6
+    }
+   ],
+   "amenities": [
+    "Açık havuz",
+    "Ücretsiz Wi-Fi",
+    "Restoran"
+   ],
+   "sea_distance_m": 250,
+   "beach_type": "platform",
+   "description": "Kaş’ta yamaçta konumlanan, Meis Adası manzaralı oda kahvaltı butik otel. Kaş merkezine kısa yürüme mesafesindedir; denize platformdan girilir.",
+   "short_description": "Kaş’ta Meis manzaralı, oda kahvaltı butik otel.",
+   "airport_distance_km": 180.0,
+   "center_distance_km": 1.2,
+   "is_featured": 1
+  },
+  {
+   "name": "Kalkan Teras Suites",
+   "slug": "kalkan-teras-suites",
+   "region": "kalkan",
+   "stars": 4,
+   "concept": "HB",
+   "booking_mode": "instant",
+   "base_price": 740000,
+   "lat": 36.264,
+   "lng": 29.417,
+   "district": "Kaş",
+   "images": [
+    [
+     "pool",
+     "golden",
+     1402,
+     "Havuz"
+    ],
+    [
+     "resort",
+     "golden",
+     1401,
+     "Teraslı yapı"
+    ],
+    [
+     "beach",
+     "day",
+     1403,
+     "Koy"
+    ],
+    [
+     "restaurant",
+     "dusk",
+     1404,
+     "Akşam yemeği"
+    ]
+   ],
+   "rooms": [
+    {
+     "name": "Suit",
+     "max_adults": 2,
+     "max_children": 2,
+     "max_occupancy": 4,
+     "size_m2": 40,
+     "bed_type": "Çift kişilik yatak",
+     "view_type": "Deniz",
+     "factor": 1.0,
+     "units": 10,
+     "image": 7
+    },
+    {
+     "name": "Havuzlu Suit",
+     "max_adults": 2,
+     "max_children": 2,
+     "max_occupancy": 4,
+     "size_m2": 48,
+     "bed_type": "Çift kişilik yatak",
+     "view_type": "Deniz",
+     "factor": 1.35,
+     "units": 4,
+     "image": 5
+    }
+   ],
+   "amenities": [
+    "Açık havuz",
+    "Ücretsiz Wi-Fi",
+    "Restoran",
+    "Spa & Wellness"
+   ],
+   "sea_distance_m": 400,
+   "beach_type": "platform",
+   "description": "Kalkan körfezine bakan teraslı mimarisiyle, yarım pansiyon hizmet veren suit otel. Tüm odalar deniz manzaralıdır; bazı suitlerde özel havuz bulunur.",
+   "short_description": "Kalkan körfezine bakan teraslı suit otel.",
+   "airport_distance_km": 160.0,
+   "center_distance_km": 1.5,
+   "is_featured": 0
+  }
+ ],
+ "room_images": [
+  [
+   "room",
+   "day",
+   9001,
+   "#2f6f9f"
+  ],
+  [
+   "room",
+   "golden",
+   9002,
+   "#c87e4f"
+  ],
+  [
+   "room",
+   "day",
+   9003,
+   "#6f8f5e"
+  ],
+  [
+   "room",
+   "day",
+   9004,
+   "#8a5a83"
+  ],
+  [
+   "room",
+   "golden",
+   9005,
+   "#c9a24b"
+  ],
+  [
+   "room",
+   "day",
+   9006,
+   "#5a7d8c"
+  ],
+  [
+   "room",
+   "dusk",
+   9007,
+   "#a05a3c"
+  ],
+  [
+   "room",
+   "golden",
+   9008,
+   "#3f5f7f"
+  ]
+ ]
+}

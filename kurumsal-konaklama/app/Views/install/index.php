@@ -31,6 +31,9 @@
         <div class="field"><label for="password">Parola (en az 10 karakter, harf ve rakam)</label><input type="password" id="password" name="password" autocomplete="new-password" required<?= aria_error('password') ?>><?= field_error('password') ?></div>
         <div class="field"><label for="password_confirmation">Parola tekrarı</label><input type="password" id="password_confirmation" name="password_confirmation" autocomplete="new-password" required<?= aria_error('password_confirmation') ?>><?= field_error('password_confirmation') ?></div>
     </div>
-    <p class="small muted">Kurulum örnek otel, sahte fiyat veya test kullanıcısı oluşturmaz. Bölgeler, konseptler, roller ve varsayılan ayarlar (üye indirimi %10) yüklenir.</p>
-    <button class="btn btn-lg" type="submit"<?= $allRequired ? '' : ' disabled' ?>>KURULUMU TAMAMLA</button>
+    <p class="small muted">Demo seçeneği işaretlenmezse kurulum örnek otel, sahte fiyat veya test kullanıcısı oluşturmaz. Bölgeler, konseptler, roller ve varsayılan ayarlar (üye indirimi %10) yüklenir.</p>
+    <h2 style="margin-top:20px">Başlangıç seçenekleri</h2>
+    <?= f_select('registration_mode', 'Üyelik kaydı', ['application' => 'Erişim talebi — yönetici onayıyla (önerilen)', 'open' => 'Açık kayıt — kullanıcı hesabını hemen açar', 'closed' => 'Kapalı — hesapları yalnız yönetim açar'], 'application', '', 'Sonradan Yönetim → Sistem Ayarları → Üyelik bölümünden değiştirilebilir.') ?>
+    <label class="check"><input type="checkbox" name="demo" value="1"<?= old('demo') ? ' checked' : '' ?>><span><strong>Demo otelleri yükle</strong> — sistemi denemek için 14 kurgusal otel, fiyat, kontenjan ve temsili görsel ekler. Canlıya geçerken tek tıkla silinir.</span></label>
+    <button class="btn btn-lg" type="submit"<?= $allRequired ? '' : ' disabled' ?> style="margin-top:14px">KURULUMU TAMAMLA</button>
 </div></form>

@@ -145,10 +145,21 @@ final class InstallController extends Controller
             'membership_type' => 'personel',
         ]);
         \App\Services\SettingsService::set('site.name', (string) $d['site_name']);
+        $mode = (string) ($in['registration_mode'] ?? 'application');
+        \App\Services\SettingsService::set('membership.registration_mode', in_array($mode, ['application', 'open', 'closed'], true) ? $mode : 'application');
         Config::write($config);
         file_put_contents(App::lockFile(), 'installed=' . date('c') . "\n");
         Session::forget('install_seed');
-        Session::flash('success', 'Kurulum tamamlandı. Yönetici hesabınızla giriş yapın.');
+        $demoNote = '';
+        if (!empty($in['demo'])) {
+            try {
+                $n = (new \App\Services\DemoDataService($db))->install();
+                $demoNote = " $n demo otel yüklendi; canlıya geçmeden önce Yönetim → Demo / Canlı Mod sayfasından kaldırabilirsiniz.";
+            } catch (\Throwable $e) {
+                $demoNote = ' Demo veriler yüklenemedi (' . $e->getMessage() . '); daha sonra Yönetim → Demo / Canlı Mod sayfasından tekrar deneyebilirsiniz.';
+            }
+        }
+        Session::flash('success', 'Kurulum tamamlandı. Yönetici hesabınızla giriş yapın.' . $demoNote);
         return Response::redirect(Url::basePath() . '/giris');
     }
 

@@ -20,6 +20,8 @@
    - Ortam kontrolleri: PHP, uzantılar, yazma izinleri, HTTPS, **temiz adres (rewrite) testi**, algılanan kurulum yolu.
    - Rewrite çalışmıyorsa kurulum **tamamlanmaz** ve tanı mesajı gösterilir (sayfaların sonradan 404 vermesini önlemek için).
    - Veritabanı bilgileri, site adresi, site adı ve ilk **Super Admin** hesabını girin.
+   - **Üyelik kaydı** modunu seçin (erişim talebi / açık kayıt / kapalı) — sonradan değiştirilebilir.
+   - Sistemi önce denemek istiyorsanız **“Demo otelleri yükle”** kutusunu işaretleyin (aşağıya bakın).
 5. Kurulum tamamlanınca `config/config.php` oluşturulur (uygulama şifreleme anahtarı ve cron anahtarı dahil), migration’lar çalışır ve `storage/installed.lock` ile sihirbaz kilitlenir.
 6. **Cron:** `docs/CRON-VE-EPOSTA.md` adımlarını uygulayın.
 7. Yönetim paneli → **Dashboard**’daki “Yayın öncesi tamamlanması gerekenler” listesini bitirin: destek telefonu/WhatsApp, KVKK / gizlilik / kullanım koşulları metinleri, SMTP.
@@ -32,7 +34,22 @@
 5. Fiyatlar → fiyat planı + toplu gecelik fiyat; Kontenjan → oda adetleri
 6. Üyeler → tek tek ekleyin veya CSV/XLSX aktarın; ya da Başvurular’dan onaylayın
 
-> Kurulum **örnek otel, sahte fiyat, test kullanıcısı veya DEMO içeriği oluşturmaz.** Yalnız roller/izinler, Antalya bölgeleri, konseptler, özellikler, kurum tipleri, bildirim şablonları, boş yasal sayfa kayıtları ve varsayılan ayarlar yüklenir. Harici API sağlayıcıları kapalı gelir.
+## Demo modu ve canlıya geçiş
+Sistemi gerçek otelleri girmeden denemek için **Yönetim → Demo / Canlı Mod → Demo verileri yükle** (veya kurulumdaki kutu, veya `php bin/demo.php yukle`).
+- 14 kurgusal otel (Lara, Kundu, Belek, Kadriye, Side, Manavgat, Alanya, Kemer, Beldibi, Tekirova, Kaleiçi, şehir merkezi, Kaş, Kalkan), 32 oda tipi, 12 aylık sezonluk fiyat ve kontenjan, örnek erken rezervasyon kuralı, otel/oda/karşılama ekranları için **temsili** görseller yüklenir.
+- Anında onaylı oteller kesin fiyat; Belek ve Tekirova örnekleri “onaya bağlı hedef teklif” akışını gösterir.
+- Demo açıkken üye ve yönetim ekranlarının üstünde **DEMO MODU** şeridi görünür; demo görselleri “Temsili görsel” etiketiyle gösterilir.
+- **Canlıya geçiş:** Demo / Canlı Mod sayfasında kutuya `CANLI` yazıp *Canlı moda geç* (veya `php bin/demo.php kaldir`). Yalnız demo kayıtları silinir: demo oteller, odaları, fiyatları, kontenjanları, görselleri, demo kuralı ve demo otellere yapılmış deneme rezervasyon/teklifleri. Sizin girdiğiniz oteller, kurumlar, üyeler ve ayarlar korunur.
+
+## Üyelik kaydı modu
+**Yönetim → Sistem Ayarları → Üyelik** bölümünden seçilir:
+| Mod | Davranış |
+|---|---|
+| Erişim talebi (varsayılan) | Giriş ekranında “Erişim talebi oluştur”; başvuru yönetici/kurum yöneticisi onayıyla hesaba dönüşür. |
+| Açık kayıt | Giriş ekranında “Hesap oluştur”; kullanıcı parolasını belirleyip **hemen** Standart Üye olarak giriş yapar. İsteğe bağlı: izinli e-posta alan adları (örn. `antalya.gov.tr`; alt alan adları da kabul edilir) ve kurum seçimini zorunlu kılma. |
+| Kapalı | Kendi kendine kayıt ve başvuru kapalıdır; hesapları yalnız yönetim veya CSV/XLSX aktarımı açar. |
+
+> Demo seçilmezse kurulum **örnek otel, sahte fiyat, test kullanıcısı veya demo içeriği oluşturmaz.** Yalnız roller/izinler, Antalya bölgeleri, konseptler, özellikler, kurum tipleri, bildirim şablonları, boş yasal sayfa kayıtları ve varsayılan ayarlar yüklenir. Harici API sağlayıcıları kapalı gelir.
 
 ## Elle kurulum (sihirbaz kullanılamıyorsa)
 1. `config/config.example.php` → `config/config.php` olarak kopyalayıp değerleri doldurun (`key` için: `php -r "echo 'base64:'.base64_encode(random_bytes(32));"`).

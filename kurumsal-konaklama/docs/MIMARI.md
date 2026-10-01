@@ -311,3 +311,9 @@ Yetkiler yönetimde **Yetkiler** ekranından değiştirilebilir; her istekte sun
 | Rol ve yetki matrisi (`roles.manage`) | ✓ | — | — | — | — | — |
 | Audit log görüntüleme (`audit.view`) | ✓ | ✓ | — | ✓ | — | — |
 | Destek taleplerini yanıtlama (`support.manage`) | ✓ | ✓ | ✓ | — | — | — |
+
+## Sürüm 1.1.0 eklemeleri
+- **Demo modu** — `App\Services\DemoDataService`: `database/demo/hotels.json` + `database/demo/images/*.jpg` (temsili illüstrasyonlar; `tools/demo-images` ile SVG sahnelerden üretilir). Kayıtlar `hotels.is_demo`, `institutions.is_demo`, `rate_rules.is_demo` ile işaretlenir. Görseller `ImageService::storeLocal()` ile normal yükleme hattından geçer. Kaldırma; demo otellere ait teklif, talep ve rezervasyonları, otelleri (cascade: oda, plan, fiyat, kontenjan, görsel kaydı) ve görsel dosyalarını siler. Rotalar: `GET /yonetim/demo-mod`, `POST /yonetim/demo-mod/yukle`, `POST /yonetim/demo-mod/kaldir` (`settings.manage`). CLI: `php bin/demo.php durum|yukle|kaldir`.
+- **Üyelik kayıt modu** — ayar `membership.registration_mode` (`application` | `open` | `closed`), `membership.allowed_domains`, `membership.require_institution`. `GET/POST /kayit-ol` (`Auth\RegisterController`, misafir) yalnız `open` modunda çalışır; hesap Standart Üye rolüyle aktif açılır, oturum hemen başlatılır, hız sınırı ve bot tuzağı uygulanır. `/erisim-talebi` yalnız `application` modunda açıktır.
+- **Açılır paneller** (takvim, konuk seçici) açıldığında `document.body`’ye taşınır ve `position: fixed` ile tetikleyiciye göre konumlanır (altta yer yoksa üstte; ikisi de yetmezse kaydırılabilir). Mobilde (<720 px) alttan açılan sayfa + arka plan örtüsü + sayfa kaydırma kilidi.
+- **Şifreleme** — sodium yoksa OpenSSL AES-256-GCM (`v2:` önekli); okuma önekten anlaşılır.

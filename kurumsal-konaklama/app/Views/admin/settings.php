@@ -2,7 +2,7 @@
 <form method="post" action="<?= e(url('/yonetim/ayarlar')) ?>" autocomplete="off"><?= csrf_field() ?>
 <div class="grid-2">
 <?php foreach (App\Controllers\Admin\SettingsController::FIELDS as $group => $fields): ?>
-    <div class="card"><div class="card-head"><h2><?= e($group) ?></h2></div><div class="card-body">
+    <div class="card"<?= $group === 'Üyelik' ? ' id="uyelik"' : '' ?>><div class="card-head"><h2><?= e($group) ?></h2></div><div class="card-body">
     <?php foreach ($fields as $k => [$label, $type, $extra]): $f = str_replace('.', '__', $k); $v = $values[$k]; ?>
         <?php if ($type === 'bool'): ?><input type="hidden" name="<?= $f ?>" value="0"><label class="check"><input type="checkbox" name="<?= $f ?>" value="1"<?= $v === '1' ? ' checked' : '' ?>> <?= e($label) ?></label>
         <?php elseif ($type === 'select'): ?><?= f_select($f, $label, $extra, $v) ?>

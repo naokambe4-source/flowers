@@ -12,3 +12,8 @@ Güncellemeler **veriyi silmez**; yalnız henüz uygulanmamış migration dosyal
 4. Tarayıcı önbelleği: CSS/JS adreslerine dosya değişim zamanına göre sürüm eklenir; ek işlem gerekmez.
 
 Yeni migration eklerken (geliştiriciler için): `database/migrations/NNN_aciklama.sql` veya `.php` (`return static function (Database $db): void {...}`) oluşturun; mevcut dosyaları değiştirmeyin.
+
+## 1.0.0 → 1.1.0
+- Yeni migration: `003_demo_and_registration.sql` (demo işaretleri ve üyelik kayıt modu ayarları). Mevcut veriye dokunmaz; *Sistem Güncellemesi* sayfasından uygulayın.
+- `database/demo/` klasörü (demo veri ve temsili görseller) yeni gelir; yalnız yönetici isteğiyle yüklenir.
+- Yenilikler: Demo / Canlı mod, üyelik kayıt modu (açık kayıt), tarih seçicinin her zaman ekranın üstünde ve görünür alanda açılması (mobilde alttan açılan sayfa), çıkış tarihi seçilince otomatik uygulanma, sodium olmayan sunucularda OpenSSL şifreleme.

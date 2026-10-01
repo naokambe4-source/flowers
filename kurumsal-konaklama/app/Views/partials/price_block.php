@@ -9,7 +9,8 @@ if ($q === null): ?>
     <?php if ($q->referenceTotal && $q->verifiedSavings): ?><span class="price-old" title="Aynı koşullarda doğrulanmış karşılaştırma fiyatı"><?= e(money($q->referenceTotal, $q->currency)) ?></span><?php endif; ?>
     <span class="price-main"><?= e(money($q->total, $q->currency)) ?></span>
     <span class="price-sub"><?= (int) $q->nights ?> gece toplamı · vergiler dahil<?= $q->nights > 1 ? ' · gecelik ort. ' . e(money($q->perNight(), $q->currency)) : '' ?></span>
-    <?php if ($q->verifiedSavings): ?><span class="saving"><?= icon('check-circle', 'icon-s') ?> <?= e(money($q->verifiedSavings, $q->currency)) ?> doğrulanmış avantaj</span><?php endif; ?>
+    <?php if ($q->verifiedSavings): ?><span class="saving"><?= icon('check-circle', 'icon-s') ?> <?= e(money($q->verifiedSavings, $q->currency)) ?> doğrulanmış avantaj</span>
+    <?php elseif ($q->discountTotal > 0): ?><span class="member-discount" title="Anlaşmalı fiyat üzerinden uygulanan kurum/üye indirimi (piyasa karşılaştırması değildir)"><?= icon('tag', 'icon-s') ?> Kurum indirimi dahil · <?= e(money($q->discountTotal, $q->currency)) ?></span><?php endif; ?>
 <?php elseif ($q->kind === 'target'): ?>
     <span class="price-label">Onaya bağlı hedef teklif</span>
     <?php if ($q->referenceTotal && $q->discountTotal > 0): ?><span class="price-old" title="Doğrulanmış referans fiyat"><?= e(money($q->referenceTotal, $q->currency)) ?></span><?php endif; ?>

@@ -292,15 +292,22 @@ legend { font-weight: 700; padding: 0 6px; }
 .guest-fallback .span-all { grid-column: 1 / -1; }
 
 /* Popover panels (date range & guests) */
-.popover { position: absolute; z-index: 70; background: #fff; border: 1px solid var(--c-line); border-radius: var(--radius-l); box-shadow: var(--shadow-l); padding: 16px; display: none; color: var(--c-ink); }
-.popover.is-open { display: block; }
+.popover { position: fixed; z-index: 1000; top: 0; left: 0; background: #fff; border: 1px solid var(--c-line); border-radius: var(--radius-l); box-shadow: 0 24px 60px rgba(15, 34, 64, .28), 0 4px 14px rgba(15, 34, 64, .12); padding: 18px; display: none; color: var(--c-ink); overflow-y: auto; overscroll-behavior: contain; }
+.popover.is-open { display: block; animation: pop-in .16s ease-out; }
+@keyframes pop-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+html.popover-lock, html.popover-lock body { overflow: hidden; }
+@media (prefers-reduced-motion: reduce) { .popover.is-open { animation: none; } }
 .popover-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 8px; }
 .popover-head strong { font-size: 1.02rem; }
 .popover-foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; border-top: 1px solid var(--c-line); margin-top: 12px; padding-top: 12px; flex-wrap: wrap; }
 @media (max-width: 719px) {
   .popover, .popover-dates, .popover-guests { width: auto !important; }
-  .popover { position: fixed; left: 0 !important; right: 0; bottom: 0; top: auto; max-height: 88vh; overflow-y: auto; border-radius: 20px 20px 0 0; padding: 16px 16px calc(16px + env(safe-area-inset-bottom)); }
-  .popover-backdrop { position: fixed; inset: 0; background: rgba(15, 34, 64, .45); z-index: 69; }
+  .popover { left: 0 !important; right: 0; bottom: 0; top: auto !important; max-height: 90vh; max-height: 90dvh; border-radius: 22px 22px 0 0; padding: 10px 16px calc(16px + env(safe-area-inset-bottom)); }
+  .popover::before { content: ""; display: block; width: 44px; height: 5px; border-radius: 3px; background: var(--c-line-strong); margin: 0 auto 10px; }
+  .popover.is-open { animation: sheet-in .2s ease-out; }
+  @keyframes sheet-in { from { transform: translateY(40px); opacity: .4; } to { transform: none; opacity: 1; } }
+  .popover-backdrop { position: fixed; inset: 0; background: rgba(15, 34, 64, .5); z-index: 999; }
+  .popover-dates .popover-foot { position: sticky; bottom: calc(-16px - env(safe-area-inset-bottom)); background: #fff; padding-bottom: 6px; }
 }
 .dr-months { display: grid; gap: 24px; grid-template-columns: 1fr; }
 @media (min-width: 900px) { .dr-months.two { grid-template-columns: 1fr 1fr; } }
@@ -634,3 +641,16 @@ a.tile:hover { border-color: var(--c-teal); box-shadow: var(--shadow); }
 }
 
 .admin-main, .admin-content, .detail-layout > *, .results-layout > * { min-width: 0; }
+
+/* ---------- Demo modu ---------- */
+.badge-lg { font-size: .85rem; padding: 6px 14px; letter-spacing: .04em; font-weight: 800; }
+.stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px; margin-bottom: 12px; }
+.stat { background: var(--c-surface-2); border: 1px solid var(--c-line); border-radius: var(--radius); padding: 12px; }
+.stat strong { display: block; font-size: 1.5rem; line-height: 1.1; color: var(--c-ink); }
+.stat span { color: var(--c-muted); font-size: .85rem; }
+.demo-banner { background: repeating-linear-gradient(135deg, #fff4dc 0 14px, #ffefcc 14px 28px); color: #6b4a0c; border-bottom: 1px solid #f0d59c; font-size: .88rem; font-weight: 650; }
+.demo-banner .container, .demo-banner > div { display: flex; gap: 10px; align-items: center; justify-content: center; flex-wrap: wrap; padding: 7px 16px; text-align: center; }
+.demo-banner a { color: #6b4a0c; text-decoration: underline; }
+.img-note { position: absolute; right: 10px; bottom: 10px; z-index: 2; background: rgba(15, 34, 64, .62); color: #fff; font-size: .72rem; font-weight: 600; padding: 3px 9px; border-radius: 999px; backdrop-filter: blur(4px); pointer-events: none; }
+.member-discount { display: inline-flex; align-items: center; gap: 6px; margin-top: 6px; padding: 3px 10px; border-radius: 999px; background: var(--c-teal-soft); color: var(--c-teal-strong); font-size: .8rem; font-weight: 700; width: fit-content; }
+@media (max-width: 719px) { .demo-banner .demo-more { display: none; } .demo-banner > div { padding: 5px 12px; font-size: .8rem; } }

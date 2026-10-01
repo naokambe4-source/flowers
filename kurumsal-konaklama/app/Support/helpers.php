@@ -224,7 +224,8 @@ function site_image(string $settingKey, string $illustration): array
 {
     $key = setting($settingKey);
     if ($key !== '') {
-        return ['url' => url('/medya/site/' . str_replace('.', '_', $settingKey)), 'representative' => false];
+        // Demo ile gelen site görselleri de temsili illüstrasyondur
+        return ['url' => url('/medya/site/' . str_replace('.', '_', $settingKey)), 'representative' => $key === setting('demo.site_image.' . $settingKey)];
     }
     return ['url' => asset_url('img/illustrations/' . $illustration . '.svg'), 'representative' => true];
 }

@@ -26,37 +26,63 @@
     return e;
   }
   var openPopover = null;
-  function closePopover() {
+  /* Açılır paneller (takvim, konuk seçici) body'ye taşınır: üst öğelerin overflow/z-index'i paneli kesemez.
+     Masaüstünde tetikleyicinin altına, sığmazsa üstüne yerleşir; ekrana sığmıyorsa kaydırılabilir olur.
+     Mobilde alttan açılan tam genişlik sayfa olarak gösterilir. */
+  function placePopover() {
+    if (!openPopover) return;
+    var panel = openPopover.panel, trigger = openPopover.trigger;
+    if (mqMobile.matches) { panel.style.top = ''; panel.style.left = ''; panel.style.maxHeight = ''; return; }
+    var vw = document.documentElement.clientWidth, vh = window.innerHeight, gap = 8, m = 12;
+    var r = trigger.getBoundingClientRect();
+    panel.style.maxHeight = '';
+    var w = panel.offsetWidth, h = panel.offsetHeight;
+    var below = vh - r.bottom - gap - m, above = r.top - gap - m, top;
+    if (h <= below) top = r.bottom + gap;
+    else if (h <= above) top = r.top - gap - h;
+    else if (below >= above) { top = r.bottom + gap; panel.style.maxHeight = Math.max(260, below) + 'px'; }
+    else { panel.style.maxHeight = Math.max(260, above) + 'px'; top = r.top - gap - Math.min(h, Math.max(260, above)); }
+    top = Math.max(m, top);
+    var left = Math.min(Math.max(m, r.left), vw - w - m);
+    panel.style.top = Math.round(top) + 'px';
+    panel.style.left = Math.round(Math.max(m, left)) + 'px';
+  }
+  function closePopover(noFocus) {
     if (!openPopover) return;
     openPopover.panel.classList.remove('is-open');
     openPopover.trigger.setAttribute('aria-expanded', 'false');
     if (openPopover.backdrop) openPopover.backdrop.remove();
+    document.documentElement.classList.remove('popover-lock');
     var t = openPopover.trigger;
     openPopover = null;
-    t.focus();
+    if (!noFocus) t.focus();
   }
   function showPopover(trigger, panel, onClose) {
-    if (openPopover) closePopover();
-    panel.classList.add('is-open');
-    trigger.setAttribute('aria-expanded', 'true');
+    if (openPopover) closePopover(true);
+    if (panel.parentNode !== document.body) document.body.appendChild(panel);
     var backdrop = null;
     if (mqMobile.matches) {
       backdrop = el('div', { 'class': 'popover-backdrop' });
       backdrop.addEventListener('click', function () { if (onClose) onClose(); closePopover(); });
-      // Panel ile aynı yığın bağlamında olmalı (aksi halde arka plan paneli örter)
-      panel.parentNode.insertBefore(backdrop, panel);
+      document.body.insertBefore(backdrop, panel);
+      document.documentElement.classList.add('popover-lock');
     }
-    panel.style.left = '';
-    if (!mqMobile.matches) {
-      var r = panel.getBoundingClientRect(), vw = document.documentElement.clientWidth;
-      if (r.right > vw - 8) panel.style.left = (panel.offsetLeft - (r.right - vw + 8)) + 'px';
-      r = panel.getBoundingClientRect();
-      if (r.left < 8) panel.style.left = (panel.offsetLeft + (8 - r.left)) + 'px';
-    }
+    panel.classList.add('is-open');
+    trigger.setAttribute('aria-expanded', 'true');
     openPopover = { trigger: trigger, panel: panel, backdrop: backdrop, onClose: onClose };
-    var f = panel.querySelector('button, [tabindex="0"]');
-    if (f) f.focus();
+    // Tetikleyici ekranın alt kısmındaysa önce görünür alana kaydır (masaüstü)
+    if (!mqMobile.matches) {
+      var r = trigger.getBoundingClientRect();
+      if (r.bottom + Math.min(panel.offsetHeight, 520) > window.innerHeight && r.top > 120) {
+        window.scrollBy({ top: Math.min(r.top - 90, r.bottom + panel.offsetHeight - window.innerHeight + 24), behavior: 'auto' });
+      }
+    }
+    placePopover();
+    var f = panel.querySelector('.dr-day.is-start, button:not(:disabled), [tabindex="0"]');
+    if (f) f.focus({ preventScroll: true });
   }
+  window.addEventListener('resize', placePopover);
+  window.addEventListener('scroll', placePopover, { passive: true });
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') {
       if (openPopover) { if (openPopover.onClose) openPopover.onClose(); closePopover(); }
@@ -199,12 +225,16 @@
       e.stopPropagation();
       var b = e.target.closest('button');
       if (!b) return;
-      if (b.hasAttribute('data-nav')) { view = new Date(view.getFullYear(), view.getMonth() + parseInt(b.getAttribute('data-nav'), 10), 1); render(); return; }
+      if (b.hasAttribute('data-nav')) { view = new Date(view.getFullYear(), view.getMonth() + parseInt(b.getAttribute('data-nav'), 10), 1); render(); placePopover(); var nb = panel.querySelector('[data-nav="' + b.getAttribute('data-nav') + '"]'); if (nb && !nb.disabled) nb.focus(); return; }
       if (b.hasAttribute('data-date')) {
         var d = parseIso(b.getAttribute('data-date'));
         if (!start || (start && end) || d <= start) { start = d; end = null; }
+        else if (diffDays(start, d) > maxNights) { end = addDays(start, maxNights); }
         else { end = d; }
         render();
+        // Çıkış tarihi seçilince seçim otomatik uygulanır (Uygula'ya basmak gerekmez)
+        if (start && end) { setTimeout(function () { if (openPopover && openPopover.panel === panel) { commit(); saved = null; closePopover(); } }, 260); return; }
+        placePopover();
         var again = panel.querySelector('[data-date="' + b.getAttribute('data-date') + '"]');
         if (again) again.focus();
         return;
@@ -302,7 +332,8 @@
         if (again && !again.disabled) again.focus();
       } else if (b.hasAttribute('data-remove')) { rooms.splice(+b.getAttribute('data-remove'), 1); render(); }
       else if (b.hasAttribute('data-add')) { if (rooms.length < maxRooms) { rooms.push({ y: 1, c: [] }); render(); } }
-      else if (b.hasAttribute('data-apply')) { writeHidden(); saved = null; closePopover(); }
+      else if (b.hasAttribute('data-apply')) { writeHidden(); saved = null; closePopover(); return; }
+      placePopover();
     });
     panel.addEventListener('change', function (e) {
       var s = e.target;

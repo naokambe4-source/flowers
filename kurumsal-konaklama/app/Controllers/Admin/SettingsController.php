@@ -22,6 +22,11 @@ final class SettingsController extends AdminController
             'pricing.accommodation_tax_bp' => ['Konaklama vergisi (%)', 'percent', ''],
             'pricing.reference_max_age_hours' => ['Referans fiyat azami yaşı (saat)', 'int', 'Bu süreden eski doğrulanmış fiyatlar karşılaştırmada kullanılmaz.'],
         ],
+        'Üyelik' => [
+            'membership.registration_mode' => ['Üyelik kaydı', 'select', ['application' => 'Erişim talebi — yönetici onayıyla açılır (önerilen)', 'open' => 'Açık kayıt — kullanıcı kendi hesabını hemen açar', 'closed' => 'Kapalı — hesapları yalnız yönetim oluşturur']],
+            'membership.allowed_domains' => ['Açık kayıtta izinli e-posta alan adları', 'text', 'Virgülle ayırın (örn. antalya.gov.tr, ornek.edu.tr). Boş bırakılırsa tüm alan adları kabul edilir.'],
+            'membership.require_institution' => ['Açık kayıtta kurum seçimi zorunlu', 'bool', 'İşaretlenirse kullanıcı listedeki aktif kurumlardan birini seçmek zorundadır.'],
+        ],
         'Rezervasyon' => [
             'booking.max_nights' => ['En fazla gece', 'int', ''],
             'booking.max_rooms' => ['Tek seferde en fazla oda', 'int', ''],
@@ -72,7 +77,7 @@ final class SettingsController extends AdminController
         $errors = [];
         $changes = [];
         foreach (self::FIELDS as $group) {
-            foreach ($group as $k => [$label, $type]) {
+            foreach ($group as $k => [$label, $type, $extra]) {
                 $field = str_replace('.', '__', $k);
                 $raw = $this->request->post[$field] ?? null;
                 if ($type === 'bool') {
@@ -103,7 +108,7 @@ final class SettingsController extends AdminController
                         }
                         $v = $raw;
                     } elseif ($type === 'select') {
-                        $opts = self::FIELDS['E-posta (SMTP)'][$k][2] ?? [];
+                        $opts = is_array($extra) ? $extra : [];
                         $v = array_key_exists($raw, $opts) ? $raw : (string) array_key_first($opts);
                     } else {
                         $v = mb_substr($raw, 0, 500);

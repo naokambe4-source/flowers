@@ -10,7 +10,7 @@ use App\Services\SettingsService;
 
 final class App
 {
-    public const VERSION = '1.0.0';
+    public const VERSION = '1.1.0';
 
     private static ?Database $db = null;
     private static ?Router $router = null;
