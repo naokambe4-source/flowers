@@ -770,8 +770,7 @@ function df_lang_links() {
 		}
 		return $out;
 	}
-	$uri  = isset( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '/';
-	$here = home_url( $uri );
+	$here = df_request_url();
 	$base = strtolower( (string) df_opt( 'lang_base', 'tr' ) );
 	foreach ( array_filter( array_map( 'trim', explode( ',', (string) df_opt( 'lang_codes', 'TR, EN, RU, AR, DE, FR' ) ) ) ) as $code ) {
 		$c     = strtolower( preg_replace( '/[^A-Za-z-]/', '', $code ) );
@@ -825,3 +824,33 @@ function df_currency_tl( $symbol, $currency ) {
 	return ( 'TRY' === $currency && df_opt( 'price_tl' ) ) ? 'TL' : $symbol;
 }
 add_filter( 'woocommerce_currency_symbol', 'df_currency_tl', 20, 2 );
+
+/**
+ * İstenen sayfanın tam adresi. REQUEST_URI alt dizini / dil önekini zaten içerir;
+ * home_url() ile birleştirmek yolu iki kez ekler (alt dizin kurulumlarında 404).
+ *
+ * @return string
+ */
+function df_request_url() {
+	$uri  = isset( $_SERVER['REQUEST_URI'] ) ? wp_unslash( $_SERVER['REQUEST_URI'] ) : '/'; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+	$home = wp_parse_url( home_url( '/' ) );
+	$base = ( isset( $home['scheme'] ) ? $home['scheme'] : ( is_ssl() ? 'https' : 'http' ) ) . '://' . $home['host'] . ( isset( $home['port'] ) ? ':' . $home['port'] : '' );
+	return esc_url_raw( $base . '/' . ltrim( (string) $uri, '/' ) );
+}
+
+/**
+ * Tek seferlik ayar güncellemesi: vitrin görselleri kare ve tam görünsün.
+ */
+function df_migrate_163() {
+	if ( get_option( 'df_mig_163' ) ) {
+		return;
+	}
+	$o = get_option( DF_OPTION );
+	if ( is_array( $o ) && ( empty( $o['vit_ratio'] ) || '4-5' === $o['vit_ratio'] ) ) {
+		$o['vit_ratio']  = '1-1';
+		$o['__df_clean'] = 1;
+		update_option( DF_OPTION, $o );
+	}
+	update_option( 'df_mig_163', 1, false );
+}
+add_action( 'admin_init', 'df_migrate_163' );

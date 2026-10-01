@@ -476,3 +476,7 @@ hr { border: 0; border-top: 1px solid var(--df-line); margin: 2em 0; }
 	.df-topbar__langs { flex: none; font-size: 11px; }
 }
 .df-nav--serif .df-nav__list > li > a { font-family: var(--df-font-heading); font-size: calc(17px * var(--df-scale)); font-weight: 500; letter-spacing: .01em; text-transform: none; }
+
+/* Metin logo: ikon, yazı ve alt satır her yerde ortalı ve aynı */
+.df-logo a { display: inline-flex; flex-direction: column; align-items: center; text-align: center; }
+.df-logo--footer .df-logo__icon { margin-bottom: 4px; }

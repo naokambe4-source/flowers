@@ -658,7 +658,7 @@ function df_options_schema() {
 						array( 'id' => 'vit_link', 'type' => 'text', 'label' => 'Sağ bağlantı yazısı', 'default' => 'Tüm ürünleri gör', 'third' => true ),
 						array( 'id' => 'vit_promos_on', 'type' => 'toggle', 'label' => 'Ürünlerin arasına banner koy', 'default' => 1, 'third' => true ),
 						array( 'id' => 'vit_cols', 'type' => 'select', 'label' => 'Masaüstü sütun (az sütun = büyük görsel)', 'default' => '4', 'third' => true, 'options' => array( '3' => '3', '4' => '4', '5' => '5' ) ),
-						array( 'id' => 'vit_ratio', 'type' => 'select', 'label' => 'Ürün görsel oranı', 'default' => '4-5', 'third' => true, 'options' => array( '1-1' => 'Kare (1:1)', '4-5' => 'Dikey (4:5)', '3-4' => 'Uzun dikey (3:4)', 'fit' => 'Tamamını göster (kırpma yok)' ) ),
+						array( 'id' => 'vit_ratio', 'type' => 'select', 'label' => 'Ürün görsel oranı', 'default' => '1-1', 'third' => true, 'options' => array( '1-1' => 'Kare (1:1)', '4-5' => 'Dikey (4:5)', '3-4' => 'Uzun dikey (3:4)', 'fit' => 'Tamamını göster (kırpma yok)' ) ),
 						array( 'id' => 'card_view_style', 'type' => 'select', 'label' => '"İncele" düğmesi', 'default' => 'solid', 'third' => true, 'options' => array( 'solid' => 'Dolu', 'outline' => 'Çerçeveli (ince)' ) ),
 						array(
 							'id'          => 'vit_promos',

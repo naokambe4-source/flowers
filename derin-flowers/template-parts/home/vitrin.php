@@ -30,7 +30,7 @@ $all_url = ( $term && ! is_wp_error( $term ) ) ? get_term_link( $term ) : wc_get
 $first   = array_slice( $products, 0, $cols );
 $rest    = array_slice( $products, $cols );
 ?>
-<section data-df-sec="vitrin" class="df-section df-vitrin df-vitrin--r<?php echo esc_attr( sanitize_key( df_opt( 'vit_ratio', '4-5' ) ) ); ?> df-vitrin--c<?php echo (int) df_opt( 'vit_cols', 4 ); ?>" aria-labelledby="df-vit-title">
+<section data-df-sec="vitrin" class="df-section df-vitrin df-vitrin--r<?php echo esc_attr( sanitize_key( df_opt( 'vit_ratio', '1-1' ) ) ); ?> df-vitrin--c<?php echo (int) df_opt( 'vit_cols', 4 ); ?>" aria-labelledby="df-vit-title">
 	<div class="df-container">
 		<header class="df-vitrin__head">
 			<h2 id="df-vit-title"<?php echo df_e( 'vit_title' ); // phpcs:ignore ?>><?php echo esc_html( df_opt( 'vit_title', 'Vitrin Koleksiyonu' ) ); ?></h2>

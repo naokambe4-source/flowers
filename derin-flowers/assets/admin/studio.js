@@ -531,7 +531,14 @@
 		}
 	} );
 
+	var tried404 = false;
 	function onReady( m, swapped ) {
+		if ( m.is404 && ! tried404 ) {
+			// Sayfa bulunamadıysa ana sayfayı aç.
+			tried404 = true;
+			loadFrame( S.home, false );
+			return;
+		}
 		$( '#dfs-loading' ).removeClass( 'is-on' );
 		knownKeys = {};
 		try {

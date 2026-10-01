@@ -35,8 +35,7 @@ function df_studio_url( $url = '' ) {
  * @return string
  */
 function df_current_url() {
-	$uri = isset( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '/';
-	return remove_query_arg( array( 'df_live', 'df_preview' ), home_url( $uri ) );
+	return remove_query_arg( array( 'df_live', 'df_preview' ), df_request_url() );
 }
 
 /**
@@ -124,6 +123,7 @@ function df_live_assets() {
 			'panelUrl' => admin_url( 'admin.php?page=derin-flowers' ),
 			'exitUrl'  => remove_query_arg( 'df_live' ),
 			'isHome'   => is_front_page(),
+			'is404'    => is_404(),
 			'studio'   => df_studio_url( df_current_url() ),
 			'context'  => df_live_context(),
 			'origin'   => untrailingslashit( home_url() ),

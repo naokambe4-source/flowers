@@ -210,6 +210,7 @@
 		url: window.location.href.replace( /([?&])df_(live|preview)=1&?/g, '$1' ).replace( /[?&]$/, '' ),
 		title: document.title,
 		home: !! L.isHome,
+		is404: !! L.is404,
 		context: L.context || {}
 	} );
 }() );
