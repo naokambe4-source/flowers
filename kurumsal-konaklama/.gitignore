@@ -1,0 +1,10 @@
+/vendor/
+/config/config.php
+/storage/installed.lock
+/storage/logs/*
+/storage/sessions/*
+/storage/tmp/*
+/storage/cache/*
+/storage/private/*
+!/storage/*/.gitkeep
+/build/

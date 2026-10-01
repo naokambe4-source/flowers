@@ -1,0 +1,7 @@
+<div class="admin-title"><div><h1>Odalar</h1><p>Oda ekleme ve düzenleme otel sihirbazının 4. adımından yapılır.</p></div></div>
+<form class="toolbar card card-body" method="get"><?= f_select('otel', 'Otel', $hotels, $hotelId ?: '', 'Tüm oteller') ?><div class="field" style="flex:0 0 auto"><span class="label">&nbsp;</span><button class="btn">Filtrele</button></div></form>
+<?php if (!$rows): ?><div class="empty"><?= icon('bed', 'icon-l') ?><h3>Oda yok</h3></div><?php else: ?>
+<div class="table-wrap"><table class="table responsive"><thead><tr><th>Oda</th><th>Otel</th><th>Kapasite</th><th>Fiyat planı</th><th>Foto</th><th>Durum</th><th></th></tr></thead><tbody>
+<?php foreach ($rows as $r): ?><tr><td data-label="Oda"><strong><?= e($r['name']) ?></strong><div class="small muted"><?= e(trim(($r['size_m2'] ? $r['size_m2'] . ' m² · ' : '') . ($r['view_type'] ?? ''), ' ·')) ?></div></td><td data-label="Otel"><?= e($r['hotel_name']) ?></td><td data-label="Kapasite"><?= (int) $r['max_adults'] ?> yet. / <?= (int) $r['max_children'] ?> çoc. / <?= (int) $r['max_occupancy'] ?></td><td data-label="Plan"><?= (int) $r['plans'] ?></td><td data-label="Foto"><?= (int) $r['images'] ?></td><td data-label="Durum"><?= $r['is_active'] ? '<span class="badge badge-success">Aktif</span>' : '<span class="badge">Pasif</span>' ?></td>
+<td class="actions"><a class="btn btn-secondary btn-sm" href="<?= e(url('/yonetim/oteller/' . $r['hotel_id'] . '/adim/4')) ?>">Düzenle</a></td></tr><?php endforeach; ?>
+</tbody></table></div><?= pagination_links($page, $query) ?><?php endif; ?>

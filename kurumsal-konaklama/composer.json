@@ -1,0 +1,24 @@
+{
+    "name": "kurumsal/konaklama",
+    "description": "Kurumsal Konaklama ve Otel Rezervasyon Platformu",
+    "type": "project",
+    "license": "proprietary",
+    "require": {
+        "php": ">=8.3",
+        "ext-pdo": "*",
+        "ext-mbstring": "*",
+        "ext-json": "*",
+        "dompdf/dompdf": "^3.0",
+        "chillerlan/php-qrcode": "^5.0",
+        "phpmailer/phpmailer": "^6.9"
+    },
+    "autoload": {
+        "psr-4": { "App\\": "app/" },
+        "files": ["app/Support/helpers.php"]
+    },
+    "config": {
+        "platform": { "php": "8.3.0" },
+        "optimize-autoloader": true,
+        "sort-packages": true
+    }
+}

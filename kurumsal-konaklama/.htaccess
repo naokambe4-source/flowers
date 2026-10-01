@@ -1,0 +1,47 @@
+# Kurumsal Konaklama Platformu — Apache / LiteSpeed yapılandırması
+# Ana dizinde (/) ve alt klasörlerde (/oteller/, /kurumsal/konaklama/) RewriteBase gerekmeden çalışır.
+
+Options -Indexes -MultiViews
+DirectoryIndex index.php
+AddDefaultCharset UTF-8
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Kurulum yolunun rewrite ile çalıştığını uygulamaya bildir
+    RewriteRule ^ - [E=KK_REWRITE:1]
+
+    # İç klasörlere ve hassas dosyalara doğrudan erişimi engelle
+    RewriteRule ^(app|config|database|storage|vendor|tests|bin|docs)(/|$) - [F,L]
+    RewriteRule (^|/)\.(?!well-known/) - [F,L]
+    RewriteRule \.(sql|log|lock|md|json|zip|dist|ini|sh|bak|env)$ - [F,L,NC]
+    RewriteRule ^(?!index\.php$).*\.php$ - [F,L,NC]
+
+    # Var olan statik dosyaları doğrudan sun
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule ^assets/ - [L]
+
+    # Diğer her şey front controller'a
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^ index.php [QSA,L]
+</IfModule>
+
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set X-Frame-Options "SAMEORIGIN"
+</IfModule>
+
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css "access plus 30 days"
+    ExpiresByType application/javascript "access plus 30 days"
+    ExpiresByType image/svg+xml "access plus 30 days"
+    ExpiresByType image/png "access plus 30 days"
+    ExpiresByType image/webp "access plus 30 days"
+</IfModule>
+
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json image/svg+xml
+</IfModule>
