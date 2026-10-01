@@ -150,7 +150,7 @@ if ( $side ) {
 	<div class="df-herosplit__side">
 		<?php foreach ( $side as $row ) : ?>
 			<?php $k = 'hero_side.' . $row['_i']; ?>
-			<a class="df-sidebn" href="<?php echo esc_url( ! empty( $row['url'] ) ? df_url( $row['url'] ) : '#' ); ?>">
+			<a class="df-sidebn<?php echo ( isset( $row['theme'] ) && 'dark' === $row['theme'] ) ? ' df-sidebn--dark' : ''; ?>" href="<?php echo esc_url( ! empty( $row['url'] ) ? df_url( $row['url'] ) : '#' ); ?>">
 				<span class="df-sidebn__media"<?php echo df_i( $k . '.image' ); // phpcs:ignore ?>><?php echo df_image( isset( $row['image'] ) ? $row['image'] : 0, 'df-card', array( 'sizes' => '(max-width: 900px) 50vw, 28vw', 'alt' => '' ), 'Görsel' ); // phpcs:ignore ?></span>
 				<span class="df-sidebn__title"><span<?php echo df_e( $k . '.title' ); // phpcs:ignore ?>><?php echo esc_html( isset( $row['title'] ) ? $row['title'] : '' ); ?></span><?php df_the_icon( 'arrow-right', array( 'size' => 18 ) ); ?></span>
 			</a>

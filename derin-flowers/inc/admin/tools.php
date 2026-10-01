@@ -533,6 +533,98 @@ function df_apply_preset_vitrin() {
 add_action( 'admin_post_df_preset_vitrin', 'df_apply_preset_vitrin' );
 
 /**
+ * Krem & zarif paleti (fildişi zemin, koyu adaçayı yeşili düğmeler).
+ *
+ * @return array
+ */
+function df_palette_cream() {
+	return array(
+		'color_bg'          => '#FAF7F2',
+		'color_ivory'       => '#F4EFE8',
+		'color_sand'        => '#EFE8DE',
+		'color_text'        => '#262321',
+		'color_muted'       => '#6E665F',
+		'color_line'        => '#E6DED3',
+		'color_accent'      => '#3F5B45',
+		'color_accent_dark' => '#2F4734',
+		'color_rose'        => '#F3ECE4',
+		'color_dark'        => '#3F5B45',
+		'topbar_bg'         => '#F1ECE4',
+		'topbar_fg'         => '#4A4440',
+		'header_bg'         => '#FFFFFF',
+		'footer_bg'         => '#FFFFFF',
+		'soc_bg'            => '#F4EFE8',
+	);
+}
+
+/**
+ * Krem vitrin düzeni (gönderilen son tasarım): vitrin düzeni + krem palet, çerçeveli
+ * "İncele" düğmeleri, 12 ürün arada banner yok, koyu Instagram bannerı, "TL" fiyat.
+ */
+function df_apply_preset_cream() {
+	if ( ! current_user_can( 'edit_theme_options' ) || ! check_admin_referer( 'df_preset_cream' ) ) {
+		wp_die( 'Yetkiniz yok.' );
+	}
+	$opts  = array_merge( df_defaults(), (array) get_option( DF_OPTION, array() ) );
+	$first = array( 'hero', 'vitrin', 'social', 'trust' );
+	$list  = array();
+	foreach ( $first as $id ) {
+		$list[] = array( 'id' => $id, 'on' => 1 );
+	}
+	foreach ( array_keys( df_home_section_labels() ) as $id ) {
+		if ( ! in_array( $id, $first, true ) ) {
+			$list[] = array( 'id' => $id, 'on' => 0 );
+		}
+	}
+	$opts = array_merge(
+		$opts,
+		df_palette_cream(),
+		array(
+			'home_sections'        => $list,
+			'hero_side_on'         => 1,
+			'header_search_bar'    => 1,
+			'header_search_ph'     => 'Ürün adı veya ürün kodu ile ara',
+			'header_inline_labels' => 1,
+			'header_cat_btn'       => 0,
+			'header_show_search'   => 1,
+			'header_show_wishlist' => 0,
+			'logo_icon'            => 1,
+			'nav_serif'            => 1,
+			'nav_icons'            => 0,
+			'lang_on'              => 1,
+			'vit_count'            => '12',
+			'vit_promos_on'        => 0,
+			'card_view_style'      => 'outline',
+			'card_show_sku'        => 1,
+			'card_show_cat'        => 0,
+			'card_radius'          => 6,
+			'btn_radius'           => 4,
+			'soc_style'            => 'image',
+			'soc_ig_dark'          => 1,
+			'soc_ig_title'         => "Instagram'dan\nilham alın",
+			'soc_blog_title'       => 'Çiçek Rehberi & Blog',
+			'soc_blog_text'        => 'Çiçeklerin büyülü dünyası, bakım ipuçları ve daha fazlası…',
+			'section_space'        => 48,
+			'price_tl'             => 1,
+		)
+	);
+	if ( isset( $opts['hero_side'][1] ) && is_array( $opts['hero_side'][1] ) ) {
+		$opts['hero_side'][1]['theme'] = 'dark';
+	}
+	$opts['__df_clean'] = 1;
+	update_option( DF_OPTION, $opts );
+	if ( ! empty( $_POST['price_format'] ) && df_wc() ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- yukarıda doğrulandı.
+		update_option( 'woocommerce_price_num_decimals', 0 );
+		update_option( 'woocommerce_price_thousand_sep', '.' );
+		update_option( 'woocommerce_price_decimal_sep', ',' );
+		update_option( 'woocommerce_currency_pos', 'right_space' );
+	}
+	wp_safe_redirect( admin_url( 'admin.php?page=derin-flowers-tools&preset=1' ) );
+	exit;
+}
+add_action( 'admin_post_df_preset_cream', 'df_apply_preset_cream' );
+
+/**
  * Araçlar sayfası.
  */
 function df_tools_page() {
@@ -590,6 +682,19 @@ function df_tools_page() {
 						<?php wp_nonce_field( 'df_preset' ); ?>
 						<input type="hidden" name="action" value="df_preset">
 						<p><button class="button button-primary">Düzeni uygula</button></p>
+					</form>
+				</div>
+			</div>
+
+			<div class="df-group">
+				<div class="df-group__head"><h3>Krem & zarif vitrin (en son tasarım)</h3></div>
+				<div class="df-group__body">
+					<p class="df-group__desc">Fildişi/krem zemin, koyu adaçayı yeşili düğmeler. Küçük hero + sağda 3 kategori bannerı (ortadaki koyu), 12 ürünlük Vitrin Koleksiyonu (ince çerçeveli "İncele" düğmeleri), koyu Instagram + açık Blog bannerı, güven şeridi, footer. Diğer bölümler kapatılır, silinmez. Vitrin kategorisini Ana Sayfa → Vitrin Koleksiyonu'ndan seçin.</p>
+					<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" onsubmit="return confirm('Ana sayfa düzeni ve renkler değişecek. Devam edilsin mi?');">
+						<?php wp_nonce_field( 'df_preset_cream' ); ?>
+						<input type="hidden" name="action" value="df_preset_cream">
+						<label class="df-check"><input type="checkbox" name="price_format" value="1" checked> Fiyatları "2.490 TL" biçiminde göster (WooCommerce: kuruş yok, binlik nokta, TL sağda)</label>
+						<p><button class="button button-primary">Krem vitrini uygula</button></p>
 					</form>
 				</div>
 			</div>

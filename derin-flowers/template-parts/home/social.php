@@ -20,7 +20,7 @@ if ( 'image' === df_opt( 'soc_style' ) ) :
 	<section data-df-sec="social" class="df-sstrip df-sstrip--image" aria-label="Instagram ve blog">
 		<div class="df-container df-sstrip__duo">
 			<?php if ( $ig_url ) : ?>
-				<a class="df-sstrip__tile" href="<?php echo esc_url( $ig_url ); ?>" target="_blank" rel="noopener">
+				<a class="df-sstrip__tile<?php echo df_opt( 'soc_ig_dark' ) ? ' df-sstrip__tile--dark' : ''; ?>" href="<?php echo esc_url( $ig_url ); ?>" target="_blank" rel="noopener">
 					<span class="df-sstrip__bg"<?php echo df_i( 'soc_ig_image' ); // phpcs:ignore ?>><?php echo df_image( df_opt( 'soc_ig_image' ), 'df-wide', array( 'sizes' => '(max-width: 900px) 100vw, 50vw', 'alt' => '' ), 'Instagram görseli' ); // phpcs:ignore ?></span>
 					<span class="df-sstrip__txt">
 						<strong<?php echo df_e( 'soc_ig_title' ); // phpcs:ignore ?>><?php echo df_nl2br( df_opt( 'soc_ig_title' ) ); // phpcs:ignore ?></strong>

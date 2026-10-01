@@ -19,7 +19,7 @@ if ( ! $products ) {
 }
 $cols   = 4;
 $promos = array();
-foreach ( (array) df_opt( 'vit_promos', array() ) as $i => $row ) {
+foreach ( df_opt( 'vit_promos_on', 1 ) ? (array) df_opt( 'vit_promos', array() ) : array() as $i => $row ) {
 	if ( is_array( $row ) && ( ! empty( $row['image'] ) || df_live() ) && ! empty( $row['title'] ) ) {
 		$row['_i'] = $i;
 		$promos[]  = $row;

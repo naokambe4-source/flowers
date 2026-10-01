@@ -813,3 +813,15 @@ function df_search_by_sku( $search, $q ) {
 	return preg_replace( '/^\s*AND\s*\(/', " AND ( {$wpdb->posts}.ID IN ({$in}) OR (", $search, 1 ) . ')';
 }
 add_filter( 'posts_search', 'df_search_by_sku', 20, 2 );
+
+/**
+ * Para birimi simgesi: ₺ yerine "TL" (Tema ayarı).
+ *
+ * @param string $symbol   Simge.
+ * @param string $currency Para birimi.
+ * @return string
+ */
+function df_currency_tl( $symbol, $currency ) {
+	return ( 'TRY' === $currency && df_opt( 'price_tl' ) ) ? 'TL' : $symbol;
+}
+add_filter( 'woocommerce_currency_symbol', 'df_currency_tl', 20, 2 );

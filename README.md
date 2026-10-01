@@ -42,6 +42,11 @@ Araçlar sayfasında ayarları **JSON dışa/içe aktarma** ve sıfırlama da va
 - **Üyelik**: sekmeli Giriş / Üye Ol, ad-soyad-telefon-KVKK alanları, Hesabım kısayol kartları.
 - **Favoriler** (üye + ziyaretçi), canlı ürün araması, mini sepet çekmecesi, ürün kategorisine ikon + kapak görseli, menü öğelerine ikon seçimi, bülten aboneleri + CSV.
 
+## v1.6 — Krem & zarif vitrin
+
+- **Araçlar → Krem & zarif vitrin:** fildişi zemin, koyu adaçayı yeşili düğmeler, zarif (tırnaklı) menü; küçük hero + sağda 3 banner (ortadaki koyu); 12 ürünlük vitrin, ince çerçeveli "İncele" düğmeleri, kartlarda hover efekti; koyu Instagram + açık Blog bannerı; isteğe bağlı "2.490 TL" fiyat biçimi.
+- Yeni seçenekler: yan banner tonu (açık/koyu), vitrin arası banner aç/kapa, "İncele" düğmesi dolu/çerçeveli, koyu Instagram bannerı, fiyatta "TL".
+
 ## v1.5 — Vitrin düzeni ve pastel adaçayı paleti
 
 - **Araçlar → Vitrin düzeni:** dil seçicili ince üst bant, solda "ürün adı veya kodu" arama, ikonlu logo, sağda Hesabım / Sepetim; küçük hero + sağında 3 kategori bannerı; **Vitrin Koleksiyonu** (seçilen kategoriden 4'lü satırlar, araya 3 tanıtım bannerı, "İncele" düğmeli kartlar); Instagram & Blog görselli bannerlar; ilçe kısayolları; güven şeridi. İsteğe bağlı göz yormayan **pastel adaçayı** renkleri.

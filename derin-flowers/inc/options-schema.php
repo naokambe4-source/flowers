@@ -300,6 +300,7 @@ function df_options_schema() {
 								array( 'id' => 'title', 'type' => 'text', 'label' => 'Başlık', 'third' => true ),
 								array( 'id' => 'url', 'type' => 'url', 'label' => 'Bağlantı', 'third' => true ),
 								array( 'id' => 'image', 'type' => 'image', 'label' => 'Görsel (sağa yaslı)', 'third' => true ),
+								array( 'id' => 'theme', 'type' => 'select', 'label' => 'Ton', 'default' => 'light', 'third' => true, 'options' => array( 'light' => 'Açık zemin, koyu yazı', 'dark' => 'Koyu zemin, beyaz yazı' ) ),
 							),
 						),
 					),
@@ -653,6 +654,8 @@ function df_options_schema() {
 						array( 'id' => 'vit_cat', 'type' => 'product_cat', 'label' => 'Vitrin kategorisi', 'third' => true ),
 						array( 'id' => 'vit_count', 'type' => 'select', 'label' => 'Ürün sayısı', 'default' => '12', 'third' => true, 'options' => array( '4' => '4', '8' => '8', '12' => '12', '16' => '16', '20' => '20' ) ),
 						array( 'id' => 'vit_link', 'type' => 'text', 'label' => 'Sağ bağlantı yazısı', 'default' => 'Tüm ürünleri gör', 'third' => true ),
+						array( 'id' => 'vit_promos_on', 'type' => 'toggle', 'label' => 'Ürünlerin arasına banner koy', 'default' => 1, 'third' => true ),
+						array( 'id' => 'card_view_style', 'type' => 'select', 'label' => '"İncele" düğmesi', 'default' => 'solid', 'third' => true, 'options' => array( 'solid' => 'Dolu', 'outline' => 'Çerçeveli (ince)' ) ),
 						array(
 							'id'          => 'vit_promos',
 							'type'        => 'repeater',
@@ -690,6 +693,8 @@ function df_options_schema() {
 					'fields'  => array(
 						array( 'id' => 'soc_style', 'type' => 'select', 'label' => 'Görünüm', 'default' => 'cards', 'half' => true, 'options' => array( 'cards' => 'Üç küçük kart', 'image' => 'İki büyük görselli banner (Instagram + Blog)' ) ),
 						array( 'id' => 'soc_blog_btn', 'type' => 'text', 'label' => 'Blog buton yazısı (görselli)', 'default' => 'Yazıları keşfet', 'half' => true ),
+						array( 'id' => 'soc_ig_dark', 'type' => 'toggle', 'label' => 'Instagram bannerı koyu (beyaz yazı)', 'default' => 0, 'half' => true ),
+						array( 'id' => 'price_tl', 'type' => 'toggle', 'label' => 'Fiyatlarda ₺ yerine "TL" yaz', 'default' => 0, 'half' => true ),
 						array( 'id' => 'soc_ig_image', 'type' => 'image', 'label' => 'Instagram banner görseli (görselli)', 'half' => true ),
 						array( 'id' => 'soc_blog_image', 'type' => 'image', 'label' => 'Blog banner görseli (görselli)', 'half' => true ),
 						array( 'id' => 'soc_ig_title', 'type' => 'text', 'label' => 'Instagram başlığı', 'default' => 'Instagram', 'third' => true ),
