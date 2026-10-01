@@ -3,7 +3,7 @@
 Yönetim → **API Yönetimi**. Tüm sağlayıcılar `HotelProviderInterface` sözleşmesini uygular ve desteklediği yetenekleri (`capabilities()`) açıkça bildirir. Desteklenmeyen işlem başarılı gibi davranmaz; `UnsupportedCapabilityException` fırlatır.
 
 ## Güvenlik
-- Anahtarlar yönetimden girilir, **libsodium ile şifreli** saklanır, ekranda tekrar gösterilmez (yalnız son 4 hane), ön yüze gönderilmez, loglarda maskelenir. Teslim paketinde gerçek anahtar yoktur.
+- Anahtarlar yönetimden girilir, **şifreli** (libsodium; sunucuda yoksa OpenSSL AES-256-GCM) saklanır, ekranda tekrar gösterilmez (yalnız son 4 hane), ön yüze gönderilmez, loglarda maskelenir. Teslim paketinde gerçek anahtar yoktur.
 - HTTP istemcisi: bağlantı + toplam timeout, yalnız ağ hatası / 429 / 5xx için en fazla 2 kontrollü tekrar (rezervasyon oluşturma asla tekrarlanmaz), sağlayıcı bazlı dakika sınırı, `api_request_logs` kaydı.
 
 ## Önbellek ve geri dönüş

@@ -2,7 +2,7 @@
 
 ## Gereksinimler
 - PHP **8.3** veya üzeri (cPanel → *Select PHP Version* / *MultiPHP Manager*)
-- Zorunlu PHP uzantıları: `pdo_mysql`, `mbstring`, `sodium`, `fileinfo`, `dom`, `xml`, `openssl`
+- Zorunlu PHP uzantıları: `pdo_mysql`, `mbstring`, `fileinfo`, `dom`, `xml`, `openssl` (`sodium` önerilir ama zorunlu değildir; yoksa gizli değerler OpenSSL AES-256-GCM ile şifrelenir)
 - Önerilen: `curl` (API sağlayıcıları), `gd` (görsel boyutlandırma ve QR PNG), `zip` (XLSX), `exif`
 - MySQL 8+ veya MariaDB 10.6+
 - Apache veya LiteSpeed, `.htaccess` (AllowOverride) açık

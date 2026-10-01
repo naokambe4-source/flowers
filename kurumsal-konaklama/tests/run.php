@@ -464,11 +464,33 @@ $tests['CSV aktarımı: zorunlu alan, mükerrer e-posta ve hata raporu'] = funct
 $tests['Gizli anahtarlar şifreli saklanır ve maskelenir'] = function () use ($db) {
     SettingsService::set('mail.password', 'cokgizliparola', true);
     $raw = (string) $db->value("SELECT `value` FROM settings WHERE `key` = 'mail.password'");
-    T::ok(str_starts_with($raw, 'v1:') && !str_contains($raw, 'cokgizli'), 'veritabanında şifreli');
+    T::ok((str_starts_with($raw, 'v1:') || str_starts_with($raw, 'v2:')) && !str_contains($raw, 'cokgizli'), 'veritabanında şifreli');
     T::eq('cokgizliparola', SettingsService::get('mail.password'), 'sunucuda çözülür');
     T::eq('••••••••lama', \App\Core\Crypto::mask('çokgizliparolalama'), 'maskeleme');
     $ctx = \App\Core\Logger::sanitize(['api_key' => 'abcd1234efgh', 'x' => 'y']);
     T::ok(!str_contains($ctx['api_key'], 'abcd1234'), 'log maskesi');
+};
+
+$tests['sodium olmayan sunucuda OpenSSL (AES-256-GCM) ile şifreleme'] = function () use ($db) {
+    $C = \App\Core\Crypto::class;
+    $v1 = $C::encrypt('sodium-ile');
+    $C::$forceOpenssl = true;
+    try {
+        $v2 = $C::encrypt('openssl-ile');
+        T::ok(str_starts_with($v2, 'v2:') && !str_contains($v2, 'openssl-ile'), 'v2 biçiminde şifreli');
+        T::eq('openssl-ile', $C::decrypt($v2), 'v2 çözülür');
+        $bin = base64_decode(substr($v2, 3));
+        $bin[strlen($bin) - 1] = chr(ord($bin[strlen($bin) - 1]) ^ 1);
+        T::eq(null, $C::decrypt('v2:' . base64_encode($bin)), 'değiştirilmiş veri reddedilir');
+        SettingsService::set('mail.password', 'opensslparola', true);
+        $raw = (string) $db->value("SELECT `value` FROM settings WHERE `key` = 'mail.password'");
+        T::ok(str_starts_with($raw, 'v2:'), 'ayar OpenSSL ile saklanır');
+        T::eq('opensslparola', SettingsService::get('mail.password'), 'ayar çözülür');
+    } finally {
+        $C::$forceOpenssl = false;
+    }
+    T::eq('sodium-ile', $C::decrypt($v1), 'eski v1 kayıtlar okunmaya devam eder');
+    T::ok($C::available(), 'kurulum kontrolü şifreleme desteğini görür');
 };
 
 $tests['Sayfa render (üye ve yönetim) — taşma riski olmayan HTML üretimi'] = function () use ($fx, $crit) {
