@@ -21,3 +21,6 @@ Yeni migration eklerken (geliştiriciler için): `database/migrations/NNN_acikla
 ## 1.1.0 → 1.2.0
 - Yeni migration: `004_live_hotel_sources.sql` (otel kaynak alanları, web/telefon alanları, OpenStreetMap ve LiteAPI sağlayıcı kayıtları). Mevcut veriye dokunmaz; *Sistem Güncellemesi* sayfasından uygulayın.
 - Yenilikler: Yönetim → Canlı Otel Verisi (OpenStreetMap ile anahtarsız gerçek otel kataloğu, LiteAPI ile fotoğraf + canlı fiyat + rezervasyon), otel sayfasında “Canlı oda fiyatları” bölümü, `bin/import-hotels.php`.
+
+## 1.2.0 → 1.2.1
+- Düzeltme: LiteAPI rezervasyonunda "invalid offerId" hatası (uzun teklif kimlikleri kesiliyordu). Migration `005_long_offer_ids.sql` — Sistem Güncellemesi sayfasından uygulayın.

@@ -605,12 +605,13 @@ $tests['Canlı veri: OpenStreetMap içe aktarma, LiteAPI birleştirme, canlı fi
         if (str_contains($url, '/hotels/rates')) {
             T::eq('TRY', $body['currency'] ?? null, 'fiyatlar TL istenir');
             $offers = static fn ($hid) => [
-                ['offerId' => "OFF-$hid-A", 'supplier' => 'x', 'offerRetailRate' => ['amount' => 12500.5, 'currency' => 'TRY'], 'rates' => [['name' => 'Deluxe Deniz Manzaralı', 'boardType' => 'AI', 'boardName' => 'All Inclusive', 'retailRate' => ['total' => [['amount' => 12500.5, 'currency' => 'TRY']], 'taxesAndFees' => [['included' => true, 'amount' => 100]]], 'cancellationPolicies' => ['refundableTag' => 'RFN', 'cancelPolicyInfos' => [['cancelTime' => '2026-12-01 12:00:00']]]]]],
+                ['offerId' => "OFF-$hid-A" . str_repeat('x', 400), 'supplier' => 'x', 'offerRetailRate' => ['amount' => 12500.5, 'currency' => 'TRY'], 'rates' => [['name' => 'Deluxe Deniz Manzaralı', 'boardType' => 'AI', 'boardName' => 'All Inclusive', 'retailRate' => ['total' => [['amount' => 12500.5, 'currency' => 'TRY']], 'taxesAndFees' => [['included' => true, 'amount' => 100]]], 'cancellationPolicies' => ['refundableTag' => 'RFN', 'cancelPolicyInfos' => [['cancelTime' => '2026-12-01 12:00:00']]]]]],
                 ['offerId' => "OFF-$hid-B", 'supplier' => 'x', 'offerRetailRate' => ['amount' => 9800, 'currency' => 'TRY'], 'rates' => [['name' => 'Standart Oda', 'boardType' => 'BB', 'boardName' => 'Breakfast', 'retailRate' => ['total' => [['amount' => 9800, 'currency' => 'TRY']], 'taxesAndFees' => [['included' => false, 'amount' => 300]]], 'cancellationPolicies' => ['refundableTag' => 'NRFN']]]],
             ];
             return $j(['data' => array_map(static fn ($hid) => ['hotelId' => $hid, 'roomTypes' => $offers($hid)], $body['hotelIds'])]);
         }
         if (str_contains($url, '/rates/prebook')) {
+            T::eq('OFF-lp1-A' . str_repeat('x', 400), $body['offerId'] ?? null, 'uzun offerId kesilmeden gönderilir');
             return $j(['data' => ['prebookId' => 'PB-1', 'hotelId' => 'lp1', 'price' => $prebookPrice, 'currency' => 'TRY']]);
         }
         if (str_contains($url, '/rates/book')) {
@@ -664,7 +665,7 @@ $tests['Canlı veri: OpenStreetMap içe aktarma, LiteAPI birleştirme, canlı fi
         TestEnv::actingAs('uye@test.local');
         $page = TestEnv::request('GET', '/oteller/' . $merged['slug'], $c->toQuery());
         $body = $page->body();
-        T::ok(str_contains($body, 'Canlı oda fiyatları') && str_contains($body, 'OFF-lp1-A') && str_contains($body, 'OFF-lp1-B'), 'canlı teklifler listelenir');
+        T::ok(str_contains($body, 'Canlı oda fiyatları') && str_contains($body, 'OFF-lp1-A' . str_repeat('x', 400)) && str_contains($body, 'OFF-lp1-B'), 'canlı teklifler listelenir');
         T::ok(str_contains($body, 'TEST (sandbox)'), 'sandbox uyarısı gösterilir');
         T::ok(str_contains($body, '9.800') && str_contains($body, '12.500,50'), 'fiyatlar sağlayıcıdan TL olarak');
         TestEnv::logout();
@@ -674,7 +675,7 @@ $tests['Canlı veri: OpenStreetMap içe aktarma, LiteAPI birleştirme, canlı fi
         // 4) Seçilen (pahalı) teklifle rezervasyon → prebook → book
         $u = $user('uye@test.local');
         $bs = new BookingService($db);
-        $draft = $bs->startDraft($u, (int) $h['id'], 0, null, $c, null, 'idem-lite-1', 'OFF-lp1-A');
+        $draft = $bs->startDraft($u, (int) $h['id'], 0, null, $c, null, 'idem-lite-1', 'OFF-lp1-A' . str_repeat('x', 400));
         T::eq(1250050, (int) $draft['total_minor'], 'seçilen teklif korunur (en ucuza sessizce geçilmez)');
         T::eq('provider', $draft['source'], 'kaynak sağlayıcı');
         $bs->saveGuests($draft, ['misafir' => [['ad' => 'Mehmet', 'soyad' => 'Üye']], 'iletisim_telefon' => '05551112233', 'iletisim_eposta' => 'uye@test.local']);
@@ -685,7 +686,7 @@ $tests['Canlı veri: OpenStreetMap içe aktarma, LiteAPI birleştirme, canlı fi
         T::ok(in_array('POST https://book.liteapi.travel/v3.0/rates/prebook', $calls, true), 'rezervasyon öncesi fiyat yeniden doğrulandı');
         // Fiyat değişirse rezervasyon yapılmaz
         $prebookPrice = 13100.0;
-        $d2 = $bs->startDraft($u, (int) $h['id'], 0, null, $c, null, 'idem-lite-2', 'OFF-lp1-A');
+        $d2 = $bs->startDraft($u, (int) $h['id'], 0, null, $c, null, 'idem-lite-2', 'OFF-lp1-A' . str_repeat('x', 400));
         $bs->saveGuests($d2, ['misafir' => [['ad' => 'Mehmet', 'soyad' => 'Üye']], 'iletisim_telefon' => '05551112233', 'iletisim_eposta' => 'uye@test.local']);
         $d2 = $db->fetch('SELECT * FROM bookings WHERE id = ?', [$d2['id']]);
         T::throws(DomainException::class, fn () => $bs->confirm($d2, $u, $d2['quote_hash']), 'sağlayıcı fiyatı değişince rezervasyon durdurulur');

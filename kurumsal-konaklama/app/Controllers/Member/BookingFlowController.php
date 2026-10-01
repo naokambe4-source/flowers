@@ -34,7 +34,7 @@ final class BookingFlowController extends Controller
             $criteria,
             null,
             mb_substr($idem, 0, 64),
-            ($ref = (string) ($this->request->post['teklif_ref'] ?? '')) !== '' && strlen($ref) <= 190 && preg_match('/^[A-Za-z0-9_\-.:=+\/]+$/', $ref) ? $ref : null,
+            ($ref = (string) ($this->request->post['teklif_ref'] ?? '')) !== '' && strlen($ref) <= 3000 && preg_match('/^[A-Za-z0-9_\-.:=+\/]+$/', $ref) ? $ref : null,
         );
         if ($booking['status'] !== 'draft') {
             return $this->redirect('/rezervasyonlarim/' . $booking['code']);

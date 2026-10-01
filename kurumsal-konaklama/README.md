@@ -2,7 +2,7 @@
 
 Antalya ve ilçelerindeki anlaşmalı otelleri **yalnızca yetkilendirilmiş kurum üyelerine** özel fiyatlarla sunan kapalı B2B/B2E konaklama platformu. Standart cPanel hosting üzerinde (PHP 8.3 + MySQL/MariaDB) çalışır; Node.js, Docker veya sürekli çalışan servis gerektirmez.
 
-**Teslim paketi:** `../kurumsal-konaklama-1.2.0.zip` (vendor dahil, cPanel’e doğrudan yüklenir).
+**Teslim paketi:** `../kurumsal-konaklama-1.2.1.zip` (vendor dahil, cPanel’e doğrudan yüklenir).
 
 ## Dokümanlar
 | Doküman | İçerik |

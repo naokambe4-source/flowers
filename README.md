@@ -2,7 +2,7 @@
 
 | Proje | Klasör | Paket |
 |---|---|---|
-| **Kurumsal Konaklama ve Otel Rezervasyon Platformu** (PHP 8.3 + MySQL, cPanel) | [`kurumsal-konaklama/`](kurumsal-konaklama/) | `kurumsal-konaklama-1.2.0.zip` |
+| **Kurumsal Konaklama ve Otel Rezervasyon Platformu** (PHP 8.3 + MySQL, cPanel) | [`kurumsal-konaklama/`](kurumsal-konaklama/) | `kurumsal-konaklama-1.2.1.zip` |
 | Derin Flowers — WordPress + WooCommerce teması | [`derin-flowers/`](derin-flowers/) | `derin-flowers.zip` |
 
 ---

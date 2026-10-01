@@ -134,7 +134,7 @@ final class ProviderRateService
                     'concept_id' => $concepts[strtoupper((string) ($r['boardCode'] ?? ''))] ?? null,
                     'refundable' => $r['refundable'] === null ? null : ((bool) $r['refundable'] ? 1 : 0),
                     'cancellation_summary' => $r['cancellationSummary'] ?? null, 'captured_at' => $fetchedAt, 'valid_until' => $validUntil,
-                    'external_rate_id' => $r['rateKey'] !== null ? mb_substr((string) $r['rateKey'], 0, 190) : null,
+                    'external_rate_id' => $r['rateKey'] !== null && strlen((string) $r['rateKey']) <= 3000 ? (string) $r['rateKey'] : null,
                     'provider_bookable' => !empty($r['bookable']) ? 1 : 0,
                 ]);
             }
