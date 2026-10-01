@@ -611,6 +611,7 @@ function df_css_variables() {
 		'--df-sale'         => $o['color_sale'],
 		'--df-success'      => $o['color_success'],
 		'--df-topbar'       => $o['topbar_bg'],
+		'--df-topbar-fg'    => $o['topbar_fg'] ? $o['topbar_fg'] : $o['color_text'],
 		'--df-header'       => $o['header_bg'],
 		'--df-footer'       => $o['footer_bg'],
 		'--df-font-heading' => '"' . $o['font_heading'] . '", "Times New Roman", serif',
@@ -717,6 +718,9 @@ function df_logo( $context = 'header' ) {
 			)
 		);
 	} else {
+		if ( df_opt( 'logo_icon' ) ) {
+			echo '<span class="df-logo__icon" aria-hidden="true">' . df_icon( 'flower', array( 'size' => 30 ) ) . '</span>'; // phpcs:ignore
+		}
 		echo '<span class="df-logo__text">' . esc_html( df_opt( 'logo_text', get_bloginfo( 'name' ) ) ) . '</span>';
 		if ( df_opt( 'logo_tagline' ) ) {
 			echo '<span class="df-logo__tag">' . esc_html( df_opt( 'logo_tagline' ) ) . '</span>';
@@ -733,3 +737,79 @@ function df_logo( $context = 'header' ) {
 function df_wc() {
 	return class_exists( 'WooCommerce' );
 }
+
+/**
+ * Dil bağlantıları (üst bant). Polylang / WPML varsa onları kullanır; yoksa
+ * Google Çeviri ile sayfanın çevrilmiş halini açar.
+ *
+ * @return array<int, array{code:string,url:string,current:bool}>
+ */
+function df_lang_links() {
+	if ( ! df_opt( 'lang_on' ) ) {
+		return array();
+	}
+	$out = array();
+	if ( function_exists( 'pll_the_languages' ) ) {
+		foreach ( (array) pll_the_languages( array( 'raw' => 1, 'hide_if_empty' => 0 ) ) as $l ) {
+			$out[] = array(
+				'code'    => strtoupper( $l['slug'] ),
+				'url'     => $l['url'],
+				'current' => ! empty( $l['current_lang'] ),
+			);
+		}
+		return $out;
+	}
+	$langs = apply_filters( 'wpml_active_languages', null, array( 'skip_missing' => 0 ) );
+	if ( is_array( $langs ) && $langs ) {
+		foreach ( $langs as $l ) {
+			$out[] = array(
+				'code'    => strtoupper( $l['language_code'] ),
+				'url'     => $l['url'],
+				'current' => ! empty( $l['active'] ),
+			);
+		}
+		return $out;
+	}
+	$uri  = isset( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '/';
+	$here = home_url( $uri );
+	$base = strtolower( (string) df_opt( 'lang_base', 'tr' ) );
+	foreach ( array_filter( array_map( 'trim', explode( ',', (string) df_opt( 'lang_codes', 'TR, EN, RU, AR, DE, FR' ) ) ) ) as $code ) {
+		$c     = strtolower( preg_replace( '/[^A-Za-z-]/', '', $code ) );
+		$out[] = array(
+			'code'    => strtoupper( $c ),
+			'url'     => $c === $base ? $here : 'https://translate.google.com/translate?sl=' . rawurlencode( $base ) . '&tl=' . rawurlencode( $c ) . '&u=' . rawurlencode( $here ),
+			'current' => $c === $base,
+		);
+	}
+	return $out;
+}
+
+/**
+ * Ürün aramasında ürün kodu (SKU) ile de eşleş.
+ *
+ * @param string   $search SQL.
+ * @param WP_Query $q      Sorgu.
+ * @return string
+ */
+function df_search_by_sku( $search, $q ) {
+	global $wpdb;
+	if ( is_admin() || ! $q->is_main_query() || ! $q->is_search() || ! $search || ! df_wc() ) {
+		return $search;
+	}
+	$term = trim( (string) $q->get( 's' ) );
+	if ( strlen( $term ) < 2 ) {
+		return $search;
+	}
+	$ids = $wpdb->get_col( $wpdb->prepare( "SELECT p.ID FROM {$wpdb->posts} p INNER JOIN {$wpdb->postmeta} m ON m.post_id = p.ID AND m.meta_key = '_sku' WHERE m.meta_value LIKE %s AND p.post_type IN ('product','product_variation')", '%' . $wpdb->esc_like( $term ) . '%' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+	if ( ! $ids ) {
+		return $search;
+	}
+	$parents = array();
+	foreach ( $ids as $id ) {
+		$parent    = wp_get_post_parent_id( $id );
+		$parents[] = (int) ( $parent ? $parent : $id );
+	}
+	$in = implode( ',', array_unique( $parents ) );
+	return preg_replace( '/^\s*AND\s*\(/', " AND ( {$wpdb->posts}.ID IN ({$in}) OR (", $search, 1 ) . ')';
+}
+add_filter( 'posts_search', 'df_search_by_sku', 20, 2 );

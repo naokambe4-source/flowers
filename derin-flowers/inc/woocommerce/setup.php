@@ -136,6 +136,7 @@ function df_product_card( $product, $args = array() ) {
 		array(
 			'tag'     => 'div',
 			'loading' => 'lazy',
+			'variant' => '',
 		)
 	);
 	get_template_part(
@@ -145,6 +146,7 @@ function df_product_card( $product, $args = array() ) {
 			'product' => $product,
 			'tag'     => $args['tag'],
 			'loading' => $args['loading'],
+			'variant' => $args['variant'],
 		)
 	);
 }

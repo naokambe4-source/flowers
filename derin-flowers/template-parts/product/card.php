@@ -109,7 +109,9 @@ $subtitle = get_post_meta( $product->get_id(), '_df_subtitle', true );
 		<?php endif; ?>
 		<div class="df-card__foot">
 			<div class="df-card__price"><?php echo wp_kses_post( $product->get_price_html() ); ?></div>
-			<?php if ( df_opt( 'card_cart_icon' ) ) : ?>
+			<?php if ( ! empty( $args['variant'] ) && 'vitrin' === $args['variant'] ) : ?>
+				<a href="<?php echo esc_url( $link ); ?>" class="df-card__view" aria-label="<?php echo esc_attr( sprintf( '%s ürününü incele', $name ) ); ?>"><?php echo esc_html( df_opt( 'card_btn_text', 'İncele' ) ); ?><?php df_the_icon( 'arrow-right', array( 'size' => 14 ) ); ?></a>
+			<?php elseif ( df_opt( 'card_cart_icon' ) ) : ?>
 				<?php if ( df_quick_add_allowed( $product ) ) : ?>
 					<a href="<?php echo esc_url( $product->add_to_cart_url() ); ?>" data-quantity="1" data-product_id="<?php echo esc_attr( $product->get_id() ); ?>" class="df-card__cart add_to_cart_button ajax_add_to_cart" aria-label="<?php echo esc_attr( sprintf( '%s sepete ekle', $name ) ); ?>" rel="nofollow"><?php df_the_icon( 'bag', array( 'size' => 18 ) ); ?></a>
 				<?php else : ?>

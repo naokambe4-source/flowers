@@ -18,6 +18,7 @@ defined( 'ABSPATH' ) || exit;
 function df_home_section_labels() {
 	return array(
 		'hero'        => 'Hero (tam genişlik)',
+		'vitrin'      => 'Vitrin Koleksiyonu (kategori ürünleri + 3 banner)',
 		'trust'       => 'Güven şeridi',
 		'popular'     => 'Popüler kategoriler (yuvarlak)',
 		'categories'  => 'Ana kategoriler',
@@ -33,6 +34,7 @@ function df_home_section_labels() {
 		'instagram'   => 'Instagram',
 		'newsletter'  => 'Bülten',
 		'social'      => 'Instagram · Blog · Sosyal şeridi',
+		'districts'   => 'İlçe kısayolları (hangi ilçeye?)',
 	);
 }
 
@@ -232,6 +234,7 @@ function df_options_schema() {
 						array( 'id' => 'topbar_right', 'type' => 'text', 'label' => 'Sağ metin', 'default' => 'Pazartesi - Cumartesi 09.00 - 19.00', 'half' => true ),
 						array( 'id' => 'topbar_link', 'type' => 'url', 'label' => 'Sol metin bağlantısı (opsiyonel)', 'half' => true ),
 						array( 'id' => 'topbar_bg', 'type' => 'color', 'label' => 'Band zemini', 'default' => '#F5EEE8', 'half' => true ),
+						array( 'id' => 'topbar_fg', 'type' => 'color', 'label' => 'Band yazı rengi (boşsa metin rengi)', 'default' => '', 'half' => true ),
 					),
 				),
 				array(
@@ -241,7 +244,12 @@ function df_options_schema() {
 						array( 'id' => 'header_bg', 'type' => 'color', 'label' => 'Header zemini', 'default' => '#FFFFFF', 'half' => true ),
 						array( 'id' => 'header_sticky', 'type' => 'toggle', 'label' => 'Kaydırınca header sabit kalsın', 'default' => 1, 'half' => true ),
 						array( 'id' => 'header_cat_btn', 'type' => 'toggle', 'label' => 'Solda "Kategoriler" menüsü (ikonlu)', 'default' => 1, 'half' => true ),
-						array( 'id' => 'header_search_bar', 'type' => 'toggle', 'label' => 'Solda arama kutusu', 'default' => 0, 'half' => true ),
+						array( 'id' => 'header_search_bar', 'type' => 'toggle', 'label' => 'Solda arama kutusu (ürün adı veya kodu)', 'default' => 0, 'half' => true ),
+						array( 'id' => 'header_inline_labels', 'type' => 'toggle', 'label' => 'Sağdaki ikon yazıları yanında ("Hesabım", "Sepetim")', 'default' => 0, 'half' => true ),
+						array( 'id' => 'logo_icon', 'type' => 'toggle', 'label' => 'Metin logonun üstünde küçük çiçek ikonu', 'default' => 0, 'half' => true ),
+						array( 'id' => 'nav_serif', 'type' => 'toggle', 'label' => 'Menü yazıları başlık fontuyla (zarif)', 'default' => 0, 'half' => true ),
+						array( 'id' => 'lang_on', 'type' => 'toggle', 'label' => 'Üst bantta dil seçici (TR · EN · …)', 'default' => 0, 'half' => true ),
+						array( 'id' => 'lang_codes', 'type' => 'text', 'label' => 'Diller (virgülle; ilk dil sitenin dili)', 'default' => 'TR, EN, RU, AR, DE, FR', 'half' => true, 'desc' => 'Polylang veya WPML kuruluysa onların dilleri kullanılır. Kurulu değilse diğer diller sayfayı Google Çeviri ile açar.' ),
 						array( 'id' => 'header_search_ph', 'type' => 'text', 'label' => 'Arama kutusu yazısı', 'default' => 'Çiçek, buket, özel gün ara…', 'half' => true ),
 						array( 'id' => 'header_cat_label', 'type' => 'text', 'label' => 'Kategori butonu metni', 'default' => 'Kategoriler', 'half' => true ),
 						array( 'id' => 'header_phone_on', 'type' => 'toggle', 'label' => 'Kategori butonu yanında telefon', 'default' => 0, 'half' => true ),
@@ -276,6 +284,24 @@ function df_options_schema() {
 						array( 'id' => 'hero_height', 'type' => 'select', 'label' => 'Yükseklik', 'default' => 'tall', 'third' => true, 'options' => array( 'standard' => 'Standart (72vh)', 'tall' => 'Yüksek (78vh)', 'full' => 'Tam ekran' ) ),
 						array( 'id' => 'hero_autoplay', 'type' => 'toggle', 'label' => 'Otomatik geçiş', 'default' => 1, 'third' => true ),
 						array( 'id' => 'hero_interval', 'type' => 'number', 'label' => 'Geçiş süresi (sn)', 'default' => 7, 'min' => 3, 'max' => 20, 'third' => true ),
+						array( 'id' => 'hero_side_on', 'type' => 'toggle', 'label' => 'Hero\'yu küçült, sağına kategori bannerları koy', 'default' => 0, 'half' => true ),
+						array(
+							'id'          => 'hero_side',
+							'type'        => 'repeater',
+							'label'       => 'Sağ bannerlar (en fazla 4, önerilen 3)',
+							'add_label'   => 'Banner ekle',
+							'title_field' => 'title',
+							'default'     => array(
+								array( 'title' => 'Buketler', 'url' => '/urun-kategori/buketler/' ),
+								array( 'title' => 'Güller', 'url' => '/urun-kategori/guller/' ),
+								array( 'title' => 'Orkideler', 'url' => '/urun-kategori/orkideler/' ),
+							),
+							'fields'      => array(
+								array( 'id' => 'title', 'type' => 'text', 'label' => 'Başlık', 'third' => true ),
+								array( 'id' => 'url', 'type' => 'url', 'label' => 'Bağlantı', 'third' => true ),
+								array( 'id' => 'image', 'type' => 'image', 'label' => 'Görsel (sağa yaslı)', 'third' => true ),
+							),
+						),
 					),
 				),
 				array(
@@ -619,10 +645,53 @@ function df_options_schema() {
 					),
 				),
 				array(
+					'title'   => 'Vitrin Koleksiyonu',
+					'section' => 'vitrin',
+					'desc'    => 'Seçtiğiniz kategorinin ürünleri 4\'lü satırlarla gösterilir; ilk satırdan sonra üç tanıtım bannerı gelir. Kartlarda "İncele" düğmesi bulunur (ürün sayfasına gider).',
+					'fields'  => array(
+						array( 'id' => 'vit_title', 'type' => 'text', 'label' => 'Başlık', 'default' => 'Vitrin Koleksiyonu', 'third' => true ),
+						array( 'id' => 'vit_cat', 'type' => 'product_cat', 'label' => 'Vitrin kategorisi', 'third' => true ),
+						array( 'id' => 'vit_count', 'type' => 'select', 'label' => 'Ürün sayısı', 'default' => '12', 'third' => true, 'options' => array( '4' => '4', '8' => '8', '12' => '12', '16' => '16', '20' => '20' ) ),
+						array( 'id' => 'vit_link', 'type' => 'text', 'label' => 'Sağ bağlantı yazısı', 'default' => 'Tüm ürünleri gör', 'third' => true ),
+						array(
+							'id'          => 'vit_promos',
+							'type'        => 'repeater',
+							'label'       => 'Ürünlerin arasındaki bannerlar (önerilen 3)',
+							'add_label'   => 'Banner ekle',
+							'title_field' => 'title',
+							'default'     => array(
+								array( 'title' => "Özel\nKoleksiyon", 'btn' => 'Keşfet', 'url' => '/magaza/' ),
+								array( 'title' => "Signature\nKoleksiyon", 'btn' => 'Keşfet', 'url' => '/urun-kategori/koleksiyonlar/' ),
+								array( 'title' => 'Söz Çiçekleri', 'btn' => 'Keşfet', 'url' => '/urun-kategori/soz-nisan/' ),
+							),
+							'fields'      => array(
+								array( 'id' => 'title', 'type' => 'textarea', 'label' => 'Başlık', 'rows' => 2, 'half' => true ),
+								array( 'id' => 'image', 'type' => 'image', 'label' => 'Görsel (çiçek sağda olacak şekilde)', 'half' => true ),
+								array( 'id' => 'btn', 'type' => 'text', 'label' => 'Buton', 'default' => 'Keşfet', 'half' => true ),
+								array( 'id' => 'url', 'type' => 'url', 'label' => 'Bağlantı', 'half' => true ),
+							),
+						),
+					),
+				),
+				array(
+					'title'   => 'İlçe kısayolları',
+					'section' => 'districts',
+					'fields'  => array(
+						array( 'id' => 'dist_title', 'type' => 'text', 'label' => 'Başlık', 'default' => 'İzmir\'de hangi ilçeye çiçek göndermek istersiniz?', 'half' => true ),
+						array( 'id' => 'dist_url', 'type' => 'url', 'label' => 'İlçelere tıklanınca gidilecek sayfa (boşsa mağaza)', 'half' => true ),
+						array( 'id' => 'dist_items', 'type' => 'textarea', 'label' => 'İlçeler (virgülle ya da satır satır)', 'default' => 'Konak, Karşıyaka, Bornova, Bayraklı, Buca, Balçova, Narlıdere, Gaziemir, Çiğli, Güzelbahçe', 'rows' => 3 ),
+						array( 'id' => 'dist_note', 'type' => 'text', 'label' => 'Alt not (opsiyonel)', 'default' => '' ),
+					),
+				),
+				array(
 					'title'   => 'Instagram · Blog · Sosyal şeridi',
 					'section' => 'social',
 					'desc'    => 'Footer\'ın hemen üstünde üç kart: Instagram, Blog ve sosyal medya ikonları. Bağlantılar Footer & İletişim → Sosyal medya alanlarından gelir.',
 					'fields'  => array(
+						array( 'id' => 'soc_style', 'type' => 'select', 'label' => 'Görünüm', 'default' => 'cards', 'half' => true, 'options' => array( 'cards' => 'Üç küçük kart', 'image' => 'İki büyük görselli banner (Instagram + Blog)' ) ),
+						array( 'id' => 'soc_blog_btn', 'type' => 'text', 'label' => 'Blog buton yazısı (görselli)', 'default' => 'Yazıları keşfet', 'half' => true ),
+						array( 'id' => 'soc_ig_image', 'type' => 'image', 'label' => 'Instagram banner görseli (görselli)', 'half' => true ),
+						array( 'id' => 'soc_blog_image', 'type' => 'image', 'label' => 'Blog banner görseli (görselli)', 'half' => true ),
 						array( 'id' => 'soc_ig_title', 'type' => 'text', 'label' => 'Instagram başlığı', 'default' => 'Instagram', 'third' => true ),
 						array( 'id' => 'soc_ig_text', 'type' => 'text', 'label' => 'Instagram metni', 'default' => 'En özel anlarımız', 'third' => true ),
 						array( 'id' => 'soc_bg', 'type' => 'color', 'label' => 'Kart zemin rengi', 'default' => '#F6E7E4', 'third' => true ),

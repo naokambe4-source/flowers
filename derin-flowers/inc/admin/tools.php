@@ -457,6 +457,82 @@ function df_apply_campaign_banners() {
 add_action( 'admin_post_df_campaign', 'df_apply_campaign_banners' );
 
 /**
+ * Pastel adaçayı paleti (göz yormayan yumuşak yeşil).
+ *
+ * @return array
+ */
+function df_palette_sage() {
+	return array(
+		'color_bg'          => '#EEF3EC',
+		'color_ivory'       => '#F7FAF5',
+		'color_sand'        => '#E4ECE1',
+		'color_text'        => '#2E3830',
+		'color_muted'       => '#6A766B',
+		'color_line'        => '#D6E0D2',
+		'color_accent'      => '#6D8F70',
+		'color_accent_dark' => '#557458',
+		'color_rose'        => '#E6EEE3',
+		'color_dark'        => '#4E6A52',
+		'topbar_bg'         => '#8EA68B',
+		'topbar_fg'         => '#FFFFFF',
+		'header_bg'         => '#EEF3EC',
+		'footer_bg'         => '#E4ECE1',
+		'occ_bg'            => '#F7FAF5',
+		'cats_bg'           => '#F7FAF5',
+		'soc_bg'            => '#F7FAF5',
+	);
+}
+
+/**
+ * Vitrin düzeni: küçük hero + 3 yan banner, vitrin kategorisi ve araya banner,
+ * Instagram & Blog, ilçeler, güven şeridi. İsteğe bağlı pastel adaçayı paleti.
+ */
+function df_apply_preset_vitrin() {
+	if ( ! current_user_can( 'edit_theme_options' ) || ! check_admin_referer( 'df_preset_vitrin' ) ) {
+		wp_die( 'Yetkiniz yok.' );
+	}
+	$opts  = array_merge( df_defaults(), (array) get_option( DF_OPTION, array() ) );
+	$first = array( 'hero', 'vitrin', 'social', 'districts', 'trust' );
+	$list  = array();
+	foreach ( $first as $id ) {
+		$list[] = array( 'id' => $id, 'on' => 1 );
+	}
+	foreach ( array_keys( df_home_section_labels() ) as $id ) {
+		if ( ! in_array( $id, $first, true ) ) {
+			$list[] = array( 'id' => $id, 'on' => 0 );
+		}
+	}
+	$opts['home_sections']        = $list;
+	$opts['hero_side_on']         = 1;
+	$opts['header_search_bar']    = 1;
+	$opts['header_search_ph']     = 'Ürün adı veya ürün kodu ile ara';
+	$opts['header_inline_labels'] = 1;
+	$opts['header_cat_btn']       = 0;
+	$opts['header_show_search']   = 1;
+	$opts['header_show_wishlist'] = 0;
+	$opts['logo_icon']            = 1;
+	$opts['nav_serif']            = 1;
+	$opts['nav_icons']            = 0;
+	$opts['lang_on']              = 1;
+	$opts['soc_style']            = 'image';
+	$opts['soc_ig_title']         = "Instagram'dan\nilham alın";
+	$opts['soc_blog_title']       = 'Çiçek Rehberi & Blog';
+	$opts['soc_blog_text']        = 'Çiçeklerin büyülü dünyası, bakım ipuçları ve daha fazlası…';
+	$opts['section_space']        = 56;
+	$opts['card_show_sku']        = 1;
+	$opts['card_radius']          = 8;
+	$opts['btn_radius']           = 4;
+	if ( ! empty( $_POST['palette'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- yukarıda doğrulandı.
+		$opts = array_merge( $opts, df_palette_sage() );
+	}
+	$opts['__df_clean'] = 1;
+	update_option( DF_OPTION, $opts );
+	wp_safe_redirect( admin_url( 'admin.php?page=derin-flowers-tools&preset=1' ) );
+	exit;
+}
+add_action( 'admin_post_df_preset_vitrin', 'df_apply_preset_vitrin' );
+
+/**
  * Araçlar sayfası.
  */
 function df_tools_page() {
@@ -514,6 +590,19 @@ function df_tools_page() {
 						<?php wp_nonce_field( 'df_preset' ); ?>
 						<input type="hidden" name="action" value="df_preset">
 						<p><button class="button button-primary">Düzeni uygula</button></p>
+					</form>
+				</div>
+			</div>
+
+			<div class="df-group">
+				<div class="df-group__head"><h3>Vitrin düzeni (son tasarım)</h3></div>
+				<div class="df-group__body">
+					<p class="df-group__desc">Üst bantta dil seçici; solda "ürün adı veya kodu" arama kutusu, ortada ikonlu logo, sağda Hesabım / Sepetim. Küçük hero ve sağında 3 kategori bannerı → Vitrin Koleksiyonu (seçtiğiniz kategori, 4'lü satırlar, araya 3 banner, "İncele" düğmeleri) → Instagram & Blog görselli bannerlar → ilçe kısayolları → güven şeridi → footer. Diğer bölümler silinmez, kapatılır; istediğinizi stüdyodan tekrar açabilirsiniz. <strong>Vitrin kategorisini</strong> Ana Sayfa → Vitrin Koleksiyonu'ndan seçin.</p>
+					<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" onsubmit="return confirm('Ana sayfa düzeni değişecek. Devam edilsin mi?');">
+						<?php wp_nonce_field( 'df_preset_vitrin' ); ?>
+						<input type="hidden" name="action" value="df_preset_vitrin">
+						<label class="df-check"><input type="checkbox" name="palette" value="1" checked> Göz yormayan pastel adaçayı yeşili renkleri de uygula</label>
+						<p><button class="button button-primary">Vitrin düzenini uygula</button></p>
 					</form>
 				</div>
 			</div>

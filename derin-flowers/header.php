@@ -28,12 +28,21 @@ defined( 'ABSPATH' ) || exit;
 					<span<?php echo df_e( 'topbar_left' ); // phpcs:ignore ?>><?php echo esc_html( df_opt( 'topbar_left' ) ); ?></span>
 				<?php endif; ?>
 			</p>
-			<p class="df-topbar__right"><?php df_the_icon( 'clock', array( 'size' => 14 ) ); ?><span<?php echo df_e( 'topbar_right' ); // phpcs:ignore ?>><?php echo esc_html( df_opt( 'topbar_right' ) ); ?></span></p>
+			<?php $df_langs = df_lang_links(); ?>
+			<?php if ( $df_langs ) : ?>
+				<nav class="df-topbar__langs" aria-label="Dil seçimi">
+					<?php foreach ( $df_langs as $df_l ) : ?>
+						<a href="<?php echo esc_url( $df_l['url'] ); ?>"<?php echo $df_l['current'] ? ' aria-current="true" class="is-current"' : ' rel="nofollow"'; ?> lang="<?php echo esc_attr( strtolower( $df_l['code'] ) ); ?>"><?php echo esc_html( $df_l['code'] ); ?></a>
+					<?php endforeach; ?>
+				</nav>
+			<?php else : ?>
+				<p class="df-topbar__right"><?php df_the_icon( 'clock', array( 'size' => 14 ) ); ?><span<?php echo df_e( 'topbar_right' ); // phpcs:ignore ?>><?php echo esc_html( df_opt( 'topbar_right' ) ); ?></span></p>
+			<?php endif; ?>
 		</div>
 	</div>
 <?php endif; ?>
 
-<header class="df-header" id="df-header">
+<header class="df-header<?php echo df_opt( 'header_inline_labels' ) ? ' df-header--inline' : ''; ?>" id="df-header">
 	<div class="df-header__main">
 		<div class="df-container df-header__inner">
 			<div class="df-header__left">
@@ -89,7 +98,7 @@ defined( 'ABSPATH' ) || exit;
 				<?php if ( df_wc() && df_opt( 'header_show_cart' ) ) : ?>
 					<?php $cart_count = WC()->cart ? WC()->cart->get_cart_contents_count() : 0; ?>
 					<a class="df-iconbtn df-cart-toggle" href="<?php echo esc_url( wc_get_cart_url() ); ?>" data-df-open="df-cart-drawer" aria-label="Sepetim">
-						<?php df_the_icon( 'bag' ); ?><span class="df-iconbtn__label">Sepet</span>
+						<?php df_the_icon( 'bag' ); ?><span class="df-iconbtn__label"><?php echo df_opt( 'header_inline_labels' ) ? 'Sepetim' : 'Sepet'; ?></span>
 						<span class="df-cart-count<?php echo $cart_count ? '' : ' is-empty'; ?>"><?php echo (int) $cart_count; ?></span>
 					</a>
 				<?php endif; ?>
@@ -97,7 +106,7 @@ defined( 'ABSPATH' ) || exit;
 		</div>
 	</div>
 
-	<nav class="df-nav df-nav--<?php echo esc_attr( df_opt( 'nav_align', 'center' ) ); ?>" aria-label="Ana menü">
+	<nav class="df-nav df-nav--<?php echo esc_attr( df_opt( 'nav_align', 'center' ) ); ?><?php echo df_opt( 'nav_serif' ) ? ' df-nav--serif' : ''; ?>" aria-label="Ana menü">
 		<div class="df-container">
 			<?php
 			wp_nav_menu(

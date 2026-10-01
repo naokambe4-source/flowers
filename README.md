@@ -42,6 +42,12 @@ Araçlar sayfasında ayarları **JSON dışa/içe aktarma** ve sıfırlama da va
 - **Üyelik**: sekmeli Giriş / Üye Ol, ad-soyad-telefon-KVKK alanları, Hesabım kısayol kartları.
 - **Favoriler** (üye + ziyaretçi), canlı ürün araması, mini sepet çekmecesi, ürün kategorisine ikon + kapak görseli, menü öğelerine ikon seçimi, bülten aboneleri + CSV.
 
+## v1.5 — Vitrin düzeni ve pastel adaçayı paleti
+
+- **Araçlar → Vitrin düzeni:** dil seçicili ince üst bant, solda "ürün adı veya kodu" arama, ikonlu logo, sağda Hesabım / Sepetim; küçük hero + sağında 3 kategori bannerı; **Vitrin Koleksiyonu** (seçilen kategoriden 4'lü satırlar, araya 3 tanıtım bannerı, "İncele" düğmeli kartlar); Instagram & Blog görselli bannerlar; ilçe kısayolları; güven şeridi. İsteğe bağlı göz yormayan **pastel adaçayı** renkleri.
+- Ürün aramasında **ürün kodu (SKU)** ile de bulunur.
+- **Dil seçici:** Polylang/WPML varsa onların dilleri; yoksa diğer diller sayfayı Google Çeviri ile açar.
+
 ## v1.4 — Kampanya bannerları ve yeni ana sayfa görünümü
 
 - **Kampanya bannerları:** solda fotoğraf, sağda renkli zemin; başlık üstü ikon, yaprak süsleri, iki satırlı başlık (son satır ayrı renk), alt metin ve kamyon ikonlu "Aynı Gün Teslimat" düğmesi, istenirse köşe rozeti (ör. "SEÇİLİ ÜRÜNLERDE %20"). Her şey banner genişliğine göre ölçeklenir; mobilde de oranlar aynı kalır. Başlık yazı tipi (kalın düz / tırnaklı zarif) ve boyutu banner başına seçilir.
