@@ -1,6 +1,6 @@
 <?php
 /**
- * İçerik sözlüğü tekil sayfası (DefinedTerm).
+ * İçerik sözlüğü tekil sayfası: editoryal künye (DefinedTerm).
  *
  * @package CiltRotasi
  */
@@ -15,116 +15,161 @@ while ( have_posts() ) :
 	$inci     = cr_meta( '_cr_inci' );
 	$aka      = cr_meta( '_cr_aka' );
 	$fn       = cr_meta( '_cr_function' );
+	$short    = cr_meta( '_cr_short_answer' ) ? cr_meta( '_cr_short_answer' ) : $fn;
 	$benefits = cr_lines( cr_meta( '_cr_benefits' ) );
 	$pairs    = cr_lines( cr_meta( '_cr_pairs' ) );
 	$avoid    = cr_lines( cr_meta( '_cr_avoid' ) );
+	$group    = cr_primary_term( $pid );
 	$when_map = array( 'sabah' => 'Sabah', 'aksam' => 'Akşam', 'ikisi' => 'Sabah ve akşam' );
-	$preg_map = array( 'uygun' => 'Genel olarak uygun', 'danis' => 'Hekime danışın', 'kacin' => 'Önerilmez' );
+	$preg_map = array( 'uygun' => 'Genel olarak uygun', 'danis' => 'Hekime danışılmalı', 'kacin' => 'Önerilmez' );
 	$lvl      = array( '1' => 'Sınırlı', '2' => 'Orta', '3' => 'Güçlü' );
 	$irr      = array( '1' => 'Düşük', '2' => 'Orta', '3' => 'Yüksek' );
 	$content  = apply_filters( 'the_content', get_the_content() ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals
-	$short    = cr_meta( '_cr_short_answer' ) ? cr_meta( '_cr_short_answer' ) : $fn;
-	$group    = cr_primary_term( $pid );
+	$products = cr_products_with_ingredient( get_the_title(), $inci, 3 );
+
+	$facts = array();
+	if ( cr_meta( '_cr_skin_types' ) ) {
+		$facts[] = array( 'Uygun cilt tipleri', esc_html( cr_meta( '_cr_skin_types' ) ), 'wide' );
+	}
+	if ( cr_meta( '_cr_conc' ) ) {
+		$facts[] = array( 'Etkili oran', esc_html( cr_meta( '_cr_conc' ) ), '' );
+	}
+	if ( isset( $when_map[ cr_meta( '_cr_when' ) ] ) ) {
+		$facts[] = array( 'Ne zaman?', esc_html( $when_map[ cr_meta( '_cr_when' ) ] ), '' );
+	}
+	if ( isset( $preg_map[ cr_meta( '_cr_pregnancy' ) ] ) ) {
+		$facts[] = array( 'Hamilelik & emzirme', esc_html( $preg_map[ cr_meta( '_cr_pregnancy' ) ] ), 'kacin' === cr_meta( '_cr_pregnancy' ) ? 'warn' : '' );
+	}
+	if ( isset( $lvl[ cr_meta( '_cr_evidence' ) ] ) ) {
+		$facts[] = array( 'Bilimsel kanıt', cr_level_dots( cr_meta( '_cr_evidence' ) ) . esc_html( $lvl[ cr_meta( '_cr_evidence' ) ] ), '' );
+	}
+	if ( isset( $irr[ cr_meta( '_cr_irritation' ) ] ) ) {
+		$facts[] = array( 'Tahriş potansiyeli', cr_level_dots( cr_meta( '_cr_irritation' ), 'cr-dots--warn' ) . esc_html( $irr[ cr_meta( '_cr_irritation' ) ] ), '' );
+	}
 	?>
-	<article <?php post_class( 'cr-ing' ); ?>>
-		<header class="cr-ing__hero">
-			<div class="cr-container">
-				<?php cr_breadcrumb_html(); ?>
-				<div class="cr-ing__hero-grid">
-					<div>
-						<p class="cr-eyebrow"><?php echo cr_icon( 'flask', 14 ); // phpcs:ignore ?> <?php echo esc_html( $group ? $group->name : 'İçerik sözlüğü' ); ?></p>
-						<h1 class="cr-article__title cr-ing__title"><?php the_title(); ?></h1>
-						<?php if ( $inci || $aka ) : ?>
-							<p class="cr-ing__inci">
-								<?php if ( $inci ) : ?>
-									<span><small>INCI</small><?php echo esc_html( $inci ); ?></span>
-								<?php endif; ?>
-								<?php if ( $aka ) : ?>
-									<span><small>Diğer adları</small><?php echo esc_html( $aka ); ?></span>
-								<?php endif; ?>
-							</p>
-						<?php endif; ?>
-						<?php if ( $short ) : ?>
-							<div class="cr-short-answer cr-short-answer--plain">
-								<span class="cr-short-answer__label"><?php echo cr_icon( 'sparkle', 16 ); // phpcs:ignore ?>Ne işe yarar?</span>
-								<p class="cr-short-answer__text"><?php echo esc_html( $short ); ?></p>
-							</div>
-						<?php endif; ?>
-						<div class="cr-ing__actions">
-							<?php echo cr_save_button( $pid, 'cr-share__btn', true ); // phpcs:ignore ?>
-							<button type="button" class="cr-share__btn" data-share data-title="<?php echo esc_attr( get_the_title() ); ?>" data-url="<?php echo esc_url( get_permalink() ); ?>"><?php echo cr_icon( 'share', 18 ); // phpcs:ignore ?><span>Paylaş</span></button>
+	<article <?php post_class( 'cr-ingpage' ); ?>>
+		<header class="cr-pagehead cr-pagehead--split cr-pagehead--ing">
+			<div class="cr-container cr-pagehead__grid">
+				<div class="cr-pagehead__copy">
+					<?php cr_breadcrumb_html(); ?>
+					<p class="cr-eyebrow cr-eyebrow--line"><?php echo esc_html( $group ? $group->name : 'İçerik Sözlüğü' ); ?></p>
+					<h1 class="cr-pagehead__title cr-article__title"><?php the_title(); ?></h1>
+					<?php if ( $inci || $aka ) : ?>
+						<p class="cr-ingpage__inci">
+							<?php if ( $inci ) : ?>
+								<span><b>INCI</b> <?php echo esc_html( $inci ); ?></span>
+							<?php endif; ?>
+							<?php if ( $aka ) : ?>
+								<span><b>Diğer adları</b> <?php echo esc_html( $aka ); ?></span>
+							<?php endif; ?>
+						</p>
+					<?php endif; ?>
+					<?php if ( $short ) : ?>
+						<div class="cr-answer">
+							<p class="cr-eyebrow cr-eyebrow--sm">Kısa cevap · Ne işe yarar?</p>
+							<p class="cr-answer__text cr-short-answer__text"><?php echo esc_html( $short ); ?></p>
 						</div>
+					<?php endif; ?>
+					<div class="cr-ingpage__actions">
+						<?php echo cr_save_button( $pid, 'cr-linebtn', true ); // phpcs:ignore ?>
+						<button type="button" class="cr-linebtn" data-share data-title="<?php echo esc_attr( get_the_title() ); ?>" data-url="<?php echo esc_url( get_permalink() ); ?>"><?php echo cr_icon( 'share', 18 ); // phpcs:ignore ?><span>Paylaş</span></button>
 					</div>
-					<dl class="cr-ing__facts">
-						<?php if ( cr_meta( '_cr_skin_types' ) ) : ?>
-							<div class="cr-ing__fact cr-ing__fact--wide"><dt><?php echo cr_icon( 'face', 18 ); // phpcs:ignore ?>Uygun cilt tipleri</dt><dd><?php echo esc_html( cr_meta( '_cr_skin_types' ) ); ?></dd></div>
-						<?php endif; ?>
-						<?php if ( cr_meta( '_cr_conc' ) ) : ?>
-							<div class="cr-ing__fact"><dt><?php echo cr_icon( 'drop', 18 ); // phpcs:ignore ?>Etkili oran</dt><dd><?php echo esc_html( cr_meta( '_cr_conc' ) ); ?></dd></div>
-						<?php endif; ?>
-						<?php if ( isset( $when_map[ cr_meta( '_cr_when' ) ] ) ) : ?>
-							<div class="cr-ing__fact"><dt><?php echo cr_icon( 'aksam' === cr_meta( '_cr_when' ) ? 'moon' : 'sun', 18 ); // phpcs:ignore ?>Ne zaman?</dt><dd><?php echo esc_html( $when_map[ cr_meta( '_cr_when' ) ] ); ?></dd></div>
-						<?php endif; ?>
-						<?php if ( isset( $preg_map[ cr_meta( '_cr_pregnancy' ) ] ) ) : ?>
-							<div class="cr-ing__fact"><dt><?php echo cr_icon( 'heart', 18 ); // phpcs:ignore ?>Hamilelik</dt><dd><?php echo esc_html( $preg_map[ cr_meta( '_cr_pregnancy' ) ] ); ?></dd></div>
-						<?php endif; ?>
-						<?php if ( isset( $lvl[ cr_meta( '_cr_evidence' ) ] ) ) : ?>
-							<div class="cr-ing__fact"><dt><?php echo cr_icon( 'chart', 18 ); // phpcs:ignore ?>Kanıt düzeyi</dt><dd><span class="cr-meter" data-level="<?php echo esc_attr( cr_meta( '_cr_evidence' ) ); ?>"><i></i><i></i><i></i></span><?php echo esc_html( $lvl[ cr_meta( '_cr_evidence' ) ] ); ?></dd></div>
-						<?php endif; ?>
-						<?php if ( isset( $irr[ cr_meta( '_cr_irritation' ) ] ) ) : ?>
-							<div class="cr-ing__fact"><dt><?php echo cr_icon( 'alert', 18 ); // phpcs:ignore ?>Tahriş potansiyeli</dt><dd><span class="cr-meter cr-meter--warn" data-level="<?php echo esc_attr( cr_meta( '_cr_irritation' ) ); ?>"><i></i><i></i><i></i></span><?php echo esc_html( $irr[ cr_meta( '_cr_irritation' ) ] ); ?></dd></div>
-						<?php endif; ?>
-					</dl>
 				</div>
+				<figure class="cr-pagehead__media">
+					<?php echo cr_ing_image( $pid, 'cr-card', array( 'loading' => 'eager', 'fetchpriority' => 'high' ) ); // phpcs:ignore ?>
+				</figure>
 			</div>
 		</header>
 
-		<div class="cr-container cr-container--narrow cr-ing__body">
-			<?php if ( $benefits ) : ?>
-				<div class="cr-takeaways">
-					<p class="cr-takeaways__title"><?php echo cr_icon( 'check', 18 ); // phpcs:ignore ?>Faydaları</p>
-					<ul><?php foreach ( $benefits as $b ) : ?><li><?php echo esc_html( $b ); ?></li><?php endforeach; ?></ul>
-				</div>
-			<?php endif; ?>
-
-			<?php if ( $pairs || $avoid ) : ?>
-				<div class="cr-combos">
-					<?php if ( $pairs ) : ?>
-						<div class="cr-combos__col cr-combos__col--good">
-							<p class="cr-combos__title"><?php echo cr_icon( 'check', 18 ); // phpcs:ignore ?> İyi anlaşır</p>
-							<div class="cr-chips">
-								<?php foreach ( $pairs as $p ) : ?>
-									<?php $l = cr_ingredient_link( $p ); ?>
-									<?php echo $l ? '<a class="cr-chip cr-chip--soft" href="' . esc_url( $l ) . '">' . esc_html( $p ) . '</a>' : '<span class="cr-chip">' . esc_html( $p ) . '</span>'; ?>
-								<?php endforeach; ?>
+		<?php if ( $facts ) : ?>
+			<section class="cr-spec" aria-label="İçerik künyesi">
+				<div class="cr-container">
+					<dl class="cr-spec__grid">
+						<?php foreach ( $facts as $f ) : ?>
+							<div class="cr-spec__cell<?php echo $f[2] ? ' is-' . esc_attr( $f[2] ) : ''; ?>">
+								<dt class="cr-eyebrow cr-eyebrow--sm"><?php echo esc_html( $f[0] ); ?></dt>
+								<dd><?php echo wp_kses_post( $f[1] ); ?></dd>
 							</div>
-						</div>
-					<?php endif; ?>
-					<?php if ( $avoid ) : ?>
-						<div class="cr-combos__col cr-combos__col--warn">
-							<p class="cr-combos__title"><?php echo cr_icon( 'alert', 18 ); // phpcs:ignore ?> Dikkatli kombinle</p>
-							<div class="cr-chips">
-								<?php foreach ( $avoid as $p ) : ?>
-									<?php $l = cr_ingredient_link( $p ); ?>
-									<?php echo $l ? '<a class="cr-chip" href="' . esc_url( $l ) . '">' . esc_html( $p ) . '</a>' : '<span class="cr-chip">' . esc_html( $p ) . '</span>'; ?>
-								<?php endforeach; ?>
-							</div>
-						</div>
-					<?php endif; ?>
+						<?php endforeach; ?>
+					</dl>
 				</div>
-			<?php endif; ?>
+			</section>
+		<?php endif; ?>
 
-			<div class="cr-prose entry-content">
-				<?php echo $content; // phpcs:ignore ?>
+		<div class="cr-container cr-ingpage__layout">
+			<div class="cr-ingpage__main">
+				<?php if ( $benefits ) : ?>
+					<section class="cr-benefits">
+						<h2 class="cr-h3">Faydaları</h2>
+						<ol>
+							<?php foreach ( $benefits as $i => $b ) : ?>
+								<li><span><?php echo esc_html( str_pad( (string) ( $i + 1 ), 2, '0', STR_PAD_LEFT ) ); ?></span><?php echo esc_html( $b ); ?></li>
+							<?php endforeach; ?>
+						</ol>
+					</section>
+				<?php endif; ?>
+
+				<div class="cr-prose entry-content">
+					<?php echo $content; // phpcs:ignore ?>
+				</div>
+
+				<?php get_template_part( 'template-parts/parts/article-extras' ); ?>
+
+				<p class="cr-updated"><?php echo cr_icon( 'refresh', 16 ); // phpcs:ignore ?> Son güncelleme: <time datetime="<?php echo esc_attr( mysql2date( 'c', cr_updated( $pid ) ) ); ?>"><?php echo esc_html( cr_date( cr_updated( $pid ) ) ); ?></time></p>
 			</div>
 
-			<?php get_template_part( 'template-parts/parts/article-extras' ); ?>
+			<aside class="cr-ingpage__aside">
+				<div class="cr-ingpage__sticky">
+					<?php if ( $pairs || $avoid ) : ?>
+						<div class="cr-combo">
+							<p class="cr-eyebrow">Uyum rehberi</p>
+							<?php if ( $pairs ) : ?>
+								<p class="cr-combo__title">İyi anlaşır</p>
+								<ul class="cr-combo__list">
+									<?php foreach ( $pairs as $p ) : ?>
+										<?php $l = cr_ingredient_link( $p ); ?>
+										<li class="is-good"><span aria-hidden="true">+</span><?php echo $l ? '<a href="' . esc_url( $l ) . '">' . esc_html( $p ) . '</a>' : esc_html( $p ); ?></li>
+									<?php endforeach; ?>
+								</ul>
+							<?php endif; ?>
+							<?php if ( $avoid ) : ?>
+								<p class="cr-combo__title">Dikkatli kombinle</p>
+								<ul class="cr-combo__list">
+									<?php foreach ( $avoid as $p ) : ?>
+										<?php $l = cr_ingredient_link( $p ); ?>
+										<li class="is-warn"><span aria-hidden="true">!</span><?php echo $l ? '<a href="' . esc_url( $l ) . '">' . esc_html( $p ) . '</a>' : esc_html( $p ); ?></li>
+									<?php endforeach; ?>
+								</ul>
+							<?php endif; ?>
+						</div>
+					<?php endif; ?>
 
-			<p class="cr-updated"><?php echo cr_icon( 'refresh', 16 ); // phpcs:ignore ?> Son güncelleme: <time datetime="<?php echo esc_attr( mysql2date( 'c', cr_updated( $pid ) ) ); ?>"><?php echo esc_html( cr_date( cr_updated( $pid ) ) ); ?></time></p>
+					<?php if ( $products ) : ?>
+						<div class="cr-combo">
+							<p class="cr-eyebrow">Bu içeriği barındıran ürünler</p>
+							<ul class="cr-minilist">
+								<?php foreach ( $products as $prid ) : ?>
+									<li>
+										<a href="<?php echo esc_url( get_permalink( $prid ) ); ?>">
+											<span class="cr-minilist__img"><?php echo cr_post_image( $prid, 'cr-thumb', array( 'alt' => '' ) ); // phpcs:ignore ?></span>
+											<span><strong><?php echo esc_html( get_the_title( $prid ) ); ?></strong><small><?php echo esc_html( get_post_meta( $prid, '_cr_brand', true ) ); ?></small></span>
+										</a>
+									</li>
+								<?php endforeach; ?>
+							</ul>
+						</div>
+					<?php endif; ?>
+
+					<a class="cr-asidecta" href="<?php echo esc_url( cr_url( cr_opt( 'quiz_url' ) ) ); ?>">
+						<span class="cr-eyebrow cr-eyebrow--sm">Cilt testi</span>
+						<strong>Bu içerik cildine uygun mu?</strong>
+						<span class="cr-btn-line">Teste Başla</span>
+					</a>
+				</div>
+			</aside>
 		</div>
 
 		<?php
-		// Bu içerikten bahseden rehberler.
 		$mentions = new WP_Query(
 			array(
 				'post_type'      => 'post',
@@ -136,45 +181,59 @@ while ( have_posts() ) :
 		$siblings = get_posts(
 			array(
 				'post_type'      => 'icerik',
-				'posts_per_page' => 8,
+				'posts_per_page' => 6,
 				'post__not_in'   => array( $pid ),
 				'orderby'        => 'rand',
 				'no_found_rows'  => true,
 				'tax_query'      => $group ? array( array( 'taxonomy' => 'icerik_grubu', 'terms' => array( $group->term_id ) ) ) : array(), // phpcs:ignore
 			)
 		);
+		if ( count( $siblings ) < 3 ) {
+			$siblings = get_posts( array( 'post_type' => 'icerik', 'posts_per_page' => 6, 'post__not_in' => array( $pid ), 'orderby' => 'rand', 'no_found_rows' => true ) );
+		}
 		?>
-		<div class="cr-after">
-			<div class="cr-container">
-				<?php if ( $mentions->have_posts() ) : ?>
-					<div class="cr-related">
-						<h2 class="cr-h3"><?php echo esc_html( get_the_title() ); ?> geçen rehberler</h2>
-						<div class="cr-related__grid">
-							<?php
-							while ( $mentions->have_posts() ) {
-								$mentions->the_post();
-								get_template_part( 'template-parts/cards/card', null, array( 'variant' => 'plain' ) );
-							}
-							wp_reset_postdata();
-							?>
-						</div>
+		<?php if ( $mentions->have_posts() ) : ?>
+			<section class="cr-section cr-section--alt">
+				<div class="cr-container">
+					<header class="cr-head cr-head--split">
+						<div><p class="cr-eyebrow">Journal</p><h2 class="cr-h2"><?php the_title(); ?> geçen rehberler</h2></div>
+					</header>
+					<div class="cr-journal__grid">
+						<?php
+						while ( $mentions->have_posts() ) {
+							$mentions->the_post();
+							get_template_part( 'template-parts/cards/card', null, array( 'variant' => 'journal' ) );
+						}
+						wp_reset_postdata();
+						?>
 					</div>
-				<?php endif; ?>
-				<?php if ( $siblings ) : ?>
-					<div class="cr-related">
-						<h2 class="cr-h3">Benzer içerikler</h2>
-						<div class="cr-ing-grid cr-ing-grid--compact">
-							<?php foreach ( $siblings as $s ) : ?>
-								<a class="cr-ing-card" href="<?php echo esc_url( get_permalink( $s ) ); ?>">
-									<span class="cr-ing-card__name"><?php echo esc_html( get_the_title( $s ) ); ?></span>
-									<span class="cr-ing-card__fn"><?php echo esc_html( get_post_meta( $s->ID, '_cr_function', true ) ); ?></span>
+				</div>
+			</section>
+		<?php endif; ?>
+		<?php if ( $siblings ) : ?>
+			<section class="cr-section cr-section--tight">
+				<div class="cr-container">
+					<header class="cr-head cr-head--split">
+						<div><p class="cr-eyebrow">Sözlük</p><h2 class="cr-h2">Benzer içerikler</h2></div>
+						<a class="cr-link-arrow" href="<?php echo esc_url( get_post_type_archive_link( 'icerik' ) ); ?>">Tüm sözlük <?php echo cr_icon( 'arrow-right', 16 ); // phpcs:ignore ?></a>
+					</header>
+					<ul class="cr-index__list cr-index__list--2">
+						<?php foreach ( $siblings as $s ) : ?>
+							<li class="cr-entry">
+								<a href="<?php echo esc_url( get_permalink( $s ) ); ?>">
+									<span class="cr-entry__head">
+										<span class="cr-entry__name"><?php echo esc_html( get_the_title( $s ) ); ?></span>
+										<span class="cr-entry__inci"><?php echo esc_html( get_post_meta( $s->ID, '_cr_inci', true ) ); ?></span>
+									</span>
+									<span class="cr-entry__fn"><?php echo esc_html( get_post_meta( $s->ID, '_cr_function', true ) ); ?></span>
+									<?php echo cr_icon( 'arrow-up-right', 20, 'cr-entry__go' ); // phpcs:ignore ?>
 								</a>
-							<?php endforeach; ?>
-						</div>
-					</div>
-				<?php endif; ?>
-			</div>
-		</div>
+							</li>
+						<?php endforeach; ?>
+					</ul>
+				</div>
+			</section>
+		<?php endif; ?>
 	</article>
 	<?php
 endwhile;

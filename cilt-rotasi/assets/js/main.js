@@ -60,7 +60,7 @@
 
 	function onScroll() {
 		var y = window.scrollY;
-		if (header) { header.classList.toggle('is-scrolled', y > 8); }
+		if (header) { header.classList.toggle('is-scrolled', y > 40); }
 		if (bottom) {
 			if (y > lastY + 6 && y > 240) { bottom.classList.add('is-hidden'); }
 			else if (y < lastY - 6 || y < 240) { bottom.classList.remove('is-hidden'); }
@@ -470,6 +470,29 @@
 		});
 	}
 
+	/* ---------- Katalog filtresi ---------- */
+	var cf = $('[data-catalog-filters]');
+	var cg = $('[data-catalog]');
+	if (cf && cg) {
+		cf.addEventListener('click', function (e) {
+			var b = e.target.closest('[data-type]');
+			if (!b) { return; }
+			var t = b.getAttribute('data-type');
+			$$('[data-type]', cf).forEach(function (x) {
+				x.classList.toggle('is-active', x === b);
+				x.setAttribute('aria-selected', x === b ? 'true' : 'false');
+			});
+			var vis = 0;
+			$$('.cr-product', cg).forEach(function (p) {
+				var ok = !t || p.getAttribute('data-type') === t;
+				p.hidden = !ok;
+				if (ok) { vis++; }
+			});
+			var em = $('[data-catalog-empty]');
+			if (em) { em.hidden = vis > 0; }
+		});
+	}
+
 	/* ---------- Ana sayfa sözlük araması ---------- */
 	$$('[data-ing-search]').forEach(function (form) {
 		var input = form.querySelector('input[type="search"]');
@@ -516,7 +539,7 @@
 		var any = false;
 		$$('[data-letter]').forEach(function (sec) {
 			var vis = 0;
-			$$('.cr-ing-card', sec).forEach(function (c) {
+			$$('.cr-ing-card, .cr-entry', sec).forEach(function (c) {
 				var ok = (!q || c.getAttribute('data-search').indexOf(q) > -1) && (!glGroup || (' ' + c.getAttribute('data-groups') + ' ').indexOf(' ' + glGroup + ' ') > -1);
 				c.hidden = !ok;
 				if (ok) { vis++; }

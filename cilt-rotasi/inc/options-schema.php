@@ -51,19 +51,30 @@ function cr_default_img( $key ) {
  */
 function cr_home_section_labels() {
 	return array(
-		'hero'      => 'Hero',
-		'quick'     => 'Hızlı keşif (3 büyük kategori)',
-		'featured'  => 'En çok okunanlar',
-		'problems'  => 'Cilt problemleri şeridi',
-		'quiz'      => 'Cilt tipini keşfet (test)',
-		'guides'    => 'Cilt Rotası Rehberleri (filtreli)',
-		'products'  => 'Ürün rehberi',
-		'glossary'  => 'İçerik sözlüğü',
-		'manifesto' => 'Manifesto (görsel mola)',
-		'trust'     => 'Yayın ilkeleri / güven',
-		'faq'       => 'Sık sorulan sorular (AEO)',
-		'newsletter'=> 'Bülten',
+		'hero'       => 'Hero (tam genişlik görsel)',
+		'categories' => 'Kategoriler — Cildin İçin Ne Arıyorsun?',
+		'editorial'  => 'Öne çıkan inceleme (yarı yarıya)',
+		'catalog'    => 'Ürün kataloğu (filtreli)',
+		'manifesto'  => 'Manifesto (görsel mola)',
+		'needs'      => 'İhtiyacınıza göre rotalar',
+		'journal'    => 'Journal — Okumaya Değer',
+		'quiz'       => 'Cilt testi',
+		'glossary'   => 'İçerik sözlüğü araması',
+		'faq'        => 'Kısa cevaplar (SSS)',
+		'newsletter' => 'Bülten',
+		'featured'   => 'En çok okunanlar',
+		'problems'   => 'Cilt problemleri şeridi',
+		'trust'      => 'Yayın ilkeleri / güven',
 	);
+}
+
+/**
+ * Varsayılan olarak kapalı gelen bölümler.
+ *
+ * @return array
+ */
+function cr_home_sections_off() {
+	return array( 'featured', 'problems', 'trust' );
 }
 
 /**
@@ -115,7 +126,8 @@ function cr_options_schema() {
 					'fields' => array(
 						array( 'id' => 'logo_image', 'type' => 'image', 'label' => 'Logo görseli', 'desc' => 'Boş bırakılırsa metin logo kullanılır. Yatay, şeffaf PNG/SVG önerilir (yükseklik ~40px görünür).', 'default' => '' ),
 						array( 'id' => 'logo_text', 'type' => 'text', 'label' => 'Metin logo', 'default' => 'Cilt Rotası' ),
-						array( 'id' => 'logo_mark', 'type' => 'toggle', 'label' => 'Metin logonun yanında yaprak işareti', 'default' => 1 ),
+						array( 'id' => 'logo_upper', 'type' => 'toggle', 'label' => 'Metin logoyu büyük harfle yaz (CİLT ROTASI)', 'default' => 1 ),
+						array( 'id' => 'logo_mark', 'type' => 'toggle', 'label' => 'Metin logonun yanında yaprak işareti', 'default' => 0 ),
 						array( 'id' => 'logo_height', 'type' => 'number', 'label' => 'Logo görsel yüksekliği (px)', 'default' => 38, 'min' => 20, 'max' => 70 ),
 					),
 				),
@@ -123,22 +135,23 @@ function cr_options_schema() {
 					'title'  => 'Renk paleti',
 					'desc'   => 'Arka plan çoğunlukla krem ve sıcak beyaz; yeşil ve şampanya yalnızca vurgu için.',
 					'fields' => array(
-						array( 'id' => 'c_green', 'type' => 'color', 'label' => 'Ana koyu yeşil', 'default' => '#24483F', 'var' => '--cr-green' ),
-						array( 'id' => 'c_green2', 'type' => 'color', 'label' => 'İkinci yeşil', 'default' => '#3B5E53', 'var' => '--cr-green-2' ),
-						array( 'id' => 'c_sage', 'type' => 'color', 'label' => 'Sage', 'default' => '#AAB7A2', 'var' => '--cr-sage' ),
-						array( 'id' => 'c_sage_light', 'type' => 'color', 'label' => 'Açık sage', 'default' => '#E6ECE1', 'var' => '--cr-sage-light' ),
-						array( 'id' => 'c_cream', 'type' => 'color', 'label' => 'Sıcak krem', 'default' => '#FBF8F2', 'var' => '--cr-cream' ),
-						array( 'id' => 'c_white', 'type' => 'color', 'label' => 'Beyaz-krem', 'default' => '#FFFDFC', 'var' => '--cr-white' ),
-						array( 'id' => 'c_beige', 'type' => 'color', 'label' => 'Bej', 'default' => '#E9DDCE', 'var' => '--cr-beige' ),
-						array( 'id' => 'c_gold', 'type' => 'color', 'label' => 'Şampanya / altın vurgu', 'default' => '#C9A06B', 'var' => '--cr-gold' ),
-						array( 'id' => 'c_text', 'type' => 'color', 'label' => 'Ana metin', 'default' => '#28322E', 'var' => '--cr-text' ),
-						array( 'id' => 'c_muted', 'type' => 'color', 'label' => 'İkincil metin', 'default' => '#68716D', 'var' => '--cr-muted' ),
+						array( 'id' => 'c_green', 'type' => 'color', 'label' => 'Ana koyu yeşil', 'default' => '#1A2F25', 'var' => '--cr-green' ),
+						array( 'id' => 'c_green2', 'type' => 'color', 'label' => 'İkinci yeşil', 'default' => '#2A4A3B', 'var' => '--cr-green-2' ),
+						array( 'id' => 'c_sage', 'type' => 'color', 'label' => 'Sage', 'default' => '#A9B4A4', 'var' => '--cr-sage' ),
+						array( 'id' => 'c_sage_light', 'type' => 'color', 'label' => 'Açık sage', 'default' => '#E8EBE3', 'var' => '--cr-sage-light' ),
+						array( 'id' => 'c_cream', 'type' => 'color', 'label' => 'Zemin (kırık beyaz)', 'default' => '#FAF9F5', 'var' => '--cr-cream' ),
+						array( 'id' => 'c_white', 'type' => 'color', 'label' => 'Kart zemini', 'default' => '#FDFCF9', 'var' => '--cr-white' ),
+						array( 'id' => 'c_beige', 'type' => 'color', 'label' => 'Kum / bej zemin', 'default' => '#F2EFEB', 'var' => '--cr-beige' ),
+						array( 'id' => 'c_gold', 'type' => 'color', 'label' => 'Şampanya / altın vurgu', 'default' => '#B8905B', 'var' => '--cr-gold' ),
+						array( 'id' => 'c_text', 'type' => 'color', 'label' => 'Ana metin', 'default' => '#121212', 'var' => '--cr-text' ),
+						array( 'id' => 'c_muted', 'type' => 'color', 'label' => 'İkincil metin', 'default' => '#5A5D5A', 'var' => '--cr-muted' ),
+						array( 'id' => 'c_line', 'type' => 'color', 'label' => 'Çizgi rengi', 'default' => '#E0DDD5', 'var' => '--cr-outline' ),
 					),
 				),
 				array(
 					'title'  => 'Tipografi',
 					'fields' => array(
-						array( 'id' => 'font_heading', 'type' => 'select', 'label' => 'Başlık yazı tipi', 'choices' => $fonts['heading'], 'default' => 'DM Serif Display' ),
+						array( 'id' => 'font_heading', 'type' => 'select', 'label' => 'Başlık yazı tipi', 'choices' => $fonts['heading'], 'default' => 'Cormorant Garamond' ),
 						array( 'id' => 'font_body', 'type' => 'select', 'label' => 'Gövde yazı tipi', 'choices' => $fonts['body'], 'default' => 'Manrope' ),
 						array( 'id' => 'font_scale', 'type' => 'number', 'label' => 'Yazı ölçeği (%)', 'desc' => 'Tüm siteyi orantılı büyütür/küçültür.', 'default' => 100, 'min' => 85, 'max' => 120 ),
 						array( 'id' => 'google_fonts', 'type' => 'toggle', 'label' => 'Google Fonts yükle', 'desc' => 'Kapatırsanız sistem yazı tipleri kullanılır (en hızlı).', 'default' => 1 ),
@@ -148,7 +161,7 @@ function cr_options_schema() {
 					'title'  => 'Düzen',
 					'fields' => array(
 						array( 'id' => 'container', 'type' => 'number', 'label' => 'Maksimum içerik genişliği (px)', 'default' => 1360, 'min' => 1100, 'max' => 1440 ),
-						array( 'id' => 'radius', 'type' => 'number', 'label' => 'Köşe yuvarlaklığı (px)', 'default' => 22, 'min' => 0, 'max' => 40 ),
+						array( 'id' => 'radius', 'type' => 'number', 'label' => 'Köşe yuvarlaklığı (px)', 'desc' => 'Editoryal tasarım için 0 (keskin köşe) önerilir.', 'default' => 0, 'min' => 0, 'max' => 40 ),
 						array( 'id' => 'section_space', 'type' => 'number', 'label' => 'Bölüm dikey boşluğu (px, masaüstü)', 'default' => 112, 'min' => 48, 'max' => 180 ),
 						array( 'id' => 'animations', 'type' => 'toggle', 'label' => 'Yumuşak giriş animasyonları', 'desc' => '“Hareketi azalt” tercihi olan ziyaretçilerde her zaman kapalıdır.', 'default' => 1 ),
 					),
@@ -164,8 +177,8 @@ function cr_options_schema() {
 				array(
 					'title'  => 'Header',
 					'fields' => array(
-						array( 'id' => 'header_cta_text', 'type' => 'text', 'label' => 'Buton yazısı', 'default' => 'Cildini Keşfet' ),
-						array( 'id' => 'header_cta_url', 'type' => 'url', 'label' => 'Buton bağlantısı', 'default' => '/cilt-testi/' ),
+						array( 'id' => 'header_cta_text', 'type' => 'text', 'label' => 'Buton yazısı', 'default' => 'İncele' ),
+						array( 'id' => 'header_cta_url', 'type' => 'url', 'label' => 'Buton bağlantısı', 'default' => '/urun-rehberi/' ),
 						array( 'id' => 'header_search', 'type' => 'toggle', 'label' => 'Arama ikonu', 'default' => 1 ),
 						array( 'id' => 'header_saved', 'type' => 'toggle', 'label' => 'Kaydedilenler ikonu', 'default' => 1 ),
 						array( 'id' => 'announce_on', 'type' => 'toggle', 'label' => 'Üst duyuru bandı', 'default' => 0 ),
@@ -205,29 +218,33 @@ function cr_options_schema() {
 			'groups' => array(
 				array(
 					'title'  => 'Metinler',
+					'desc'   => 'Başlık üç parçadır: 1. satır, vurgulu (italik, altın) kısım ve devamı.',
 					'fields' => array(
-						array( 'id' => 'hero_eyebrow', 'type' => 'text', 'label' => 'Üst etiket', 'default' => 'Bağımsız cilt bilgisi platformu' ),
-						array( 'id' => 'hero_title', 'type' => 'text', 'label' => 'Başlık (1. satır)', 'default' => 'Cildini tanı.' ),
-						array( 'id' => 'hero_title_accent', 'type' => 'text', 'label' => 'Başlık (2. satır, vurgulu)', 'default' => 'Bakımını bilinçle şekillendir.' ),
-						array( 'id' => 'hero_text', 'type' => 'textarea', 'label' => 'Açıklama', 'default' => 'Cilt yapısından bakım rutinlerine, içeriklerden dermokozmetik ürünlere kadar ihtiyacın olan bilgiyi sade ve anlaşılır şekilde keşfet.' ),
-						array( 'id' => 'hero_cta1_text', 'type' => 'text', 'label' => 'Birincil buton', 'default' => 'Cildini Keşfet' ),
-						array( 'id' => 'hero_cta1_url', 'type' => 'url', 'label' => 'Birincil buton bağlantısı', 'default' => '/cilt-testi/' ),
-						array( 'id' => 'hero_cta2_text', 'type' => 'text', 'label' => 'İkincil buton', 'default' => 'Rehberlere Göz At' ),
+						array( 'id' => 'hero_eyebrow', 'type' => 'text', 'label' => 'Üst etiket', 'default' => 'Bağımsız Kozmetik Platformu' ),
+						array( 'id' => 'hero_title', 'type' => 'text', 'label' => 'Başlık — 1. satır', 'default' => 'Cildin İçin' ),
+						array( 'id' => 'hero_title_accent', 'type' => 'text', 'label' => 'Başlık — vurgulu kısım', 'default' => 'Doğru Rotayı' ),
+						array( 'id' => 'hero_title_after', 'type' => 'text', 'label' => 'Başlık — devamı', 'default' => 'Keşfet.' ),
+						array( 'id' => 'hero_text', 'type' => 'textarea', 'label' => 'Açıklama', 'default' => 'Kozmetik ürünleri, aktif içerikleri ve bakım rutinlerini sade, anlaşılır ve kanıta dayalı bilimsel rehberlerle yeniden tanımlıyoruz.' ),
+						array( 'id' => 'hero_cta1_text', 'type' => 'text', 'label' => 'Birincil buton', 'default' => 'Ürünleri İncele' ),
+						array( 'id' => 'hero_cta1_url', 'type' => 'url', 'label' => 'Birincil buton bağlantısı', 'default' => '/urun-rehberi/' ),
+						array( 'id' => 'hero_cta2_text', 'type' => 'text', 'label' => 'İkincil buton', 'default' => 'Makaleleri Oku' ),
 						array( 'id' => 'hero_cta2_url', 'type' => 'url', 'label' => 'İkincil buton bağlantısı', 'default' => '/rehberler/' ),
 					),
 				),
 				array(
 					'title'  => 'Görsel',
 					'fields' => array(
-						array( 'id' => 'hero_image', 'type' => 'image', 'label' => 'Hero görseli', 'desc' => 'Dikey veya kare, en az 1200px. Krem/yeşil tonlu doğal bir kompozisyon önerilir.', 'default' => cr_default_img( 'hero' ) ),
-						array( 'id' => 'hero_image_alt', 'type' => 'text', 'label' => 'Görsel alternatif metni (SEO)', 'default' => 'Krem ve yeşil tonlarda doğal cilt bakım kompozisyonu' ),
-						array( 'id' => 'hero_focus', 'type' => 'select', 'label' => 'Görsel odak noktası', 'choices' => array( 'center' => 'Orta', 'left' => 'Sol', 'right' => 'Sağ', 'top' => 'Üst', 'bottom' => 'Alt' ), 'default' => 'center' ),
-						array( 'id' => 'hero_chip_on', 'type' => 'toggle', 'label' => 'Görsel üstünde yüzen içerik kartı', 'default' => 1 ),
+						array( 'id' => 'hero_image', 'type' => 'image', 'label' => 'Hero arka plan görseli', 'desc' => 'Tam genişlik arka plan. Yatay, en az 1920px; ana obje sağda olmalı (solda metin için gradyan var).', 'default' => cr_default_img( 'hero' ) ),
+						array( 'id' => 'hero_image_mobile', 'type' => 'image', 'label' => 'Mobil görsel (isteğe bağlı)', 'desc' => 'Dikey kırpılmış ayrı görsel. Boşsa masaüstü görseli kullanılır.', 'default' => '' ),
+						array( 'id' => 'hero_image_alt', 'type' => 'text', 'label' => 'Görsel alternatif metni (SEO)', 'default' => 'Cilt Rotası — doğal cilt bakımı kompozisyonu' ),
+						array( 'id' => 'hero_focus', 'type' => 'select', 'label' => 'Görsel odak noktası', 'choices' => array( 'center' => 'Orta', 'right' => 'Sağ', 'left' => 'Sol', 'top' => 'Üst', 'bottom' => 'Alt' ), 'default' => 'center' ),
+						array( 'id' => 'hero_overlay', 'type' => 'select', 'label' => 'Metin gradyanı', 'choices' => array( 'soft' => 'Yumuşak', 'strong' => 'Güçlü (açık görsellerde)', 'none' => 'Yok' ), 'default' => 'soft' ),
+						array( 'id' => 'hero_motion', 'type' => 'toggle', 'label' => 'Görselde çok yavaş yakınlaşma', 'default' => 1 ),
+						array( 'id' => 'hero_chip_on', 'type' => 'toggle', 'label' => 'Sağ altta “haftanın içeriği” kartı', 'default' => 0 ),
 						array( 'id' => 'hero_chip_label', 'type' => 'text', 'label' => 'Kart etiketi', 'default' => 'Haftanın içeriği' ),
 						array( 'id' => 'hero_chip_title', 'type' => 'text', 'label' => 'Kart başlığı', 'default' => 'Niasinamid' ),
 						array( 'id' => 'hero_chip_text', 'type' => 'text', 'label' => 'Kart kısa metni', 'default' => 'Bariyer ve ton dengesi' ),
 						array( 'id' => 'hero_chip_url', 'type' => 'url', 'label' => 'Kart bağlantısı', 'default' => '/icerik/niasinamid/' ),
-						array( 'id' => 'hero_motion', 'type' => 'toggle', 'label' => 'Çok yavaş yüzen dekor ve hafif parallax', 'default' => 1 ),
 					),
 				),
 			),
@@ -240,39 +257,144 @@ function cr_options_schema() {
 			'groups' => array(
 				array(
 					'title'  => 'Bölüm sırası',
-					'desc'   => 'Sürükleyip bırakarak sıralayın, göz ikonuyla gizleyin. Canlı düzenleyicide de ▲▼ ile taşınabilir.',
+					'desc'   => 'Sürükleyip bırakarak sıralayın, anahtarla gizleyin. Canlı düzenleyicide de ▲▼ ile taşınabilir.',
 					'fields' => array(
 						array( 'id' => 'sections', 'type' => 'sections', 'label' => 'Bölümler' ),
 					),
 				),
 				array(
-					'title'  => 'Hızlı keşif',
+					'title'  => 'Kategoriler — “Cildin İçin Ne Arıyorsun?”',
 					'fields' => array(
-						array( 'id' => 'quick_title', 'type' => 'text', 'label' => 'Başlık', 'default' => 'Cildinle ilgili nereden başlamak istersin?' ),
+						array( 'id' => 'cat_eyebrow', 'type' => 'text', 'label' => 'Üst etiket', 'default' => 'Rehberler' ),
+						array( 'id' => 'cat_title', 'type' => 'text', 'label' => 'Başlık', 'default' => 'Cildin İçin Ne Arıyorsun?' ),
 						array(
-							'id'      => 'quick_items',
+							'id'      => 'cat_items',
 							'type'    => 'repeater',
 							'label'   => 'Kategoriler',
-							'max'     => 3,
+							'max'     => 8,
 							'fields'  => array(
 								'title' => array( 'type' => 'text', 'label' => 'Başlık' ),
+								'tag'   => array( 'type' => 'text', 'label' => 'Etiket (ör. 01 / TEMEL)' ),
 								'text'  => array( 'type' => 'text', 'label' => 'Kısa açıklama' ),
-								'image' => array( 'type' => 'image', 'label' => 'Görsel' ),
+								'image' => array( 'type' => 'image', 'label' => 'Görsel (3:4)' ),
 								'url'   => array( 'type' => 'url', 'label' => 'Bağlantı' ),
 							),
 							'default' => array(
-								array( 'title' => 'Cilt Yapısı', 'text' => 'Cildin nasıl çalıştığını keşfet.', 'image' => cr_default_img( 'structure' ), 'url' => '/kategori/cilt-yapisi/' ),
-								array( 'title' => 'Cilt Problemleri', 'text' => 'Akne, leke, hassasiyet ve daha fazlasını tanı.', 'image' => cr_default_img( 'problems' ), 'url' => '/kategori/cilt-problemleri/' ),
-								array( 'title' => 'Cilt Bakım Rutini', 'text' => 'İhtiyacına uygun bakım adımlarını öğren.', 'image' => cr_default_img( 'routine' ), 'url' => '/kategori/cilt-bakim-rutini/' ),
+								array( 'title' => 'Cilt Yapısı', 'tag' => '01 / Temel', 'text' => 'Bariyer, sebum dengesi ve doğal mikrobiyom analizi.', 'image' => cr_default_img( 'structure' ), 'url' => '/kategori/cilt-yapisi/' ),
+								array( 'title' => 'Cilt Problemleri', 'tag' => '02 / Çözüm', 'text' => 'Akne, kızarıklık, leke ve dehidrasyon yönetimi.', 'image' => cr_default_img( 'problems' ), 'url' => '/kategori/cilt-problemleri/' ),
+								array( 'title' => 'Aktif İçerikler', 'tag' => '03 / Bilim', 'text' => 'Asitler, vitaminler ve hedeflenmiş molekül arşivi.', 'image' => cr_default_img( 'actives' ), 'url' => '/icerik/' ),
+								array( 'title' => 'Bakım Rutini', 'tag' => '04 / Uygulama', 'text' => 'Cilt tipine göre kişiselleştirilmiş protokoller.', 'image' => cr_default_img( 'routine' ), 'url' => '/kategori/cilt-bakim-rutini/' ),
 							),
 						),
 					),
 				),
 				array(
-					'title'  => 'En çok okunanlar',
+					'title'  => 'Öne çıkan inceleme (yarı yarıya)',
 					'fields' => array(
-						array( 'id' => 'featured_title', 'type' => 'text', 'label' => 'Başlık', 'default' => 'Şu anda en çok okunanlar' ),
-						array( 'id' => 'featured_source', 'type' => 'select', 'label' => 'Kaynak', 'choices' => array( 'popular' => 'En çok okunan (görüntülenme)', 'latest' => 'En yeni', 'sticky' => 'Sabitlenmiş yazılar' ), 'default' => 'popular' ),
+						array( 'id' => 'ed_eyebrow', 'type' => 'text', 'label' => 'Üst etiket', 'default' => 'Öne Çıkan İnceleme' ),
+						array( 'id' => 'ed_title', 'type' => 'text', 'label' => 'Başlık', 'default' => 'Dermokozmetik Nedir,' ),
+						array( 'id' => 'ed_accent', 'type' => 'text', 'label' => 'Başlık (italik vurgulu satır)', 'default' => 'Gerçekten Kimin İçin?' ),
+						array( 'id' => 'ed_text', 'type' => 'textarea', 'label' => 'Metin', 'default' => 'Kozmetik raflarındaki medikal vaatlerin ardındaki regülasyon farklarını, dermatolojik formülasyon prensiplerini ve hangi cilt tiplerinin gerçekten klinik aktiflere ihtiyaç duyduğunu mercek altına alıyoruz.' ),
+						array( 'id' => 'ed_image', 'type' => 'image', 'label' => 'Görsel', 'default' => cr_default_img( 'derm' ) ),
+						array( 'id' => 'ed_cta', 'type' => 'text', 'label' => 'Bağlantı yazısı', 'default' => 'Rehberi Oku' ),
+						array( 'id' => 'ed_url', 'type' => 'url', 'label' => 'Bağlantı', 'default' => '/dermokozmetik-nedir/' ),
+						array( 'id' => 'ed_reverse', 'type' => 'toggle', 'label' => 'Görseli sağa al', 'default' => 0 ),
+					),
+				),
+				array(
+					'title'  => 'Ürün kataloğu',
+					'desc'   => 'Ürün Rehberi’ne eklediğin incelemeler otomatik listelenir ve ürün türlerine göre filtrelenir. Hiç inceleme yoksa aşağıdaki elle girilen ürünler gösterilir.',
+					'fields' => array(
+						array( 'id' => 'catalog_eyebrow', 'type' => 'text', 'label' => 'Üst etiket', 'default' => 'Katalog' ),
+						array( 'id' => 'catalog_title', 'type' => 'text', 'label' => 'Başlık', 'default' => 'Cilt Bakım Rafına Daha Bilinçli Bak.' ),
+						array( 'id' => 'catalog_source', 'type' => 'select', 'label' => 'Kaynak', 'choices' => array( 'auto' => 'Otomatik (ürün incelemeleri, yoksa elle girilenler)', 'posts' => 'Yalnızca ürün incelemeleri', 'manual' => 'Yalnızca elle girilenler' ), 'default' => 'auto' ),
+						array( 'id' => 'catalog_count', 'type' => 'number', 'label' => 'Gösterilecek ürün', 'default' => 8, 'min' => 4, 'max' => 16 ),
+						array(
+							'id'      => 'catalog_items',
+							'type'    => 'repeater',
+							'label'   => 'Elle girilen ürünler',
+							'fields'  => array(
+								'title' => array( 'type' => 'text', 'label' => 'Ürün adı' ),
+								'tag'   => array( 'type' => 'text', 'label' => 'Etiket (ör. Aydınlatıcı)' ),
+								'type'  => array( 'type' => 'text', 'label' => 'Filtre (ürün türü slug’ı)' ),
+								'text'  => array( 'type' => 'text', 'label' => 'Kısa açıklama' ),
+								'image' => array( 'type' => 'image', 'label' => 'Görsel (4:5)' ),
+								'url'   => array( 'type' => 'url', 'label' => 'Bağlantı' ),
+							),
+							'default' => array(
+								array( 'title' => 'C Vitamini Kompleksi', 'tag' => 'Aydınlatıcı', 'type' => 'serumlar', 'text' => 'Antioksidan koruma ve leke görünümünü dengeleme.', 'image' => cr_default_img( 'serum' ), 'url' => '/icerik/c-vitamini/' ),
+								array( 'title' => 'Salisilik Asit Jel', 'tag' => 'Arındırıcı', 'type' => 'temizleyiciler', 'text' => 'Gözenek temizliği ve nazik mikro-eksfoliasyon.', 'image' => cr_default_img( 'cleanser' ), 'url' => '/urun-rehberi/salisilik-asitli-temizleyici/' ),
+								array( 'title' => 'Seramid Bariyer Krem', 'tag' => 'Onarıcı', 'type' => 'nemlendiriciler', 'text' => 'Lipid kaybını önleyen yoğun bariyer desteği.', 'image' => cr_default_img( 'cream' ), 'url' => '/urun-rehberi/seramidli-bariyer-kremi/' ),
+								array( 'title' => 'Mineral Filtreli SPF', 'tag' => 'Geniş Spektrum', 'type' => 'gunes-koruyucular', 'text' => 'Hassas ciltler için görünmez fiziksel UV kalkanı.', 'image' => cr_default_img( 'spf' ), 'url' => '/urun-rehberi/mineral-filtreli-spf-50/' ),
+							),
+						),
+						array( 'id' => 'catalog_filters', 'type' => 'lines', 'label' => 'Elle girilen ürünlerin filtreleri', 'desc' => 'Her satır: Etiket | ürün-türü-slug. Ürün incelemeleri kullanılırken filtreler ürün türlerinden otomatik oluşur.', 'default' => "Temizleyici | temizleyiciler\nSerum | serumlar\nNemlendirici | nemlendiriciler\nGüneş Koruyucu | gunes-koruyucular" ),
+					),
+				),
+				array(
+					'title'  => 'İhtiyacınıza göre rotalar',
+					'fields' => array(
+						array( 'id' => 'needs_eyebrow', 'type' => 'text', 'label' => 'Üst etiket', 'default' => 'Kişisel Protokoller' ),
+						array( 'id' => 'needs_title', 'type' => 'text', 'label' => 'Başlık', 'default' => 'İhtiyacınıza Göre Rotalar' ),
+						array(
+							'id'      => 'needs_items',
+							'type'    => 'repeater',
+							'label'   => 'Rotalar',
+							'fields'  => array(
+								'title' => array( 'type' => 'text', 'label' => 'Başlık' ),
+								'text'  => array( 'type' => 'text', 'label' => 'Kısa açıklama' ),
+								'image' => array( 'type' => 'image', 'label' => 'Görsel (16:10)' ),
+								'url'   => array( 'type' => 'url', 'label' => 'Bağlantı' ),
+							),
+							'default' => array(
+								array( 'title' => 'Hassasiyet & Kızarıklık', 'text' => 'Yatıştırıcı botanikler ve bariyer onarımı.', 'image' => cr_default_img( 'sensitive' ), 'url' => '/cilt-sorunu/hassasiyet/' ),
+								array( 'title' => 'Kuruluk & Dehidrasyon', 'text' => 'Derin hidrasyon ve su kaybını önleme rehberi.', 'image' => cr_default_img( 'dry' ), 'url' => '/cilt-sorunu/kuruluk/' ),
+								array( 'title' => 'Akne Eğilimi', 'text' => 'Sebum dengesi ve nazik eksfoliasyon teknikleri.', 'image' => cr_default_img( 'acne' ), 'url' => '/cilt-sorunu/akne/' ),
+								array( 'title' => 'Leke Görünümü', 'text' => 'Hiperpigmentasyon ve ton eşitleme çözümleri.', 'image' => cr_default_img( 'spot' ), 'url' => '/cilt-sorunu/leke/' ),
+								array( 'title' => 'Bariyer Hasarı', 'text' => 'Aşırı işlem görmüş yorgun ciltler için onarım.', 'image' => cr_default_img( 'barrier' ), 'url' => '/cilt-bariyeri-nedir/' ),
+								array( 'title' => 'Yaşlanma Belirtileri', 'text' => 'Kolajen desteği ve elastikiyet kaybını yavaşlatma.', 'image' => cr_default_img( 'aging' ), 'url' => '/cilt-sorunu/ince-cizgiler/' ),
+							),
+						),
+					),
+				),
+				array(
+					'title'  => 'Journal (makaleler)',
+					'fields' => array(
+						array( 'id' => 'journal_eyebrow', 'type' => 'text', 'label' => 'Üst etiket', 'default' => 'Cilt Rotası Journal' ),
+						array( 'id' => 'journal_title', 'type' => 'text', 'label' => 'Başlık', 'default' => 'Okumaya Değer.' ),
+						array( 'id' => 'journal_filters_on', 'type' => 'toggle', 'label' => 'Kategori filtrelerini göster', 'default' => 1 ),
+						array( 'id' => 'guides_filters', 'type' => 'lines', 'label' => 'Filtreler', 'desc' => 'Her satır: Etiket | kategori-slug (Tümü otomatik eklenir).', 'default' => "Cilt Yapısı | cilt-yapisi\nCilt Problemleri | cilt-problemleri\nRutin | cilt-bakim-rutini\nİçerikler | icerikler\nÜrünler | urunler" ),
+						array( 'id' => 'guides_count', 'type' => 'number', 'label' => 'Gösterilecek yazı', 'default' => 6, 'min' => 3, 'max' => 12 ),
+					),
+				),
+				array(
+					'title'  => 'Cilt testi',
+					'fields' => array(
+						array( 'id' => 'quiz_title', 'type' => 'text', 'label' => 'Başlık', 'default' => 'Cildin gerçekten neye ihtiyaç duyuyor?' ),
+						array( 'id' => 'quiz_text', 'type' => 'textarea', 'label' => 'Metin', 'default' => 'Cilt tipi tek başına yeterli değildir. Cildinin mevcut durumunu da birlikte değerlendirmek gerekir.' ),
+						array( 'id' => 'quiz_cta', 'type' => 'text', 'label' => 'Buton', 'default' => 'Kısa Teste Başla' ),
+						array( 'id' => 'quiz_note', 'type' => 'text', 'label' => 'Küçük not', 'default' => '2–3 dakika' ),
+						array( 'id' => 'quiz_url', 'type' => 'url', 'label' => 'Test sayfası', 'default' => '/cilt-testi/' ),
+						array( 'id' => 'quiz_image', 'type' => 'image', 'label' => 'Görsel', 'default' => cr_default_img( 'blog1' ) ),
+						array( 'id' => 'quiz_points', 'type' => 'lines', 'label' => 'Madde işaretleri', 'desc' => 'En fazla 4 kısa madde.', 'default' => "Cilt tipi + mevcut durum\nKişisel bakım rotası\nKayıt gerekmez" ),
+					),
+				),
+				array(
+					'title'  => 'İçerik sözlüğü',
+					'fields' => array(
+						array( 'id' => 'glossary_eyebrow', 'type' => 'text', 'label' => 'Üst etiket', 'default' => 'INCI Rehberi' ),
+						array( 'id' => 'glossary_title', 'type' => 'text', 'label' => 'Başlık', 'default' => 'Etiketteki Her Molekül, Bir Cümlede.' ),
+						array( 'id' => 'glossary_text', 'type' => 'text', 'label' => 'Alt metin', 'default' => 'Niasinamidden seramide, retinolden hyaluronik aside; içerik listesini okumayı kolaylaştıran sözlük.' ),
+						array( 'id' => 'glossary_placeholder', 'type' => 'text', 'label' => 'Arama metni', 'default' => 'Bir içerik ara: niasinamid, retinol, seramid…' ),
+						array( 'id' => 'glossary_popular', 'type' => 'lines', 'label' => 'Popüler içerikler', 'desc' => 'Her satır: Ad | bağlantı', 'default' => "Niasinamid | /icerik/niasinamid/\nHyaluronik Asit | /icerik/hyaluronik-asit/\nSeramid | /icerik/seramid/\nRetinol | /icerik/retinol/\nSalisilik Asit | /icerik/salisilik-asit/\nC Vitamini | /icerik/c-vitamini/" ),
+					),
+				),
+				array(
+					'title'  => 'Manifesto (görsel mola)',
+					'fields' => array(
+						array( 'id' => 'manifesto_quote', 'type' => 'textarea', 'label' => 'Söz', 'default' => 'Cilt bakımı, bedeninizle kurduğunuz en dürüst iletişimdir.' ),
+						array( 'id' => 'manifesto_by', 'type' => 'text', 'label' => 'İmza', 'default' => '— Cilt Rotası Manifestosu' ),
+						array( 'id' => 'manifesto_image', 'type' => 'image', 'label' => 'Görsel', 'default' => cr_default_img( 'calm' ) ),
 					),
 				),
 				array(
@@ -304,67 +426,10 @@ function cr_options_schema() {
 					),
 				),
 				array(
-					'title'  => 'Cilt tipini keşfet',
+					'title'  => 'En çok okunanlar',
 					'fields' => array(
-						array( 'id' => 'quiz_title', 'type' => 'text', 'label' => 'Başlık', 'default' => 'Cildin gerçekten neye ihtiyaç duyuyor?' ),
-						array( 'id' => 'quiz_text', 'type' => 'textarea', 'label' => 'Metin', 'default' => 'Cilt tipi tek başına yeterli değildir. Cildinin mevcut durumunu da birlikte değerlendirmek gerekir.' ),
-						array( 'id' => 'quiz_cta', 'type' => 'text', 'label' => 'Buton', 'default' => 'Kısa Teste Başla' ),
-						array( 'id' => 'quiz_note', 'type' => 'text', 'label' => 'Küçük not', 'default' => '2–3 dakika' ),
-						array( 'id' => 'quiz_url', 'type' => 'url', 'label' => 'Test sayfası', 'default' => '/cilt-testi/' ),
-						array( 'id' => 'quiz_points', 'type' => 'lines', 'label' => 'Diyagram etiketleri', 'desc' => 'Yüz diyagramı üzerindeki bölge etiketleri (en fazla 4).', 'default' => "Alın · sebum\nYanaklar · nem\nT bölgesi · gözenek\nÇene · hassasiyet" ),
-					),
-				),
-				array(
-					'title'  => 'Rehberler',
-					'fields' => array(
-						array( 'id' => 'guides_title', 'type' => 'text', 'label' => 'Başlık', 'default' => 'Cilt Rotası Rehberleri' ),
-						array( 'id' => 'guides_text', 'type' => 'text', 'label' => 'Alt metin', 'default' => 'Kanıta dayalı, sade ve güncel rehberler.' ),
-						array( 'id' => 'guides_filters', 'type' => 'lines', 'label' => 'Filtreler', 'desc' => 'Her satır: Etiket | kategori-slug (Tümü otomatik eklenir).', 'default' => "Cilt Yapısı | cilt-yapisi\nCilt Problemleri | cilt-problemleri\nRutin | cilt-bakim-rutini\nİçerikler | icerikler\nÜrünler | urunler" ),
-						array( 'id' => 'guides_count', 'type' => 'number', 'label' => 'Gösterilecek yazı', 'desc' => 'Asimetrik ritim 6 yazıda bir tekrar eder (6 veya 12 önerilir).', 'default' => 6, 'min' => 3, 'max' => 12 ),
-					),
-				),
-				array(
-					'title'  => 'Ürün rehberi',
-					'fields' => array(
-						array( 'id' => 'products_title', 'type' => 'text', 'label' => 'Başlık', 'default' => 'Ürünü değil, ihtiyacı seç.' ),
-						array( 'id' => 'products_text', 'type' => 'textarea', 'label' => 'Açıklama', 'default' => 'Temizleyici, serum, nemlendirici ve güneş koruyucu kategorilerini içerik ve kullanım amacına göre incele.' ),
-						array( 'id' => 'products_note', 'type' => 'text', 'label' => 'Bağımsızlık notu', 'default' => 'Sponsorlu sıralama yok. Ürünleri içerik ve amaç üzerinden değerlendiriyoruz.' ),
-						array(
-							'id'      => 'products_items',
-							'type'    => 'repeater',
-							'label'   => 'Kategoriler',
-							'fields'  => array(
-								'title' => array( 'type' => 'text', 'label' => 'Ad' ),
-								'text'  => array( 'type' => 'text', 'label' => 'Kısa açıklama' ),
-								'image' => array( 'type' => 'image', 'label' => 'Görsel' ),
-								'url'   => array( 'type' => 'url', 'label' => 'Bağlantı' ),
-							),
-							'default' => array(
-								array( 'title' => 'Temizleyiciler', 'text' => 'Bariyeri bozmadan arındırma.', 'image' => cr_default_img( 'cleanser' ), 'url' => '/urun-turu/temizleyiciler/' ),
-								array( 'title' => 'Serumlar', 'text' => 'Hedefe yönelik aktif konsantrasyon.', 'image' => cr_default_img( 'serum' ), 'url' => '/urun-turu/serumlar/' ),
-								array( 'title' => 'Nemlendiriciler', 'text' => 'Nem tutma ve lipid desteği.', 'image' => cr_default_img( 'cream' ), 'url' => '/urun-turu/nemlendiriciler/' ),
-								array( 'title' => 'Güneş Koruyucular', 'text' => 'UVA/UVB filtreleri ve doku seçimi.', 'image' => cr_default_img( 'spf' ), 'url' => '/urun-turu/gunes-koruyucular/' ),
-								array( 'title' => 'Tonikler', 'text' => 'Denge, hazırlık ve nazik asitler.', 'image' => cr_default_img( 'blog5' ), 'url' => '/urun-turu/tonikler/' ),
-								array( 'title' => 'Aktif İçerikler', 'text' => 'Molekül molekül bilinçli seçim.', 'image' => cr_default_img( 'actives' ), 'url' => '/icerik/' ),
-							),
-						),
-					),
-				),
-				array(
-					'title'  => 'İçerik sözlüğü',
-					'fields' => array(
-						array( 'id' => 'glossary_title', 'type' => 'text', 'label' => 'Başlık', 'default' => 'İçerik sözlüğü' ),
-						array( 'id' => 'glossary_text', 'type' => 'text', 'label' => 'Alt metin', 'default' => 'INCI listesindeki her molekülün ne yaptığını saniyeler içinde öğren.' ),
-						array( 'id' => 'glossary_placeholder', 'type' => 'text', 'label' => 'Arama metni', 'default' => 'Bir içerik ara: niasinamid, retinol, seramid…' ),
-						array( 'id' => 'glossary_popular', 'type' => 'lines', 'label' => 'Popüler içerikler', 'desc' => 'Her satır: Ad | bağlantı', 'default' => "Niasinamid | /icerik/niasinamid/\nHyaluronik Asit | /icerik/hyaluronik-asit/\nSeramid | /icerik/seramid/\nRetinol | /icerik/retinol/\nSalisilik Asit | /icerik/salisilik-asit/\nVitamin C | /icerik/c-vitamini/" ),
-					),
-				),
-				array(
-					'title'  => 'Manifesto',
-					'fields' => array(
-						array( 'id' => 'manifesto_quote', 'type' => 'textarea', 'label' => 'Söz', 'default' => 'Cilt bakımı, bedeninle kurduğun en dürüst iletişimdir.' ),
-						array( 'id' => 'manifesto_by', 'type' => 'text', 'label' => 'İmza', 'default' => 'Cilt Rotası Manifestosu' ),
-						array( 'id' => 'manifesto_image', 'type' => 'image', 'label' => 'Görsel', 'default' => cr_default_img( 'calm' ) ),
+						array( 'id' => 'featured_title', 'type' => 'text', 'label' => 'Başlık', 'default' => 'Şu anda en çok okunanlar' ),
+						array( 'id' => 'featured_source', 'type' => 'select', 'label' => 'Kaynak', 'choices' => array( 'popular' => 'En çok okunan (görüntülenme)', 'latest' => 'En yeni', 'sticky' => 'Sabitlenmiş yazılar' ), 'default' => 'popular' ),
 					),
 				),
 				array(
@@ -416,12 +481,13 @@ function cr_options_schema() {
 				array(
 					'title'  => 'Bülten',
 					'fields' => array(
-						array( 'id' => 'news_title', 'type' => 'text', 'label' => 'Başlık', 'default' => 'Cilt bakımında bilgi karmaşasını azalt.' ),
-						array( 'id' => 'news_text', 'type' => 'text', 'label' => 'Alt metin', 'default' => 'Yeni rehberleri ve güncel içerikleri kaçırma.' ),
-						array( 'id' => 'news_placeholder', 'type' => 'text', 'label' => 'Kutu metni', 'default' => 'E-posta adresin' ),
-						array( 'id' => 'news_button', 'type' => 'text', 'label' => 'Buton', 'default' => 'Katıl' ),
-						array( 'id' => 'news_note', 'type' => 'text', 'label' => 'Küçük not', 'default' => 'Ayda en fazla iki e-posta. İstediğin an tek tıkla ayrılabilirsin.' ),
-						array( 'id' => 'news_success', 'type' => 'text', 'label' => 'Başarı mesajı', 'default' => 'Teşekkürler! Listeye eklendin.' ),
+						array( 'id' => 'news_eyebrow', 'type' => 'text', 'label' => 'Üst etiket', 'default' => 'Haftalık Bülten' ),
+						array( 'id' => 'news_title', 'type' => 'text', 'label' => 'Başlık', 'default' => 'Cilt Bakımını Daha Bilinçli Takip Edin.' ),
+						array( 'id' => 'news_text', 'type' => 'textarea', 'label' => 'Metin', 'default' => 'Pazarlama iddialarından arındırılmış yeni ürün incelemeleri, içerik analizleri ve bağımsız kılavuzlar her perşembe e-posta kutunuzda.' ),
+						array( 'id' => 'news_placeholder', 'type' => 'text', 'label' => 'Kutu metni', 'default' => 'E-posta adresiniz...' ),
+						array( 'id' => 'news_button', 'type' => 'text', 'label' => 'Buton', 'default' => 'Abone Ol' ),
+						array( 'id' => 'news_note', 'type' => 'text', 'label' => 'Küçük not', 'default' => 'Spam yok. İstediğiniz an tek tıkla ayrılabilirsiniz.' ),
+						array( 'id' => 'news_success', 'type' => 'text', 'label' => 'Başarı mesajı', 'default' => 'Bültene kaydınız başarıyla alındı.' ),
 					),
 				),
 			),
@@ -593,12 +659,13 @@ function cr_options_schema() {
 				array(
 					'title'  => 'Footer',
 					'fields' => array(
-						array( 'id' => 'footer_text', 'type' => 'textarea', 'label' => 'Kısa açıklama', 'default' => 'Cilt bakımını daha anlaşılır hale getiren bağımsız bilgi platformu.' ),
-						array( 'id' => 'footer_col1', 'type' => 'text', 'label' => '1. kolon başlığı', 'default' => 'Keşfet' ),
+						array( 'id' => 'footer_text', 'type' => 'textarea', 'label' => 'Kısa açıklama', 'default' => 'Dermokozmetik dünyasını sadeleştiriyor; bilimsel, bağımsız ve estetik bir dille doğru bakımı ulaşılabilir kılıyoruz.' ),
+						array( 'id' => 'footer_col1', 'type' => 'text', 'label' => '1. kolon başlığı', 'default' => 'Kütüphane' ),
 						array( 'id' => 'footer_col2', 'type' => 'text', 'label' => '2. kolon başlığı', 'default' => 'Kurumsal' ),
 						array( 'id' => 'footer_col3', 'type' => 'text', 'label' => '3. kolon başlığı', 'default' => 'Yasal' ),
 						array( 'id' => 'footer_disclaimer', 'type' => 'textarea', 'label' => 'Alt uyarı', 'default' => 'İçerikler bilgilendirme amaçlıdır ve tıbbi tanı veya tedavi yerine geçmez.' ),
-						array( 'id' => 'footer_copy', 'type' => 'text', 'label' => 'Telif satırı', 'desc' => '{yil} otomatik yıl olur.', 'default' => '© {yil} Cilt Rotası. Tüm hakları saklıdır.' ),
+						array( 'id' => 'footer_copy', 'type' => 'text', 'label' => 'Telif satırı', 'desc' => '{yil} otomatik yıl olur.', 'default' => '© {yil} Cilt Rotası.' ),
+						array( 'id' => 'footer_tagline', 'type' => 'text', 'label' => 'Alt bar sloganı', 'default' => 'Bağımsız • Şeffaf • Bilimsel' ),
 					),
 				),
 				array(

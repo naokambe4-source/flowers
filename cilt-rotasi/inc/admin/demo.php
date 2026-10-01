@@ -730,11 +730,13 @@ function cr_demo_posts() {
  * @return array
  */
 function cr_demo_ingredients() {
-	$mk = function ( $title, $slug, $group, $m, $content, $faq, $probs = array() ) {
+	$imgs = array( 'niasinamid' => 'blog3', 'hyaluronik-asit' => 'cream', 'seramid' => 'blog6', 'retinol' => 'blog2', 'salisilik-asit' => 'cleanser', 'c-vitamini' => 'serum', 'pantenol' => 'sensitive', 'azelaik-asit' => 'acne' );
+	$mk   = function ( $title, $slug, $group, $m, $content, $faq, $probs = array() ) use ( $imgs ) {
 		return array(
 			'type'    => 'icerik',
 			'title'   => $title,
 			'slug'    => $slug,
+			'image'   => cr_default_img( isset( $imgs[ $slug ] ) ? $imgs[ $slug ] : 'actives' ),
 			'excerpt' => $m['_cr_function'],
 			'terms'   => array( 'icerik_grubu' => array( $group ), 'cilt_sorunu' => $probs ),
 			'content' => $content,

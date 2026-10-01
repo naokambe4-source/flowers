@@ -1,12 +1,13 @@
 <?php
 /**
- * Footer.
+ * Footer (minimal dergi tarzı).
  *
  * @package CiltRotasi
  */
 
 defined( 'ABSPATH' ) || exit;
 $social = cr_social_links();
+$names  = array( 'instagram' => 'Instagram', 'pinterest' => 'Pinterest', 'tiktok' => 'TikTok', 'youtube' => 'YouTube', 'x' => 'X (Twitter)' );
 ?>
 </main>
 
@@ -16,31 +17,30 @@ $social = cr_social_links();
 			<div class="cr-footer__brand">
 				<?php echo cr_logo( 'footer' ); // phpcs:ignore ?>
 				<p<?php echo cr_edit( 'footer_text' ); // phpcs:ignore ?>><?php cr_t( 'footer_text' ); ?></p>
-				<?php if ( $social ) : ?>
-					<div class="cr-social">
-						<?php foreach ( $social as $k => $u ) : ?>
-							<a href="<?php echo esc_url( $u ); ?>" target="_blank" rel="noopener me" aria-label="<?php echo esc_attr( 'x' === $k ? 'X' : ucfirst( $k ) ); ?>"><?php echo cr_icon( $k, 20 ); // phpcs:ignore ?></a>
-						<?php endforeach; ?>
-					</div>
-				<?php endif; ?>
 			</div>
 			<div class="cr-footer__cols">
 				<?php foreach ( array( 1, 2, 3 ) as $i ) : ?>
 					<div class="cr-footer__col">
-						<p class="cr-footer__title"<?php echo cr_edit( 'footer_col' . $i ); // phpcs:ignore ?>><?php cr_t( 'footer_col' . $i ); ?></p>
+						<p class="cr-eyebrow cr-footer__title"<?php echo cr_edit( 'footer_col' . $i ); // phpcs:ignore ?>><?php cr_t( 'footer_col' . $i ); ?></p>
 						<?php cr_footer_menu( 'footer_' . $i ); ?>
 					</div>
 				<?php endforeach; ?>
-				<div class="cr-footer__col cr-footer__col--news">
-					<p class="cr-footer__title">Bülten</p>
-					<p class="cr-footer__small"><?php cr_t( 'news_text' ); ?></p>
-					<?php cr_news_form( 'footer', 'cr-news-form--dark' ); ?>
-				</div>
+				<?php if ( $social ) : ?>
+					<div class="cr-footer__col">
+						<p class="cr-eyebrow cr-footer__title">Sosyal Medya</p>
+						<ul class="cr-footer__list">
+							<?php foreach ( $social as $k => $u ) : ?>
+								<li><a href="<?php echo esc_url( $u ); ?>" target="_blank" rel="noopener me"><?php echo esc_html( $names[ $k ] ); ?></a></li>
+							<?php endforeach; ?>
+						</ul>
+					</div>
+				<?php endif; ?>
 			</div>
 		</div>
+		<p class="cr-footer__disc"<?php echo cr_edit( 'footer_disclaimer' ); // phpcs:ignore ?>><?php cr_t( 'footer_disclaimer' ); ?></p>
 		<div class="cr-footer__bottom">
-			<p class="cr-footer__disc"><?php echo cr_icon( 'info', 16 ); // phpcs:ignore ?><span<?php echo cr_edit( 'footer_disclaimer' ); // phpcs:ignore ?>><?php cr_t( 'footer_disclaimer' ); ?></span></p>
-			<p class="cr-footer__copy"><?php echo esc_html( str_replace( '{yil}', gmdate( 'Y' ), cr_opt( 'footer_copy' ) ) ); ?></p>
+			<p><?php echo esc_html( str_replace( '{yil}', gmdate( 'Y' ), cr_opt( 'footer_copy' ) ) ); ?></p>
+			<p<?php echo cr_edit( 'footer_tagline' ); // phpcs:ignore ?>><?php cr_t( 'footer_tagline' ); ?></p>
 		</div>
 	</div>
 </footer>

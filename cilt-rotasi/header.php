@@ -44,7 +44,7 @@ defined( 'ABSPATH' ) || exit;
 				</a>
 			<?php endif; ?>
 			<?php if ( cr_opt( 'header_cta_text' ) ) : ?>
-				<a class="cr-btn cr-btn--primary cr-btn--sm cr-header__cta" href="<?php echo esc_url( cr_url( cr_opt( 'header_cta_url' ) ) ); ?>"><span<?php echo cr_edit( 'header_cta_text' ); // phpcs:ignore ?>><?php cr_t( 'header_cta_text' ); ?></span></a>
+				<a class="cr-btn cr-btn--solid cr-btn--sm cr-header__cta" href="<?php echo esc_url( cr_url( cr_opt( 'header_cta_url' ) ) ); ?>"><span<?php echo cr_edit( 'header_cta_text' ); // phpcs:ignore ?>><?php cr_t( 'header_cta_text' ); ?></span></a>
 			<?php endif; ?>
 			<button type="button" class="cr-icon-btn cr-burger" data-drawer-open aria-label="Menüyü aç" aria-controls="cr-drawer" aria-expanded="false">
 				<?php echo cr_icon( 'menu', 24 ); // phpcs:ignore ?>

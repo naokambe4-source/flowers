@@ -118,14 +118,13 @@ $cr_order = isset( $_GET['siralama'] ) ? sanitize_key( wp_unslash( $_GET['sirala
 		</div>
 
 		<?php if ( have_posts() ) : ?>
-			<div class="cr-archive__grid" data-filter-grid>
+			<div class="cr-journal__grid cr-archive__grid" data-filter-grid>
 				<?php
-				$i       = 0;
-				$pattern = array( 'large', 'tall', 'tall' );
+				$i = 0;
 				while ( have_posts() ) :
 					the_post();
-					$variant = ( ! is_paged() && $i < 3 ) ? $pattern[ $i ] : 'plain';
-					get_template_part( 'template-parts/cards/card', null, array( 'variant' => $variant, 'heading' => 'h2', 'eager' => $i < 1 ) );
+					$variant = ( ! is_paged() && 0 === $i && ! is_search() ) ? 'lead' : 'journal';
+					get_template_part( 'template-parts/cards/card', null, array( 'variant' => $variant, 'heading' => 'h2', 'eager' => 0 === $i ) );
 					$i++;
 				endwhile;
 				?>

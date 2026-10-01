@@ -14,7 +14,7 @@ get_header();
 		<?php cr_breadcrumb_html(); ?>
 		<div class="cr-quizpage__grid">
 			<div class="cr-quizpage__visual" aria-hidden="true">
-				<?php echo cr_img( cr_opt( 'quick_items' )[0]['image'] ?? cr_default_img( 'structure' ), 'cr-card', array( 'alt' => '', 'loading' => 'eager' ) ); // phpcs:ignore ?>
+				<?php echo cr_img( cr_opt( 'quiz_image' ) ? cr_opt( 'quiz_image' ) : cr_default_img( 'blog1' ), 'cr-card', array( 'alt' => '', 'loading' => 'eager' ) ); // phpcs:ignore ?>
 			</div>
 			<div class="cr-quizpage__main">
 				<?php echo cr_quiz_html(); // phpcs:ignore ?>

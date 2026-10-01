@@ -242,3 +242,74 @@ function cr_first_letter( $s ) {
 	$c = function_exists( 'mb_strtoupper' ) ? mb_strtoupper( $c, 'UTF-8' ) : strtoupper( $c );
 	return preg_match( '/\p{L}/u', $c ) ? $c : '#';
 }
+
+/**
+ * Sözlük içeriğinin görseli (yoksa gruba göre varsayılan).
+ *
+ * @param int    $post_id Yazı.
+ * @param string $size    Boyut.
+ * @param array  $attr    Nitelikler.
+ * @return string
+ */
+function cr_ing_image( $post_id, $size = 'cr-card', $attr = array() ) {
+	if ( has_post_thumbnail( $post_id ) || get_post_meta( $post_id, '_cr_ext_image', true ) ) {
+		return cr_post_image( $post_id, $size, $attr );
+	}
+	$map   = array( 'nem-tutucular' => 'cream', 'bariyer-lipidleri' => 'barrier', 'eksfolyanlar' => 'cleanser', 'retinoidler' => 'blog2', 'antioksidanlar' => 'serum', 'yatistiricilar' => 'sensitive', 'vitaminler' => 'blog3' );
+	$terms = get_the_terms( $post_id, 'icerik_grubu' );
+	$key   = 'actives';
+	if ( $terms && ! is_wp_error( $terms ) && isset( $map[ $terms[0]->slug ] ) ) {
+		$key = $map[ $terms[0]->slug ];
+	}
+	$attr = wp_parse_args( $attr, array( 'alt' => get_the_title( $post_id ) ) );
+	return cr_img( cr_default_img( $key ), $size, $attr );
+}
+
+/**
+ * Bir içeriği “öne çıkan içerikler” listesinde barındıran ürün incelemeleri.
+ *
+ * @param string $name  İçerik adı.
+ * @param string $inci  INCI adı.
+ * @param int    $limit Sayı.
+ * @return int[]
+ */
+function cr_products_with_ingredient( $name, $inci = '', $limit = 4 ) {
+	$out   = array();
+	$names = array_filter( array( cr_lower( $name ), cr_lower( $inci ) ) );
+	$ids   = get_posts(
+		array(
+			'post_type'      => 'urun_rehberi',
+			'posts_per_page' => 200,
+			'fields'         => 'ids',
+			'no_found_rows'  => true,
+		)
+	);
+	foreach ( $ids as $id ) {
+		foreach ( cr_lines( get_post_meta( $id, '_cr_key_ingr', true ) ) as $line ) {
+			if ( in_array( cr_lower( $line ), $names, true ) ) {
+				$out[] = $id;
+				break;
+			}
+		}
+		if ( count( $out ) >= $limit ) {
+			break;
+		}
+	}
+	return $out;
+}
+
+/**
+ * Seviye noktaları (kanıt / tahriş).
+ *
+ * @param string $level 1–3.
+ * @param string $class Sınıf.
+ * @return string
+ */
+function cr_level_dots( $level, $class = '' ) {
+	$level = (int) $level;
+	$out   = '<span class="cr-dots ' . esc_attr( $class ) . '" aria-hidden="true">';
+	for ( $i = 1; $i <= 3; $i++ ) {
+		$out .= '<i' . ( $i <= $level ? ' class="on"' : '' ) . '></i>';
+	}
+	return $out . '</span>';
+}

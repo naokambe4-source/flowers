@@ -44,7 +44,10 @@ Ayrıca: markalı giriş ekranı, tüm yönetime Cilt Rotası görünümü, üst
 
 ## Ön yüz
 
-- Ana sayfa (12 bölüm, sıralanabilir): hero, hızlı keşif, en çok okunanlar, cilt problemleri şeridi, cilt testi çağrısı, filtreli rehber ızgarası, ürün rehberi, içerik sözlüğü araması, manifesto, yayın ilkeleri, SSS, bülten.
+- Editoryal tasarım dili (v1.1): Cormorant Garamond başlıklar, keskin köşeler, çizgili eyebrow'lar, kare/alt çizgili butonlar, #1A2F25 / #B8905B / #FAF9F5 paleti. Tüm renkler ve yazı tipleri panelden değişir.
+- Ana sayfa (14 bölüm, sıralanabilir, açılıp kapatılabilir): tam ekran hero (sol gradyan, Ken Burns), 4'lü kategori kartları (3:4), 50/50 editoryal split, filtreli ürün kataloğu (4:5), manifesto bandı, ihtiyaçlar ızgarası (16:10), filtreli Journal kartları, cilt testi çağrısı, INCI sözlüğü bandı, SSS, koyu yeşil bülten; isteğe bağlı popüler yazılar, problem şeridi ve yayın ilkeleri.
+- Ürün rehberi: tür sekmeleri (adetli), editör puanı / A–Z sıralama, 4 sütun katalog, değerlendirme yöntemi bölümü. Ürün sayfası: sabit görsel, yıldız puanı, editör kararı, özellik satırları, öne çıkan içerikler (sözlüğe bağlı), artı/eksi, kullanım ve benzer ürünler.
+- İçerik sözlüğü: görselli başlık, öne çıkan 4 içerik, sabit A–Z + grup filtre çubuğu, harf blokları halinde dizin (INCI, işlev, grup, kanıt noktaları), gösterge açıklaması. İçerik sayfası: büyük başlık, kısa cevap, 6 hücreli özellik tablosu, faydalar, uyum rehberi (iyi anlaşır / dikkatli kombinle), bu içeriği barındıran ürünler, geçtiği rehberler.
 - Global arama paneli (`/` veya Ctrl+K): Makaleler, İçerikler, Problemler, Ürün rehberleri; klavyeyle gezinme, son aramalar.
 - Kaydedilenler (üyelik gerekmez), paylaş, okuma ilerleme çubuğu, sağda sabit içindekiler, sonraki rehber, ilgili içerikler.
 - İçerik sözlüğü: A–Z dizini, anlık filtre, grup filtreleri; her içerikte INCI adı, etkili oran, kanıt düzeyi, tahriş potansiyeli, hamilelik bilgisi ve uyumlu içerikler.

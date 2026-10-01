@@ -35,8 +35,9 @@ function cr_defaults() {
  */
 function cr_default_sections() {
 	$out = array();
+	$off = cr_home_sections_off();
 	foreach ( array_keys( cr_home_section_labels() ) as $id ) {
-		$out[] = array( 'id' => $id, 'on' => 1 );
+		$out[] = array( 'id' => $id, 'on' => in_array( $id, $off, true ) ? 0 : 1 );
 	}
 	return $out;
 }
@@ -222,19 +223,25 @@ function cr_pairs( $text ) {
 function cr_sections() {
 	$saved  = cr_opt( 'sections' );
 	$labels = cr_home_section_labels();
+	$rename = array( 'quick' => 'categories', 'guides' => 'journal', 'products' => 'catalog' );
+	$off    = cr_home_sections_off();
 	$out    = array();
 	$seen   = array();
 	if ( is_array( $saved ) ) {
 		foreach ( $saved as $s ) {
-			if ( isset( $s['id'], $labels[ $s['id'] ] ) && ! isset( $seen[ $s['id'] ] ) ) {
-				$out[]              = array( 'id' => $s['id'], 'on' => empty( $s['on'] ) ? 0 : 1 );
-				$seen[ $s['id'] ] = true;
+			if ( ! isset( $s['id'] ) ) {
+				continue;
+			}
+			$id = isset( $rename[ $s['id'] ] ) ? $rename[ $s['id'] ] : $s['id'];
+			if ( isset( $labels[ $id ] ) && ! isset( $seen[ $id ] ) ) {
+				$out[]       = array( 'id' => $id, 'on' => empty( $s['on'] ) ? 0 : 1 );
+				$seen[ $id ] = true;
 			}
 		}
 	}
 	foreach ( array_keys( $labels ) as $id ) {
 		if ( ! isset( $seen[ $id ] ) ) {
-			$out[] = array( 'id' => $id, 'on' => 1 );
+			$out[] = array( 'id' => $id, 'on' => in_array( $id, $off, true ) ? 0 : 1 );
 		}
 	}
 	return $out;
@@ -281,7 +288,7 @@ function cr_logo( $context = 'header' ) {
 		if ( cr_opt( 'logo_mark' ) ) {
 			$html .= '<span class="cr-logo__mark" aria-hidden="true"><svg viewBox="0 0 32 32" width="26" height="26"><path d="M6 26C6 14 13 6 27 5c-1 14-9 21-21 21z" fill="currentColor" opacity=".18"/><path d="M6 26C6 14 13 6 27 5c-1 14-9 21-21 21zM6 26 19 13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>';
 		}
-		$html .= '<span class="cr-logo__text"' . ( 'header' === $context ? cr_edit( 'logo_text' ) : '' ) . '>' . esc_html( $name ) . '</span>';
+		$html .= '<span class="cr-logo__text' . ( cr_opt( 'logo_upper' ) ? ' is-upper' : '' ) . '"' . ( 'header' === $context ? cr_edit( 'logo_text' ) : '' ) . '>' . esc_html( $name ) . '</span>';
 	}
 	return $html . '</a>';
 }
@@ -601,15 +608,11 @@ function cr_guides_grid( $cat = '', $count = 6 ) {
 	if ( ! $q->have_posts() ) {
 		return '<p class="cr-empty">Bu başlıkta henüz rehber yok. Yakında burada olacak.</p>';
 	}
-	// Ritim: büyük, dikey, dikey, yatay, küçük, küçük (6'da bir tekrar).
-	$pattern = array( 'large', 'tall', 'tall', 'wide', 'small', 'small' );
 	ob_start();
-	echo '<div class="cr-guides__grid">';
-	$i = 0;
+	echo '<div class="cr-journal__grid">';
 	while ( $q->have_posts() ) {
 		$q->the_post();
-		get_template_part( 'template-parts/cards/card', null, array( 'variant' => $pattern[ $i % count( $pattern ) ] ) );
-		$i++;
+		get_template_part( 'template-parts/cards/card', null, array( 'variant' => 'journal' ) );
 	}
 	echo '</div>';
 	wp_reset_postdata();
@@ -634,3 +637,44 @@ function cr_guides_route() {
 	);
 }
 add_action( 'rest_api_init', 'cr_guides_route' );
+
+/**
+ * Sürüm geçişi: v1.0 varsayılanlarıyla kayıtlı kalmış değerleri kaldırır; böylece yeni editoryal
+ * tasarımın varsayılanları devreye girer. Kullanıcının değiştirdiği değerlere dokunulmaz.
+ */
+function cr_migrate() {
+	if ( version_compare( (string) get_option( 'cr_theme_version', '1.0.0' ), CR_VERSION, '>=' ) ) {
+		return;
+	}
+	$saved = get_option( CR_OPTION, array() );
+	if ( is_array( $saved ) && $saved ) {
+		$old = array(
+			'c_green' => '#24483F', 'c_green2' => '#3B5E53', 'c_sage' => '#AAB7A2', 'c_sage_light' => '#E6ECE1',
+			'c_cream' => '#FBF8F2', 'c_white' => '#FFFDFC', 'c_beige' => '#E9DDCE', 'c_gold' => '#C9A06B',
+			'c_text' => '#28322E', 'c_muted' => '#68716D', 'font_heading' => 'DM Serif Display', 'radius' => 22,
+			'logo_mark' => 1, 'header_cta_text' => 'Cildini Keşfet', 'header_cta_url' => '/cilt-testi/',
+			'hero_eyebrow' => 'Bağımsız cilt bilgisi platformu', 'hero_title' => 'Cildini tanı.',
+			'hero_title_accent' => 'Bakımını bilinçle şekillendir.', 'hero_cta1_text' => 'Cildini Keşfet',
+			'hero_cta1_url' => '/cilt-testi/', 'hero_cta2_text' => 'Rehberlere Göz At', 'hero_chip_on' => 1,
+			'hero_text' => 'Cilt yapısından bakım rutinlerine, içeriklerden dermokozmetik ürünlere kadar ihtiyacın olan bilgiyi sade ve anlaşılır şekilde keşfet.',
+			'hero_image_alt' => 'Krem ve yeşil tonlarda doğal cilt bakım kompozisyonu',
+			'manifesto_quote' => 'Cilt bakımı, bedeninle kurduğun en dürüst iletişimdir.', 'manifesto_by' => 'Cilt Rotası Manifestosu',
+			'glossary_title' => 'İçerik sözlüğü', 'glossary_text' => 'INCI listesindeki her molekülün ne yaptığını saniyeler içinde öğren.',
+			'news_title' => 'Cilt bakımında bilgi karmaşasını azalt.', 'news_text' => 'Yeni rehberleri ve güncel içerikleri kaçırma.',
+			'news_placeholder' => 'E-posta adresin', 'news_button' => 'Katıl', 'news_success' => 'Teşekkürler! Listeye eklendin.',
+			'news_note' => 'Ayda en fazla iki e-posta. İstediğin an tek tıkla ayrılabilirsin.',
+			'footer_text' => 'Cilt bakımını daha anlaşılır hale getiren bağımsız bilgi platformu.', 'footer_col1' => 'Keşfet',
+			'footer_copy' => '© {yil} Cilt Rotası. Tüm hakları saklıdır.', 'quiz_points' => "Alın · sebum\nYanaklar · nem\nT bölgesi · gözenek\nÇene · hassasiyet",
+		);
+		foreach ( $old as $k => $v ) {
+			if ( array_key_exists( $k, $saved ) && (string) $saved[ $k ] === (string) $v ) {
+				unset( $saved[ $k ] );
+			}
+		}
+		unset( $saved['sections'] );
+		update_option( CR_OPTION, $saved );
+		cr_flush_options_cache();
+	}
+	update_option( 'cr_theme_version', CR_VERSION );
+}
+add_action( 'init', 'cr_migrate', 1 );

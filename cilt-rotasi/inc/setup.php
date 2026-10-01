@@ -185,7 +185,7 @@ function cr_head_perf() {
 	}
 	$lcp = '';
 	if ( is_front_page() ) {
-		$lcp = cr_img_url( cr_opt( 'hero_image' ), 'cr-hero' );
+		$lcp = cr_img_url( cr_opt( 'hero_image' ), 'full' );
 	} elseif ( is_singular( array( 'post', 'urun_rehberi' ) ) ) {
 		$lcp = cr_post_image_url( get_the_ID(), 'cr-hero' );
 	}
@@ -249,6 +249,18 @@ function cr_body_class( $classes ) {
 	}
 	if ( cr_opt( 'announce_on' ) ) {
 		$classes[] = 'has-announce';
+	}
+	if ( is_front_page() && ! cr_opt( 'announce_on' ) ) {
+		$first = null;
+		foreach ( cr_sections() as $s ) {
+			if ( $s['on'] ) {
+				$first = $s['id'];
+				break;
+			}
+		}
+		if ( 'hero' === $first ) {
+			$classes[] = 'cr-over-hero';
+		}
 	}
 	return $classes;
 }
@@ -412,6 +424,29 @@ function cr_search_query( $q ) {
 			)
 		);
 		$q->set( 'orderby', array( 'views' => 'DESC', 'date' => 'DESC' ) );
+	}
+	if ( ! is_admin() && $q->is_main_query() && ( $q->is_post_type_archive( 'urun_rehberi' ) || $q->is_tax( 'urun_turu' ) ) ) {
+		$q->set( 'posts_per_page', 16 );
+		$sort = isset( $_GET['siralama'] ) ? sanitize_key( wp_unslash( $_GET['siralama'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification
+		if ( 'puan' === $sort ) {
+			$q->set(
+				'meta_query',
+				array(
+					'relation' => 'OR',
+					'rating'   => array( 'key' => '_cr_rating', 'type' => 'DECIMAL(3,1)' ),
+					array( 'key' => '_cr_rating', 'compare' => 'NOT EXISTS' ),
+				)
+			);
+			$q->set( 'orderby', array( 'rating' => 'DESC', 'date' => 'DESC' ) );
+		} elseif ( 'ad' === $sort ) {
+			$q->set( 'orderby', 'title' );
+			$q->set( 'order', 'ASC' );
+		}
+	}
+	if ( ! is_admin() && $q->is_main_query() && $q->is_tax( 'icerik_grubu' ) ) {
+		$q->set( 'posts_per_page', 300 );
+		$q->set( 'orderby', 'title' );
+		$q->set( 'order', 'ASC' );
 	}
 	if ( ! is_admin() && $q->is_main_query() && $q->is_post_type_archive( 'icerik' ) ) {
 		$q->set( 'posts_per_page', 300 );
