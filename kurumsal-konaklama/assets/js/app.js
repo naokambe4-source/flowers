@@ -46,6 +46,13 @@
       // Panel ile aynı yığın bağlamında olmalı (aksi halde arka plan paneli örter)
       panel.parentNode.insertBefore(backdrop, panel);
     }
+    panel.style.left = '';
+    if (!mqMobile.matches) {
+      var r = panel.getBoundingClientRect(), vw = document.documentElement.clientWidth;
+      if (r.right > vw - 8) panel.style.left = (panel.offsetLeft - (r.right - vw + 8)) + 'px';
+      r = panel.getBoundingClientRect();
+      if (r.left < 8) panel.style.left = (panel.offsetLeft + (8 - r.left)) + 'px';
+    }
     openPopover = { trigger: trigger, panel: panel, backdrop: backdrop, onClose: onClose };
     var f = panel.querySelector('button, [tabindex="0"]');
     if (f) f.focus();

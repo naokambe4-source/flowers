@@ -67,7 +67,7 @@ $beachLabels = ['kum' => 'Kum plaj', 'cakil' => 'Çakıl plaj', 'kum_cakil' => '
             </section>
 
             <section id="odalar" class="detail-section">
-                <div class="row-between"><h2 style="margin:0">Odalar ve fiyatlar</h2><?php if ($criteria): ?><span class="badge badge-teal"><?= e(tr_date_short($criteria->checkIn)) ?> – <?= e(tr_date_short($criteria->checkOut)) ?> · <?= $criteria->nights() ?> gece · <?= e($criteria->summary()) ?></span><?php endif; ?></div>
+                <div class="row-between"><h2 style="margin:0">Odalar ve fiyatlar</h2><?php if ($criteria): ?><span class="badge badge-teal" style="white-space:normal"><?= e(tr_date_short($criteria->checkIn)) ?> – <?= e(tr_date_short($criteria->checkOut)) ?> · <?= $criteria->nights() ?> gece · <?= e($criteria->summary()) ?></span><?php endif; ?></div>
                 <?php if (!$criteria): ?>
                     <div class="alert alert-info" style="margin-top:12px"><?= icon('calendar') ?><div>Oda fiyatlarını ve müsaitliği görmek için tarih ve konuk seçin.</div></div>
                 <?php endif; ?>

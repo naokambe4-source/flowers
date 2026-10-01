@@ -1,3 +1,12 @@
+# Depo içeriği
+
+| Proje | Klasör | Paket |
+|---|---|---|
+| **Kurumsal Konaklama ve Otel Rezervasyon Platformu** (PHP 8.3 + MySQL, cPanel) | [`kurumsal-konaklama/`](kurumsal-konaklama/) | `kurumsal-konaklama-1.0.0.zip` |
+| Derin Flowers — WordPress + WooCommerce teması | [`derin-flowers/`](derin-flowers/) | `derin-flowers.zip` |
+
+---
+
 # Derin Flowers — Premium WordPress + WooCommerce Teması
 
 İzmir'deki premium çiçek butiği için geliştirilmiş, tüm içerik ve tasarımı **WordPress yönetim panelinden** yönetilen tema.

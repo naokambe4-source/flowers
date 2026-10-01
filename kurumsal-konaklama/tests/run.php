@@ -484,8 +484,53 @@ $tests['Sayfa render (üye ve yönetim) — taşma riski olmayan HTML üretimi']
     }
     $exp = TestEnv::request('GET', '/yonetim/raporlar/disa-aktar', ['format' => 'csv', 'bas' => date('Y-01-01'), 'bit' => date('Y-12-31'), 'tarih' => 'created']);
     T::ok(str_contains($exp->headers()['Content-Type'] ?? '', 'text/csv'), 'rapor CSV dışa aktarım');
+    $roles = TestEnv::request('POST', '/yonetim/yetkiler', ['perm' => [2 => [1 => '1', 2 => '1', 3 => '1']]]);
+    T::eq(302, $roles->status(), 'yetki matrisi kaydedilir');
+    \App\Services\AuditService::log('test.diff', 'x', 1, ['a' => [1, 2], 'b' => 1], ['a' => [1, 3], 'b' => 1]);
+    T::ok(str_contains((string) App::db()->value("SELECT new_values FROM audit_logs WHERE action = 'test.diff'"), '"a"'), 'audit dizi farkı');
     TestEnv::actingAs('uye@test.local');
     T::eq(403, TestEnv::request('GET', '/yonetim/raporlar/disa-aktar')->status(), 'üye dışa aktaramaz');
+};
+
+$tests['Cron kuyruğu: süresi dolan teklifler, tamamlanan rezervasyonlar, başarısız iş tekrar denemesi'] = function () use ($db) {
+    $db->query("UPDATE offers SET valid_until = DATE_SUB(NOW(), INTERVAL 1 MINUTE) WHERE status = 'sent'");
+    $db->query("UPDATE bookings SET check_in = DATE_SUB(CURDATE(), INTERVAL 3 DAY), check_out = DATE_SUB(CURDATE(), INTERVAL 1 DAY) WHERE status = 'confirmed' ORDER BY id LIMIT 1");
+    \App\Services\QueueService::push('expire_offers');
+    \App\Services\QueueService::push('complete_bookings');
+    \App\Services\QueueService::push('send_email', ['to' => 'gecersiz', 'subject' => 'x', 'body' => 'y'], 0, 1);
+    $r = \App\Services\QueueService::work(10, 20);
+    T::eq(2, $r['done'], 'iki iş tamamlandı');
+    T::eq(1, $r['failed'], 'hatalı iş başarısız');
+    T::eq(0, (int) $db->value("SELECT COUNT(*) FROM offers WHERE status = 'sent' AND valid_until < NOW()"), 'süresi dolan teklif kalmadı');
+    T::ok((int) $db->value("SELECT COUNT(*) FROM bookings WHERE status = 'completed'") >= 1, 'çıkışı geçen rezervasyon tamamlandı');
+    $failed = (int) $db->value("SELECT id FROM jobs WHERE status = 'failed' ORDER BY id DESC LIMIT 1");
+    T::ok($failed > 0, 'başarısız iş kaydedildi');
+    \App\Services\QueueService::retry($failed);
+    T::eq('queued', $db->value('SELECT status FROM jobs WHERE id = ?', [$failed]), 'yeniden kuyruğa alındı');
+    TestEnv::logout();
+    T::eq(404, TestEnv::request('GET', '/cron/yanlis-anahtar-yanlis-anahtar-yanlis-anahtar')->status(), 'yanlış cron anahtarı 404');
+    T::eq(200, TestEnv::request('GET', '/cron/' . str_repeat('c', 40))->status(), 'doğru cron anahtarı çalışır');
+};
+
+$tests['Tüm PHP dosyaları sözdizimi kontrolü (php -l)'] = function () {
+    $files = [];
+    foreach (['app', 'bin', 'database', 'config'] as $dir) {
+        $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(APP_ROOT . '/' . $dir, FilesystemIterator::SKIP_DOTS));
+        foreach ($it as $f) {
+            if ($f->getExtension() === 'php') {
+                $files[] = $f->getPathname();
+            }
+        }
+    }
+    $files[] = APP_ROOT . '/index.php';
+    $bad = [];
+    foreach ($files as $f) {
+        exec(escapeshellarg(PHP_BINARY) . ' -l ' . escapeshellarg($f) . ' 2>&1', $out, $code);
+        if ($code !== 0) {
+            $bad[] = basename($f);
+        }
+    }
+    T::eq([], $bad, count($files) . ' dosya sözdizimi');
 };
 
 // ---------------------------------------------------------------- Çalıştır

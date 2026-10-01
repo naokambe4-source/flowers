@@ -25,7 +25,7 @@
             <?php if (!$hotel): ?><div class="alert alert-warning"><?= icon('alert') ?><div>Önce otel seçin.</div></div><?php else: ?>
             <p><strong><?= e($hotel['name']) ?></strong></p>
             <div class="form-grid">
-                <?= f_select('room_id', 'Oda (sistemde varsa)', $hotelRooms, $req['room_id'] ?? '', 'Listeden seçmeyeceğim') ?>
+                <?= f_select('room_id', 'Oda (sistemde varsa)', $hotelRooms, $offers[0]['room_id'] ?? ($req['room_id'] ?? ''), 'Listeden seçmeyeceğim') ?>
                 <?= f_input('room_name', 'Oda adı (listede yoksa)', '') ?>
                 <?= f_select('concept_id', 'Konsept', $concepts, $req['concept_id'] ?? '', 'Belirtilmemiş') ?>
                 <?= f_input('total', 'Vergiler dahil toplam (TL)', '', 'text', ['required' => true, 'inputmode' => 'decimal', 'placeholder' => '12.500,00']) ?>
@@ -33,8 +33,8 @@
                 <?= f_input('check_out', 'Çıkış', $req['check_out'], 'date', ['required' => true]) ?>
                 <?= f_input('valid_until', 'Teklif geçerlilik sonu', $validity, 'datetime-local', ['required' => true]) ?>
                 <div></div>
-                <?= f_textarea('payment_terms', 'Ödeme koşulları', $hotel['payment_policy'] ?? '', 3) ?>
-                <?= f_textarea('cancellation_terms', 'İptal koşulları', $hotel['cancellation_policy'] ?? '', 3) ?>
+                <?= f_textarea('payment_terms', 'Ödeme koşulları', $offers[0]['payment_terms'] ?? ($hotel['payment_policy'] ?? ''), 3) ?>
+                <?= f_textarea('cancellation_terms', 'İptal koşulları', $offers[0]['cancellation_terms'] ?? ($hotel['cancellation_policy'] ?? ''), 3) ?>
                 <?= f_textarea('note', 'Üyeye not', '', 2) ?>
             </div>
             <button class="btn" type="submit">TEKLİFİ GÖNDER</button>

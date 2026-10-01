@@ -36,7 +36,8 @@ final class AuditService
         $n = [];
         foreach ($new as $k => $v) {
             $before = $old[$k] ?? null;
-            if ((string) json_encode($before) !== (string) json_encode($v) && (string) $before !== (string) (is_scalar($v) ? $v : json_encode($v))) {
+            $norm = static fn ($x) => is_scalar($x) || $x === null ? (string) $x : (string) json_encode($x);
+            if ($norm($before) !== $norm($v)) {
                 $o[$k] = $before;
                 $n[$k] = $v;
             }

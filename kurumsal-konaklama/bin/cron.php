@@ -1,11 +1,9 @@
 <?php
 declare(strict_types=1);
 
-/**
- * cPanel cron: her 5 dakikada bir çalıştırın.
- *   */5 * * * * /usr/local/bin/php /home/KULLANICI/public_html/oteller/bin/cron.php >/dev/null 2>&1
- * Periyodik görevleri kuyruğa ekler ve iş kuyruğunu işler.
- */
+// cPanel cron: her 5 dakikada bir çalıştırın, örnek zamanlama ifadesi:
+//   "*/5 * * * *"  komut: /usr/local/bin/php /home/KULLANICI/public_html/oteller/bin/cron.php >/dev/null 2>&1
+// Periyodik görevleri kuyruğa ekler ve iş kuyruğunu işler.
 require __DIR__ . '/bootstrap.php';
 
 $lock = fopen(APP_ROOT . '/storage/tmp/cron.lock', 'c');
