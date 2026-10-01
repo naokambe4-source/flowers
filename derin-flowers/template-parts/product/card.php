@@ -26,6 +26,8 @@ if ( ! $product->is_in_stock() ) {
 	$classes[] = 'is-out';
 }
 $subtitle = get_post_meta( $product->get_id(), '_df_subtitle', true );
+// Vitrinde kırpılmamış görsel: kare/dikey fotoğraflar kesilmeden sığar.
+$img_size = ( ! empty( $args['variant'] ) && 'vitrin' === $args['variant'] && '4-5' !== df_opt( 'vit_ratio', '1-1' ) ) ? 'medium_large' : 'df-card';
 ?>
 <<?php echo esc_attr( $tag ); ?> <?php wc_product_class( $classes, $product ); ?>>
 	<div class="df-card__media">
@@ -34,7 +36,7 @@ $subtitle = get_post_meta( $product->get_id(), '_df_subtitle', true );
 			if ( $img_id ) {
 				echo wp_get_attachment_image(
 					$img_id,
-					'df-card',
+					$img_size,
 					false,
 					array(
 						'class'    => 'df-card__primary',
@@ -50,7 +52,7 @@ $subtitle = get_post_meta( $product->get_id(), '_df_subtitle', true );
 			if ( $hover ) {
 				echo wp_get_attachment_image(
 					$hover,
-					'df-card',
+					$img_size,
 					false,
 					array(
 						'class'    => 'df-card__secondary',

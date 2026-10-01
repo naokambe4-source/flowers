@@ -501,6 +501,7 @@ function df_options_schema() {
 								array( 'id' => 'badge', 'type' => 'textarea', 'label' => 'Köşe rozeti (ör. "SEÇİLİ ÜRÜNLERDE" Enter "%20")', 'rows' => 2, 'third' => true ),
 								array( 'id' => 'icon', 'type' => 'icon', 'label' => 'Başlık üstü ikon', 'third' => true ),
 								array( 'id' => 'font', 'type' => 'select', 'label' => 'Başlık yazı tipi', 'default' => 'sans', 'half' => true, 'options' => array( 'sans' => 'Kalın düz (GEÇMİŞ OLSUN tarzı)', 'serif' => 'Tırnaklı zarif (SÖZ / NİŞAN tarzı)' ) ),
+								array( 'id' => 'focus', 'type' => 'select', 'label' => 'Fotoğraf hizası (kesilen tarafı göstermek için)', 'default' => 'left', 'half' => true, 'options' => array( 'left' => 'Sola yasla (sol taraf görünür)', 'center' => 'Ortala', 'right' => 'Sağa yasla', 'fit' => 'Tamamını göster (kırpma yok)' ) ),
 								array( 'id' => 'size', 'type' => 'select', 'label' => 'Başlık boyutu', 'default' => 'm', 'half' => true, 'options' => array( 's' => 'Küçük (uzun başlıklar)', 'm' => 'Orta', 'l' => 'Büyük (kısa başlıklar)' ) ),
 								array( 'id' => 'bg', 'type' => 'color', 'label' => 'Zemin rengi', 'default' => '#F3E7E1', 'third' => true ),
 								array( 'id' => 'color', 'type' => 'color', 'label' => 'Yazı / buton rengi', 'default' => '#6F463C', 'third' => true ),
@@ -655,6 +656,7 @@ function df_options_schema() {
 						array( 'id' => 'vit_count', 'type' => 'select', 'label' => 'Ürün sayısı', 'default' => '12', 'third' => true, 'options' => array( '4' => '4', '8' => '8', '12' => '12', '16' => '16', '20' => '20' ) ),
 						array( 'id' => 'vit_link', 'type' => 'text', 'label' => 'Sağ bağlantı yazısı', 'default' => 'Tüm ürünleri gör', 'third' => true ),
 						array( 'id' => 'vit_promos_on', 'type' => 'toggle', 'label' => 'Ürünlerin arasına banner koy', 'default' => 1, 'third' => true ),
+						array( 'id' => 'vit_ratio', 'type' => 'select', 'label' => 'Ürün görsel oranı', 'default' => '1-1', 'third' => true, 'options' => array( '1-1' => 'Kare (1:1)', '4-5' => 'Dikey (4:5)', '3-4' => 'Uzun dikey (3:4)', 'fit' => 'Tamamını göster (kırpma yok)' ) ),
 						array( 'id' => 'card_view_style', 'type' => 'select', 'label' => '"İncele" düğmesi', 'default' => 'solid', 'third' => true, 'options' => array( 'solid' => 'Dolu', 'outline' => 'Çerçeveli (ince)' ) ),
 						array(
 							'id'          => 'vit_promos',

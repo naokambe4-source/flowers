@@ -57,7 +57,7 @@ $radius = absint( df_opt( 'ban_radius', 18 ) );
 					$ac    = sanitize_hex_color( $b['accent'] ) ? sanitize_hex_color( $b['accent'] ) : $fg;
 					$lines = preg_split( '/\r\n|\r|\n/', trim( (string) $b['title'] ) );
 					$last  = count( $lines ) > 1 ? array_pop( $lines ) : '';
-					$cls   = 'df-banner df-banner--card df-banner--' . ( 'serif' === $b['font'] ? 'serif' : 'sans' ) . ' df-banner--size-' . sanitize_key( $b['size'] ? $b['size'] : 'm' );
+					$cls   = 'df-banner df-banner--card df-banner--' . ( 'serif' === $b['font'] ? 'serif' : 'sans' ) . ' df-banner--size-' . sanitize_key( $b['size'] ? $b['size'] : 'm' ) . ' df-banner--focus-' . sanitize_key( ! empty( $b['focus'] ) ? $b['focus'] : 'left' );
 					?>
 					<<?php echo $tag . $href; // phpcs:ignore ?> class="<?php echo esc_attr( $cls ); ?>" style="--b-bg:<?php echo esc_attr( $bg ); ?>;--b-fg:<?php echo esc_attr( $fg ); ?>;--b-ac:<?php echo esc_attr( $ac ); ?>">
 						<span class="df-banner__media"<?php echo df_i( $k . '.image' ); // phpcs:ignore ?>>
