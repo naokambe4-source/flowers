@@ -571,6 +571,146 @@ $tests['Üyelik kayıt modu: başvuru / açık kayıt / kapalı'] = function () 
     SettingsService::set('membership.registration_mode', 'application');
 };
 
+$tests['Canlı veri: OpenStreetMap içe aktarma, LiteAPI birleştirme, canlı fiyat, rezervasyon ve iptal'] = function () use ($db, $crit, $user) {
+    $img = imagecreatetruecolor(800, 600);
+    imagefill($img, 0, 0, imagecolorallocate($img, 40, 120, 180));
+    ob_start();
+    imagejpeg($img, null, 85);
+    $jpeg = (string) ob_get_clean();
+    $calls = [];
+    $prebookPrice = 12500.5;
+    HttpClient::$fake = function ($m, $url, $h, $body) use (&$calls, $jpeg, &$prebookPrice) {
+        $calls[] = $m . ' ' . preg_replace('/\?.*/', '', $url);
+        $j = static fn ($d) => ['status' => 200, 'headers' => [], 'body' => json_encode($d)];
+        if (str_contains($url, 'overpass-api.de')) {
+            return $j(['elements' => [
+                ['type' => 'node', 'id' => 101, 'lat' => 36.8580, 'lon' => 30.8160, 'tags' => ['tourism' => 'hotel', 'name' => 'Lara Deniz Otel', 'stars' => '5', 'addr:street' => 'Güzeloba Cd.', 'phone' => '+90 242 000 00 00', 'website' => 'https://ornek-otel.example', 'internet_access' => 'wlan']],
+                ['type' => 'way', 'id' => 202, 'center' => ['lat' => 36.8600, 'lon' => 30.8200], 'tags' => ['tourism' => 'hotel', 'name' => 'Kumsal Pansiyon Otel']],
+                ['type' => 'node', 'id' => 303, 'lat' => 36.85, 'lon' => 30.81, 'tags' => ['tourism' => 'hotel']],
+            ]]);
+        }
+        if (str_contains($url, 'static.cdn.test')) {
+            return ['status' => 200, 'headers' => ['content-type' => 'image/jpeg'], 'body' => $jpeg];
+        }
+        if (str_contains($url, '/data/hotels')) {
+            T::eq('sand_test_key_1234567890', $h['X-API-Key'] ?? null, 'LiteAPI anahtarı başlıkta gönderilir');
+            return $j(['data' => [
+                ['id' => 'lp1', 'name' => 'Lara Deniz Hotel', 'latitude' => 36.8581, 'longitude' => 30.8161, 'stars' => 5, 'address' => 'Güzeloba', 'main_photo' => 'https://static.cdn.test/a.jpg'],
+                ['id' => 'lp2', 'name' => 'Lara Palmiye Resort', 'latitude' => 36.8550, 'longitude' => 30.8300, 'stars' => 4, 'address' => 'Kundu yolu', 'main_photo' => 'https://static.cdn.test/b.jpg'],
+            ]]);
+        }
+        if (str_contains($url, '/data/hotel')) {
+            return $j(['data' => ['name' => '', 'hotelDescription' => '<p>Denize sıfır <b>resort</b>.</p>', 'starRating' => 5, 'hotelImages' => [['urlHd' => 'https://static.cdn.test/a.jpg'], ['url' => 'https://static.cdn.test/c.jpg']], 'hotelFacilities' => ['Free WiFi', 'Outdoor swimming pool', 'Spa and wellness centre'], 'checkinCheckoutTimes' => ['checkin_start' => '14:00', 'checkout' => '12:00']]]);
+        }
+        if (str_contains($url, '/hotels/rates')) {
+            T::eq('TRY', $body['currency'] ?? null, 'fiyatlar TL istenir');
+            $offers = static fn ($hid) => [
+                ['offerId' => "OFF-$hid-A", 'supplier' => 'x', 'offerRetailRate' => ['amount' => 12500.5, 'currency' => 'TRY'], 'rates' => [['name' => 'Deluxe Deniz Manzaralı', 'boardType' => 'AI', 'boardName' => 'All Inclusive', 'retailRate' => ['total' => [['amount' => 12500.5, 'currency' => 'TRY']], 'taxesAndFees' => [['included' => true, 'amount' => 100]]], 'cancellationPolicies' => ['refundableTag' => 'RFN', 'cancelPolicyInfos' => [['cancelTime' => '2026-12-01 12:00:00']]]]]],
+                ['offerId' => "OFF-$hid-B", 'supplier' => 'x', 'offerRetailRate' => ['amount' => 9800, 'currency' => 'TRY'], 'rates' => [['name' => 'Standart Oda', 'boardType' => 'BB', 'boardName' => 'Breakfast', 'retailRate' => ['total' => [['amount' => 9800, 'currency' => 'TRY']], 'taxesAndFees' => [['included' => false, 'amount' => 300]]], 'cancellationPolicies' => ['refundableTag' => 'NRFN']]]],
+            ];
+            return $j(['data' => array_map(static fn ($hid) => ['hotelId' => $hid, 'roomTypes' => $offers($hid)], $body['hotelIds'])]);
+        }
+        if (str_contains($url, '/rates/prebook')) {
+            return $j(['data' => ['prebookId' => 'PB-1', 'hotelId' => 'lp1', 'price' => $prebookPrice, 'currency' => 'TRY']]);
+        }
+        if (str_contains($url, '/rates/book')) {
+            T::eq('PB-1', $body['prebookId'] ?? null, 'rezervasyon prebookId ile yapılır');
+            T::eq('ACC_CREDIT_CARD', $body['payment']['method'] ?? null, 'ödeme yöntemi ayardan gelir');
+            T::eq(1, $body['guests'][0]['occupancyNumber'] ?? null, 'oda başına sorumlu misafir');
+            return $j(['data' => ['bookingId' => 'BK-77', 'status' => 'CONFIRMED', 'hotelConfirmationCode' => 'HC-1', 'price' => 12500.5, 'currency' => 'TRY']]);
+        }
+        if (str_contains($url, '/bookings/BK-77') && $m === 'PUT') {
+            return $j(['data' => ['bookingId' => 'BK-77', 'status' => 'CANCELLED', 'cancellation_fee' => 0, 'refund_amount' => 12500.5]]);
+        }
+        return ['status' => 404, 'headers' => [], 'body' => '{"error":"not found"}'];
+    };
+    try {
+        $lara = (int) $db->value("SELECT id FROM regions WHERE slug = 'lara'");
+        $osm = (int) $db->value("SELECT id FROM providers WHERE code = 'osm'");
+        $lite = (int) $db->value("SELECT id FROM providers WHERE code = 'liteapi'");
+        \App\Services\RateLimiter::clear('provider:' . $osm);
+        \App\Providers\ProviderRegistry::reset();
+        $svc = new \App\Services\HotelImportService($db);
+        // 1) OpenStreetMap: anahtarsız gerçek katalog
+        $r = $svc->importRegion($osm, $lara, ['max_new' => 10]);
+        T::eq(2, $r['created'], 'adı olan 2 otel eklendi (adsız kayıt atlandı)');
+        $h = $db->fetch("SELECT * FROM hotels WHERE name = 'Lara Deniz Otel'");
+        T::ok($h['data_source'] === 'osm' && $h['booking_mode'] === 'request' && (int) $h['is_contracted'] === 0, 'OSM oteli teklif akışıyla, anlaşmasız eklenir');
+        T::ok(str_contains((string) $h['source_attribution'], 'OpenStreetMap'), 'ODbL kaynak gösterimi');
+        T::ok($h['phone'] === '+90 242 000 00 00' && $h['website'] === 'https://ornek-otel.example' && (int) $h['stars'] === 5, 'telefon, web, yıldız aktarıldı');
+        T::eq(0, (int) $db->value('SELECT COUNT(*) FROM hotel_images WHERE hotel_id = ?', [$h['id']]), 'OSM için uydurma görsel eklenmez');
+        T::eq(0, (int) $db->value('SELECT COUNT(*) FROM rates r JOIN rate_plans p ON p.id = r.rate_plan_id WHERE p.hotel_id = ?', [$h['id']]), 'OSM için uydurma fiyat eklenmez');
+        $r2 = $svc->importRegion($osm, $lara, ['max_new' => 10]);
+        T::ok($r2['created'] === 0 && $r2['updated'] === 2, 'tekrar içe aktarma kopya oluşturmaz');
+        T::throws(\App\Exceptions\UnsupportedCapabilityException::class, fn () => \App\Providers\ProviderRegistry::find($osm)->getRates(['node/101'], $crit(30, 2)), 'OSM fiyat vermez, başarılıymış gibi davranmaz');
+
+        // 2) LiteAPI: anahtar + etkinleştirme
+        $db->insert('provider_credentials', ['provider_id' => $lite, 'key_name' => 'api_key', 'value_encrypted' => \App\Core\Crypto::encrypt('sand_test_key_1234567890'), 'last4' => '7890']);
+        $db->update('providers', ['is_enabled' => 1, 'display_authorized' => 1, 'booking_authorized' => 1], ['id' => $lite]);
+        SettingsService::set('providers.live_search', '1');
+        \App\Providers\ProviderRegistry::reset();
+        T::ok(\App\Providers\ProviderRegistry::find($lite)->isSandbox(), 'sand_ anahtarı sandbox olarak tanınır');
+        $r3 = $svc->importRegion($lite, $lara, ['max_new' => 10, 'max_images' => 3]);
+        T::eq(1, $r3['merged'], 'aynı otel OSM kaydıyla birleştirildi');
+        T::eq(1, $r3['created'], 'yeni LiteAPI oteli eklendi');
+        T::ok($r3['images'] >= 3, 'fotoğraflar indirilip yeniden kodlandı');
+        $merged = $db->fetch('SELECT * FROM hotels WHERE id = ?', [$h['id']]);
+        T::ok($merged['data_source'] === 'liteapi' && $merged['booking_mode'] === 'instant' && str_contains((string) $merged['description'], 'Denize sıfır') && !str_contains((string) $merged['description'], '<b>'), 'birleşen otel zenginleşti, HTML temizlendi');
+        T::ok((bool) $db->value('SELECT 1 FROM provider_hotel_map WHERE provider_id = ? AND hotel_id = ? AND external_hotel_id = ?', [$lite, $h['id'], 'lp1']), 'LiteAPI eşlemesi kuruldu');
+        T::ok((int) $db->value("SELECT COUNT(*) FROM hotel_amenity ha JOIN amenities a ON a.id = ha.amenity_id WHERE ha.hotel_id = ? AND a.name IN ('Ücretsiz Wi-Fi','Açık havuz','Spa & Wellness')", [$h['id']]) === 3, 'olanaklar eşlendi');
+
+        // 3) Canlı fiyat: otel sayfası
+        $c = $crit(50, 3);
+        TestEnv::actingAs('uye@test.local');
+        $page = TestEnv::request('GET', '/oteller/' . $merged['slug'], $c->toQuery());
+        $body = $page->body();
+        T::ok(str_contains($body, 'Canlı oda fiyatları') && str_contains($body, 'OFF-lp1-A') && str_contains($body, 'OFF-lp1-B'), 'canlı teklifler listelenir');
+        T::ok(str_contains($body, 'TEST (sandbox)'), 'sandbox uyarısı gösterilir');
+        T::ok(str_contains($body, '9.800') && str_contains($body, '12.500,50'), 'fiyatlar sağlayıcıdan TL olarak');
+        TestEnv::logout();
+        $search = (new SearchService($db))->search($user('uye@test.local'), $c, ['ids' => [(int) $h['id']]], 'onerilen', 1);
+        T::eq('firm', $search['quotes'][(int) $h['id']]->kind ?? null, 'rezervasyon yetkili sağlayıcı fiyatı kesin fiyattır');
+
+        // 4) Seçilen (pahalı) teklifle rezervasyon → prebook → book
+        $u = $user('uye@test.local');
+        $bs = new BookingService($db);
+        $draft = $bs->startDraft($u, (int) $h['id'], 0, null, $c, null, 'idem-lite-1', 'OFF-lp1-A');
+        T::eq(1250050, (int) $draft['total_minor'], 'seçilen teklif korunur (en ucuza sessizce geçilmez)');
+        T::eq('provider', $draft['source'], 'kaynak sağlayıcı');
+        $bs->saveGuests($draft, ['misafir' => [['ad' => 'Mehmet', 'soyad' => 'Üye']], 'iletisim_telefon' => '05551112233', 'iletisim_eposta' => 'uye@test.local']);
+        $draft = $db->fetch('SELECT * FROM bookings WHERE id = ?', [$draft['id']]);
+        $b = $bs->confirm($draft, $u, $draft['quote_hash']);
+        T::eq('confirmed', $b['status'], 'sağlayıcı rezervasyonu onaylandı');
+        T::eq('BK-77', $b['provider_reference'], 'sağlayıcı rezervasyon numarası saklandı');
+        T::ok(in_array('POST https://book.liteapi.travel/v3.0/rates/prebook', $calls, true), 'rezervasyon öncesi fiyat yeniden doğrulandı');
+        // Fiyat değişirse rezervasyon yapılmaz
+        $prebookPrice = 13100.0;
+        $d2 = $bs->startDraft($u, (int) $h['id'], 0, null, $c, null, 'idem-lite-2', 'OFF-lp1-A');
+        $bs->saveGuests($d2, ['misafir' => [['ad' => 'Mehmet', 'soyad' => 'Üye']], 'iletisim_telefon' => '05551112233', 'iletisim_eposta' => 'uye@test.local']);
+        $d2 = $db->fetch('SELECT * FROM bookings WHERE id = ?', [$d2['id']]);
+        T::throws(DomainException::class, fn () => $bs->confirm($d2, $u, $d2['quote_hash']), 'sağlayıcı fiyatı değişince rezervasyon durdurulur');
+        T::eq('draft', $db->value('SELECT status FROM bookings WHERE id = ?', [$d2['id']]), 'taslak onaylanmadı');
+        // İptal sağlayıcıya iletilir
+        $bs->cancelByUser($b, $u, 'test');
+        T::eq('cancelled', $db->value('SELECT status FROM bookings WHERE id = ?', [$b['id']]), 'iptal edildi');
+        T::ok(in_array('PUT https://book.liteapi.travel/v3.0/bookings/BK-77', $calls, true), 'iptal LiteAPI\'ye iletildi');
+
+        // 5) Yönetim ekranı ve kaynak kaldırma
+        TestEnv::actingAs('admin@test.local');
+        $adm = TestEnv::request('GET', '/yonetim/canli-veri');
+        T::ok($adm->status() === 200 && str_contains($adm->body(), '••••7890') && !str_contains($adm->body(), 'sand_test_key'), 'yönetim ekranı anahtarı maskeler');
+        TestEnv::logout();
+        $rm = $svc->removeSource('osm');
+        T::eq(1, $rm['deleted'], 'yalnız OSM kaynaklı (birleşmemiş) otel silindi');
+        T::ok((bool) $db->value('SELECT 1 FROM hotels WHERE id = ?', [$h['id']]), 'rezervasyon geçmişi olan / LiteAPI\'ye geçen otel korunur');
+    } finally {
+        HttpClient::$fake = null;
+        SettingsService::set('providers.live_search', '0');
+        $db->update('providers', ['is_enabled' => 0, 'display_authorized' => 0, 'booking_authorized' => 0], ['code' => 'liteapi']);
+        \App\Providers\ProviderRegistry::reset();
+    }
+};
+
 $tests['Sayfa render (üye ve yönetim) — taşma riski olmayan HTML üretimi'] = function () use ($fx, $crit) {
     TestEnv::actingAs('uye@test.local');
     $c = $crit(15, 2);

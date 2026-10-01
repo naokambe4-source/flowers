@@ -45,7 +45,8 @@
                 <button class="btn btn-danger btn-lg" type="submit"><?= icon('check-circle') ?> CANLI MODA GEÇ</button>
             </form>
         <?php else: ?>
-            <div class="alert alert-success"><?= icon('check-circle') ?><div>Sistem canlı modda. Sistemde demo kayıt yok; yalnız sizin girdiğiniz <?= (int) $realHotels ?> otel listelenir.</div></div>
+            <div class="alert alert-success"><?= icon('check-circle') ?><div>Sistem canlı modda. Sistemde demo kayıt yok; yalnız gerçek <?= (int) $realHotels ?> otel listelenir.</div></div>
+            <p class="small">Gerçek otelleri ücretsiz kaynaklardan (OpenStreetMap, LiteAPI) içe aktarmak ve canlı fiyatı açmak için: <a href="<?= e(url('/yonetim/canli-veri')) ?>">Canlı Otel Verisi</a></p>
         <?php endif; ?>
     </div>
 </div>

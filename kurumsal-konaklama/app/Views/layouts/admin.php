@@ -37,6 +37,7 @@ $menu = [
         ['/yonetim/basvurular', 'Başvurular', 'user', 'applications.manage', 'applications'],
     ],
     'Sistem' => [
+        ['/yonetim/canli-veri', 'Canlı Otel Verisi', 'globe', 'providers.manage'],
         ['/yonetim/api', 'API Yönetimi', 'api', 'providers.manage'],
         ['/yonetim/bildirimler', 'Bildirimler', 'bell', 'notifications.manage'],
         ['/yonetim/raporlar', 'Raporlar', 'chart', 'reports.view'],

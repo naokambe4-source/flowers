@@ -116,6 +116,8 @@ final class HotelController extends Controller
         $quotesByRoom = [];
         $best = null;
         $notices = [];
+        $providerOffers = [];
+        $providerInfo = null;
         if ($criteria) {
             $prs = new ProviderRateService($db);
             $prs->refresh([$hotelId], $criteria);
@@ -130,8 +132,20 @@ final class HotelController extends Controller
                 $quotesByRoom[(int) $q->roomId][] = $q;
             }
             $best = $pricing->bestForHotel($ctx, $profile, $hotelId);
-            if ($best->kind === 'target' && $best->roomId === null) {
+            $providerOffers = $pricing->providerOffers($ctx, $profile, $hotelId, 12);
+            if ($best->kind === 'target' && $best->roomId === null && !($best->source === 'provider' && $providerOffers)) {
                 $quotesByRoom[0][] = $best;
+            }
+            if ($providerOffers) {
+                $pid = (int) $providerOffers[0]->providerId;
+                $prow = $ctx->providers[$pid] ?? null;
+                $sandbox = false;
+                try {
+                    $adapter = \App\Providers\ProviderRegistry::find($pid);
+                    $sandbox = $adapter instanceof \App\Providers\Adapters\LiteApiProvider && $adapter->isSandbox();
+                } catch (\Throwable) {
+                }
+                $providerInfo = ['name' => (string) ($prow['name'] ?? 'Sağlayıcı'), 'sandbox' => $sandbox, 'captured_at' => $providerOffers[0]->breakdown['reference_captured_at'] ?? null, 'valid_until' => $providerOffers[0]->breakdown['reference_valid_until'] ?? null];
             }
         }
         $isFav = (bool) $db->value('SELECT 1 FROM favorites WHERE user_id = ? AND hotel_id = ?', [$user['id'], $hotelId]);
@@ -145,6 +159,8 @@ final class HotelController extends Controller
             'roomAmenities' => $repo->roomAmenities($roomIds),
             'criteria' => $criteria,
             'quotesByRoom' => $quotesByRoom,
+            'providerOffers' => $providerOffers,
+            'providerInfo' => $providerInfo,
             'best' => $best,
             'notices' => $notices,
             'isFav' => $isFav,

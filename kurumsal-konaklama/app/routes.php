@@ -189,6 +189,12 @@ return static function (Router $r): void {
 
         $r->get('/ayarlar', [Admin\SettingsController::class, 'index'], ['can:settings.manage'], 'admin.settings');
         $r->post('/ayarlar', [Admin\SettingsController::class, 'save'], ['can:settings.manage']);
+        $r->get('/canli-veri', [Admin\LiveDataController::class, 'index'], ['can:providers.manage'], 'admin.live');
+        $r->post('/canli-veri/liteapi', [Admin\LiveDataController::class, 'saveLiteApi'], ['can:providers.manage']);
+        $r->post('/canli-veri/test/{code:osm|liteapi}', [Admin\LiveDataController::class, 'test'], ['can:providers.manage']);
+        $r->post('/canli-veri/ice-aktar', [Admin\LiveDataController::class, 'import'], ['can:providers.manage']);
+        $r->post('/canli-veri/kaldir', [Admin\LiveDataController::class, 'remove'], ['can:providers.manage']);
+        $r->post('/canli-veri/canli-arama', [Admin\LiveDataController::class, 'liveSearch'], ['can:providers.manage']);
         $r->get('/demo-mod', [Admin\DemoController::class, 'index'], ['can:settings.manage'], 'admin.demo');
         $r->post('/demo-mod/yukle', [Admin\DemoController::class, 'install'], ['can:settings.manage']);
         $r->post('/demo-mod/kaldir', [Admin\DemoController::class, 'remove'], ['can:settings.manage']);

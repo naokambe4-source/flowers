@@ -41,6 +41,14 @@ Sistemi gerçek otelleri girmeden denemek için **Yönetim → Demo / Canlı Mod
 - Demo açıkken üye ve yönetim ekranlarının üstünde **DEMO MODU** şeridi görünür; demo görselleri “Temsili görsel” etiketiyle gösterilir.
 - **Canlıya geçiş:** Demo / Canlı Mod sayfasında kutuya `CANLI` yazıp *Canlı moda geç* (veya `php bin/demo.php kaldir`). Yalnız demo kayıtları silinir: demo oteller, odaları, fiyatları, kontenjanları, görselleri, demo kuralı ve demo otellere yapılmış deneme rezervasyon/teklifleri. Sizin girdiğiniz oteller, kurumlar, üyeler ve ayarlar korunur.
 
+## Gerçek otellerle canlı kullanım (demo yerine)
+**Yönetim → Canlı Otel Verisi**:
+1. (Varsa) Demo / Canlı Mod sayfasından demo verileri kaldırın.
+2. **OpenStreetMap** — anahtar gerekmez. Kaynak: OpenStreetMap, bölgeleri işaretleyin → *İçe aktar*. Gerçek oteller (ad, yıldız, konum, telefon, web) eklenir; fiyat yoktur, üyeler teklif ister.
+3. **LiteAPI** — https://dashboard.liteapi.travel adresinden ücretsiz hesap açın, API anahtarını yapıştırıp *Kaydet ve bağlan* deyin (bağlantı test edilir, canlı fiyat açılır). Ardından Kaynak: LiteAPI ile bölgeleri içe aktarın: fotoğraflar, açıklamalar ve olanaklar gelir; otel sayfasında canlı oda fiyatları ve anında rezervasyon çalışır. Aynı otel OpenStreetMap’ten de geldiyse kayıtlar birleşir.
+4. Paylaşımlı hostingte bir istek ~20 sn’de durur; kalan bölgeler için işlemi tekrar başlatın (eklenen oteller tekrar eklenmez). SSH varsa: `php bin/import-hotels.php osm all`, `php bin/import-hotels.php liteapi all`.
+5. Sunucunun dışarıya HTTPS bağlantısı (cURL) açık olmalıdır: `overpass-api.de`, `api.liteapi.travel`, `book.liteapi.travel` ve LiteAPI görsel adresleri.
+
 ## Üyelik kaydı modu
 **Yönetim → Sistem Ayarları → Üyelik** bölümünden seçilir:
 | Mod | Davranış |

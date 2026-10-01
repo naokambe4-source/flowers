@@ -317,3 +317,10 @@ Yetkiler yönetimde **Yetkiler** ekranından değiştirilebilir; her istekte sun
 - **Üyelik kayıt modu** — ayar `membership.registration_mode` (`application` | `open` | `closed`), `membership.allowed_domains`, `membership.require_institution`. `GET/POST /kayit-ol` (`Auth\RegisterController`, misafir) yalnız `open` modunda çalışır; hesap Standart Üye rolüyle aktif açılır, oturum hemen başlatılır, hız sınırı ve bot tuzağı uygulanır. `/erisim-talebi` yalnız `application` modunda açıktır.
 - **Açılır paneller** (takvim, konuk seçici) açıldığında `document.body`’ye taşınır ve `position: fixed` ile tetikleyiciye göre konumlanır (altta yer yoksa üstte; ikisi de yetmezse kaydırılabilir). Mobilde (<720 px) alttan açılan sayfa + arka plan örtüsü + sayfa kaydırma kilidi.
 - **Şifreleme** — sodium yoksa OpenSSL AES-256-GCM (`v2:` önekli); okuma önekten anlaşılır.
+
+## Sürüm 1.2.0 eklemeleri — canlı otel verisi
+- `App\Providers\Contracts\HotelCatalogInterface` (listHotels, attribution): içe aktarılabilir gerçek otel kataloğu.
+- `OsmOverpassProvider` (anahtarsız; yalnız içerik) ve `LiteApiProvider` (içerik + fiyat + prebook + rezervasyon + iptal).
+- `App\Services\HotelImportService`: bölge merkezi + yarıçap ile kataloğu çeker; `provider_hotel_map` ile tekrar etmeyen eşleme, OSM↔LiteAPI birleştirme (ad benzerliği + 300 m), olanak eşleme, görsel indirme (ImageService hattından geçer). `hotels.data_source` (manual/osm/liteapi), `source_attribution`, `website`, `phone`, `last_synced_at`.
+- `PricingService::providerOffers()` bir otelin tüm geçerli sağlayıcı tekliflerini döndürür; rezervasyon taslağı seçilen teklifin `external_rate_id` değerini taşır ve yeniden fiyatlamada yalnız o teklifi kullanır.
+- Yönetim: `GET /yonetim/canli-veri`, `POST /yonetim/canli-veri/{liteapi|ice-aktar|kaldir|canli-arama|test/{osm|liteapi}}` (`providers.manage`). CLI: `php bin/import-hotels.php`.

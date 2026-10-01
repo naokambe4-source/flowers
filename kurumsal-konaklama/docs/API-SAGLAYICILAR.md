@@ -24,6 +24,8 @@ Her sağlayıcı için iki ayrı onay vardır:
 | ManualHotelProvider | Yerel arama, içerik, müsaitlik, fiyat, yeniden doğrulama, yerel rezervasyon | Tam çalışır, testli |
 | StayApiProvider | Destinasyon, tarihli arama, fiyat (arama sonucundan), içerik, sağlık kontrolü. **Rezervasyon YOK** | Kod tamam; **canlı API ile test edilmedi** (aşağıya bakın) |
 | HotelbedsProvider | Tüm yetenekler (APItude Booking + Content API, X-Signature) | Kod tamam; **canlı test yapılmadı**, sözleşme + sertifikasyon gerektirir |
+| **OsmOverpassProvider** | Gerçek otel kataloğu (ad, yıldız, konum, adres, telefon, web), sağlık kontrolü. **Fiyat/müsaitlik YOK** | Kod tamam, sahte yanıtlarla testli; **canlı Overpass sunucusuyla bu ortamdan denenemedi** (ağ erişimi yok) |
+| **LiteApiProvider** | Katalog + içerik + fotoğraf, canlı fiyat (`/hotels/rates`), prebook ile yeniden doğrulama, rezervasyon, sorgu, iptal, sağlık | Kod tamam, sahte yanıtlarla uçtan uca testli; **canlı LiteAPI ile bu ortamdan denenemedi** |
 | ExpediaRapidProvider | Destinasyon, içerik, müsaitlik, fiyat, price check; ödeme tipi tanımlanırsa rezervasyon/sorgu/iptal | Kod tamam; **canlı test yapılmadı**, EPS sözleşmesi gerektirir |
 
 ### StayAPI notları
@@ -34,6 +36,20 @@ Her sağlayıcı için iki ayrı onay vardır:
 
 ### Antalya destinasyon eşleştirme
 API Yönetimi → sağlayıcı → *Antalya bölge eşleştirme*: arama yapıp her bölge için doğru sonucu seçin. Türkiye dışı (ör. aynı isimli başka ülke/şehir) sonuçlar uyarıyla gösterilir ve **ek onay olmadan kabul edilmez**; koordinat varsa bölge merkezine uzaklık gösterilir. Otel eşleştirme aynı sayfadan yapılır (dış otel kimliği).
+
+## Ücretsiz canlı otel verisi (Yönetim → Canlı Otel Verisi)
+
+### OpenStreetMap (anahtarsız)
+- Overpass API (`https://overpass-api.de/api/interpreter`, yönetimden değiştirilebilir) ile her bölgenin merkez koordinatı çevresindeki `tourism=hotel` kayıtları alınır (üst bölgeler 9 km, alt bölgeler 5 km).
+- Aktarılan alanlar: ad, yıldız (`stars`), konum, adres, telefon, web sitesi, Wi-Fi/havuz/erişilebilirlik etiketleri. **Fiyat, müsaitlik ve fotoğraf yoktur**; bu oteller `booking_mode = request` ile “Teklif iste” akışında çalışır, uydurma fiyat veya görsel eklenmez. Kartta “Temsili bölge görseli” etiketiyle bölge illüstrasyonu gösterilir.
+- Lisans: ODbL. Otel sayfasında “© OpenStreetMap katkıcıları” kaynak gösterimi otomatik yer alır. Ortak Overpass sunucusu sınırlı kapasitelidir: içe aktarma bölgeler arasında bekleyerek yapılır, sık tekrarlanmamalıdır.
+
+### LiteAPI (ücretsiz hesap)
+- Hesap: https://dashboard.liteapi.travel → API anahtarı. `sand_` ile başlayan **sandbox** anahtarı gerçek otel içeriği ve **test** fiyatları döndürür; sandbox rezervasyonları gerçek değildir (otel sayfasında uyarı gösterilir). Canlı anahtar ile fiyatlar gerçek, rezervasyonlar bağlayıcıdır; ödeme yöntemi (`payment_method`, varsayılan `ACC_CREDIT_CARD`) LiteAPI hesabınızdaki tanıma göre API Yönetimi’nden ayarlanmalıdır.
+- Uç noktalar (resmî `liteapi-node-sdk` 4.3.2 kaynağıyla doğrulandı): `GET /data/hotels`, `GET /data/hotel`, `POST /hotels/rates`, `POST book…/rates/prebook`, `POST book…/rates/book`, `GET|PUT book…/bookings/{id}`; kimlik doğrulama `X-API-Key`.
+- Akış: arama/otel sayfasında `hotels/rates` (TL, `guestNationality=TR`) → her oda teklifi `reference_prices`’a geçerlilik süresiyle yazılır → üye bir teklifi seçer (seçilen `offerId` rezervasyon boyunca korunur) → onayda `prebook` ile fiyat yeniden doğrulanır, **fiyat değiştiyse rezervasyon durdurulur** → `book` → sağlayıcı rezervasyon numarası saklanır → iptal `PUT /bookings/{id}` ile iletilir. Rezervasyon ve iptal istekleri tekrar denenmez (mükerrer işlem riskine karşı).
+- Üye indirimi sağlayıcı fiyatına varsayılan olarak uygulanmaz (`apply_member_discount=false`); sağlayıcı fiyatı kurum indirimiyle düşürülürse fark platformun zararı olur.
+- LiteAPI ile içe aktarılan otel, daha önce OpenStreetMap’ten gelen aynı otelle (benzer ad + 300 m) otomatik birleştirilir; fotoğraflar indirilip doğrulanır ve yeniden kodlanarak özel depoda saklanır.
 
 ## Yeni sağlayıcı eklemek
 1. `app/Providers/Adapters/YeniProvider.php` → `AbstractProvider`’dan türetin, `credentialFields()` ve `capabilities()` tanımlayın, desteklenen metotları uygulayın.

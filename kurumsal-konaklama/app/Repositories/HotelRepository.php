@@ -71,7 +71,7 @@ final class HotelRepository
         }
         $sql = 'SELECT h.id, h.name, h.slug, h.stars, h.district, h.region_id, h.latitude, h.longitude, h.short_description,
                        h.cover_image_id, h.is_demo, h.booking_mode, h.is_contracted, h.is_featured, h.featured_sort, h.sea_distance_m,
-                       r.name AS region_name, c.name AS concept_name, c.code AS concept_code
+                       h.data_source, r.name AS region_name, r.illustration AS region_illustration, c.name AS concept_name, c.code AS concept_code
                 FROM hotels h LEFT JOIN regions r ON r.id = h.region_id LEFT JOIN concepts c ON c.id = h.concept_id
                 WHERE ' . implode(' AND ', $where) . ' ORDER BY h.is_featured DESC, h.featured_sort, h.name LIMIT 2000';
         return $this->db->fetchAll($sql, $p);
@@ -105,7 +105,7 @@ final class HotelRepository
     public function findPublishedBySlug(string $slug): ?array
     {
         return $this->db->fetch(
-            "SELECT h.*, r.name AS region_name, c.name AS concept_name FROM hotels h
+            "SELECT h.*, r.name AS region_name, r.illustration AS region_illustration, c.name AS concept_name FROM hotels h
              LEFT JOIN regions r ON r.id = h.region_id LEFT JOIN concepts c ON c.id = h.concept_id
              WHERE h.slug = ? AND h.status = 'published'",
             [$slug],
@@ -167,7 +167,7 @@ final class HotelRepository
     public function featured(int $limit = 8): array
     {
         return $this->db->fetchAll(
-            "SELECT h.id, h.name, h.slug, h.stars, h.district, h.short_description, h.cover_image_id, h.is_demo, r.name AS region_name, c.name AS concept_name
+            "SELECT h.id, h.name, h.slug, h.stars, h.district, h.short_description, h.cover_image_id, h.is_demo, h.data_source, r.name AS region_name, r.illustration AS region_illustration, c.name AS concept_name
              FROM hotels h LEFT JOIN regions r ON r.id = h.region_id LEFT JOIN concepts c ON c.id = h.concept_id
              WHERE h.status = 'published' AND h.is_featured = 1 ORDER BY h.featured_sort, h.name LIMIT " . max(1, $limit),
         );

@@ -1,6 +1,6 @@
 # Test Sonuçları
 
-Test tarihi: 1 Ekim 2026 (sürüm 1.1.0) · Ortam: PHP 8.3.6, MariaDB 10.11, Apache 2.4.58 + mod_php, Chromium 141 (Playwright ile).
+Test tarihi: 1 Ekim 2026 (sürüm 1.2.0) · Ortam: PHP 8.3.6, MariaDB 10.11, Apache 2.4.58 + mod_php, Chromium 141 (Playwright ile).
 
 ## 1. Otomatik test paketi (`php tests/run.php`)
 
@@ -85,7 +85,22 @@ Testler sırasında bulunup düzeltilen hatalar: hero yığın bağlamı nedeniy
 | Masaüstü (1366 px) takvim | Panel `position: fixed` ile body’ye taşındı; üst öğelerin `overflow` kesmesi yok; ekrana sığmıyorsa üstte açılıyor veya sayfa kaydırılıyor |
 | Yatay taşma: 10 üye/yönetim sayfası + giriş/başvuru × 360/390/768/1024/1440 px | Taşma yok |
 
+## 4c. Sürüm 1.2.0 — canlı otel verisi
+Bu geliştirme ortamının dış ağ erişimi kapalı olduğundan (`overpass-api.de`, `api.liteapi.travel` erişilemez) OpenStreetMap ve LiteAPI **canlı servislerle denenemedi**. LiteAPI uç noktaları ve alan adları resmî `liteapi-node-sdk` 4.3.2 paketinin kaynak kodu ve README’si ile doğrulandı; OpenStreetMap için standart Overpass QL kullanıldı. Doğrulama, gerçek yanıt biçimini taklit eden sahte HTTP yanıtlarıyla yapıldı:
+
+| Senaryo | Sonuç |
+|---|---|
+| OSM içe aktarma: adsız kayıt atlanır, yıldız/telefon/web/adres aktarılır, uydurma fiyat ve görsel eklenmez, tekrar içe aktarma kopya üretmez | Geçti |
+| OSM sağlayıcısından fiyat istenmesi | `UnsupportedCapabilityException` (başarılı gibi davranmaz) |
+| LiteAPI: anahtar başlıkta, sandbox tanıma, aynı otelin OSM kaydıyla birleşmesi, HTML temizleme, olanak eşleme, fotoğraf indirme + yeniden kodlama | Geçti |
+| Otel sayfasında canlı teklifler, sandbox uyarısı, TL fiyatlar; aramada kesin fiyat | Geçti |
+| Pahalı teklif seçildiğinde rezervasyonun o teklifle kalması; prebook → book; sağlayıcı rezervasyon no | Geçti |
+| Prebook fiyatı değişince rezervasyonun durdurulması | Geçti (taslak onaylanmadı) |
+| İptalin LiteAPI’ye iletilmesi; yönetim ekranında anahtar maskeleme; kaynak kaldırma | Geçti |
+| Tarayıcı (1366 px ve 390 px): sonuç listesi, canlı teklifler, temsili bölge görseli, yönetim ekranı; 360–1440 px yatay taşma | Taşma yok |
+
 ## 5. Yapılamayan / doğrulanamayan testler (açıkça)
+- OpenStreetMap Overpass ve LiteAPI ile **gerçek ağ üzerinden** içe aktarma, canlı fiyat ve sandbox rezervasyonu (ağ erişimi yok). Kurulumdan sonra Yönetim → Canlı Otel Verisi → *Bağlantıyı test et* ile ilk kontrol yapılmalıdır.
 
 - **Gerçek API testi yapılmadı.** StayAPI, Hotelbeds ve Expedia Rapid için geçerli anahtar bulunmuyor ve geliştirme ortamının ağ politikası bu servislere erişimi engelliyor. Adaptörler sahte HTTP yanıtlarıyla (başarı, 503, önbellek) test edildi; canlı yanıt şemaları doğrulanmadı. StayAPI dokümantasyonu doğrudan açılamadı (bkz. `API-SAGLAYICILAR.md`).
 - **Gerçek SMTP ile e-posta gönderimi test edilmedi** (sunucu yok). Kuyruk, şablon ve hata/tekrar mekanizması test edildi.

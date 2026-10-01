@@ -5,6 +5,8 @@ $cq = $criteria ? $criteria->toQuery() : [];
 $photos = $images;
 $allQuotes = [];
 foreach ($quotesByRoom as $list) { foreach ($list as $q) { $allQuotes[] = $q; } }
+$providerOffers = $providerOffers ?? [];
+foreach ($providerOffers as $q) { $allQuotes[] = $q; }
 $selectable = array_values(array_filter($allQuotes, static fn ($q) => in_array($q->kind, ['firm', 'target'], true)));
 usort($selectable, static fn ($a, $b) => [$a->kind === 'firm' ? 0 : 1, $a->total] <=> [$b->kind === 'firm' ? 0 : 1, $b->total]);
 $defaultSel = $selectable[0] ?? null;
@@ -26,6 +28,8 @@ $beachLabels = ['kum' => 'Kum plaj', 'cakil' => 'Çakıl plaj', 'kum_cakil' => '
         <?php endforeach; ?>
         <?php foreach (array_slice($photos, 5) as $img): ?><button type="button" hidden data-full="<?= e(url('/medya/otel/' . $img['id'] . '/large')) ?>" data-caption="<?= e($img['caption'] ?: $h['name']) ?>"></button><?php endforeach; ?>
     </div>
+    <?php elseif (($h['data_source'] ?? 'manual') !== 'manual' && !empty($h['region_illustration'])): ?>
+        <div class="hotel-illustration"><img src="<?= e(asset_url('img/illustrations/' . $h['region_illustration'] . '.svg')) ?>" alt=""><span class="img-note">Temsili bölge görseli — bu otelin fotoğrafı henüz eklenmedi</span></div>
     <?php else: ?>
         <div class="empty" style="padding:28px"><?= icon('image', 'icon-l') ?><h3>Bu otel için henüz fotoğraf eklenmedi</h3><p>Yanıltıcı olmaması için başka tesislere ait görseller kullanılmaz.</p></div>
     <?php endif; ?>
@@ -72,7 +76,46 @@ $beachLabels = ['kum' => 'Kum plaj', 'cakil' => 'Çakıl plaj', 'kum_cakil' => '
                     <div class="alert alert-info" style="margin-top:12px"><?= icon('calendar') ?><div>Oda fiyatlarını ve müsaitliği görmek için tarih ve konuk seçin.</div></div>
                 <?php endif; ?>
                 <div style="margin:14px 0"><?= App\Core\View::partial('partials/search_form', ['regions' => $regions, 'criteria' => $criteria, 'regionId' => 0, 'compact' => true, 'hideRegion' => true, 'action' => url('/oteller/' . $h['slug']), 'submitLabel' => 'FİYATLARI GÖSTER']) ?></div>
-                <?php if (!$rooms): ?><div class="empty"><?= icon('bed', 'icon-l') ?><h3>Oda bilgisi henüz eklenmedi</h3><p>Bu otel için teklif isteyebilirsiniz.</p><a class="btn" href="<?= e(url('/teklif-iste', $offerQuery(null, null))) ?>">TEKLİF İSTE</a></div><?php endif; ?>
+                <?php if ($providerOffers): ?>
+                    <article class="room-card live-offers">
+                        <div class="room-info">
+                            <h3><?= icon('globe') ?> Canlı oda fiyatları</h3>
+                            <p class="muted small" style="margin:4px 0 0"><?= e($providerInfo['name'] ?? '') ?> üzerinden<?= !empty($providerInfo['captured_at']) ? ' ' . e(tr_datetime($providerInfo['captured_at'])) . ' itibarıyla' : '' ?> alındı<?= !empty($providerInfo['valid_until']) ? '; ' . e(substr((string) $providerInfo['valid_until'], 11, 5)) . '’e kadar geçerli' : '' ?>. Rezervasyon öncesi fiyat sağlayıcıda yeniden doğrulanır.</p>
+                            <?php if (!empty($providerInfo['sandbox'])): ?><div class="alert alert-warning" style="margin:10px 0 0"><?= icon('alert') ?><div><strong>TEST (sandbox) bağlantısı:</strong> Fiyatlar test amaçlıdır ve yapılan rezervasyonlar gerçek değildir. Canlı kullanım için yönetimden canlı API anahtarı girilmelidir.</div></div><?php endif; ?>
+                        </div>
+                        <?php foreach ($providerOffers as $q): $fid = $formIdFor($q); $ref = (string) ($q->breakdown['external_rate_id'] ?? ''); ?>
+                            <div class="rate-row">
+                                <div>
+                                    <strong><?= e($q->roomName ?: 'Oda') ?></strong>
+                                    <?php if ($q->conceptName): ?><div class="muted small"><?= e($q->conceptName) ?></div><?php endif; ?>
+                                    <?php if ($q->kind === 'firm'): ?><span class="badge badge-success" style="margin-top:6px"><?= icon('check', 'icon-s') ?> Anında onay</span><?php else: ?><span class="badge badge-teal" style="margin-top:6px">Onaya bağlı hedef teklif</span><?php endif; ?>
+                                    <?php if (!$q->taxIncluded): ?><p class="muted small" style="margin:6px 0 0">Bazı vergi/ücretler otelde ödenir.</p><?php endif; ?>
+                                </div>
+                                <div style="display:flex;flex-direction:column;gap:4px"><?= App\Core\View::partial('partials/price_block', ['q' => $q]) ?></div>
+                                <div class="stack-s">
+                                    <?php if ($q->kind === 'firm'): ?>
+                                        <label class="check" style="min-height:auto;padding:0"><input type="radio" name="secili_fiyat" value="<?= e($fid) ?>" data-form="<?= e($fid) ?>" data-room="<?= e($q->roomName ?: 'Oda') ?>" data-total="<?= e(money($q->total, $q->currency)) ?>" data-note="<?= e(($q->conceptName ?: '') . ' · ' . $q->cancellationSummary) ?>" data-action-label="ODAYI SEÇ"<?= $defaultSel === $q ? ' checked' : '' ?>> Bu seçeneği işaretle</label>
+                                        <form id="<?= e($fid) ?>" method="post" action="<?= e(url('/rezervasyon/baslat')) ?>">
+                                            <?= csrf_field() ?>
+                                            <input type="hidden" name="otel" value="<?= (int) $h['id'] ?>"><input type="hidden" name="oda_tipi" value="0"><input type="hidden" name="plan" value="0"><input type="hidden" name="teklif_ref" value="<?= e($ref) ?>">
+                                            <input type="hidden" name="giris" value="<?= e($criteria->checkIn) ?>"><input type="hidden" name="cikis" value="<?= e($criteria->checkOut) ?>">
+                                            <?php foreach ($criteria->rooms as $i => $r): ?><input type="hidden" name="oda[<?= $i ?>][y]" value="<?= $r->adults ?>"><input type="hidden" name="oda[<?= $i ?>][c]" value="<?= e(implode('-', $r->childAges)) ?>"><?php endforeach; ?>
+                                            <input type="hidden" name="idem" value="<?= e($idemKey . '-p' . (int) $q->referencePriceId) ?>">
+                                            <button type="submit" class="btn btn-block"<?= $preview ? ' disabled' : '' ?>>ODAYI SEÇ</button>
+                                        </form>
+                                    <?php else: ?>
+                                        <label class="check" style="min-height:auto;padding:0"><input type="radio" name="secili_fiyat" value="<?= e($fid) ?>" data-form="<?= e($fid) ?>" data-room="<?= e($q->roomName ?: 'Oda') ?>" data-total="<?= e(money($q->total, $q->currency)) ?>" data-note="Onaya bağlı hedef teklif" data-action-label="TEKLİF İSTE"<?= $defaultSel === $q ? ' checked' : '' ?>> Bu seçeneği işaretle</label>
+                                        <form id="<?= e($fid) ?>" method="get" action="<?= e(url('/teklif-iste')) ?>">
+                                            <?php foreach ($offerQuery(null, $q) as $k => $v): if ($v === null) continue; if (is_array($v)) { foreach ($v as $i => $r) { echo '<input type="hidden" name="oda[' . (int) $i . '][y]" value="' . (int) $r['y'] . '"><input type="hidden" name="oda[' . (int) $i . '][c]" value="' . e($r['c']) . '">'; } continue; } ?><input type="hidden" name="<?= e($k) ?>" value="<?= e($v) ?>"><?php endforeach; ?>
+                                            <button type="submit" class="btn btn-secondary btn-block">TEKLİF İSTE</button>
+                                        </form>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </article>
+                <?php endif; ?>
+                <?php if (!$rooms && !$providerOffers): ?><div class="empty"><?= icon('bed', 'icon-l') ?><h3>Oda bilgisi henüz eklenmedi</h3><p>Bu otel için teklif isteyebilirsiniz.</p><a class="btn" href="<?= e(url('/teklif-iste', $offerQuery(null, null))) ?>">TEKLİF İSTE</a></div><?php endif; ?>
                 <?php if (!empty($quotesByRoom[0])): $q = $quotesByRoom[0][0]; ?>
                     <div class="room-card"><div class="room-info"><h3>Otel geneli doğrulanmış fiyat</h3><p class="muted small"><?= e($q->roomName ?: 'Oda tipi kaynakta belirtilmemiş') ?> · <?= e($q->message) ?></p></div>
                         <div class="rate-row"><div><?= App\Core\View::partial('partials/price_block', ['q' => $q]) ?></div><div></div>
@@ -152,10 +195,12 @@ $beachLabels = ['kum' => 'Kum plaj', 'cakil' => 'Çakıl plaj', 'kum_cakil' => '
             <section id="konum" class="detail-section">
                 <h2>Konum</h2>
                 <?php if ($h['address']): ?><p><?= icon('pin', 'icon-s') ?> <?= e($h['address']) ?></p><?php endif; ?>
+                <?php if (!empty($h['phone']) || !empty($h['website'])): ?><p class="small"><?php if (!empty($h['phone'])): ?><?= icon('phone', 'icon-s') ?> <a href="<?= e(tel_link($h['phone'])) ?>"><?= e($h['phone']) ?></a>&nbsp;&nbsp;<?php endif; ?><?php if (!empty($h['website'])): ?><?= icon('external', 'icon-s') ?> <a href="<?= e($h['website']) ?>" target="_blank" rel="noopener nofollow">Otelin web sitesi</a><?php endif; ?></p><?php endif; ?>
                 <?php if ($h['latitude'] !== null): ?>
                     <div class="map-box" style="height:340px" data-map data-tiles="<?= e(setting('map.tile_url', 'https://tile.openstreetmap.org/{z}/{x}/{y}.png')) ?>" data-attribution="<?= e(setting('map.attribution')) ?>" data-items="<?= e(json_encode([['lat' => (float) $h['latitude'], 'lng' => (float) $h['longitude'], 'name' => $h['name'], 'region' => $h['region_name'], 'price' => null, 'url' => null]], JSON_UNESCAPED_UNICODE)) ?>" role="region" aria-label="Otel konumu haritası"></div>
                     <p style="margin-top:8px"><a href="https://www.openstreetmap.org/?mlat=<?= e($h['latitude']) ?>&amp;mlon=<?= e($h['longitude']) ?>#map=16/<?= e($h['latitude']) ?>/<?= e($h['longitude']) ?>" target="_blank" rel="noopener"><?= icon('external', 'icon-s') ?> Büyük haritada aç</a></p>
                 <?php else: ?><p class="muted">Harita konumu henüz girilmedi.</p><?php endif; ?>
+                <?php if (!empty($h['source_attribution'])): ?><p class="source-note"><?= icon('info', 'icon-s') ?> <?= e($h['source_attribution']) ?><?= !empty($h['last_synced_at']) ? ' · son güncelleme ' . e(tr_datetime($h['last_synced_at'])) : '' ?></p><?php endif; ?>
                 <?php if ($h['center_distance_km'] !== null): ?><p class="muted small">Merkeze uzaklık: <?= e(str_replace('.', ',', (string) (float) $h['center_distance_km'])) ?> km</p><?php endif; ?>
             </section>
             <section id="cocuk" class="detail-section"><h2>Çocuk politikası</h2><?= $h['child_policy'] ? '<div class="prose">' . nl2p($h['child_policy']) . '</div>' : '<p class="muted">Bilgi girilmedi; rezervasyon öncesi destek ekibine danışabilirsiniz.</p>' ?><?php if ($h['pet_policy']): ?><h3>Evcil hayvan</h3><p><?= e($h['pet_policy']) ?></p><?php endif; ?></section>

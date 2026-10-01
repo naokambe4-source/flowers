@@ -17,3 +17,7 @@ Yeni migration eklerken (geliştiriciler için): `database/migrations/NNN_acikla
 - Yeni migration: `003_demo_and_registration.sql` (demo işaretleri ve üyelik kayıt modu ayarları). Mevcut veriye dokunmaz; *Sistem Güncellemesi* sayfasından uygulayın.
 - `database/demo/` klasörü (demo veri ve temsili görseller) yeni gelir; yalnız yönetici isteğiyle yüklenir.
 - Yenilikler: Demo / Canlı mod, üyelik kayıt modu (açık kayıt), tarih seçicinin her zaman ekranın üstünde ve görünür alanda açılması (mobilde alttan açılan sayfa), çıkış tarihi seçilince otomatik uygulanma, sodium olmayan sunucularda OpenSSL şifreleme.
+
+## 1.1.0 → 1.2.0
+- Yeni migration: `004_live_hotel_sources.sql` (otel kaynak alanları, web/telefon alanları, OpenStreetMap ve LiteAPI sağlayıcı kayıtları). Mevcut veriye dokunmaz; *Sistem Güncellemesi* sayfasından uygulayın.
+- Yenilikler: Yönetim → Canlı Otel Verisi (OpenStreetMap ile anahtarsız gerçek otel kataloğu, LiteAPI ile fotoğraf + canlı fiyat + rezervasyon), otel sayfasında “Canlı oda fiyatları” bölümü, `bin/import-hotels.php`.

@@ -60,7 +60,7 @@ final class BookingService
         ]);
     }
 
-    public function quoteFor(array $user, int $hotelId, int $roomId, ?int $planId, StayCriteria $c, ?array $promo): PriceQuote
+    public function quoteFor(array $user, int $hotelId, int $roomId, ?int $planId, StayCriteria $c, ?array $promo, ?string $rateRef = null): PriceQuote
     {
         $ctx = PricingContext::load($this->db, [$hotelId], $c, SettingsService::int('pricing.reference_max_age_hours', 24));
         $pricing = new PricingService();
@@ -68,12 +68,14 @@ final class BookingService
         if ($planId !== null) {
             return $pricing->quote($ctx, $profile, $hotelId, $roomId, $planId, $promo);
         }
-        return $pricing->referenceQuote($ctx, $profile, $hotelId, $roomId)
-            ?? new PriceQuote('request', $hotelId, $roomId, message: 'Bu oda için güncel fiyat bulunamadı.');
+        return $pricing->referenceQuote($ctx, $profile, $hotelId, $roomId, $rateRef)
+            ?? new PriceQuote('request', $hotelId, $roomId, message: $rateRef !== null
+                ? 'Seçtiğiniz canlı fiyatın geçerlilik süresi doldu. Lütfen otel sayfasında fiyatları yenileyin.'
+                : 'Bu oda için güncel fiyat bulunamadı.');
     }
 
     /** Adım 1: taslak oluşturur. Aynı idempotency anahtarıyla tekrar çağrılırsa aynı taslağı döndürür. */
-    public function startDraft(array $user, int $hotelId, int $roomId, ?int $planId, StayCriteria $c, ?string $promoCode, string $idemKey): array
+    public function startDraft(array $user, int $hotelId, int $roomId, ?int $planId, StayCriteria $c, ?string $promoCode, string $idemKey, ?string $rateRef = null): array
     {
         if ($idemKey !== '' && ($existing = $this->db->fetch('SELECT * FROM bookings WHERE user_id = ? AND idempotency_key = ?', [$user['id'], $idemKey]))) {
             return $existing;
@@ -89,7 +91,7 @@ final class BookingService
         if ($promoCode !== null && $promoCode !== '') {
             $promo = (new PromoService($this->db))->resolve($promoCode, $user, $hotelId, $c->nights());
         }
-        $quote = $this->quoteFor($user, $hotelId, $roomId, $planId, $c, $promo);
+        $quote = $this->quoteFor($user, $hotelId, $roomId, $planId, $c, $promo, $rateRef);
         if (!$quote->isBookable()) {
             throw new DomainException($quote->kind === 'target'
                 ? 'Bu fiyat onaya bağlı hedef tekliftir. Rezervasyon yerine teklif isteyebilirsiniz.'
@@ -130,7 +132,7 @@ final class BookingService
             $perRoom = intdiv($quote->total, max(1, $c->roomCount()));
             foreach ($c->rooms as $i => $occ) {
                 $db->insert('booking_rooms', [
-                    'booking_id' => $id, 'room_id' => $roomId, 'rate_plan_id' => $planId, 'room_name' => (string) $quote->roomName,
+                    'booking_id' => $id, 'room_id' => $roomId ?: null, 'rate_plan_id' => $planId, 'room_name' => (string) $quote->roomName,
                     'concept_name' => $quote->conceptName, 'adults' => $occ->adults, 'children_ages' => implode(',', $occ->childAges),
                     'total_minor' => $i === 0 ? $quote->total - $perRoom * ($c->roomCount() - 1) : $perRoom,
                 ]);
@@ -249,7 +251,13 @@ final class BookingService
                 }
             }
         }
-        return $this->quoteFor($user, (int) $booking['hotel_id'], (int) $room['room_id'], $room['rate_plan_id'] !== null ? (int) $room['rate_plan_id'] : null, $this->criteriaOf($booking), $promo);
+        // Sağlayıcı teklifinde seçilen teklifin kimliği korunur (en ucuz başka bir teklife sessizce geçilmez)
+        $rateRef = null;
+        if ($booking['source'] === 'provider') {
+            $bd = json_decode((string) $booking['price_breakdown'], true) ?: [];
+            $rateRef = isset($bd['external_rate_id']) ? (string) $bd['external_rate_id'] : null;
+        }
+        return $this->quoteFor($user, (int) $booking['hotel_id'], (int) $room['room_id'], $room['rate_plan_id'] !== null ? (int) $room['rate_plan_id'] : null, $this->criteriaOf($booking), $promo, $rateRef);
     }
 
     /** Taslaktaki fiyatı yeni teklifle günceller (kullanıcı yeniden kabul etmelidir). */

@@ -654,3 +654,8 @@ a.tile:hover { border-color: var(--c-teal); box-shadow: var(--shadow); }
 .img-note { position: absolute; right: 10px; bottom: 10px; z-index: 2; background: rgba(15, 34, 64, .62); color: #fff; font-size: .72rem; font-weight: 600; padding: 3px 9px; border-radius: 999px; backdrop-filter: blur(4px); pointer-events: none; }
 .member-discount { display: inline-flex; align-items: center; gap: 6px; margin-top: 6px; padding: 3px 10px; border-radius: 999px; background: var(--c-teal-soft); color: var(--c-teal-strong); font-size: .8rem; font-weight: 700; width: fit-content; }
 @media (max-width: 719px) { .demo-banner .demo-more { display: none; } .demo-banner > div { padding: 5px 12px; font-size: .8rem; } }
+.hotel-illustration { position: relative; margin-top: 12px; border-radius: var(--radius-l); overflow: hidden; aspect-ratio: 21 / 8; background: #0f2240; }
+.hotel-illustration img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.live-offers { border-color: #b9e0e1; }
+.live-offers .room-info h3 { display: flex; align-items: center; gap: 8px; }
+.source-note { font-size: .8rem; color: var(--c-muted); margin-top: 6px; }

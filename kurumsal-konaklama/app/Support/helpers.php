@@ -187,6 +187,7 @@ function status_label(string $status): string
         'pending_user' => 'Onay Bekliyor', 'active' => 'Aktif', 'passive' => 'Pasif', 'suspended' => 'Askıda', 'rejected' => 'Reddedildi',
         'approved' => 'Onaylandı', 'open' => 'Açık', 'answered' => 'Yanıtlandı', 'closed' => 'Kapandı',
         'published' => 'Yayında', 'unpublished' => 'Yayından Kaldırıldı',
+        'unknown' => 'Henüz test edilmedi', 'ok' => 'Çalışıyor', 'degraded' => 'Sorunlu', 'error' => 'Hata', 'disabled' => 'Kapalı',
     ][$status] ?? $status;
 }
 

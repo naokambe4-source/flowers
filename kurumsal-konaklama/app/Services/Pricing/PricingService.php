@@ -370,10 +370,35 @@ final class PricingService
      * Anlaşmalı fiyat yoksa: doğrulanmış referans (manuel veya sağlayıcı) üzerinden ONAYA BAĞLI HEDEF TEKLİF.
      * Sağlayıcı rezervasyon yetkili ve rate rezerve edilebilir ise kesin fiyat olabilir.
      */
-    public function referenceQuote(PricingContext $ctx, PricingProfile $profile, int $hotelId, ?int $roomId): ?PriceQuote
+    public function referenceQuote(PricingContext $ctx, PricingProfile $profile, int $hotelId, ?int $roomId, ?string $externalRateId = null): ?PriceQuote
     {
-        $c = $ctx->criteria;
         $best = null;
+        foreach ($this->eligibleReferences($ctx, $hotelId, $roomId) as $ref) {
+            if ($externalRateId !== null && (string) $ref['external_rate_id'] !== $externalRateId) {
+                continue;
+            }
+            if ($best === null || (int) $ref['total_minor'] < (int) $best['total_minor']) {
+                $best = $ref;
+            }
+        }
+        return $best === null ? null : $this->quoteFromReference($ctx, $profile, $hotelId, $best);
+    }
+
+    /**
+     * Sağlayıcıdan gelen tüm geçerli oda teklifleri (canlı fiyat), ucuzdan pahalıya.
+     * @return PriceQuote[]
+     */
+    public function providerOffers(PricingContext $ctx, PricingProfile $profile, int $hotelId, int $limit = 10): array
+    {
+        $refs = array_values(array_filter($this->eligibleReferences($ctx, $hotelId, null), static fn ($r) => $r['source'] === 'provider' && $r['room_id'] === null));
+        usort($refs, static fn ($a, $b) => (int) $a['total_minor'] <=> (int) $b['total_minor']);
+        return array_map(fn ($r) => $this->quoteFromReference($ctx, $profile, $hotelId, $r), array_slice($refs, 0, $limit));
+    }
+
+    /** Gösterime uygun referans/sağlayıcı fiyatları (doğrulanmamış manuel ve yetkisiz sağlayıcı hariç). */
+    private function eligibleReferences(PricingContext $ctx, int $hotelId, ?int $roomId): array
+    {
+        $out = [];
         foreach ($ctx->references[$hotelId] ?? [] as $ref) {
             if ($roomId !== null && (int) $ref['room_id'] !== $roomId) {
                 continue;
@@ -385,13 +410,14 @@ final class PricingService
             if ($ref['source'] === 'provider' && (!$provider || (int) $provider['is_enabled'] !== 1 || (int) $provider['display_authorized'] !== 1)) {
                 continue;
             }
-            if ($best === null || (int) $ref['total_minor'] < (int) $best['total_minor']) {
-                $best = $ref;
-            }
+            $out[] = $ref;
         }
-        if ($best === null) {
-            return null;
-        }
+        return $out;
+    }
+
+    private function quoteFromReference(PricingContext $ctx, PricingProfile $profile, int $hotelId, array $best): PriceQuote
+    {
+        $c = $ctx->criteria;
         $refTotal = (int) $best['total_minor'];
         $taxNote = (int) $best['tax_included'] === 1;
         $firmProvider = $best['source'] === 'provider' && (int) $best['provider_bookable'] === 1
