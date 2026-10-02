@@ -743,7 +743,11 @@ function df_options_schema() {
 						array( 'id' => 'care_default', 'type' => 'textarea', 'label' => 'Varsayılan bakım bilgisi', 'default' => "Çiçeklerinizi doğrudan güneş ışığından ve ısı kaynaklarından uzak tutun.\nVazo suyunu iki günde bir değiştirin, sapları çapraz şekilde 1-2 cm kesin.\nSolan yaprakları temizleyerek çiçeklerinizin ömrünü uzatabilirsiniz.", 'rows' => 3 ),
 						array( 'id' => 'delivery_info', 'type' => 'textarea', 'label' => 'Teslimat bilgisi (ürün sayfası)', 'default' => "Siparişleriniz İzmir'in seçili bölgelerine, seçtiğiniz tarih ve saat aralığında teslim edilir.\nAynı gün teslimat için son sipariş saati {cutoff}'dır.\nÇiçeklerde mevsimsel farklılıklar olabilir; tasarım aynı özen ve renk uyumuyla hazırlanır.", 'rows' => 3 ),
 						array( 'id' => 'related_title', 'type' => 'text', 'label' => 'Benzer ürünler başlığı', 'default' => 'Bunları da Beğenebilirsiniz', 'half' => true ),
-						array( 'id' => 'related_count', 'type' => 'select', 'label' => 'Benzer ürün sayısı', 'default' => '4', 'half' => true, 'options' => array( '4' => '4', '8' => '8' ) ),
+						array( 'id' => 'related_count', 'type' => 'select', 'label' => 'Benzer ürün sayısı', 'default' => '8', 'half' => true, 'options' => array( '4' => '4', '8' => '8', '12' => '12' ) ),
+						array( 'id' => 'quick_order', 'type' => 'toggle', 'label' => 'Hızlı sipariş: teslimat bilgileri ürün sayfasında alınır, tek adımda ödeme', 'default' => 1, 'half' => true ),
+						array( 'id' => 'quick_single', 'type' => 'toggle', 'label' => '"Hemen Satın Al" sepeti sadece bu ürünle başlatsın (tek teslimat = tek sipariş)', 'default' => 1, 'half' => true ),
+						array( 'id' => 'quick_intro', 'type' => 'text', 'label' => 'Hızlı sipariş üst yazısı', 'default' => 'Teslimat bilgilerini burada doldurun, tek adımda ödemeye geçin.', 'half' => true ),
+						array( 'id' => 'single_related_first', 'type' => 'toggle', 'label' => 'Benzer ürünler hemen ürünün altında (açıklama ve SSS sonra)', 'default' => 1, 'half' => true ),
 					),
 				),
 				array(

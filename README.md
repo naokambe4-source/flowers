@@ -42,6 +42,13 @@ Araçlar sayfasında ayarları **JSON dışa/içe aktarma** ve sıfırlama da va
 - **Üyelik**: sekmeli Giriş / Üye Ol, ad-soyad-telefon-KVKK alanları, Hesabım kısayol kartları.
 - **Favoriler** (üye + ziyaretçi), canlı ürün araması, mini sepet çekmecesi, ürün kategorisine ikon + kapak görseli, menü öğelerine ikon seçimi, bülten aboneleri + CSV.
 
+## v1.7 — Ürün sayfasında hızlı sipariş
+
+- Teslimat (tür, tarih, saat), gönderici + e-posta, alıcı + adres ve kart notu **ürün görselinin yanında**, açılır-kapanır adımlarla alınır; seçimler adım başlıklarında özetlenir.
+- **Hemen Satın Al — Ödemeye Geç**: bilgiler doğrulanır, ödeme sayfasında yalnızca "Teslimat bilgileriniz hazır" özeti (Düzenle bağlantısıyla) ve ödeme adımı görünür.
+- Benzer ürünler hemen ürünün altında, vitrin kartlarıyla (8 ürün); açıklama ve SSS sonra.
+- Ayarlar: Ürün & Mağaza → Ürün detay sayfası (hızlı sipariş aç/kapa, tek ürünle sepet, üst yazı, benzer ürün yeri ve sayısı).
+
 ## v1.6 — Krem & zarif vitrin
 
 - **Araçlar → Krem & zarif vitrin:** fildişi zemin, koyu adaçayı yeşili düğmeler, zarif (tırnaklı) menü; küçük hero + sağda 3 banner (ortadaki koyu); 12 ürünlük vitrin, ince çerçeveli "İncele" düğmeleri, kartlarda hover efekti; koyu Instagram + açık Blog bannerı; isteğe bağlı "2.490 TL" fiyat biçimi.

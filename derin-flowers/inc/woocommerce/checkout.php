@@ -349,7 +349,17 @@ function df_checkout_validate( $data, $errors ) {
 	if ( ! df_checkout_enabled() ) {
 		return;
 	}
-	$p = df_checkout_posted();
+	df_validate_delivery( df_checkout_posted(), $errors );
+}
+add_action( 'woocommerce_after_checkout_validation', 'df_checkout_validate', 10, 2 );
+
+/**
+ * Teslimat alanlarını doğrular (ödeme sayfası ve ürün sayfasındaki hızlı sipariş).
+ *
+ * @param array    $p      df_checkout_posted() çıktısı.
+ * @param WP_Error $errors Hatalar.
+ */
+function df_validate_delivery( $p, $errors ) {
 
 	if ( mb_strlen( $p['sender_name'] ) < 3 ) {
 		$errors->add( 'df_sender_name', '<strong>Gönderici adı soyadı</strong> zorunludur.', array( 'id' => 'df_sender_name' ) );
@@ -402,7 +412,6 @@ function df_checkout_validate( $data, $errors ) {
 		$errors->add( 'df_note', sprintf( 'Çiçek notu en fazla %d karakter olabilir.', $max_note ), array( 'id' => 'df_note' ) );
 	}
 }
-add_action( 'woocommerce_after_checkout_validation', 'df_checkout_validate', 10, 2 );
 
 /**
  * Tema alanlarından WooCommerce fatura/teslimat verilerini doldur (ödeme altyapıları için).
@@ -507,6 +516,7 @@ function df_checkout_save_order( $order ) {
 	}
 	if ( WC()->session ) {
 		WC()->session->set( 'df_checkout_form', null );
+		WC()->session->set( 'df_quick_ready', null );
 	}
 }
 add_action( 'woocommerce_checkout_create_order', 'df_checkout_save_order' );
@@ -706,14 +716,16 @@ add_action( 'admin_post_df_print_card', 'df_print_card' );
  * Ödeme sayfası scriptleri.
  */
 function df_checkout_assets() {
-	if ( ! df_checkout_enabled() || ! is_checkout() || is_order_received_page() || is_checkout_pay_page() ) {
+	$on_product = function_exists( 'df_quick_order_on' ) && is_product() && df_quick_order_on();
+	if ( ! df_checkout_enabled() || ( ! $on_product && ( ! is_checkout() || is_order_received_page() || is_checkout_pay_page() ) ) ) {
 		return;
 	}
 	if ( wp_script_is( 'selectWoo', 'registered' ) ) {
 		wp_enqueue_script( 'selectWoo' );
 		wp_enqueue_style( 'select2' );
 	}
-	wp_enqueue_script( 'df-checkout', DF_URI . '/assets/js/checkout.js', array( 'jquery', 'wc-checkout' ), DF_VERSION, true );
+	wp_enqueue_script( 'df-checkout', DF_URI . '/assets/js/checkout.js', $on_product ? array( 'jquery' ) : array( 'jquery', 'wc-checkout' ), DF_VERSION, true );
+
 	$districts = array();
 	foreach ( df_delivery_districts() as $key => $d ) {
 		$districts[ $key ] = $d['fee'];

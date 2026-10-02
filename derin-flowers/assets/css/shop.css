@@ -687,3 +687,63 @@ ul.woocommerce-order-overview li strong { display: block; margin-top: 6px; font-
 	.woocommerce-Addresses { grid-template-columns: 1fr; }
 	.form-row-first, .form-row-last { width: 100%; float: none; }
 }
+
+/* ---------------------------------------------------------------------
+ * Hızlı sipariş (ürün sayfası): teslimat bilgileri görselin yanında
+ * ------------------------------------------------------------------ */
+.df-has-quick .df-single__grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(28px, 3.6vw, 64px); }
+.df-has-quick .df-single__gallery { position: sticky; top: calc(var(--df-header-h) + 60px); }
+.df-has-quick .df-single__sticky { position: static; }
+.df-has-quick .df-single form.cart, .df-has-quick form.cart { display: flex; flex-direction: column; align-items: stretch; gap: 0; }
+.df-has-quick form.cart .df-buy-now--main { order: 5; }
+.df-has-quick form.cart .single_add_to_cart_button { order: 6; }
+.df-has-quick form.cart .quantity { display: none; }
+.df-quick { margin: 4px 0 16px; }
+.df-quick__intro { display: flex; align-items: center; gap: 8px; margin: 0 0 12px; padding: 10px 14px; border-radius: 8px; background: var(--df-ivory); color: var(--df-text); font-size: 14px; }
+.df-quick__intro .df-icon { color: var(--df-accent); flex: none; }
+.df-quick .df-step { margin: 0 0 10px; padding: 0; border: 1px solid var(--df-line); border-radius: 10px; background: #fff; overflow: hidden; }
+.df-quick .df-step__title { margin: 0; padding: 14px 16px; gap: 12px; font-size: calc(19px * var(--df-scale)); cursor: pointer; user-select: none; }
+.df-quick .df-step__title::after { content: ""; width: 8px; height: 8px; margin-left: 6px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(45deg); transition: transform .25s; flex: none; opacity: .6; }
+.df-quick .df-step.is-open > .df-step__title::after { transform: rotate(-135deg); }
+.df-quick .df-step__num { width: 28px; height: 28px; font-size: 13px; }
+.df-quick .df-step.is-done:not(.is-open) .df-step__num { background: var(--df-success, #5E7B61); }
+.df-quick .df-step__sum { flex: 1; min-width: 0; margin-left: auto; overflow: hidden; color: var(--df-muted); font-family: var(--df-font-body); font-size: 13px; text-align: right; white-space: nowrap; text-overflow: ellipsis; }
+.df-quick .df-step.is-open .df-step__sum { visibility: hidden; }
+.df-quick .df-step:not(.is-open) > :not(.df-step__title) { display: none !important; }
+.df-quick .df-step.is-open { padding-bottom: 16px; border-color: rgba(var(--df-text-rgb), .25); }
+.df-quick .df-step.is-open > :not(.df-step__title) { margin-left: 16px; margin-right: 16px; }
+.df-quick .df-step__desc { font-size: 13.5px; }
+.df-quick .df-when, .df-quick .df-note { grid-template-columns: 1fr; gap: 16px; }
+.df-quick .df-note__preview { display: none; }
+.df-quick .df-types { gap: 10px; }
+.df-quick .df-cal__box { max-width: 420px; }
+.df-quick .df-step.is-invalid, .df-quick .df-step:has(.is-invalid) { border-color: var(--df-sale); }
+.df-step__next { display: block; margin-top: 14px; margin-left: auto !important; padding: 9px 22px; border: 0; border-radius: var(--df-radius-btn); background: var(--df-dark); color: #fff; font-size: 13px; letter-spacing: .06em; cursor: pointer; }
+.df-step__next:hover { background: var(--df-accent); }
+.df-has-quick form.cart .df-buy-now--main { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; min-height: 60px; margin: 6px 0 10px; font-size: 14px; letter-spacing: .1em; }
+.df-has-quick form.cart .single_add_to_cart_button { display: block; width: 100%; min-height: 0; padding: 10px; border: 0; background: none !important; color: var(--df-muted) !important; font-size: 13px; letter-spacing: 0; text-transform: none; text-decoration: underline; text-underline-offset: 3px; box-shadow: none; }
+.df-has-quick form.cart .single_add_to_cart_button:hover { color: var(--df-accent) !important; }
+@media (min-width: 1025px) { .df-has-quick .df-single__bar { display: none !important; } }
+@media (max-width: 1024px) {
+	.df-has-quick .df-single__grid { grid-template-columns: 1fr; }
+	.df-has-quick .df-single__gallery { position: static; }
+}
+@media (max-width: 767px) {
+	.df-quick .df-row-2 { grid-template-columns: 1fr; }
+	.df-quick .df-step__sum { display: none; }
+}
+
+/* Ödeme sayfası: bilgiler hazırsa sadece özet + ödeme */
+.df-checkout-quick #customer_details > .df-step { display: none; }
+.df-quick-sum { border-color: rgba(var(--df-text-rgb), .2); }
+.df-quick-sum__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.df-quick-sum__head .df-step__title { margin: 0; font-size: calc(22px * var(--df-scale)); }
+.df-quick-sum__head .df-step__num { background: var(--df-success, #5E7B61); }
+.df-quick-sum__head .df-link { border: 0; background: none; padding: 0; cursor: pointer; color: var(--df-accent); text-decoration: underline; text-underline-offset: 3px; font-size: 14px; }
+.df-quick-sum__list { display: grid; margin: 0; }
+.df-quick-sum__list > div { display: grid; grid-template-columns: 120px 1fr; gap: 12px; padding: 9px 0; border-top: 1px solid var(--df-line); font-size: 14.5px; }
+.df-quick-sum__list dt { color: var(--df-muted); font-size: 13px; }
+.df-quick-sum__list dd { margin: 0; word-break: break-word; }
+.df-checkout-quick .df-step--payment .df-step__num { font-size: 0; }
+.df-checkout-quick .df-step--payment .df-step__num::before { content: "2"; font-size: 14px; }
+@media (max-width: 600px) { .df-quick-sum__list > div { grid-template-columns: 1fr; gap: 2px; } }

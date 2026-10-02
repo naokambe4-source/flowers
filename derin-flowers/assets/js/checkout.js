@@ -4,13 +4,22 @@
 
 	var C = window.DFCheckout;
 	var $form = $( 'form.checkout' );
+	var isProduct = false;
+	if ( ! $form.length && $( '[data-df-quick]' ).length ) {
+		// Ürün sayfasındaki hızlı sipariş: alanlar sepete ekle formunun içinde.
+		$form = $( '[data-df-quick]' ).closest( 'form' );
+		isProduct = true;
+	}
 	if ( ! C || ! $form.length ) {
 		return;
 	}
 
 	var $body = $( document.body );
 	var update = function () {
-		$body.trigger( 'update_checkout' );
+		if ( ! isProduct ) {
+			$body.trigger( 'update_checkout' );
+		}
+		$form.trigger( 'df:changed' );
 	};
 
 	/* ---------------------------------------------------------------------
@@ -349,5 +358,132 @@
 	} );
 	$form.on( 'input change', '.is-invalid input, .is-invalid textarea, .is-invalid select', function () {
 		$( this ).closest( '.is-invalid' ).removeClass( 'is-invalid' );
+	} );
+
+	/* ---------------------------------------------------------------------
+	 * Ödeme sayfası: bilgiler ürün sayfasında alındıysa sadece ödeme
+	 * ------------------------------------------------------------------ */
+	$( '[data-df-quick-edit]' ).on( 'click', function () {
+		$body.removeClass( 'df-checkout-quick' );
+		$( '#df-quick-sum' ).remove();
+		$( 'html, body' ).animate( { scrollTop: $( '#customer_details' ).offset().top - 100 }, 300 );
+	} );
+	$body.on( 'checkout_error', function () {
+		if ( $body.hasClass( 'df-checkout-quick' ) && $( '.woocommerce-error li[data-id]' ).length ) {
+			$body.removeClass( 'df-checkout-quick' );
+			$( '#df-quick-sum' ).remove();
+		}
+	} );
+
+	/* ---------------------------------------------------------------------
+	 * Ürün sayfası: adımlar açılır/kapanır, seçimler başlıkta özetlenir
+	 * ------------------------------------------------------------------ */
+	if ( ! isProduct ) {
+		return;
+	}
+	$form.attr( 'novalidate', 'novalidate' );
+	var $steps = $form.find( '.df-step' );
+	$steps.each( function ( i ) {
+		var $st = $( this );
+		var $t = $st.children( '.df-step__title' );
+		$t.attr( { role: 'button', tabindex: 0, 'aria-expanded': i === 0 ? 'true' : 'false' } ).append( '<span class="df-step__sum" data-df-sum></span>' );
+		$st.toggleClass( 'is-open', i === 0 );
+	} );
+	function openStep( $st ) {
+		$steps.not( $st ).removeClass( 'is-open' ).children( '.df-step__title' ).attr( 'aria-expanded', 'false' );
+		$st.addClass( 'is-open' ).children( '.df-step__title' ).attr( 'aria-expanded', 'true' );
+	}
+	$form.on( 'click keydown', '.df-step__title', function ( e ) {
+		if ( 'keydown' === e.type && 'Enter' !== e.key && ' ' !== e.key ) {
+			return;
+		}
+		e.preventDefault();
+		var $st = $( this ).closest( '.df-step' );
+		if ( $st.hasClass( 'is-open' ) ) {
+			$st.removeClass( 'is-open' );
+			$( this ).attr( 'aria-expanded', 'false' );
+		} else {
+			openStep( $st );
+		}
+	} );
+	function val( n ) {
+		return $.trim( $form.find( '[name="' + n + '"]' ).filter( function () {
+			return ! this.disabled && ( ! /radio|checkbox/.test( this.type ) || this.checked );
+		} ).first().val() || '' );
+	}
+	function summarize() {
+		var date = $( '#df_date' ).val();
+		var slot = $slots.find( 'input:checked' ).closest( 'label' ).text();
+		var pickup = 'pickup' === val( 'df_type' );
+		var dsel = $( '#df_district option:selected' );
+		var sums = {
+			'df-step-delivery': date ? ( /^(Bugün|Yarın)$/.test( relLabel( date ) ) ? relLabel( date ) : human( date, true ) ) + ( slot ? ' · ' + $.trim( slot ) : '' ) : '',
+			'df-step-sender': val( 'df_sender_name' ),
+			'df-step-recipient': val( 'df_recipient_name' ) ? val( 'df_recipient_name' ) + ( pickup ? '' : ( dsel.val() ? ' · ' + $.trim( dsel.text().split( '—' )[ 0 ] ) : '' ) ) : '',
+			'df-step-note': $form.find( 'input[name="df_no_note"]' ).is( ':checked' ) ? 'Not yok' : ( val( 'df_note' ) ? val( 'df_note' ).slice( 0, 34 ) + ( val( 'df_note' ).length > 34 ? '…' : '' ) : '' )
+		};
+		$.each( sums, function ( id, t ) {
+			var $st = $( '#' + id );
+			$st.find( '[data-df-sum]' ).text( t );
+			$st.toggleClass( 'is-done', !! t );
+		} );
+	}
+	$form.on( 'input change df:changed', summarize );
+	$form.on( 'click', '.df-note__tpl', function () {
+		setTimeout( summarize, 0 );
+	} );
+	summarize();
+	// "Devam" düğmesi: bir sonraki adımı aç.
+	$steps.each( function ( i ) {
+		if ( i < $steps.length - 1 ) {
+			$( '<button type="button" class="df-step__next">Devam</button>' ).appendTo( this ).on( 'click', function () {
+				openStep( $steps.eq( i + 1 ) );
+				$( 'html, body' ).animate( { scrollTop: $steps.eq( i + 1 ).offset().top - 110 }, 250 );
+			} );
+		}
+	} );
+	// Sunucu hataları: ilgili alanı işaretle ve adımını aç.
+	var $first = null;
+	$( '.woocommerce-error li[data-id]' ).each( function () {
+		var id = $( this ).data( 'id' );
+		var $f = $( '#' + id + '_field' );
+		if ( ! $f.length ) {
+			$f = $( '#' + id ).closest( '.df-field, .form-row' );
+		}
+		$f.addClass( 'is-invalid' );
+		$first = $first || $f.closest( '.df-step' );
+	} );
+	if ( $first && $first.length ) {
+		openStep( $first );
+	}
+	// Gönderirken boş zorunlu alan varsa sayfa yenilenmeden uyar.
+	$form.on( 'submit', function ( e ) {
+		var sub = e.originalEvent && e.originalEvent.submitter;
+		if ( ! sub || 'df_buy_now' !== sub.name ) {
+			return;
+		}
+		var missing = null;
+		var pickup = 'pickup' === val( 'df_type' );
+		var checks = [ [ 'df_date', '#df_date_field' ], [ 'df_slot', '#df_slot_field' ], [ 'df_sender_name' ], [ 'df_sender_phone' ], [ 'billing_email' ], [ 'df_recipient_name' ], [ 'df_recipient_phone' ] ];
+		if ( ! pickup ) {
+			checks.push( [ 'df_district' ], [ 'df_address' ] );
+		}
+		$.each( checks, function ( _, c ) {
+			var v = 'df_slot' === c[ 0 ] ? $slots.find( 'input:checked' ).val() : val( c[ 0 ] );
+			if ( ! v ) {
+				var $f = c[ 1 ] ? $( c[ 1 ] ) : $( '#' + c[ 0 ] ).closest( '.df-field, .form-row' );
+				$f.addClass( 'is-invalid' );
+				missing = missing || $f;
+			}
+		} );
+		if ( missing ) {
+			e.preventDefault();
+			openStep( missing.closest( '.df-step' ) );
+			$( 'html, body' ).animate( { scrollTop: missing.offset().top - 120 }, 250 );
+			var $el = missing.find( 'input:visible, select, textarea' ).first();
+			if ( $el.length ) {
+				$el.trigger( 'focus' );
+			}
+		}
 	} );
 }( jQuery ) );

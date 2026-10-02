@@ -37,7 +37,7 @@ function df_single_hooks() {
 	add_action( 'woocommerce_after_single_product_summary', 'df_single_details', 10 );
 	add_action( 'woocommerce_after_single_product_summary', 'df_single_reviews', 20 );
 	add_action( 'woocommerce_after_single_product_summary', 'df_single_faq', 30 );
-	add_action( 'woocommerce_after_single_product_summary', 'df_single_related', 40 );
+	add_action( 'woocommerce_after_single_product_summary', 'df_single_related', df_opt( 'single_related_first', 1 ) ? 5 : 40 );
 }
 add_action( 'init', 'df_single_hooks' );
 
@@ -308,7 +308,7 @@ function df_single_faq() {
  */
 function df_single_related() {
 	global $product;
-	$limit = absint( df_opt( 'related_count', 4 ) );
+	$limit = absint( df_opt( 'related_count', 8 ) );
 	$ids   = $product->get_upsell_ids();
 	if ( count( $ids ) < $limit ) {
 		$ids = array_unique( array_merge( $ids, wc_get_related_products( $product->get_id(), $limit * 2, $ids ) ) );
@@ -324,11 +324,11 @@ function df_single_related() {
 			'title'   => df_opt( 'related_title', 'Bunları da Beğenebilirsiniz' ),
 		)
 	);
-	echo '<div class="df-grid df-grid--4">';
+	echo '<div class="df-vitrin df-vitrin--r' . esc_attr( sanitize_key( df_opt( 'vit_ratio', '1-1' ) ) ) . '"><div class="df-vitrin__grid">';
 	foreach ( $ids as $id ) {
-		df_product_card( $id );
+		df_product_card( $id, array( 'variant' => 'vitrin' ) );
 	}
-	echo '</div></div></section>';
+	echo '</div></div></div></section>';
 }
 
 /**
@@ -352,6 +352,10 @@ function df_buy_now_button() {
 	if ( $product->is_type( 'simple' ) ) {
 		// Basit ürünlerde ürün ID'si sepete ekle butonunun değeridir; Hemen Al ile gönderimde de iletilsin.
 		echo '<input type="hidden" name="add-to-cart" value="' . esc_attr( $product->get_id() ) . '">';
+	}
+	if ( function_exists( 'df_quick_order_on' ) && df_quick_order_on() && df_quick_product_ok( $product ) ) {
+		echo '<button type="submit" name="df_buy_now" value="1" class="df-btn df-btn--solid df-buy-now df-buy-now--main">' . esc_html( df_opt( 'quick_btn', 'Hemen Satın Al — Ödemeye Geç' ) ) . df_icon( 'arrow-right', array( 'size' => 18 ) ) . '</button>'; // phpcs:ignore
+		return;
 	}
 	echo '<button type="submit" name="df_buy_now" value="1" class="df-btn df-btn--outline df-buy-now">Hemen Al</button>';
 }
