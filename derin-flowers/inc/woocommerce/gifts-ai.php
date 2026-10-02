@@ -23,8 +23,12 @@ function df_gift_products( $exclude = 0 ) {
 		return array();
 	}
 	$ids = array_filter( array_map( 'absint', (array) df_opt( 'gift_products', array() ) ) );
-	if ( ! $ids && df_opt( 'gift_cat' ) ) {
-		$term = get_term( absint( df_opt( 'gift_cat' ) ), 'product_cat' );
+	$cat = absint( df_opt( 'gift_cat' ) );
+	if ( ! $ids && ! $cat ) {
+		$cat = df_gift_auto_cat();
+	}
+	if ( ! $ids && $cat ) {
+		$term = get_term( $cat, 'product_cat' );
 		if ( $term && ! is_wp_error( $term ) ) {
 			$ids = wc_get_products(
 				array(
@@ -38,6 +42,10 @@ function df_gift_products( $exclude = 0 ) {
 			);
 		}
 	}
+	// Kategori yoksa adından hediye olduğu anlaşılan ürünler (ayıcık, çikolata, pasta, balon…).
+	if ( ! $ids ) {
+		$ids = df_gift_auto_products();
+	}
 	$out = array();
 	foreach ( $ids as $id ) {
 		$p = wc_get_product( $id );
@@ -45,8 +53,78 @@ function df_gift_products( $exclude = 0 ) {
 			$out[] = $p;
 		}
 	}
+	// Elle sıralanmadıysa en çok satan hediyeler önce.
+	if ( ! df_opt( 'gift_products' ) ) {
+		usort(
+			$out,
+			function ( $a, $b ) {
+				return (int) $b->get_total_sales() - (int) $a->get_total_sales();
+			}
+		);
+	}
 	return $out;
 }
+
+/**
+ * Hediye kelimeleri.
+ *
+ * @return string
+ */
+function df_gift_pattern() {
+	return '/(hediye|ay[ıi]c[ıi]k|pel[uü][sş]|teddy|[cç]ikolata|pasta|kek|balon|makaron|kurabiye|mum|vazo hediye|gift)/iu';
+}
+
+/**
+ * Adında "hediye" geçen ürün kategorisi.
+ *
+ * @return int
+ */
+function df_gift_auto_cat() {
+	$terms = get_terms(
+		array(
+			'taxonomy'   => 'product_cat',
+			'hide_empty' => true,
+		)
+	);
+	if ( is_wp_error( $terms ) ) {
+		return 0;
+	}
+	foreach ( $terms as $t ) {
+		if ( preg_match( '/hediye|gift/iu', $t->name . ' ' . $t->slug ) ) {
+			return (int) $t->term_id;
+		}
+	}
+	return 0;
+}
+
+/**
+ * Adından hediye olduğu anlaşılan ürünler.
+ *
+ * @return int[]
+ */
+function df_gift_auto_products() {
+	$cached = get_transient( 'df_gift_auto' );
+	if ( is_array( $cached ) ) {
+		return $cached;
+	}
+	$ids = array();
+	foreach ( wc_get_products( array( 'status' => 'publish', 'limit' => 300, 'type' => 'simple', 'return' => 'objects' ) ) as $p ) {
+		if ( preg_match( df_gift_pattern(), $p->get_name() ) && $p->get_price() !== '' && (float) $p->get_price() < (float) df_opt( 'gift_max_price', 1500 ) ) {
+			$ids[] = $p->get_id();
+		}
+		if ( count( $ids ) >= 12 ) {
+			break;
+		}
+	}
+	set_transient( 'df_gift_auto', $ids, HOUR_IN_SECONDS );
+	return $ids;
+}
+add_action(
+	'save_post_product',
+	function () {
+		delete_transient( 'df_gift_auto' );
+	}
+);
 
 /**
  * Hediye kategorisindeki ürünler vitrin / benzer ürün / ana sayfa listelerinde çıkmasın.
@@ -55,6 +133,9 @@ function df_gift_products( $exclude = 0 ) {
  */
 function df_gift_ids_all() {
 	static $ids = null;
+	if ( null === $ids && ! df_opt( 'gift_products' ) && ! df_opt( 'gift_cat' ) && ! df_gift_auto_cat() ) {
+		$ids = array(); // Ada göre bulunan hediyeler listelerden gizlenmez.
+	}
 	if ( null === $ids ) {
 		$ids = array_map(
 			function ( $p ) {
@@ -75,7 +156,13 @@ function df_gift_step() {
 		return;
 	}
 	$gifts = df_gift_products( $product->get_id() );
-	if ( ! $gifts || in_array( $product->get_id(), df_gift_ids_all(), true ) ) {
+	if ( in_array( $product->get_id(), df_gift_ids_all(), true ) || ! df_opt( 'gift_on', 1 ) ) {
+		return;
+	}
+	if ( ! $gifts ) {
+		if ( current_user_can( 'manage_woocommerce' ) ) {
+			echo '<p class="df-gift-admin">' . df_icon( 'info', array( 'size' => 16 ) ) . '<span><strong>Yönetici notu:</strong> Hediye önerisi gösterilecek ürün bulunamadı. WooCommerce\'te "Hediyeler" kategorisi açıp ayıcık, çikolata, pasta gibi ürünleri ekleyin (ya da Ürün & Mağaza → Ürün detay sayfası\'ndan seçin). Bu not yalnızca size görünür.</span></p>'; // phpcs:ignore
+		}
 		return;
 	}
 	// phpcs:ignore WordPress.Security.NonceVerification.Missing
@@ -83,12 +170,15 @@ function df_gift_step() {
 	?>
 	<section class="df-step df-gifts" id="df-step-gifts">
 		<h2 class="df-step__title"><span class="df-step__num">1</span><?php echo esc_html( df_opt( 'gift_title', 'Hediye Ekle' ) ); ?> <small class="df-gifts__opt">(isteğe bağlı)</small></h2>
-		<p class="df-step__desc">Çiçeğinizin yanına küçük bir sürpriz ekleyin; aynı paketle teslim edilir.</p>
+		<p class="df-step__desc"><?php echo esc_html( df_opt( 'gift_text', 'Çiçeğinizin yanına küçük bir sürpriz ekleyin; aynı paketle teslim edilir.' ) ); ?></p>
 		<div class="df-gifts__grid">
-			<?php foreach ( $gifts as $g ) : ?>
+			<?php foreach ( $gifts as $gi => $g ) : ?>
 				<label class="df-gift">
 					<input type="checkbox" name="df_gifts[]" value="<?php echo (int) $g->get_id(); ?>" data-price="<?php echo esc_attr( wc_get_price_to_display( $g ) ); ?>" data-name="<?php echo esc_attr( $g->get_name() ); ?>" <?php checked( in_array( $g->get_id(), $picked, true ) ); ?>>
 					<span class="df-gift__box">
+						<?php if ( $gi < 2 ) : ?>
+							<span class="df-gift__badge"><?php echo 0 === $gi ? 'Çok tercih edilen' : 'Önerilen'; ?></span>
+						<?php endif; ?>
 						<span class="df-gift__img"><?php echo $g->get_image_id() ? wp_get_attachment_image( $g->get_image_id(), 'thumbnail', false, array( 'alt' => '' ) ) : df_placeholder(); // phpcs:ignore ?></span>
 						<span class="df-gift__name"><?php echo esc_html( $g->get_name() ); ?></span>
 						<span class="df-gift__price">+<?php echo wp_kses_post( wc_price( wc_get_price_to_display( $g ) ) ); ?></span>
@@ -118,7 +208,12 @@ function df_gift_add_to_cart( $key, $product_id ) {
 		return;
 	}
 	$busy    = true;
-	$allowed = df_gift_ids_all();
+	$allowed = array_map(
+		function ( $g ) {
+			return $g->get_id();
+		},
+		df_gift_products( $product_id )
+	);
 	foreach ( array_unique( array_map( 'absint', (array) wp_unslash( $_POST['df_gifts'] ) ) ) as $gid ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
 		if ( in_array( $gid, $allowed, true ) && $gid !== (int) $product_id ) {
 			WC()->cart->add_to_cart( $gid, 1, 0, array(), array( 'df_gift_for' => get_the_title( $product_id ) ) );

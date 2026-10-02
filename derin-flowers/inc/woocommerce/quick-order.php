@@ -89,7 +89,9 @@ function df_quick_validate( $passed ) {
 	}
 	$p          = df_checkout_posted();
 	$p['email'] = isset( $_POST['billing_email'] ) ? sanitize_email( wp_unslash( $_POST['billing_email'] ) ) : '';
-	$buy_now    = ! empty( $_POST['df_buy_now'] );
+	// Ürün sayfasında sepete ekleme yok: hızlı siparişte her gönderim "Hemen Al"dır.
+	$buy_now               = true;
+	$_REQUEST['df_buy_now'] = 1;
 	// phpcs:enable
 	// Sayfa yeniden açılsa da girilenler kaybolmasın; ödeme sayfası da bunlarla dolar.
 	WC()->session->set( 'df_checkout_form', $p );

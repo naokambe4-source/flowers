@@ -501,48 +501,184 @@
 			} );
 		}
 	} );
-	// Sunucu hataları: ilgili alanı işaretle ve adımını aç.
-	var $first = null;
-	$( '.woocommerce-error li[data-id]' ).each( function () {
-		var id = $( this ).data( 'id' );
-		var $f = $( '#' + id + '_field' );
-		if ( ! $f.length ) {
-			$f = $( '#' + id ).closest( '.df-field, .form-row' );
-		}
-		$f.addClass( 'is-invalid' );
-		$first = $first || $f.closest( '.df-step' );
-	} );
-	if ( $first && $first.length ) {
-		openStep( $first );
+	// Ürün sayfasında sadece "Hemen Al": sepete ekle düğmesi kaldırılır.
+	$form.find( '.single_add_to_cart_button' ).remove();
+	var $buy = $form.find( '.df-buy-now--main' );
+
+	/* ---------- Eksik bilgi uyarısı ---------- */
+	var $alert = $( '<div class="df-qalert" role="alert" tabindex="-1" hidden></div>' ).insertBefore( $buy );
+	var $toast = $( '<div class="df-qtoast" role="status" aria-live="assertive"></div>' ).appendTo( document.body );
+	var toastTimer;
+	function toast( msg ) {
+		$toast.text( msg ).addClass( 'is-on' );
+		clearTimeout( toastTimer );
+		toastTimer = setTimeout( function () {
+			$toast.removeClass( 'is-on' );
+		}, 4200 );
 	}
-	// Gönderirken boş zorunlu alan varsa sayfa yenilenmeden uyar.
-	$form.on( 'submit', function ( e ) {
-		var sub = e.originalEvent && e.originalEvent.submitter;
-		if ( ! sub || 'df_buy_now' !== sub.name ) {
+	function markField( $f, msg ) {
+		$f.addClass( 'is-invalid' );
+		if ( ! $f.find( '.df-err' ).length ) {
+			$f.append( $( '<span class="df-err"></span>' ).text( msg ) );
+		}
+	}
+	$form.on( 'input change', '.is-invalid input, .is-invalid textarea, .is-invalid select', function () {
+		$( this ).closest( '.is-invalid' ).removeClass( 'is-invalid' ).find( '.df-err' ).remove();
+	} );
+	function showAlert( items ) {
+		if ( ! items.length ) {
+			$alert.prop( 'hidden', true ).empty();
 			return;
 		}
-		var missing = null;
-		var pickup = 'pickup' === val( 'df_type' );
-		var checks = [ [ 'df_date', '#df_date_field' ], [ 'df_slot', '#df_slot_field' ], [ 'df_sender_name' ], [ 'df_sender_phone' ], [ 'billing_email' ], [ 'df_recipient_name' ], [ 'df_recipient_phone' ] ];
-		if ( ! pickup ) {
-			checks.push( [ 'df_district' ], [ 'df_address' ] );
+		$alert.html( '<strong class="df-qalert__title">Siparişi tamamlamak için ' + items.length + ' bilgi eksik</strong><ul></ul>' );
+		items.forEach( function ( it ) {
+			$( '<li><button type="button"></button></li>' ).find( 'button' ).text( it.label ).on( 'click', function () {
+				goTo( it.$f );
+			} ).end().appendTo( $alert.find( 'ul' ) );
+		} );
+		$alert.prop( 'hidden', false );
+		$buy.removeClass( 'is-shake' );
+		void $buy[ 0 ].offsetWidth;
+		$buy.addClass( 'is-shake' );
+	}
+	function goTo( $f ) {
+		var $st = $f.closest( '.df-step' );
+		if ( $st.length ) {
+			openStep( $st );
 		}
-		$.each( checks, function ( _, c ) {
-			var v = 'df_slot' === c[ 0 ] ? $slots.find( 'input:checked' ).val() : val( c[ 0 ] );
-			if ( ! v ) {
-				var $f = c[ 1 ] ? $( c[ 1 ] ) : $( '#' + c[ 0 ] ).closest( '.df-field, .form-row' );
-				$f.addClass( 'is-invalid' );
-				missing = missing || $f;
+		$( 'html, body' ).animate( { scrollTop: $f.offset().top - 130 }, 250 );
+		var $el = $f.find( 'input:visible:not([type=hidden]), select:visible, textarea:visible' ).first();
+		if ( $el.length ) {
+			setTimeout( function () {
+				$el.trigger( 'focus' );
+			}, 260 );
+		}
+	}
+	function check() {
+		$form.find( '.df-err' ).remove();
+		$form.find( '.is-invalid' ).removeClass( 'is-invalid' );
+		var pickup = 'pickup' === val( 'df_type' );
+		var phoneOk = function ( n ) {
+			var d = val( n ).replace( /\D/g, '' );
+			return d.length >= 10;
+		};
+		var rules = [
+			[ '#df_date_field', 'Teslimat tarihi', function () { return !! $( '#df_date' ).val(); }, 'Takvimden bir gün seçin' ],
+			[ '#df_slot_field', 'Teslimat saati', function () { return !! $slots.find( 'input:checked' ).length; }, 'Bir saat aralığı seçin' ],
+			[ '#df_sender_name_field', 'Gönderici adı soyadı', function () { return val( 'df_sender_name' ).length >= 3; }, 'Adınızı ve soyadınızı yazın' ],
+			[ '#df_sender_phone_field', 'Gönderici telefonu', function () { return phoneOk( 'df_sender_phone' ); }, 'Geçerli bir telefon yazın' ],
+			[ '#billing_email_field', 'E-posta adresi', function () { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test( val( 'billing_email' ) ); }, 'Geçerli bir e-posta yazın' ],
+			[ '#df_recipient_name_field', 'Alıcı adı soyadı', function () { return val( 'df_recipient_name' ).length >= 3; }, 'Alıcının adını ve soyadını yazın' ],
+			[ '#df_recipient_phone_field', 'Alıcı telefonu', function () { return phoneOk( 'df_recipient_phone' ); }, 'Geçerli bir telefon yazın' ]
+		];
+		if ( ! pickup ) {
+			rules.push( [ '#df_district_field', 'Teslimat bölgesi', function () { return !! val( 'df_district' ); }, 'Teslimat bölgesini seçin' ] );
+			rules.push( [ '#df_address_field', 'Alıcı adresi', function () { return val( 'df_address' ).length >= 10; }, 'Adresi eksiksiz yazın (mahalle, sokak, no)' ] );
+		}
+		var $var = $form.find( 'input[name="variation_id"]' );
+		var items = [];
+		if ( $var.length && ! parseInt( $var.val(), 10 ) ) {
+			var $vt = $form.find( '.variations' );
+			markField( $vt, 'Lütfen bir seçenek seçin' );
+			items.push( { label: 'Ürün seçeneği', $f: $vt } );
+		}
+		rules.forEach( function ( r ) {
+			var $f = $( r[ 0 ] );
+			if ( $f.length && ! r[ 2 ]() ) {
+				markField( $f, r[ 3 ] );
+				items.push( { label: r[ 1 ], $f: $f } );
 			}
 		} );
-		if ( missing ) {
+		$steps.each( function () {
+			$( this ).toggleClass( 'has-error', !! $( this ).find( '.is-invalid' ).length );
+		} );
+		return items;
+	}
+
+	/* ---------- Hediye önerisi (hediye seçmeden satın alınırken) ---------- */
+	var $giftInputs = $form.find( 'input[name="df_gifts[]"]' );
+	var upsellShown = false;
+	function giftUpsell() {
+		var $m = $( '<div class="df-upsell" role="dialog" aria-modal="true" aria-labelledby="df-upsell-t"><div class="df-upsell__box">' +
+			'<button type="button" class="df-upsell__x" aria-label="Kapat">×</button>' +
+			'<p class="df-upsell__eyebrow">Bir dakika!</p><h3 id="df-upsell-t">Çiçeğinizin yanına küçük bir sürpriz?</h3>' +
+			'<p class="df-upsell__sub">Seçtiğiniz hediye çiçekle aynı paketle teslim edilir.</p><div class="df-upsell__grid"></div>' +
+			'<div class="df-upsell__acts"><button type="button" class="df-btn df-btn--solid" data-go="add">Seçtiklerimle devam et</button><button type="button" class="df-upsell__skip" data-go="skip">Hediyesiz devam et</button></div></div></div>' );
+		$form.find( '.df-gift' ).slice( 0, 6 ).each( function () {
+			var $c = $( this ).find( '.df-gift__box' ).clone();
+			var v = $( this ).find( 'input' ).val();
+			$( '<button type="button" class="df-upsell__gift"></button>' ).attr( 'data-v', v ).append( $c ).appendTo( $m.find( '.df-upsell__grid' ) );
+		} );
+		$m.on( 'click', '.df-upsell__gift', function () {
+			var v = $( this ).attr( 'data-v' );
+			var $in = $giftInputs.filter( '[value="' + v + '"]' );
+			$in.prop( 'checked', ! $in.prop( 'checked' ) ).trigger( 'change' );
+			$( this ).toggleClass( 'is-on', $in.prop( 'checked' ) );
+			$m.find( '[data-go="add"]' ).text( $giftInputs.filter( ':checked' ).length ? 'Hediyeyle satın al' : 'Seçtiklerimle devam et' );
+		} );
+		$m.on( 'click', '[data-go], .df-upsell__x', function () {
+			$m.remove();
+			$( document.body ).removeClass( 'df-modal-open' );
+			if ( $( this ).is( '[data-go]' ) ) {
+				$buy[ 0 ].click();
+			}
+		} );
+		$m.on( 'click', function ( e ) {
+			if ( e.target === this ) {
+				$m.find( '.df-upsell__x' ).trigger( 'click' );
+			}
+		} );
+		$( document.body ).addClass( 'df-modal-open' ).append( $m );
+		$m.find( '.df-upsell__gift' ).first().trigger( 'focus' );
+	}
+
+	$form.on( 'submit', function ( e ) {
+		var sub = e.originalEvent && e.originalEvent.submitter;
+		if ( sub && 'df_buy_now' !== sub.name ) {
+			return;
+		}
+		var items = check();
+		showAlert( items );
+		if ( items.length ) {
 			e.preventDefault();
-			openStep( missing.closest( '.df-step' ) );
-			$( 'html, body' ).animate( { scrollTop: missing.offset().top - 120 }, 250 );
-			var $el = missing.find( 'input:visible, select, textarea' ).first();
-			if ( $el.length ) {
-				$el.trigger( 'focus' );
+			toast( items.length + ' eksik bilgi var: ' + items[ 0 ].label + ( items.length > 1 ? ' ve diğerleri' : '' ) );
+			goTo( items[ 0 ].$f );
+			return;
+		}
+		if ( $giftInputs.length && ! $giftInputs.filter( ':checked' ).length && ! upsellShown ) {
+			e.preventDefault();
+			upsellShown = true;
+			giftUpsell();
+			return;
+		}
+		$buy.addClass( 'is-loading' ).find( 'span' ).first();
+	} );
+	$form.on( 'input change', function () {
+		if ( ! $alert.prop( 'hidden' ) ) {
+			var left = $form.find( '.is-invalid' ).length;
+			if ( ! left ) {
+				showAlert( [] );
 			}
 		}
 	} );
+
+	// Sunucudan dönen hatalar: aynı uyarı kutusunda göster.
+	var srv = $( '.woocommerce-error li' ).map( function () {
+		var id = $( this ).data( 'id' );
+		var $f = id ? $( '#' + id + '_field' ) : $();
+		if ( ! $f.length && id ) {
+			$f = $( '#' + id ).closest( '.df-field, .form-row' );
+		}
+		return { label: $( this ).text().trim(), $f: $f.length ? $f : $buy };
+	} ).get();
+	if ( srv.length ) {
+		showAlert( srv );
+		srv.forEach( function ( it ) {
+			if ( it.$f !== $buy ) {
+				markField( it.$f, 'Lütfen kontrol edin' );
+			}
+		} );
+		$( '.woocommerce-notices-wrapper .woocommerce-error' ).remove();
+		goTo( srv[ 0 ].$f );
+	}
 }( jQuery ) );
