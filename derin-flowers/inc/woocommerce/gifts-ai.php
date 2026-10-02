@@ -42,8 +42,8 @@ function df_gift_products( $exclude = 0 ) {
 			);
 		}
 	}
-	// Kategori yoksa adından hediye olduğu anlaşılan ürünler (ayıcık, çikolata, pasta, balon…).
-	if ( ! $ids ) {
+	// Hiç hediye kategorisi yoksa adından hediye olduğu anlaşılan ürünler (ayıcık, peluş, balon…).
+	if ( ! $ids && ! $cat ) {
 		$ids = df_gift_auto_products();
 	}
 	$out = array();
@@ -83,18 +83,30 @@ function df_gift_auto_cat() {
 	$terms = get_terms(
 		array(
 			'taxonomy'   => 'product_cat',
-			'hide_empty' => true,
+			'hide_empty' => false,
 		)
 	);
 	if ( is_wp_error( $terms ) ) {
 		return 0;
 	}
+	// Önce birebir "Hediyeler / Hediye / Hediye Ürünleri", sonra adı "hediye" ile başlayan.
+	$best  = 0;
+	$score = 0;
 	foreach ( $terms as $t ) {
-		if ( preg_match( '/hediye|gift/iu', $t->name . ' ' . $t->slug ) ) {
-			return (int) $t->term_id;
+		$name = mb_strtolower( trim( $t->name ) );
+		$slug = strtolower( $t->slug );
+		$sc   = 0;
+		if ( in_array( $name, array( 'hediyeler', 'hediye', 'hediye ürünleri', 'hediyelikler' ), true ) || in_array( $slug, array( 'hediyeler', 'hediye', 'hediye-urunleri', 'gifts', 'gift' ), true ) ) {
+			$sc = 3;
+		} elseif ( 0 === strpos( $slug, 'hediye' ) ) {
+			$sc = 1;
+		}
+		if ( $sc > $score ) {
+			$score = $sc;
+			$best  = (int) $t->term_id;
 		}
 	}
-	return 0;
+	return $best;
 }
 
 /**
@@ -168,8 +180,9 @@ function df_gift_step() {
 	// phpcs:ignore WordPress.Security.NonceVerification.Missing
 	$picked = isset( $_POST['df_gifts'] ) ? array_map( 'absint', (array) wp_unslash( $_POST['df_gifts'] ) ) : array();
 	?>
-	<div class="df-gifts" id="df-gifts">
-		<p class="df-gifts__title"><?php df_the_icon( 'gift', array( 'size' => 18 ) ); ?><strong><?php echo esc_html( df_opt( 'gift_title', 'Hediye Ekle' ) ); ?></strong><span class="df-gifts__opt">isteğe bağlı · çiçekle aynı paketle teslim edilir</span></p>
+	<section class="df-step df-gifts" id="df-step-gifts">
+		<h2 class="df-step__title"><span class="df-step__num">5</span><?php echo esc_html( df_opt( 'gift_title', 'Hediye Ekle' ) ); ?> <small class="df-gifts__opt">(isteğe bağlı)</small></h2>
+		<p class="df-step__desc">Çiçeğinizin yanına eklemek istediğiniz hediyeyi seçin; aynı paketle teslim edilir.</p>
 		<div class="df-gifts__grid">
 			<?php foreach ( $gifts as $gi => $g ) : ?>
 				<label class="df-gift">
@@ -186,7 +199,7 @@ function df_gift_step() {
 				</label>
 			<?php endforeach; ?>
 		</div>
-	</div>
+	</section>
 	<?php
 }
 

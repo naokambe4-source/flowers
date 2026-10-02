@@ -471,7 +471,11 @@
 		}
 		var pickup = 'pickup' === val( 'df_type' );
 		var dsel = $( '#df_district option:selected' );
+		var gifts = $form.find( 'input[name="df_gifts[]"]:checked' ).map( function () {
+			return $( this ).data( 'name' );
+		} ).get();
 		var sums = {
+			'df-step-gifts': gifts.join( ', ' ),
 			'df-step-delivery': date ? ( /^(Bugün|Yarın)$/.test( relLabel( date ) ) ? relLabel( date ) : human( date, true ) ) + ( slot ? ' · ' + $.trim( slot ) : '' ) : '',
 			'df-step-sender': val( 'df_sender_name' ),
 			'df-step-recipient': val( 'df_recipient_name' ) ? val( 'df_recipient_name' ) + ( pickup ? '' : ( dsel.val() ? ' · ' + $.trim( dsel.text().split( '—' )[ 0 ] ) : '' ) ) : '',
