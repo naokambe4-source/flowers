@@ -558,13 +558,13 @@ function df_fonts_url() {
 	$body    = df_opt( 'font_body', 'Jost' );
 	$families = array();
 	$map      = array(
-		'Cormorant Garamond' => 'ital,wght@0,400;0,500;0,600;0,700;1,400;1,500',
+		'Cormorant Garamond' => 'ital,wght@0,400;0,500;0,700;1,400',
 		'Playfair Display'   => 'ital,wght@0,400;0,500;0,600;0,700;1,400',
 		'Bodoni Moda'        => 'ital,opsz,wght@0,6..96,400;0,6..96,500;0,6..96,700;1,6..96,400',
 		'Marcellus'          => 'wght@400',
 		'Gilda Display'      => 'wght@400',
 		'Lora'               => 'ital,wght@0,400;0,500;0,700;1,400',
-		'Jost'               => 'wght@300;400;500;600;700;800',
+		'Jost'               => 'wght@400;500;600;700;800',
 		'Manrope'            => 'wght@300;400;500;600;700;800',
 		'DM Sans'            => 'opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700;9..40,800',
 		'Inter'              => 'wght@300;400;500;600;700;800',
@@ -576,6 +576,10 @@ function df_fonts_url() {
 		'Pinyon Script'      => 'wght@400',
 	);
 	$script = df_opt( 'font_script', 'Great Vibes' );
+	// El yazısı fontu yalnızca hero notu kullanılıyorsa indirilir.
+	if ( $script && ! array_filter( (array) df_opt( 'hero_slides', array() ), function ( $s ) { return is_array( $s ) && ! empty( $s['script'] ); } ) ) {
+		$script = '';
+	}
 	foreach ( array_unique( array_filter( array( $heading, $body, $script ) ) ) as $font ) {
 		if ( isset( $map[ $font ] ) ) {
 			$families[] = 'family=' . str_replace( ' ', '+', $font ) . ':' . $map[ $font ];

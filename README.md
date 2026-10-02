@@ -42,6 +42,19 @@ Araçlar sayfasında ayarları **JSON dışa/içe aktarma** ve sıfırlama da va
 - **Üyelik**: sekmeli Giriş / Üye Ol, ad-soyad-telefon-KVKK alanları, Hesabım kısayol kartları.
 - **Favoriler** (üye + ziyaretçi), canlı ürün araması, mini sepet çekmecesi, ürün kategorisine ikon + kapak görseli, menü öğelerine ikon seçimi, bülten aboneleri + CSV.
 
+## v1.9 — Hız (PageSpeed)
+
+Test ortamında Lighthouse (mobil): ana sayfa 57 → 99, ürün 56 → 92, mağaza → 94; masaüstü ana sayfa 100.
+
+- Kullanılmayan WordPress blok / WooCommerce Blocks / markalar stilleri yüklenmez (blok içerikli yazılar hariç).
+- Tüm tema ve WooCommerce betikleri `defer`; jQuery Migrate, emoji, oEmbed kaldırıldı.
+- Tema CSS'i küçültülüp sayfaya gömülür; ürün sayfasında benzer ürün stilleri bekletmeden yüklenir.
+- Google Fonts asenkron, gereksiz kalınlıklar çıkarıldı; el yazısı fontu yalnızca kullanılıyorsa iner.
+- Sepet boşken sepet yenileme isteği yok; sipariş kaynak takibi kapalı; ürün sayfasında 165 KB'lık select kütüphanesi yerine yerel liste.
+- Mobil hero: mobil görsel yoksa küçük boy kullanılır.
+- Ayarlar: Görünüm & Marka → Hız (her biri kapatılabilir).
+- Geliştirici: CSS/JS değişince `tools/build-min.sh` ile `.min` dosyalarını yeniden üretin (eski kalırsa tema otomatik kaynak dosyayı kullanır).
+
 ## v1.8 — Hediye ekleme ve yapay zekâ ile kart notu
 
 - **Hediye Ekle** adımı (ürün sayfasında ilk adım): ayıcık, çikolata, pasta, balon gibi gerçek WooCommerce ürünleri seçilir; çiçekle birlikte sepete ayrı satır olarak, "Hediye: … ile birlikte" etiketiyle eklenir. Hediyeler "Hediyeler" kategorisinden ya da elle seçilen ürünlerden gelir ve vitrin / benzer ürünlerde çıkmaz. Ayar: Ürün & Mağaza → Ürün detay sayfası.

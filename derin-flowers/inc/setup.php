@@ -110,7 +110,7 @@ function df_enqueue() {
 		wp_enqueue_style( 'df-shop', DF_URI . '/assets/css/shop.css', array( 'df-main' ), DF_VERSION );
 	}
 
-	if ( is_singular() && ! df_wc_is_product() ) {
+	if ( is_singular() && ! df_wc_is_product() && ! is_front_page() ) {
 		wp_enqueue_style( 'df-content', DF_URI . '/assets/css/content.css', array( 'df-main' ), DF_VERSION );
 	} elseif ( is_home() || is_archive() || is_search() || is_404() ) {
 		if ( ! df_wc() || ! is_woocommerce() ) {
@@ -172,7 +172,7 @@ function df_head_hints() {
 		$slides = df_opt( 'hero_slides', array() );
 		if ( ! empty( $slides[0]['image'] ) ) {
 			$desk = df_img_url( $slides[0]['image'], 'df-hero' );
-			$mob  = ! empty( $slides[0]['image_mobile'] ) ? df_img_url( $slides[0]['image_mobile'], 'df-hero-mobile' ) : '';
+			$mob  = ! empty( $slides[0]['image_mobile'] ) ? df_img_url( $slides[0]['image_mobile'], 'df-hero-mobile' ) : df_img_url( $slides[0]['image'], 'large' );
 			if ( $mob ) {
 				printf( '<link rel="preload" as="image" href="%s" media="(max-width: 767px)" fetchpriority="high">' . "\n", esc_url( $mob ) );
 				printf( '<link rel="preload" as="image" href="%s" media="(min-width: 768px)" fetchpriority="high">' . "\n", esc_url( $desk ) );

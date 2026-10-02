@@ -64,7 +64,7 @@ if ( $side ) {
 				)
 			);
 			$desk     = df_img_url( $s['image'], 'df-hero' );
-			$mob      = $s['image_mobile'] ? df_img_url( $s['image_mobile'], 'df-hero-mobile' ) : '';
+			$mob      = $s['image_mobile'] ? df_img_url( $s['image_mobile'], 'df-hero-mobile' ) : df_img_url( $s['image'], 'large' );
 			$vars     = '';
 			if ( $desk ) {
 				$vars .= '--df-hero-d:url(' . esc_url( $desk ) . ');';

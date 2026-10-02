@@ -999,6 +999,23 @@ function df_options_schema() {
 	$schema['hero']['groups'][0]['fields'][] = array( 'id' => 'sd_hero', 'type' => 'design', 'label' => 'Bölüm tasarımı' );
 
 	$schema['appearance']['groups'][] = array(
+		'title'  => 'Hız (PageSpeed)',
+		'desc'   => 'Sayfaların hızlı açılması için önerilen ayarlar açık gelir. Bir eklentiyle uyumsuzluk görürseniz ilgili ayarı kapatın. En iyi sonuç için LiteSpeed Cache\'te sayfa önbelleği ve WebP görsel dönüştürmeyi de açın.',
+		'fields' => array(
+			array( 'id' => 'perf_blocks', 'type' => 'toggle', 'label' => 'Kullanılmayan blok stillerini yükleme', 'default' => 1, 'half' => true ),
+			array( 'id' => 'perf_defer', 'type' => 'toggle', 'label' => 'Betikleri sayfayı bekletmeden yükle (defer)', 'default' => 1, 'half' => true ),
+			array( 'id' => 'perf_jquery_footer', 'type' => 'toggle', 'label' => 'jQuery\'yi de bekletmeden yükle', 'default' => 1, 'half' => true ),
+			array( 'id' => 'perf_migrate', 'type' => 'toggle', 'label' => 'jQuery Migrate\'i kaldır', 'default' => 1, 'half' => true ),
+			array( 'id' => 'perf_fonts', 'type' => 'toggle', 'label' => 'Yazı tiplerini bekletmeden yükle', 'default' => 1, 'half' => true ),
+			array( 'id' => 'perf_min', 'type' => 'toggle', 'label' => 'Küçültülmüş tema dosyalarını kullan', 'default' => 1, 'half' => true ),
+			array( 'id' => 'perf_inline', 'type' => 'toggle', 'label' => 'Tema CSS\'ini sayfaya göm (daha hızlı ilk açılış)', 'default' => 1, 'half' => true ),
+			array( 'id' => 'perf_fragments', 'type' => 'toggle', 'label' => 'Sepet boşken sepet yenileme isteği atma', 'default' => 1, 'half' => true ),
+			array( 'id' => 'perf_attribution', 'type' => 'toggle', 'label' => 'WooCommerce sipariş kaynak takibini kapat', 'default' => 1, 'half' => true ),
+			array( 'id' => 'perf_select', 'type' => 'toggle', 'label' => 'Ürün sayfasında hafif ilçe listesi', 'default' => 1, 'half' => true ),
+			array( 'id' => 'perf_emoji', 'type' => 'toggle', 'label' => 'Emoji ve gereksiz başlık etiketlerini kaldır', 'default' => 1, 'half' => true ),
+		),
+	);
+	$schema['appearance']['groups'][] = array(
 		'title'  => 'Gelişmiş: özel CSS',
 		'desc'   => 'İleri düzey kullanıcılar için. Buraya yazılan CSS tüm sitede, tema stillerinden sonra yüklenir.',
 		'fields' => array(
