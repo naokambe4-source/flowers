@@ -42,6 +42,12 @@ Araçlar sayfasında ayarları **JSON dışa/içe aktarma** ve sıfırlama da va
 - **Üyelik**: sekmeli Giriş / Üye Ol, ad-soyad-telefon-KVKK alanları, Hesabım kısayol kartları.
 - **Favoriler** (üye + ziyaretçi), canlı ürün araması, mini sepet çekmecesi, ürün kategorisine ikon + kapak görseli, menü öğelerine ikon seçimi, bülten aboneleri + CSV.
 
+## v1.8 — Hediye ekleme ve yapay zekâ ile kart notu
+
+- **Hediye Ekle** adımı (ürün sayfasında ilk adım): ayıcık, çikolata, pasta, balon gibi gerçek WooCommerce ürünleri seçilir; çiçekle birlikte sepete ayrı satır olarak, "Hediye: … ile birlikte" etiketiyle eklenir. Hediyeler "Hediyeler" kategorisinden ya da elle seçilen ürünlerden gelir ve vitrin / benzer ürünlerde çıkmaz. Ayar: Ürün & Mağaza → Ürün detay sayfası.
+- **Yapay zekâ ile yaz** (kart notu adımında): ton + ipucu → 3 öneri, dokununca nota yazılır. Claude API anahtarı girilirse Claude (claude-opus-5-5) yazar; anahtar yoksa hazır mesajlardan alıcı adı ve tona göre kişiselleştirilmiş öneri üretilir. Ziyaretçi başına saatlik sınır. Ayar: Teslimat & Ödeme → Çiçek notu.
+- Düğmeler yan yana normal boyda; benzer ürünler sade başlıklı, 4'lü vitrin kartları.
+
 ## v1.7 — Ürün sayfasında hızlı sipariş
 
 - Teslimat (tür, tarih, saat), gönderici + e-posta, alıcı + adres ve kart notu **ürün görselinin yanında**, açılır-kapanır adımlarla alınır; seçimler adım başlıklarında özetlenir.

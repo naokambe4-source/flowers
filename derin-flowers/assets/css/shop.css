@@ -694,7 +694,8 @@ ul.woocommerce-order-overview li strong { display: block; margin-top: 6px; font-
 .df-has-quick .df-single__grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(28px, 3.6vw, 64px); }
 .df-has-quick .df-single__gallery { position: sticky; top: calc(var(--df-header-h) + 60px); }
 .df-has-quick .df-single__sticky { position: static; }
-.df-has-quick .df-single form.cart, .df-has-quick form.cart { display: flex; flex-direction: column; align-items: stretch; gap: 0; }
+.df-has-quick .df-single form.cart, .df-has-quick form.cart { display: flex; flex-direction: row; flex-wrap: wrap; align-items: stretch; gap: 10px; }
+.df-has-quick form.cart > * { flex: 0 0 100%; }
 .df-has-quick form.cart .df-buy-now--main { order: 5; }
 .df-has-quick form.cart .single_add_to_cart_button { order: 6; }
 .df-has-quick form.cart .quantity { display: none; }
@@ -720,9 +721,11 @@ ul.woocommerce-order-overview li strong { display: block; margin-top: 6px; font-
 .df-quick .df-step.is-invalid, .df-quick .df-step:has(.is-invalid) { border-color: var(--df-sale); }
 .df-step__next { display: block; margin-top: 14px; margin-left: auto !important; padding: 9px 22px; border: 0; border-radius: var(--df-radius-btn); background: var(--df-dark); color: #fff; font-size: 13px; letter-spacing: .06em; cursor: pointer; }
 .df-step__next:hover { background: var(--df-accent); }
-.df-has-quick form.cart .df-buy-now--main { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; min-height: 60px; margin: 6px 0 10px; font-size: 14px; letter-spacing: .1em; }
-.df-has-quick form.cart .single_add_to_cart_button { display: block; width: 100%; min-height: 0; padding: 10px; border: 0; background: none !important; color: var(--df-muted) !important; font-size: 13px; letter-spacing: 0; text-transform: none; text-decoration: underline; text-underline-offset: 3px; box-shadow: none; }
-.df-has-quick form.cart .single_add_to_cart_button:hover { color: var(--df-accent) !important; }
+.df-has-quick form.cart .df-buy-now--main { display: inline-flex; flex: 1 1 58%; align-items: center; justify-content: center; gap: 8px; width: auto; height: 52px; min-height: 52px; margin: 4px 0 0; padding: 0 18px; font-size: 13px; line-height: 1; letter-spacing: .1em; }
+.df-has-quick form.cart .df-buy-now--main .df-icon { width: 16px; height: 16px; flex: none; }
+.df-has-quick form.cart .single_add_to_cart_button { display: inline-flex; flex: 1 1 32%; align-items: center; justify-content: center; width: auto; height: 52px; min-height: 52px; margin: 4px 0 0; padding: 0 16px; border: 1px solid var(--df-text) !important; background: transparent !important; color: var(--df-text) !important; font-size: 13px; line-height: 1; letter-spacing: .08em; text-transform: uppercase; text-decoration: none; box-shadow: none; }
+.df-has-quick form.cart .single_add_to_cart_button:hover { background: var(--df-text) !important; color: #fff !important; }
+@media (max-width: 420px) { .df-has-quick form.cart .df-buy-now--main, .df-has-quick form.cart .single_add_to_cart_button { flex-basis: 100%; } }
 @media (min-width: 1025px) { .df-has-quick .df-single__bar { display: none !important; } }
 @media (max-width: 1024px) {
 	.df-has-quick .df-single__grid { grid-template-columns: 1fr; }
@@ -747,3 +750,45 @@ ul.woocommerce-order-overview li strong { display: block; margin-top: 6px; font-
 .df-checkout-quick .df-step--payment .df-step__num { font-size: 0; }
 .df-checkout-quick .df-step--payment .df-step__num::before { content: "2"; font-size: 14px; }
 @media (max-width: 600px) { .df-quick-sum__list > div { grid-template-columns: 1fr; gap: 2px; } }
+
+/* Düğmeler: hizalı ve normal boy */
+.df-has-quick form.cart .df-buy-now--main, .df-has-quick form.cart .single_add_to_cart_button { margin: 4px 0 0 !important; max-width: none; }
+
+/* Benzer ürünler: sade başlık, az boşluk */
+.df-related { padding: clamp(28px, 3.5vw, 48px) 0 clamp(36px, 4vw, 60px); }
+.df-related .df-vitrin__head { margin-bottom: 16px; }
+.df-related .df-vitrin__head h2 { margin: 0; font-size: calc(clamp(24px, 2vw, 32px) * var(--df-scale)); font-weight: 500; }
+.df-related .df-vitrin__head .df-link { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; font-size: 14px; }
+
+/* Hediye ekle */
+.df-gifts__opt { font-family: var(--df-font-body); font-size: 12px; font-weight: 400; color: var(--df-muted); }
+.df-gifts__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(108px, 1fr)); gap: 10px; }
+.df-gift { position: relative; cursor: pointer; }
+.df-gift input { position: absolute; opacity: 0; pointer-events: none; }
+.df-gift__box { position: relative; display: flex; flex-direction: column; gap: 4px; height: 100%; padding: 8px 8px 10px; border: 1px solid var(--df-line); border-radius: 10px; background: #fff; text-align: center; transition: border-color .2s, box-shadow .2s; }
+.df-gift__img { display: block; aspect-ratio: 1; overflow: hidden; border-radius: 8px; background: var(--df-ivory); }
+.df-gift__img img, .df-gift__img .df-ph { width: 100%; height: 100%; object-fit: cover; }
+.df-gift__name { font-size: 13px; line-height: 1.25; }
+.df-gift__price { font-size: 13px; font-weight: 600; color: var(--df-accent); }
+.df-gift__check { position: absolute; top: 6px; right: 6px; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: #fff; border: 1px solid var(--df-line); color: transparent; }
+.df-gift:hover .df-gift__box { border-color: rgba(var(--df-text-rgb), .35); }
+.df-gift input:checked + .df-gift__box { border-color: var(--df-accent); box-shadow: 0 0 0 1px var(--df-accent); }
+.df-gift input:checked + .df-gift__box .df-gift__check { background: var(--df-accent); border-color: var(--df-accent); color: #fff; }
+.df-gift input:focus-visible + .df-gift__box { outline: 2px solid var(--df-accent); outline-offset: 2px; }
+
+/* Yapay zekâ ile not */
+.df-ai { margin: 6px 0 16px; padding: 14px; border: 1px dashed rgba(var(--df-text-rgb), .25); border-radius: 10px; background: var(--df-ivory); }
+.df-ai__head { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; margin-bottom: 10px; font-size: 14px; }
+.df-ai__head .df-icon { color: var(--df-accent); }
+.df-ai__head span { flex-basis: 100%; color: var(--df-muted); font-size: 12.5px; }
+.df-ai__row { display: grid; grid-template-columns: 140px 1fr auto; gap: 8px; }
+.df-ai__row select, .df-ai__row input { min-height: 42px; padding: 0 10px; border: 1px solid var(--df-line); border-radius: 6px; background: #fff; font-size: 13.5px; }
+.df-ai__go { display: inline-flex; align-items: center; gap: 6px; min-height: 42px; padding: 0 16px; border: 0; border-radius: 6px; background: var(--df-accent); color: #fff; font-size: 13px; cursor: pointer; }
+.df-ai__go.is-busy { opacity: .6; }
+.df-ai__out:empty { display: none; }
+.df-ai__out { display: grid; gap: 8px; margin-top: 10px; }
+.df-ai__pick { padding: 10px 12px; border: 1px solid var(--df-line); border-radius: 8px; background: #fff; text-align: left; font-family: var(--df-font-heading); font-size: 16px; line-height: 1.4; cursor: pointer; }
+.df-ai__pick:hover, .df-ai__pick.is-used { border-color: var(--df-accent); box-shadow: 0 0 0 1px var(--df-accent); }
+.df-ai__wait, .df-ai__tip { color: var(--df-muted); font-size: 12.5px; }
+@media (max-width: 600px) { .df-ai__row { grid-template-columns: 1fr; } }
+.df-has-quick form.cart::before, .df-has-quick form.cart::after { display: none !important; content: none !important; }

@@ -737,6 +737,11 @@ function df_checkout_assets() {
 			df_delivery_calendar_data(),
 			array(
 				'templates' => df_note_templates(),
+				'ai'        => array(
+					'ajax'    => admin_url( 'admin-ajax.php' ),
+					'nonce'   => wp_create_nonce( 'df_ai' ),
+					'product' => $on_product ? get_the_title() : '',
+				),
 				'noteMax'   => absint( df_opt( 'note_max', 300 ) ),
 				'districts' => $districts,
 				'currency'  => html_entity_decode( get_woocommerce_currency_symbol() ),

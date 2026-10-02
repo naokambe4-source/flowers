@@ -39,6 +39,9 @@ function df_quick_fields() {
 	echo '<div class="df-quick" data-df-quick>';
 	echo '<input type="hidden" name="df_quick" value="1">';
 	echo '<p class="df-quick__intro">' . df_icon( 'sparkle', array( 'size' => 16 ) ) . '<span>' . esc_html( df_opt( 'quick_intro', 'Teslimat bilgilerini burada doldurun, tek adımda ödemeye geçin.' ) ) . '</span></p>';
+	if ( function_exists( 'df_gift_step' ) ) {
+		df_gift_step();
+	}
 	get_template_part( 'template-parts/checkout/delivery-fields', null, array( 'context' => 'product' ) );
 	echo '</div>';
 }
@@ -52,7 +55,7 @@ add_action( 'woocommerce_before_add_to_cart_button', 'df_quick_fields', 5 );
  */
 function df_quick_cart_text( $text ) {
 	global $product;
-	return ( df_quick_order_on() && df_quick_product_ok( $product ) ) ? 'Sepete ekle, alışverişe devam et' : $text;
+	return ( df_quick_order_on() && df_quick_product_ok( $product ) ) ? 'Sepete Ekle' : $text;
 }
 add_filter( 'woocommerce_product_single_add_to_cart_text', 'df_quick_cart_text', 20 );
 

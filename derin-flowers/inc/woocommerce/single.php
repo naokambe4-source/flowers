@@ -313,17 +313,22 @@ function df_single_related() {
 	if ( count( $ids ) < $limit ) {
 		$ids = array_unique( array_merge( $ids, wc_get_related_products( $product->get_id(), $limit * 2, $ids ) ) );
 	}
-	$ids = array_slice( array_diff( $ids, array( $product->get_id() ) ), 0, $limit );
+	$gifts = function_exists( 'df_gift_ids_all' ) ? df_gift_ids_all() : array();
+	$ids   = array_values( array_diff( $ids, array( $product->get_id() ), $gifts ) );
+	// Az ilgili ürün varsa en yenilerle tamamla (tek kart koca alan kaplamasın).
+	if ( count( $ids ) < $limit ) {
+		foreach ( df_query_products( 'newest', array( 'limit' => $limit, 'exclude' => array_merge( $ids, array( $product->get_id() ) ) ) ) as $np ) {
+			$ids[] = $np->get_id();
+		}
+	}
+	$ids = array_slice( $ids, 0, $limit );
 	if ( ! $ids ) {
 		return;
 	}
+	$cats = wc_get_product_term_ids( $product->get_id(), 'product_cat' );
+	$all  = $cats ? get_term_link( (int) $cats[0], 'product_cat' ) : wc_get_page_permalink( 'shop' );
 	echo '<section class="df-related"><div class="df-container">';
-	df_section_head(
-		array(
-			'eyebrow' => 'Sizin İçin Seçtiklerimiz',
-			'title'   => df_opt( 'related_title', 'Bunları da Beğenebilirsiniz' ),
-		)
-	);
+	echo '<header class="df-vitrin__head"><h2>' . esc_html( df_opt( 'related_title', 'Bunları da Beğenebilirsiniz' ) ) . '</h2><a class="df-link" href="' . esc_url( is_wp_error( $all ) ? wc_get_page_permalink( 'shop' ) : $all ) . '">Tümünü gör ' . df_icon( 'arrow-right', array( 'size' => 14 ) ) . '</a></header>'; // phpcs:ignore
 	echo '<div class="df-vitrin df-vitrin--r' . esc_attr( sanitize_key( df_opt( 'vit_ratio', '1-1' ) ) ) . '"><div class="df-vitrin__grid">';
 	foreach ( $ids as $id ) {
 		df_product_card( $id, array( 'variant' => 'vitrin' ) );
@@ -354,7 +359,7 @@ function df_buy_now_button() {
 		echo '<input type="hidden" name="add-to-cart" value="' . esc_attr( $product->get_id() ) . '">';
 	}
 	if ( function_exists( 'df_quick_order_on' ) && df_quick_order_on() && df_quick_product_ok( $product ) ) {
-		echo '<button type="submit" name="df_buy_now" value="1" class="df-btn df-btn--solid df-buy-now df-buy-now--main">' . esc_html( df_opt( 'quick_btn', 'Hemen Satın Al — Ödemeye Geç' ) ) . df_icon( 'arrow-right', array( 'size' => 18 ) ) . '</button>'; // phpcs:ignore
+		echo '<button type="submit" name="df_buy_now" value="1" class="df-btn df-btn--solid df-buy-now df-buy-now--main">' . esc_html( df_opt( 'quick_btn', 'Hemen Satın Al' ) ) . df_icon( 'arrow-right', array( 'size' => 16 ) ) . '</button>'; // phpcs:ignore
 		return;
 	}
 	echo '<button type="submit" name="df_buy_now" value="1" class="df-btn df-btn--outline df-buy-now">Hemen Al</button>';

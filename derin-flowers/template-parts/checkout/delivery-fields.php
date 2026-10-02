@@ -196,6 +196,7 @@ $df_phone     = function ( $name, $label, $value, $cc_value ) use ( $df_codes ) 
 								</select>
 							</p>
 							<div class="df-note__templates" data-df-note-templates aria-live="polite"></div>
+							<?php if ( function_exists( 'df_ai_box' ) ) { df_ai_box(); } ?>
 							<p class="form-row form-row-wide df-field" id="df_note_field">
 								<label for="df_note">Notunuz</label>
 								<textarea class="input-text" name="df_note" id="df_note" rows="4" maxlength="<?php echo esc_attr( $df_note_max ); ?>" placeholder="Kalbinizden geçenleri yazın…"><?php echo esc_textarea( $df_note ); ?></textarea>

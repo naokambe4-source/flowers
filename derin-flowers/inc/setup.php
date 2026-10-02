@@ -101,6 +101,9 @@ function df_enqueue() {
 	if ( is_front_page() ) {
 		wp_enqueue_style( 'df-home', DF_URI . '/assets/css/home.css', array( 'df-main' ), DF_VERSION );
 		wp_enqueue_script( 'df-home', DF_URI . '/assets/js/home.js', array(), DF_VERSION, true );
+	} elseif ( function_exists( 'is_product' ) && is_product() ) {
+		// Benzer ürünler vitrin kartlarını kullanır.
+		wp_enqueue_style( 'df-home', DF_URI . '/assets/css/home.css', array( 'df-main' ), DF_VERSION );
 	}
 
 	if ( df_is_shop_context() ) {

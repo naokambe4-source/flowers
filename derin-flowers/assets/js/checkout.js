@@ -361,6 +361,54 @@
 	} );
 
 	/* ---------------------------------------------------------------------
+	 * Yapay zekâ ile not önerisi
+	 * ------------------------------------------------------------------ */
+	var $ai = $( '[data-df-ai]' );
+	$ai.on( 'click', '[data-df-ai-go]', function () {
+		var $b = $( this );
+		var $out = $ai.find( '[data-df-ai-out]' );
+		if ( ! C.ai ) {
+			return;
+		}
+		$b.prop( 'disabled', true ).addClass( 'is-busy' );
+		$out.html( '<span class="df-ai__wait">Notlar hazırlanıyor…</span>' );
+		$.post( C.ai.ajax, {
+			action: 'df_ai_note',
+			nonce: C.ai.nonce,
+			tone: $ai.find( '.df-ai__tone' ).val(),
+			hint: $ai.find( '.df-ai__hint' ).val(),
+			cat: $( '#df_note_cat' ).val() || '',
+			to: $( '#df_recipient_name' ).val() || '',
+			from: $( '#df_note_from' ).val() || $( '#df_sender_name' ).val() || '',
+			product: C.ai.product || ''
+		} ).done( function ( res ) {
+			if ( res && res.success && res.data.notes.length ) {
+				$out.html( res.data.notes.map( function ( t ) {
+					return $( '<button type="button" class="df-ai__pick"></button>' ).text( t ).prop( 'outerHTML' );
+				} ).join( '' ) + '<small class="df-ai__tip">Beğendiğiniz nota dokunun; sonra dilediğiniz gibi düzenleyebilirsiniz.</small>' );
+			} else {
+				$out.html( '<span class="df-ai__wait">' + ( ( res && res.data && res.data.message ) || 'Şu an öneri alınamadı, hazır mesajlardan seçebilirsiniz.' ) + '</span>' );
+			}
+		} ).fail( function () {
+			$out.html( '<span class="df-ai__wait">Şu an öneri alınamadı, hazır mesajlardan seçebilirsiniz.</span>' );
+		} ).always( function () {
+			$b.prop( 'disabled', false ).removeClass( 'is-busy' );
+		} );
+	} );
+	$ai.on( 'click', '.df-ai__pick', function () {
+		$note.val( $( this ).text().slice( 0, C.noteMax ) ).trigger( 'input' );
+		$ai.find( '.df-ai__pick' ).removeClass( 'is-used' );
+		$( this ).addClass( 'is-used' );
+		refreshNote();
+	} );
+	$ai.on( 'keydown', '.df-ai__hint', function ( e ) {
+		if ( 'Enter' === e.key ) {
+			e.preventDefault();
+			$ai.find( '[data-df-ai-go]' ).trigger( 'click' );
+		}
+	} );
+
+	/* ---------------------------------------------------------------------
 	 * Ödeme sayfası: bilgiler ürün sayfasında alındıysa sadece ödeme
 	 * ------------------------------------------------------------------ */
 	$( '[data-df-quick-edit]' ).on( 'click', function () {
@@ -386,6 +434,7 @@
 	$steps.each( function ( i ) {
 		var $st = $( this );
 		var $t = $st.children( '.df-step__title' );
+		$t.find( '.df-step__num' ).text( i + 1 );
 		$t.attr( { role: 'button', tabindex: 0, 'aria-expanded': i === 0 ? 'true' : 'false' } ).append( '<span class="df-step__sum" data-df-sum></span>' );
 		$st.toggleClass( 'is-open', i === 0 );
 	} );
@@ -414,9 +463,19 @@
 	function summarize() {
 		var date = $( '#df_date' ).val();
 		var slot = $slots.find( 'input:checked' ).closest( 'label' ).text();
+		if ( date ) {
+			$( '#df_date_field' ).removeClass( 'is-invalid' );
+		}
+		if ( slot ) {
+			$( '#df_slot_field' ).removeClass( 'is-invalid' );
+		}
 		var pickup = 'pickup' === val( 'df_type' );
 		var dsel = $( '#df_district option:selected' );
+		var gifts = $form.find( 'input[name="df_gifts[]"]:checked' ).map( function () {
+			return $( this ).data( 'name' );
+		} ).get();
 		var sums = {
+			'df-step-gifts': gifts.join( ', ' ),
 			'df-step-delivery': date ? ( /^(Bugün|Yarın)$/.test( relLabel( date ) ) ? relLabel( date ) : human( date, true ) ) + ( slot ? ' · ' + $.trim( slot ) : '' ) : '',
 			'df-step-sender': val( 'df_sender_name' ),
 			'df-step-recipient': val( 'df_recipient_name' ) ? val( 'df_recipient_name' ) + ( pickup ? '' : ( dsel.val() ? ' · ' + $.trim( dsel.text().split( '—' )[ 0 ] ) : '' ) ) : '',
