@@ -471,11 +471,7 @@
 		}
 		var pickup = 'pickup' === val( 'df_type' );
 		var dsel = $( '#df_district option:selected' );
-		var gifts = $form.find( 'input[name="df_gifts[]"]:checked' ).map( function () {
-			return $( this ).data( 'name' );
-		} ).get();
 		var sums = {
-			'df-step-gifts': gifts.join( ', ' ),
 			'df-step-delivery': date ? ( /^(Bugün|Yarın)$/.test( relLabel( date ) ) ? relLabel( date ) : human( date, true ) ) + ( slot ? ' · ' + $.trim( slot ) : '' ) : '',
 			'df-step-sender': val( 'df_sender_name' ),
 			'df-step-recipient': val( 'df_recipient_name' ) ? val( 'df_recipient_name' ) + ( pickup ? '' : ( dsel.val() ? ' · ' + $.trim( dsel.text().split( '—' )[ 0 ] ) : '' ) ) : '',
@@ -595,43 +591,6 @@
 		return items;
 	}
 
-	/* ---------- Hediye önerisi (hediye seçmeden satın alınırken) ---------- */
-	var $giftInputs = $form.find( 'input[name="df_gifts[]"]' );
-	var upsellShown = false;
-	function giftUpsell() {
-		var $m = $( '<div class="df-upsell" role="dialog" aria-modal="true" aria-labelledby="df-upsell-t"><div class="df-upsell__box">' +
-			'<button type="button" class="df-upsell__x" aria-label="Kapat">×</button>' +
-			'<p class="df-upsell__eyebrow">Bir dakika!</p><h3 id="df-upsell-t">Çiçeğinizin yanına küçük bir sürpriz?</h3>' +
-			'<p class="df-upsell__sub">Seçtiğiniz hediye çiçekle aynı paketle teslim edilir.</p><div class="df-upsell__grid"></div>' +
-			'<div class="df-upsell__acts"><button type="button" class="df-btn df-btn--solid" data-go="add">Seçtiklerimle devam et</button><button type="button" class="df-upsell__skip" data-go="skip">Hediyesiz devam et</button></div></div></div>' );
-		$form.find( '.df-gift' ).slice( 0, 6 ).each( function () {
-			var $c = $( this ).find( '.df-gift__box' ).clone();
-			var v = $( this ).find( 'input' ).val();
-			$( '<button type="button" class="df-upsell__gift"></button>' ).attr( 'data-v', v ).append( $c ).appendTo( $m.find( '.df-upsell__grid' ) );
-		} );
-		$m.on( 'click', '.df-upsell__gift', function () {
-			var v = $( this ).attr( 'data-v' );
-			var $in = $giftInputs.filter( '[value="' + v + '"]' );
-			$in.prop( 'checked', ! $in.prop( 'checked' ) ).trigger( 'change' );
-			$( this ).toggleClass( 'is-on', $in.prop( 'checked' ) );
-			$m.find( '[data-go="add"]' ).text( $giftInputs.filter( ':checked' ).length ? 'Hediyeyle satın al' : 'Seçtiklerimle devam et' );
-		} );
-		$m.on( 'click', '[data-go], .df-upsell__x', function () {
-			$m.remove();
-			$( document.body ).removeClass( 'df-modal-open' );
-			if ( $( this ).is( '[data-go]' ) ) {
-				$buy[ 0 ].click();
-			}
-		} );
-		$m.on( 'click', function ( e ) {
-			if ( e.target === this ) {
-				$m.find( '.df-upsell__x' ).trigger( 'click' );
-			}
-		} );
-		$( document.body ).addClass( 'df-modal-open' ).append( $m );
-		$m.find( '.df-upsell__gift' ).first().trigger( 'focus' );
-	}
-
 	$form.on( 'submit', function ( e ) {
 		var sub = e.originalEvent && e.originalEvent.submitter;
 		if ( sub && 'df_buy_now' !== sub.name ) {
@@ -643,12 +602,6 @@
 			e.preventDefault();
 			toast( items.length + ' eksik bilgi var: ' + items[ 0 ].label + ( items.length > 1 ? ' ve diğerleri' : '' ) );
 			goTo( items[ 0 ].$f );
-			return;
-		}
-		if ( $giftInputs.length && ! $giftInputs.filter( ':checked' ).length && ! upsellShown ) {
-			e.preventDefault();
-			upsellShown = true;
-			giftUpsell();
 			return;
 		}
 		$buy.addClass( 'is-loading' ).find( 'span' ).first();

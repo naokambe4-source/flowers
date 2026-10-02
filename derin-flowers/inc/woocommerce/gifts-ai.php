@@ -168,9 +168,8 @@ function df_gift_step() {
 	// phpcs:ignore WordPress.Security.NonceVerification.Missing
 	$picked = isset( $_POST['df_gifts'] ) ? array_map( 'absint', (array) wp_unslash( $_POST['df_gifts'] ) ) : array();
 	?>
-	<section class="df-step df-gifts" id="df-step-gifts">
-		<h2 class="df-step__title"><span class="df-step__num">1</span><?php echo esc_html( df_opt( 'gift_title', 'Hediye Ekle' ) ); ?> <small class="df-gifts__opt">(isteğe bağlı)</small></h2>
-		<p class="df-step__desc"><?php echo esc_html( df_opt( 'gift_text', 'Çiçeğinizin yanına küçük bir sürpriz ekleyin; aynı paketle teslim edilir.' ) ); ?></p>
+	<div class="df-gifts" id="df-gifts">
+		<p class="df-gifts__title"><?php df_the_icon( 'gift', array( 'size' => 18 ) ); ?><strong><?php echo esc_html( df_opt( 'gift_title', 'Hediye Ekle' ) ); ?></strong><span class="df-gifts__opt">isteğe bağlı · çiçekle aynı paketle teslim edilir</span></p>
 		<div class="df-gifts__grid">
 			<?php foreach ( $gifts as $gi => $g ) : ?>
 				<label class="df-gift">
@@ -187,7 +186,7 @@ function df_gift_step() {
 				</label>
 			<?php endforeach; ?>
 		</div>
-	</section>
+	</div>
 	<?php
 }
 
