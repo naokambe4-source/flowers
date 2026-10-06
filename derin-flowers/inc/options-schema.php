@@ -1026,5 +1026,6 @@ function df_options_schema() {
 	$schema['admin']['groups'][0]['fields'][] = array( 'id' => 'admin_simple_menu', 'type' => 'toggle', 'label' => 'Sade menü (müşteriye gerekmeyen WordPress öğelerini gizle; menü altındaki bağlantıyla açılır)', 'default' => 1, 'half' => true );
 	$schema['admin']['groups'][0]['fields'][] = array( 'id' => 'admin_fab', 'type' => 'toggle', 'label' => 'Sitede yöneticiye "Tasarım Stüdyosu" düğmesi göster', 'default' => 1, 'half' => true );
 
-	return apply_filters( 'df_options_schema', $schema );
+	$schema = apply_filters( 'df_options_schema', $schema );
+	return $schema;
 }

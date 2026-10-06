@@ -42,6 +42,11 @@ Araçlar sayfasında ayarları **JSON dışa/içe aktarma** ve sıfırlama da va
 - **Üyelik**: sekmeli Giriş / Üye Ol, ad-soyad-telefon-KVKK alanları, Hesabım kısayol kartları.
 - **Favoriler** (üye + ziyaretçi), canlı ürün araması, mini sepet çekmecesi, ürün kategorisine ikon + kapak görseli, menü öğelerine ikon seçimi, bülten aboneleri + CSV.
 
+## v1.10.2 — Yeni ayarlar görünmüyordu (düzeltme)
+
+- Ayar paneli yeni sekmeleri (Lokasyon SEO, Bakım modu, Ürün kodu & başlık havuzu, Çalışma modu & kapasite, Kurye ekranı, Arşiv) gösterip kaydetmiyordu; ilçe sayfaları bu yüzden açılmıyordu. Düzeltildi.
+- Ürün ekranında başlığın altında başlık havuzu bilgisi ve düzenleme bağlantısı.
+
 ## v1.10.1 — Tasarım düzeltmeleri
 
 - Ürün sayfasının en üstünde görünen kırmızı şerit (gizli uyarı kutusu) kaldırıldı.

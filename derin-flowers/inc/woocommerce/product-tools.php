@@ -419,6 +419,10 @@ function df_title_tools() {
 		<?php if ( $pool ) : ?>
 		t.setAttribute( 'list', 'df-title-pool' );
 		<?php endif; ?>
+		var hint = document.createElement( 'p' );
+		hint.style.cssText = 'margin:6px 0 0;font-size:13px;color:#6b625c';
+		hint.innerHTML = <?php echo wp_json_encode( $pool ? 'Başlık havuzu: ' . count( $pool ) . ' isim — başlık kutusuna tıklayıp listeden seçebilirsiniz. <a href="' . esc_url( admin_url( 'admin.php?page=derin-flowers#product' ) ) . '">Havuzu düzenle</a>' : 'Başlık havuzu boş. <a href="' . esc_url( admin_url( 'admin.php?page=derin-flowers#product' ) ) . '">Site Ayarları → Ürün &amp; Mağaza</a> bölümünden isim ekleyin; burada liste olarak çıkar.' ); ?>;
+		t.parentNode.appendChild( hint );
 		<?php if ( df_opt( 'title_dupe_warn', 1 ) ) : ?>
 		var box = document.createElement( 'p' );
 		box.style.cssText = 'margin:6px 0 0;padding:8px 12px;border-radius:6px;background:#fdecea;color:#8a1f11;display:none';
