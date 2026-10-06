@@ -414,7 +414,7 @@
 	$( '[data-df-quick-edit]' ).on( 'click', function () {
 		$body.removeClass( 'df-checkout-quick' );
 		$( '#df-quick-sum' ).remove();
-		$( 'html, body' ).animate( { scrollTop: $( '#customer_details' ).offset().top - 100 }, 300 );
+		dfScroll( $( '#customer_details' ).offset().top - dfHeadOffset() );
 	} );
 	$body.on( 'checkout_error', function () {
 		if ( $body.hasClass( 'df-checkout-quick' ) && $( '.woocommerce-error li[data-id]' ).length ) {
@@ -438,6 +438,24 @@
 		$t.attr( { role: 'button', tabindex: 0, 'aria-expanded': i === 0 ? 'true' : 'false' } ).append( '<span class="df-step__sum" data-df-sum></span>' );
 		$st.toggleClass( 'is-open', i === 0 );
 	} );
+	function dfHeadOffset() {
+		var h = document.querySelector( '.df-header' );
+		var off = 16;
+		if ( h && /sticky|fixed/.test( getComputedStyle( h ).position ) ) {
+			off += h.getBoundingClientRect().height;
+		}
+		return off;
+	}
+	function dfScroll( top, instant ) {
+		var root = document.documentElement;
+		if ( instant ) {
+			root.style.scrollBehavior = 'auto';
+			window.scrollTo( 0, Math.max( 0, top ) );
+			root.style.scrollBehavior = '';
+			return;
+		}
+		window.scrollTo( { top: Math.max( 0, top ), behavior: 'smooth' } );
+	}
 	function openStep( $st ) {
 		$steps.not( $st ).removeClass( 'is-open' ).children( '.df-step__title' ).attr( 'aria-expanded', 'false' );
 		$st.addClass( 'is-open' ).children( '.df-step__title' ).attr( 'aria-expanded', 'true' );
@@ -496,8 +514,13 @@
 	$steps.each( function ( i ) {
 		if ( i < $steps.length - 1 ) {
 			$( '<button type="button" class="df-step__next">Devam</button>' ).appendTo( this ).on( 'click', function () {
-				openStep( $steps.eq( i + 1 ) );
-				$( 'html, body' ).animate( { scrollTop: $steps.eq( i + 1 ).offset().top - 110 }, 250 );
+				var $next = $steps.eq( i + 1 );
+				// Adım kapanınca sayfa kısalır; sonraki adımın başlığı düğmenin olduğu yerde kalsın,
+				// sonra yumuşakça başlığın altına kaysın (sıçrama olmasın).
+				var y = this.getBoundingClientRect().top;
+				openStep( $next );
+				dfScroll( $next.offset().top - y, true );
+				dfScroll( $next.offset().top - dfHeadOffset() );
 			} );
 		}
 	} );
@@ -546,7 +569,7 @@
 		if ( $st.length ) {
 			openStep( $st );
 		}
-		$( 'html, body' ).animate( { scrollTop: $f.offset().top - 130 }, 250 );
+		dfScroll( $f.offset().top - dfHeadOffset() - 20 );
 		var $el = $f.find( 'input:visible:not([type=hidden]), select:visible, textarea:visible' ).first();
 		if ( $el.length ) {
 			setTimeout( function () {

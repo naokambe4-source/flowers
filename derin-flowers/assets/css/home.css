@@ -496,7 +496,7 @@ a.df-sstrip__card:hover { color: var(--df-text); transform: translateY(-2px); bo
 .df-hero--split .df-hero__controls { left: clamp(24px, 4%, 56px); bottom: 18px; }
 .df-herosplit__side { display: grid; grid-auto-rows: 1fr; gap: 14px; }
 .df-sidebn { position: relative; display: flex; align-items: center; min-height: 0; overflow: hidden; border-radius: 10px; background: var(--df-ivory); color: var(--df-text); box-shadow: 0 1px 2px rgba(0, 0, 0, .04); }
-.df-sidebn__media { position: absolute; inset: 0 0 0 38%; }
+.df-sidebn__media { position: absolute; inset: 0 0 0 38%; overflow: hidden; }
 .df-sidebn__media img, .df-sidebn__media .df-ph { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 1s var(--df-ease); }
 .df-sidebn__media::before { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(90deg, var(--df-ivory) 0%, rgba(var(--df-ivory-rgb), 0) 45%); }
 .df-sidebn:hover .df-sidebn__media img { transform: scale(1.05); }

@@ -819,8 +819,9 @@ ul.woocommerce-order-overview li strong { display: block; margin-top: 6px; font-
 .df-err::before { content: "⚠ "; }
 .df-quick .df-step.has-error { border-color: #C9483A; box-shadow: 0 0 0 1px #C9483A; }
 .df-quick .df-step.has-error .df-step__num { background: #C9483A; }
-.df-qtoast { position: fixed; left: 50%; top: 18px; z-index: 100000; max-width: calc(100vw - 32px); padding: 12px 20px; border-radius: 10px; background: #C9483A; color: #fff; font-size: 14px; font-weight: 600; box-shadow: 0 14px 34px -12px rgba(0, 0, 0, .45); transform: translate(-50%, -140%); transition: transform .35s ease; pointer-events: none; }
-.df-qtoast.is-on { transform: translate(-50%, 0); }
+.df-qtoast { position: fixed; left: 50%; top: 18px; z-index: 100000; max-width: calc(100vw - 32px); padding: 12px 20px; border-radius: 10px; background: #C9483A; color: #fff; font-size: 14px; font-weight: 600; box-shadow: 0 14px 34px -12px rgba(0, 0, 0, .45); transform: translate(-50%, calc(-100% - 40px)); opacity: 0; visibility: hidden; transition: transform .35s ease, opacity .35s ease, visibility .35s; pointer-events: none; }
+.df-qtoast:empty { display: none; }
+.df-qtoast.is-on { transform: translate(-50%, 0); opacity: 1; visibility: visible; }
 
 /* Hediye: rozet + yönetici notu */
 .df-gift__badge { position: absolute; top: -9px; left: 50%; z-index: 1; transform: translateX(-50%); padding: 2px 8px; border-radius: 999px; background: var(--df-accent); color: #fff; font-size: 10.5px; font-weight: 600; white-space: nowrap; }

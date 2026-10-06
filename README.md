@@ -42,6 +42,12 @@ Araçlar sayfasında ayarları **JSON dışa/içe aktarma** ve sıfırlama da va
 - **Üyelik**: sekmeli Giriş / Üye Ol, ad-soyad-telefon-KVKK alanları, Hesabım kısayol kartları.
 - **Favoriler** (üye + ziyaretçi), canlı ürün araması, mini sepet çekmecesi, ürün kategorisine ikon + kapak görseli, menü öğelerine ikon seçimi, bülten aboneleri + CSV.
 
+## v1.10.1 — Tasarım düzeltmeleri
+
+- Ürün sayfasının en üstünde görünen kırmızı şerit (gizli uyarı kutusu) kaldırıldı.
+- Hero yanındaki kategori kartlarında üzerine gelince görselin taşıp kartı ikiye bölmesi düzeltildi.
+- Ürün sayfasında "Devam" denince sonraki adım (Gönderici bilgileri) yukarı fırlamıyor, yumuşakça başlığın altına kayıyor.
+
 ## v1.10 — Operasyon modülleri
 
 - **Otomatik ürün kodu**: yeni ürünler AYZ0001, AYZ0002…; varyasyonlar AYZ0001-21. Ürünler ekranında "Kodsuz ürünlere kod ver", CSV ile ürün yükleme ve sürükle-bırak sıralama kısayolları.
