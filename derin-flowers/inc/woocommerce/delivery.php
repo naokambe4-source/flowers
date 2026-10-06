@@ -179,6 +179,16 @@ function df_delivery_same_day_seconds_left() {
  * @return array
  */
 function df_delivery_available_slots( $ymd ) {
+	return apply_filters( 'df_available_slots', df_delivery_available_slots_base( $ymd ), $ymd );
+}
+
+/**
+ * Gün / saat kurallarına göre (kapasite ve çalışma modu hariç) saat aralıkları.
+ *
+ * @param string $ymd Tarih.
+ * @return array
+ */
+function df_delivery_available_slots_base( $ymd ) {
 	if ( ! df_delivery_day_open( $ymd ) ) {
 		return array();
 	}
@@ -191,7 +201,7 @@ function df_delivery_available_slots( $ymd ) {
 	if ( $mins >= df_cutoff_minutes() ) {
 		return array();
 	}
-	$ready = $mins + absint( df_opt( 'df_prep_hours', 2 ) ) * 60;
+	$ready = $mins + ( absint( df_opt( 'df_prep_hours', 2 ) ) + ( 'busy' === df_opt( 'df_mode', 'normal' ) ? absint( df_opt( 'df_busy_extra', 2 ) ) : 0 ) ) * 60;
 	return array_filter(
 		$slots,
 		function ( $s ) use ( $ready ) {

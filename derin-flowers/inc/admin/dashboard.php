@@ -150,7 +150,7 @@ function df_app_status_badge( $order ) {
  * @return string[]
  */
 function df_app_active_statuses() {
-	return array( 'on-hold', 'processing', 'df-preparing', 'df-on-the-way', 'completed' );
+	return array( 'on-hold', 'processing', 'df-preparing', 'df-on-the-way', 'completed', 'df-archived' );
 }
 
 /**
@@ -317,7 +317,7 @@ function df_app_sales_7days() {
 	$orders = wc_get_orders(
 		array(
 			'limit'        => 1000,
-			'status'       => array( 'on-hold', 'processing', 'df-preparing', 'df-on-the-way', 'completed' ),
+			'status'       => array( 'on-hold', 'processing', 'df-preparing', 'df-on-the-way', 'completed', 'df-archived' ),
 			'date_created' => '>=' . $start->getTimestamp(),
 			'type'         => 'shop_order',
 		)
@@ -427,7 +427,7 @@ function df_app_top_products() {
 	$orders = wc_get_orders(
 		array(
 			'limit'        => 500,
-			'status'       => array( 'processing', 'df-preparing', 'df-on-the-way', 'completed' ),
+			'status'       => array( 'processing', 'df-preparing', 'df-on-the-way', 'completed', 'df-archived' ),
 			'date_created' => '>=' . ( time() - 30 * DAY_IN_SECONDS ),
 			'type'         => 'shop_order',
 		)
@@ -502,6 +502,60 @@ function df_app_seo_rows() {
 		array( 'label' => 'Kalıcı bağlantılar', 'value' => get_option( 'permalink_structure' ) ? 'Okunaklı' : 'Düz (?p=) — değiştirin', 'ok' => (bool) get_option( 'permalink_structure' ) ),
 		array( 'label' => 'SEO eklentisi', 'value' => $plugin ? $plugin : 'Yok (Yoast / Rank Math önerilir)', 'ok' => $plugin ? true : null ),
 		array( 'label' => 'Site açıklaması', 'value' => get_bloginfo( 'description' ) ? 'Girilmiş' : 'Boş — Ayarlar → Genel', 'ok' => (bool) get_bloginfo( 'description' ) ),
+	);
+}
+
+/**
+ * Operasyon kontrol satırları.
+ *
+ * @return array
+ */
+function df_app_ops_rows() {
+	global $wpdb;
+	$modes    = array(
+		'normal' => 'Normal gün',
+		'busy'   => 'Yoğun gün',
+		'future' => 'Sadece ileri tarih',
+		'closed' => 'Sipariş alımı kapalı',
+	);
+	$mode     = df_opt( 'df_mode', 'normal' );
+	$couriers = function_exists( 'df_courier_list' ) ? count( df_courier_list() ) : 0;
+	$no_sku   = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->posts} p LEFT JOIN {$wpdb->postmeta} m ON m.post_id = p.ID AND m.meta_key = '_sku' WHERE p.post_type = 'product' AND p.post_status = 'publish' AND ( m.meta_value IS NULL OR m.meta_value = '' )" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+	$next     = function_exists( 'df_delivery_next_date' ) ? df_delivery_next_date() : null;
+	$cron     = wp_next_scheduled( 'df_archive_cron' );
+	$cap      = (int) df_opt( 'df_cap_day', 0 );
+	$cap_s    = (int) df_opt( 'df_cap_slot', 0 );
+	return array(
+		array( 'label' => 'Bakım modu', 'value' => df_opt( 'maint_on', 0 ) ? 'AÇIK — ziyaretçiler siteyi göremiyor' : 'Kapalı', 'ok' => ! df_opt( 'maint_on', 0 ), 'url' => admin_url( 'admin.php?page=derin-flowers#admin' ) ),
+		array( 'label' => 'Çalışma modu', 'value' => ( isset( $modes[ $mode ] ) ? $modes[ $mode ] : $mode ) . ( df_opt( 'df_sameday_off', 0 ) ? ' · bugün aynı gün kapalı' : '' ), 'ok' => 'closed' === $mode ? false : ( 'normal' === $mode ? true : null ), 'url' => admin_url( 'admin.php?page=derin-flowers#delivery' ) ),
+		array( 'label' => 'İlk müsait teslimat', 'value' => $next ? df_date_label( $next ) : 'Müsait gün yok', 'ok' => (bool) $next ),
+		array( 'label' => 'Kapasite', 'value' => ( $cap ? 'Günlük ' . $cap : 'Günlük sınırsız' ) . ' · ' . ( $cap_s ? 'saat başına ' . $cap_s : 'saat başına sınırsız' ), 'ok' => null ),
+		array( 'label' => 'Kuryeler', 'value' => $couriers ? $couriers . ' kurye · ekran ' . ( df_opt( 'courier_screen', 1 ) ? 'açık' : 'kapalı' ) : 'Kurye tanımlı değil', 'ok' => $couriers ? true : null, 'url' => admin_url( 'admin.php?page=df-couriers' ) ),
+		array( 'label' => 'Ürün kodu', 'value' => df_opt( 'sku_auto', 1 ) ? 'Otomatik (' . ( function_exists( 'df_sku_prefix' ) ? df_sku_prefix() : 'AYZ' ) . '0001…)' . ( $no_sku ? ' · ' . $no_sku . ' ürün kodsuz' : '' ) : 'Elle', 'ok' => $no_sku ? null : true, 'url' => admin_url( 'edit.php?post_type=product' ) ),
+		array( 'label' => 'Sipariş arşivi', 'value' => df_opt( 'archive_on', 1 ) ? 'Otomatik · teslimden ' . (int) df_opt( 'archive_days', 2 ) . ' gün sonra' . ( $cron ? '' : ' (görev bekliyor)' ) : 'Kapalı', 'ok' => df_opt( 'archive_on', 1 ) ? true : null, 'url' => function_exists( 'df_archive_url' ) ? df_archive_url() : '' ),
+	);
+}
+
+/**
+ * İçerik, dil ve entegrasyon satırları.
+ *
+ * @return array
+ */
+function df_app_content_rows() {
+	$ml    = defined( 'POLYLANG_VERSION' ) ? 'Polylang' : ( defined( 'ICL_SITEPRESS_VERSION' ) ? 'WPML' : '' );
+	$langs = df_opt( 'lang_on', 0 ) ? df_opt( 'lang_codes', '' ) : '';
+	$locs  = function_exists( 'df_loc_items' ) ? count( df_loc_items() ) : 0;
+	return array(
+		array( 'label' => 'Logo', 'value' => df_opt( 'logo_image' ) ? 'Yüklü' : 'Metin logo', 'ok' => df_opt( 'logo_image' ) ? true : null ),
+		array( 'label' => 'Telefon / WhatsApp', 'value' => trim( df_opt( 'contact_phone1' ) . ' · ' . df_opt( 'contact_whatsapp' ), ' ·' ) ? trim( df_opt( 'contact_phone1' ) . ' · ' . df_opt( 'contact_whatsapp' ), ' ·' ) : 'Girilmemiş', 'ok' => (bool) df_opt( 'contact_whatsapp' ) ),
+		array( 'label' => 'Diller', 'value' => $ml ? $ml . ' ile çok dilli' : ( $langs ? $langs . ' (çeviri eklentisi yok — Google Çeviri ile açılır)' : 'Yalnızca Türkçe' ), 'ok' => $ml ? true : null ),
+		array( 'label' => 'Arapça (sağdan sola)', 'value' => $ml ? 'WordPress dil ayarıyla otomatik' : 'Çeviri eklentisi kurulunca otomatik', 'ok' => null ),
+		array( 'label' => 'İlçe SEO sayfaları', 'value' => $locs ? $locs . ' ilçe' : 'Kapalı', 'ok' => $locs ? true : null, 'url' => $locs ? df_loc_url() : '' ),
+		array( 'label' => 'llms.txt', 'value' => df_opt( 'loc_llms', 1 ) ? 'Açık' : 'Kapalı', 'ok' => null, 'url' => df_opt( 'loc_llms', 1 ) ? home_url( '/llms.txt' ) : '' ),
+		array( 'label' => 'Google yorum daveti', 'value' => df_opt( 'review_url' ) ? 'Bağlı' : 'Bağlantı girilmemiş', 'ok' => df_opt( 'review_url' ) ? true : null ),
+		array( 'label' => 'Bildirim (SMS / otomasyon)', 'value' => df_opt( 'hook_url' ) ? 'Bağlı' : 'Bağlı değil', 'ok' => null ),
+		array( 'label' => 'E-fatura', 'value' => df_opt( 'efatura_url' ) ? 'Bağlı' : 'Bağlı değil', 'ok' => null ),
+		array( 'label' => 'WebP görsel', 'value' => wp_image_editor_supports( array( 'mime_type' => 'image/webp' ) ) ? ( df_opt( 'img_webp', 0 ) ? 'Açık' : 'Sunucu destekliyor (ayardan açılabilir)' ) : 'Sunucu desteklemiyor', 'ok' => null ),
 	);
 }
 
@@ -595,7 +649,7 @@ function df_app_dashboard() {
 		array(
 			'limit'          => -1,
 			'return'         => 'ids',
-			'status'         => 'completed',
+			'status'         => array( 'completed', 'df-archived' ),
 			'date_completed' => '>=' . $today_ts,
 			'type'           => 'shop_order',
 		)
@@ -900,7 +954,7 @@ function df_app_print() {
 										<td><?php echo esc_html( $o->get_meta( '_df_recipient_name' ) ); ?></td>
 										<td><?php echo esc_html( df_app_district( $o ) ); ?></td>
 										<td class="df-app-clip"><?php echo $o->get_meta( '_df_note' ) ? esc_html( wp_trim_words( $o->get_meta( '_df_note' ), 10 ) ) : '<span class="df-app-muted">Not yok</span>'; ?></td>
-										<td><?php echo $o->get_meta( '_df_printed' ) ? '<span class="df-app-pill is-ok">Yazdırıldı</span>' : '<span class="df-app-pill is-warn">Bekliyor</span>'; ?></td>
+										<td><?php $plog = df_print_history( $o ); ?><?php echo $o->get_meta( '_df_printed' ) ? '<span class="df-app-pill is-ok" title="' . esc_attr( implode( "\n", $plog ) ) . '">Yazdırıldı' . ( count( $plog ) > 1 ? ' · ' . count( $plog ) . ' kez' : '' ) . '</span>' : '<span class="df-app-pill is-warn">Bekliyor</span>'; ?></td>
 									</tr>
 								<?php endforeach; ?>
 							</tbody>
@@ -987,8 +1041,7 @@ function df_print_bulk() {
 			}
 			echo '</table><p>Teslim alan imza: ____________________</p></div>';
 		}
-		$o->update_meta_data( '_df_printed', time() );
-		$o->save();
+		df_print_log( $o, $type );
 	}
 	?>
 	</body></html>
@@ -1009,7 +1062,7 @@ function df_app_couriers() {
 	$orders   = array_filter(
 		df_app_orders_for_date( $date ),
 		function ( $o ) {
-			return 'pickup' !== $o->get_meta( '_df_delivery_type' ) && 'completed' !== $o->get_status();
+			return 'pickup' !== $o->get_meta( '_df_delivery_type' ) && ! in_array( $o->get_status(), array( 'completed', 'df-archived' ), true );
 		}
 	);
 	$couriers = df_app_couriers_list();
@@ -1036,6 +1089,25 @@ function df_app_couriers() {
 						<span class="df-app-chip"><span class="dashicons dashicons-car"></span><?php echo esc_html( $c['name'] ); ?> <strong><?php echo (int) ( isset( $load[ $c['name'] ] ) ? $load[ $c['name'] ] : 0 ); ?></strong></span>
 					<?php endforeach; ?>
 				</div>
+				<?php if ( function_exists( 'df_courier_list' ) && df_opt( 'courier_screen', 1 ) ) : ?>
+					<section class="df-app-card df-app-cscreens">
+						<header class="df-app-card__head"><h2>Kurye ekranları</h2><span class="df-app-muted">Her kurye kendi bağlantısından telefonda siparişlerini görür, teslim fotoğrafı çeker. Bağlantıyı sadece kuryeye gönderin.</span></header>
+						<ul class="df-app-rows">
+							<?php foreach ( df_courier_list() as $kc ) : ?>
+								<?php $kurl = df_courier_url( $kc ); ?>
+								<li>
+									<span class="df-app-rows__label"><?php echo esc_html( $kc['name'] ); ?></span>
+									<span class="df-app-rows__value">
+										<a class="button button-small" href="<?php echo esc_url( $kurl ); ?>" target="_blank" rel="noopener">Ekranı aç</a>
+										<?php if ( $kc['phone'] ) : ?>
+											<a class="button button-small df-app-wa" href="<?php echo esc_url( 'https://wa.me/' . $kc['phone'] . '?text=' . rawurlencode( 'Merhaba ' . $kc['name'] . ', teslimat ekranınız: ' . $kurl ) ); ?>" target="_blank" rel="noopener">WhatsApp ile gönder</a>
+										<?php endif; ?>
+									</span>
+								</li>
+							<?php endforeach; ?>
+						</ul>
+					</section>
+				<?php endif; ?>
 			<?php endif; ?>
 			<section class="df-app-card">
 				<?php if ( $orders ) : ?>
@@ -1140,6 +1212,8 @@ function df_app_system() {
 			<div class="df-app-grid">
 				<section class="df-app-card"><header class="df-app-card__head"><h2>Sistem</h2></header><?php df_app_rows( array_merge( df_app_system_rows(), $more ) ); ?></section>
 				<section class="df-app-card"><header class="df-app-card__head"><h2>SEO & İndeksleme</h2></header><?php df_app_rows( df_app_seo_rows() ); ?></section>
+				<section class="df-app-card"><header class="df-app-card__head"><h2>Operasyon — final kontrol</h2></header><?php df_app_rows( df_app_ops_rows() ); ?></section>
+				<section class="df-app-card"><header class="df-app-card__head"><h2>İçerik, dil & entegrasyon</h2></header><?php df_app_rows( df_app_content_rows() ); ?></section>
 			</div>
 			<?php
 		}

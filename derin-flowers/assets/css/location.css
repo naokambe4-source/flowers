@@ -1,0 +1,40 @@
+/* Derin Flowers — İlçe (lokasyon SEO) sayfaları */
+.df-loc__hero { background: var(--df-ivory); padding: clamp(36px, 6vw, 80px) 0 clamp(32px, 5vw, 64px); text-align: center; }
+.df-loc__crumbs { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; font-size: 13px; color: var(--df-muted); margin-bottom: 18px; }
+.df-loc__crumbs a { color: inherit; text-decoration: none; }
+.df-loc__crumbs a:hover { color: var(--df-accent); }
+.df-loc__title { font-size: calc(clamp(34px, 5vw, 64px) * var(--df-scale)); margin: 0; }
+.df-loc__lead { max-width: 640px; margin: 14px auto 0; color: var(--df-muted); font-size: 17px; }
+.df-loc__cta { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin-top: 26px; }
+.df-loc__facts { border-bottom: 1px solid var(--df-line); }
+.df-loc__facts-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; }
+.df-loc__fact { display: grid; justify-items: center; text-align: center; gap: 6px; padding: 26px 14px; color: var(--df-text); }
+.df-loc__fact + .df-loc__fact { border-left: 1px solid var(--df-line); }
+.df-loc__fact svg { color: var(--df-accent); }
+.df-loc__fact strong { font-family: var(--df-font-heading); font-size: 19px; font-weight: 500; }
+.df-loc__fact span { font-size: 13px; color: var(--df-muted); }
+.df-loc__section { padding: clamp(40px, 6vw, 80px) 0; }
+.df-loc__section + .df-loc__section { padding-top: 0; }
+.df-loc__h2 { font-size: calc(clamp(26px, 3vw, 38px) * var(--df-scale)); margin: 0 0 20px; text-align: center; }
+.df-loc__text .df-prose { font-size: 17px; }
+.df-loc__zones { margin-top: 18px; font-size: 14px; color: var(--df-muted); }
+.df-loc__qa { border-top: 1px solid var(--df-line); }
+.df-loc__qa:last-child { border-bottom: 1px solid var(--df-line); }
+.df-loc__qa summary { cursor: pointer; list-style: none; padding: 18px 32px 18px 0; position: relative; font-weight: 600; }
+.df-loc__qa summary::-webkit-details-marker { display: none; }
+.df-loc__qa summary::after { content: "+"; position: absolute; right: 4px; top: 14px; font-size: 22px; color: var(--df-accent); }
+.df-loc__qa[open] summary::after { content: "–"; }
+.df-loc__qa p { margin: 0 0 18px; color: var(--df-muted); }
+.df-loc__list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+.df-loc__list a { display: grid; gap: 4px; padding: 18px 20px; border: 1px solid var(--df-line); border-radius: var(--df-radius); text-decoration: none; color: var(--df-text); background: var(--df-bg); transition: border-color .2s, transform .2s; }
+.df-loc__list a:hover { border-color: var(--df-accent); transform: translateY(-2px); }
+.df-loc__list strong { font-family: var(--df-font-heading); font-size: 21px; font-weight: 500; }
+.df-loc__list span { font-size: 13px; color: var(--df-muted); }
+.df-loc__chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.df-loc__chips a { display: inline-block; padding: 9px 16px; border: 1px solid var(--df-line); border-radius: 40px; font-size: 14px; color: var(--df-text); text-decoration: none; }
+.df-loc__chips a:hover { border-color: var(--df-accent); color: var(--df-accent); }
+@media (max-width: 800px) {
+	.df-loc__facts-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+	.df-loc__fact:nth-child(3) { border-left: 0; }
+	.df-loc__fact:nth-child(n+3) { border-top: 1px solid var(--df-line); }
+}

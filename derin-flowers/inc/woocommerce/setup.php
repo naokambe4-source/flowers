@@ -364,6 +364,9 @@ function df_archive_header_data() {
 		'desc'     => '',
 		'subtitle' => '',
 		'image'    => 0,
+		'image_m'  => 0,
+		'pos'      => '',
+		'promo'    => array( 'text' => '', 'btn' => '', 'url' => '' ),
 		'children' => array(),
 	);
 	if ( is_product_taxonomy() ) {
@@ -371,6 +374,13 @@ function df_archive_header_data() {
 		$data['desc']     = term_description( $term );
 		$data['subtitle'] = get_term_meta( $term->term_id, 'df_subtitle', true );
 		$data['image']    = absint( get_term_meta( $term->term_id, 'df_banner', true ) );
+		$data['image_m']  = absint( get_term_meta( $term->term_id, 'df_banner_mobile', true ) );
+		$data['pos']      = (string) get_term_meta( $term->term_id, 'df_banner_pos', true );
+		$data['promo']    = array(
+			'text' => (string) get_term_meta( $term->term_id, 'df_promo_text', true ),
+			'btn'  => (string) get_term_meta( $term->term_id, 'df_promo_btn', true ),
+			'url'  => (string) get_term_meta( $term->term_id, 'df_promo_url', true ),
+		);
 		if ( 'product_cat' === $term->taxonomy ) {
 			$children = get_terms(
 				array(

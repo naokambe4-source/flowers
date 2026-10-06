@@ -68,6 +68,41 @@ function df_cat_edit_fields( $term ) {
 				<button type="button" class="button-link-delete df-media__remove" <?php echo $banner ? '' : 'hidden'; ?>>Kaldır</button>
 			</div>
 			<p class="description">Geniş, yatay görsel (en az 2000px). Boş bırakılırsa sade başlık alanı kullanılır.</p>
+		</td>
+	</tr>
+	<?php $banner_m = absint( get_term_meta( $term->term_id, 'df_banner_mobile', true ) ); ?>
+	<tr class="form-field">
+		<th scope="row"><label>Mobil kapak görseli (opsiyonel)</label></th>
+		<td>
+			<div class="df-media" data-size="medium">
+				<input type="hidden" name="df_banner_mobile" value="<?php echo esc_attr( $banner_m ); ?>" class="df-media__input">
+				<div class="df-media__preview"><?php echo $banner_m ? wp_get_attachment_image( $banner_m, 'medium' ) : ''; ?></div>
+				<button type="button" class="button df-media__select">Görsel seç</button>
+				<button type="button" class="button-link-delete df-media__remove" <?php echo $banner_m ? '' : 'hidden'; ?>>Kaldır</button>
+			</div>
+			<p class="description">Telefonda gösterilir (dikey / kare görsel önerilir). Boşsa masaüstü görseli kullanılır.</p>
+		</td>
+	</tr>
+	<tr class="form-field">
+		<th scope="row"><label for="df_banner_pos">Görsel odak noktası</label></th>
+		<td>
+			<?php $pos = get_term_meta( $term->term_id, 'df_banner_pos', true ); ?>
+			<select name="df_banner_pos" id="df_banner_pos">
+				<?php foreach ( array( 'center' => 'Orta', 'top' => 'Üst', 'bottom' => 'Alt', 'left' => 'Sol', 'right' => 'Sağ' ) as $k => $l ) : ?>
+					<option value="<?php echo esc_attr( $k ); ?>" <?php selected( $pos ? $pos : 'center', $k ); ?>><?php echo esc_html( $l ); ?></option>
+				<?php endforeach; ?>
+			</select>
+		</td>
+	</tr>
+	<tr class="form-field">
+		<th scope="row"><label for="df_promo_text">Kampanya bandı</label></th>
+		<td>
+			<input type="text" name="df_promo_text" id="df_promo_text" value="<?php echo esc_attr( get_term_meta( $term->term_id, 'df_promo_text', true ) ); ?>" placeholder="Örn. Anneler Günü'ne özel tüm buketlerde aynı gün teslimat">
+			<p style="display:flex;gap:8px;margin-top:8px">
+				<input type="text" name="df_promo_btn" value="<?php echo esc_attr( get_term_meta( $term->term_id, 'df_promo_btn', true ) ); ?>" placeholder="Buton metni (opsiyonel)" style="max-width:240px">
+				<input type="url" name="df_promo_url" value="<?php echo esc_attr( get_term_meta( $term->term_id, 'df_promo_url', true ) ); ?>" placeholder="Buton bağlantısı (https://…)">
+			</p>
+			<p class="description">Kategori sayfasında başlığın altında renkli bant olarak gösterilir. Boşsa gösterilmez.</p>
 			<script>
 			( function ( $ ) {
 				$( document ).on( 'click', '.df-media__select', function ( e ) {
@@ -119,6 +154,21 @@ function df_cat_save_fields( $term_id ) {
 	}
 	if ( isset( $_POST['df_banner'] ) ) {
 		update_term_meta( $term_id, 'df_banner', absint( $_POST['df_banner'] ) );
+	}
+	if ( isset( $_POST['df_banner_mobile'] ) ) {
+		update_term_meta( $term_id, 'df_banner_mobile', absint( $_POST['df_banner_mobile'] ) );
+	}
+	if ( isset( $_POST['df_banner_pos'] ) ) {
+		$pos = sanitize_key( wp_unslash( $_POST['df_banner_pos'] ) );
+		update_term_meta( $term_id, 'df_banner_pos', in_array( $pos, array( 'center', 'top', 'bottom', 'left', 'right' ), true ) ? $pos : 'center' );
+	}
+	foreach ( array( 'df_promo_text', 'df_promo_btn' ) as $k ) {
+		if ( isset( $_POST[ $k ] ) ) {
+			update_term_meta( $term_id, $k, sanitize_text_field( wp_unslash( $_POST[ $k ] ) ) );
+		}
+	}
+	if ( isset( $_POST['df_promo_url'] ) ) {
+		update_term_meta( $term_id, 'df_promo_url', esc_url_raw( wp_unslash( $_POST['df_promo_url'] ) ) );
 	}
 }
 add_action( 'created_product_cat', 'df_cat_save_fields' );

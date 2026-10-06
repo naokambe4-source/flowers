@@ -73,7 +73,13 @@ p.stars a:hover ~ a::before, p.stars.selected a.active ~ a::before { color: var(
    Mağaza / kategori
    ========================================================================== */
 .df-shophead { position: relative; padding: clamp(40px, 6vw, 88px) 0 clamp(28px, 3.5vw, 48px); text-align: center; background: var(--df-ivory); isolation: isolate; }
-.df-shophead.has-image { color: #fff; padding: clamp(80px, 11vw, 170px) 0 clamp(48px, 5vw, 80px); background: var(--df-sand) var(--df-shophead) center / cover no-repeat; }
+.df-shophead.has-image { color: #fff; padding: clamp(80px, 11vw, 170px) 0 clamp(48px, 5vw, 80px); background: var(--df-sand) var(--df-shophead) var(--df-shophead-pos, center) / cover no-repeat; }
+@media (max-width: 700px) { .df-shophead.has-mobile { background-image: var(--df-shophead-m); padding: clamp(110px, 38vw, 200px) 0 36px; } }
+.df-catpromo { background: var(--df-accent); color: #fff; }
+.df-catpromo__inner { display: flex; align-items: center; justify-content: center; gap: 12px 20px; flex-wrap: wrap; padding-top: 12px; padding-bottom: 12px; text-align: center; }
+.df-catpromo p { margin: 0; font-size: 15px; letter-spacing: .02em; }
+.df-catpromo__btn { display: inline-flex; align-items: center; min-height: 34px; padding: 0 16px; border: 1px solid rgba(255, 255, 255, .7); color: #fff; font-size: 12px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; text-decoration: none; border-radius: var(--df-radius-btn, 0); }
+.df-catpromo__btn:hover { background: #fff; color: var(--df-accent); }
 .df-shophead.has-image::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(0deg, rgba(20, 14, 12, .5), rgba(20, 14, 12, .15)); }
 .df-shophead .df-crumbs { justify-content: center; margin-bottom: 18px; }
 .df-shophead.has-image .df-crumbs, .df-shophead.has-image .df-crumbs a { color: rgba(255, 255, 255, .85); }

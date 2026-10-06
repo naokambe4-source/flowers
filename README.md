@@ -42,6 +42,22 @@ Araçlar sayfasında ayarları **JSON dışa/içe aktarma** ve sıfırlama da va
 - **Üyelik**: sekmeli Giriş / Üye Ol, ad-soyad-telefon-KVKK alanları, Hesabım kısayol kartları.
 - **Favoriler** (üye + ziyaretçi), canlı ürün araması, mini sepet çekmecesi, ürün kategorisine ikon + kapak görseli, menü öğelerine ikon seçimi, bülten aboneleri + CSV.
 
+## v1.10 — Operasyon modülleri
+
+- **Otomatik ürün kodu**: yeni ürünler AYZ0001, AYZ0002…; varyasyonlar AYZ0001-21. Ürünler ekranında "Kodsuz ürünlere kod ver", CSV ile ürün yükleme ve sürükle-bırak sıralama kısayolları.
+- **Hazır varyasyon şablonları** (21 – 41 – 101 gül, boy, renk): ürün ekranından şablon seç → fiyat yaz → kaydet; ürün değişken ürüne çevrilir.
+- **Başlık havuzu** ve aynı ürün başlığı uyarısı; ürün listesinde **Aktif / Pasif** anahtarı.
+- **Görsel SEO**: Türkçe karaktersiz dosya adı, ürün adıyla ALT metni, en büyük boyut, isteğe bağlı WebP.
+- **Çalışma modu & kapasite**: Normal / Yoğun / Sadece ileri tarih / Sipariş alımı kapalı; günlük, saat aralığı ve özel gün kapasitesi (dolan saatler takvimde kapanır); site üstünde duyuru bandı.
+- **Bakım modu** (503, yöneticiler siteyi görür).
+- **Kurye ekranı**: her kuryeye şifresiz telefon sayfası — yola çıktım, teslim ettim (fotoğraf + teslim alan), teslim edilemedi. Fotoğraf sipariş ekranında, isteğe bağlı müşteri takip sayfasında.
+- **Sipariş arşivi**: teslim edilenler X gün sonra otomatik "Arşiv" durumuna alınır; raporlarda kalır.
+- **Yazdırma geçmişi**, **Google yorum daveti** (e-posta + WhatsApp), **bildirim bağlantısı** (SMS / otomasyon için webhook), **e-fatura bağlantı noktası** (imzalı JSON).
+- **Lokasyon SEO**: /cicek-siparisi/bornova/ gibi ilçe sayfaları, ilçe listesi, site haritası, yerel işletme + SSS şeması, Yoast / Rank Math uyumu, /llms.txt.
+- **Kategori bannerı**: mobil görsel, odak noktası, kampanya bandı + buton.
+- **Sistem Durumu → final kontrol**: bakım, çalışma modu, kapasite, kurye, ürün kodu, arşiv, dil, entegrasyon kontrolleri.
+- Hız ayarları sadeleştirildi (düzen bozulmasın): blok stilleri yalnızca kullanılan bloklar için yüklenir, jQuery bekletilmez, ürün sayfası stilleri beklemeden gelir.
+
 ## v1.9 — Hız (PageSpeed)
 
 Test ortamında Lighthouse (mobil): ana sayfa 57 → 99, ürün 56 → 92, mağaza → 94; masaüstü ana sayfa 100.

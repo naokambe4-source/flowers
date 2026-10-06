@@ -858,3 +858,21 @@ function df_migrate_163() {
 	update_option( 'df_mig_163', 1, false );
 }
 add_action( 'admin_init', 'df_migrate_163' );
+
+/**
+ * 1.10: jQuery'yi bekletmeden yükleme varsayılan olarak kapalı (bazı eklentilerin satır içi
+ * betikleri jQuery'yi hemen bekler; sayfa düzeni bozulmasın).
+ */
+function df_migrate_1100() {
+	if ( get_option( 'df_mig_1100' ) ) {
+		return;
+	}
+	$o = get_option( DF_OPTION );
+	if ( is_array( $o ) && ! empty( $o['perf_jquery_footer'] ) ) {
+		$o['perf_jquery_footer'] = 0;
+		$o['__df_clean']         = 1;
+		update_option( DF_OPTION, $o );
+	}
+	update_option( 'df_mig_1100', 1, false );
+}
+add_action( 'init', 'df_migrate_1100', 1 );

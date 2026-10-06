@@ -29,6 +29,7 @@ function df_tracking_steps( $order ) {
 		'df-preparing'  => 1,
 		'df-on-the-way' => 2,
 		'completed'     => 3,
+		'df-archived'   => 3,
 	);
 	$current = isset( $map[ $status ] ) ? $map[ $status ] : -1;
 	$out     = array();
@@ -180,6 +181,7 @@ function df_tracking_shortcode() {
 							</li>
 						<?php endforeach; ?>
 					</ol>
+					<?php do_action( 'df_tracking_after_timeline', $order ); ?>
 				<?php endif; ?>
 				<div class="df-track__items">
 					<?php foreach ( $order->get_items() as $item ) : ?>

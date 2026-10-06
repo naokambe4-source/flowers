@@ -1004,7 +1004,7 @@ function df_options_schema() {
 		'fields' => array(
 			array( 'id' => 'perf_blocks', 'type' => 'toggle', 'label' => 'Kullanılmayan blok stillerini yükleme', 'default' => 1, 'half' => true ),
 			array( 'id' => 'perf_defer', 'type' => 'toggle', 'label' => 'Betikleri sayfayı bekletmeden yükle (defer)', 'default' => 1, 'half' => true ),
-			array( 'id' => 'perf_jquery_footer', 'type' => 'toggle', 'label' => 'jQuery\'yi de bekletmeden yükle', 'default' => 1, 'half' => true ),
+			array( 'id' => 'perf_jquery_footer', 'type' => 'toggle', 'label' => 'jQuery\'yi de bekletmeden yükle (eklentiler bozulursa kapatın)', 'default' => 0, 'half' => true ),
 			array( 'id' => 'perf_migrate', 'type' => 'toggle', 'label' => 'jQuery Migrate\'i kaldır', 'default' => 1, 'half' => true ),
 			array( 'id' => 'perf_fonts', 'type' => 'toggle', 'label' => 'Yazı tiplerini bekletmeden yükle', 'default' => 1, 'half' => true ),
 			array( 'id' => 'perf_min', 'type' => 'toggle', 'label' => 'Küçültülmüş tema dosyalarını kullan', 'default' => 1, 'half' => true ),

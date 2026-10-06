@@ -40,14 +40,46 @@ function df_perf_needs_blocks() {
 }
 
 /**
+ * Widget alanlarında WooCommerce bloğu var mı?
+ *
+ * @return bool
+ */
+function df_perf_wc_blocks_used() {
+	static $used = null;
+	if ( null === $used ) {
+		$used = false;
+		foreach ( (array) get_option( 'widget_block', array() ) as $w ) {
+			if ( is_array( $w ) && ! empty( $w['content'] ) && false !== strpos( $w['content'], 'wp:woocommerce/' ) ) {
+				$used = true;
+				break;
+			}
+		}
+	}
+	return $used;
+}
+
+/**
+ * Yalnızca kullanılan blokların stillerini yükle (tüm blok kütüphanesi yerine).
+ *
+ * @param bool $load Ayrı yükleme.
+ * @return bool
+ */
+function df_perf_block_assets( $load ) {
+	return df_perf( 'perf_blocks' ) ? true : $load;
+}
+add_filter( 'should_load_separate_core_block_assets', 'df_perf_block_assets' );
+
+/**
  * Gereksiz stilleri ve betikleri kaldır.
  */
 function df_perf_dequeue() {
 	if ( is_admin() || df_live() ) {
 		return;
 	}
-	if ( df_perf( 'perf_blocks' ) && ! df_perf_needs_blocks() ) {
-		foreach ( array( 'wp-block-library', 'wp-block-library-theme', 'classic-theme-styles', 'global-styles', 'wc-blocks-style', 'wc-blocks-vendors-style', 'wc-all-blocks-style' ) as $h ) {
+	// Blok stilleri: WordPress yalnızca sayfada (widget'lar dahil) kullanılan blokların stilini yükler
+	// (df_perf_block_assets). Genel blok/tema stilleri kaldırılmaz; footer widget'ları bozulmaz.
+	if ( df_perf( 'perf_blocks' ) && ! df_perf_needs_blocks() && ! df_perf_wc_blocks_used() ) {
+		foreach ( array( 'wc-blocks-style', 'wc-blocks-vendors-style', 'wc-all-blocks-style' ) as $h ) {
 			wp_dequeue_style( $h );
 		}
 	}
@@ -213,7 +245,6 @@ add_filter( 'wp_get_attachment_image_attributes', 'df_perf_img_attr' );
 
 /**
  * Tema CSS'ini sayfaya göm (ayrı dosya isteği beklenmez → ilk görüntü hızlanır).
- * Ürün sayfasında benzer ürün stilleri (home.css) bekletmeden yüklenir.
  *
  * @param string $html   Etiket.
  * @param string $handle Kimlik.
@@ -223,11 +254,8 @@ add_filter( 'wp_get_attachment_image_attributes', 'df_perf_img_attr' );
  */
 function df_perf_inline_css( $html, $handle, $href, $media ) {
 	static $budget = null;
-	if ( is_admin() || df_live() || ! df_perf( 'perf_inline' ) || ! in_array( $handle, array( 'df-main', 'df-home', 'df-shop', 'df-content', 'df-pages' ), true ) ) {
+	if ( is_admin() || df_live() || ! df_perf( 'perf_inline' ) || ! in_array( $handle, array( 'df-main', 'df-home', 'df-shop', 'df-content', 'df-pages', 'df-loc' ), true ) ) {
 		return $html;
-	}
-	if ( 'df-home' === $handle && df_wc() && is_product() ) {
-		return str_replace( "media='all'", "media='print' onload=\"this.media='all'\"", $html ) . '<noscript><link rel="stylesheet" href="' . esc_url( $href ) . '"></noscript>' . "\n";
 	}
 	$path = wp_parse_url( $href, PHP_URL_PATH );
 	$rel  = substr( $path, strpos( $path, '/assets/' ) );

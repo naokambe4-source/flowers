@@ -12,10 +12,12 @@ get_header( 'shop' );
 
 $df_data = df_archive_header_data();
 $df_bg   = $df_data['image'] ? df_img_url( $df_data['image'], 'df-banner' ) : '';
+$df_bgm  = $df_data['image_m'] ? df_img_url( $df_data['image_m'], 'large' ) : '';
+$df_sty  = $df_bg ? '--df-shophead:url(' . esc_url( $df_bg ) . ');' . ( $df_bgm ? '--df-shophead-m:url(' . esc_url( $df_bgm ) . ');' : '' ) . ( $df_data['pos'] ? '--df-shophead-pos:' . esc_attr( $df_data['pos'] ) . ';' : '' ) : '';
 
 do_action( 'woocommerce_before_main_content' );
 ?>
-<header class="df-shophead<?php echo $df_bg ? ' has-image' : ''; ?>"<?php echo $df_bg ? ' style="--df-shophead:url(' . esc_url( $df_bg ) . ')"' : ''; ?>>
+<header class="df-shophead<?php echo $df_bg ? ' has-image' : ''; ?><?php echo $df_bgm ? ' has-mobile' : ''; ?>"<?php echo $df_sty ? ' style="' . $df_sty . '"' : ''; // phpcs:ignore ?>>
 	<div class="df-container df-shophead__inner">
 		<?php woocommerce_breadcrumb(); ?>
 		<?php if ( apply_filters( 'woocommerce_show_page_title', true ) ) : ?>
@@ -29,6 +31,16 @@ do_action( 'woocommerce_before_main_content' );
 		<?php endif; ?>
 	</div>
 </header>
+<?php if ( '' !== $df_data['promo']['text'] && ! is_paged() ) : ?>
+	<div class="df-catpromo">
+		<div class="df-container df-catpromo__inner">
+			<p><?php echo esc_html( $df_data['promo']['text'] ); ?></p>
+			<?php if ( $df_data['promo']['btn'] && $df_data['promo']['url'] ) : ?>
+				<a class="df-catpromo__btn" href="<?php echo esc_url( $df_data['promo']['url'] ); ?>"><?php echo esc_html( $df_data['promo']['btn'] ); ?></a>
+			<?php endif; ?>
+		</div>
+	</div>
+<?php endif; ?>
 
 <?php if ( $df_data['children'] ) : ?>
 	<nav class="df-chips" aria-label="Kategoriler">
