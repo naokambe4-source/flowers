@@ -155,11 +155,14 @@ function cr_run_setup( $samples = true, $sideload = false ) {
 	cr_register_types();
 
 	/* Kalıcı bağlantılar */
+	// $wp_rewrite bu istekte eski değerlerle kurulmuş olduğundan seçenek yerine nesne üzerinden ayarla;
+	// aksi halde flush_rewrite_rules() eski “category” tabanıyla kural üretir ve /kategori/... 404 verir.
+	global $wp_rewrite;
 	if ( ! get_option( 'permalink_structure' ) ) {
-		update_option( 'permalink_structure', '/%postname%/' );
+		$wp_rewrite->set_permalink_structure( '/%postname%/' );
 	}
 	if ( ! get_option( 'category_base' ) ) {
-		update_option( 'category_base', 'kategori' );
+		$wp_rewrite->set_category_base( 'kategori' );
 	}
 	$desc = get_option( 'blogdescription' );
 	if ( ! $desc || false !== stripos( $desc, 'WordPress' ) ) {

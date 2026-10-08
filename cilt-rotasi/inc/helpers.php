@@ -126,6 +126,12 @@ function cr_url( $url ) {
 		return '';
 	}
 	if ( '/' === $url[0] && ( ! isset( $url[1] ) || '/' !== $url[1] ) ) {
+		// Alt klasör kurulumu (ör. /ciltrotasi/): adres zaten klasörle başlıyorsa tekrar ekleme.
+		$base = untrailingslashit( (string) wp_parse_url( home_url(), PHP_URL_PATH ) );
+		if ( $base && ( $url === $base || 0 === strpos( $url, $base . '/' ) ) ) {
+			$url = substr( $url, strlen( $base ) );
+			$url = '' === $url ? '/' : $url;
+		}
 		return home_url( $url );
 	}
 	if ( '#' === $url[0] ) {
@@ -694,6 +700,54 @@ add_filter(
 );
 
 /**
+ * Site içi bir adresi, kurulum klasöründen bağımsız göreli yola çevirir (ör. https://site.com/ciltrotasi/kategori/x/ → /kategori/x/).
+ *
+ * @param string $url Tam adres.
+ * @return string
+ */
+function cr_rel_url( $url ) {
+	$url  = (string) $url;
+	$home = untrailingslashit( home_url() );
+	if ( 0 === strpos( $url, $home ) ) {
+		$rel = substr( $url, strlen( $home ) );
+		return '' === $rel ? '/' : $rel;
+	}
+	return $url;
+}
+
+/**
+ * Kalıcı bağlantı kuralları eksikse (ör. kategori tabanı “kategori” yapıldı ama kurallar yenilenmedi,
+ * /kategori/... 404 veriyor) kuralları bir kez yeniler.
+ */
+function cr_rewrite_health() {
+	if ( ! get_option( 'permalink_structure' ) ) {
+		return;
+	}
+	$rules = get_option( 'rewrite_rules' );
+	if ( ! is_array( $rules ) || ! $rules ) {
+		return; // WordPress boş kuralları kendisi üretir.
+	}
+	$need = array();
+	$base = trim( (string) get_option( 'category_base' ), '/' );
+	$need[] = ( $base ? $base : 'category' ) . '/';
+	$need[] = 'icerik/?$';
+	$ok = 0;
+	foreach ( $need as $n ) {
+		foreach ( array_keys( $rules ) as $k ) {
+			if ( 0 === strpos( $k, $n ) ) {
+				$ok++;
+				break;
+			}
+		}
+	}
+	if ( $ok < count( $need ) && ! get_transient( 'cr_rewrite_fixed' ) ) {
+		set_transient( 'cr_rewrite_fixed', 1, HOUR_IN_SECONDS );
+		flush_rewrite_rules( false );
+	}
+}
+add_action( 'init', 'cr_rewrite_health', 999 );
+
+/**
  * Türkçe güvenli küçük harf (PHP'de “İ” → “i̇” olmasın).
  *
  * @param string $s Metin.
@@ -735,7 +789,7 @@ function cr_migrate_12() {
 			$t = cr_tr_lower( isset( $it['title'] ) ? $it['title'] : '' );
 			if ( isset( $cat_links[ $t ] ) ) {
 				$term = get_category_by_slug( $cat_links[ $t ] );
-				$saved['cat_items'][ $i ]['url'] = $term ? wp_make_link_relative( get_category_link( $term ) ) : '/kategori/' . $cat_links[ $t ] . '/';
+				$saved['cat_items'][ $i ]['url'] = $term ? cr_rel_url( get_category_link( $term ) ) : '/kategori/' . $cat_links[ $t ] . '/';
 			} elseif ( false !== mb_strpos( $t, 'aktif' ) || ( isset( $it['url'] ) && false !== strpos( $it['url'], 'urun-rehberi' ) ) ) {
 				$saved['cat_items'][ $i ]['url'] = '';
 			}
@@ -910,9 +964,35 @@ function cr_migrate() {
 	if ( version_compare( $from, '1.2.2', '<' ) ) {
 		cr_migrate_122();
 	}
+	if ( version_compare( $from, '1.2.3', '<' ) ) {
+		cr_migrate_123();
+	}
 	update_option( 'cr_theme_version', CR_VERSION );
 }
 add_action( 'init', 'cr_migrate', 20 );
+
+/**
+ * v1.2.3: alt klasör kurulumlarında klasörü iki kez içeren kayıtlı adresleri onarır, kalıcı bağlantıları yeniler.
+ */
+function cr_migrate_123() {
+	$base  = untrailingslashit( (string) wp_parse_url( home_url(), PHP_URL_PATH ) );
+	$saved = get_option( CR_OPTION, array() );
+	if ( $base && is_array( $saved ) ) {
+		$fix = function ( $v ) use ( &$fix, $base ) {
+			if ( is_array( $v ) ) {
+				return array_map( $fix, $v );
+			}
+			if ( is_string( $v ) && ( $v === $base || 0 === strpos( $v, $base . '/' ) ) ) {
+				$v = substr( $v, strlen( $base ) );
+				return '' === $v ? '/' : $v;
+			}
+			return $v;
+		};
+		update_option( CR_OPTION, $fix( $saved ) );
+		cr_flush_options_cache();
+	}
+	flush_rewrite_rules( false );
+}
 
 /**
  * “Aktif İçerikler” landing sayfasını (yoksa) oluşturur.
@@ -961,13 +1041,13 @@ function cr_migrate_122() {
 	if ( $pid && ! empty( $saved['cat_items'] ) && is_array( $saved['cat_items'] ) ) {
 		foreach ( $saved['cat_items'] as $i => $it ) {
 			if ( false !== mb_strpos( cr_tr_lower( isset( $it['title'] ) ? $it['title'] : '' ), 'aktif' ) && empty( $it['url'] ) ) {
-				$saved['cat_items'][ $i ]['url'] = wp_make_link_relative( get_permalink( $pid ) );
+				$saved['cat_items'][ $i ]['url'] = cr_rel_url( get_permalink( $pid ) );
 			}
 		}
 	}
-	$saved['hero_cta1_url'] = wp_make_link_relative( cr_blog_url() );
+	$saved['hero_cta1_url'] = cr_rel_url( cr_blog_url() );
 	$term                   = get_category_by_slug( 'cilt-yapisi' );
-	$saved['hero_cta2_url'] = $term ? wp_make_link_relative( get_category_link( $term ) ) : '/kategori/cilt-yapisi/';
+	$saved['hero_cta2_url'] = $term ? cr_rel_url( get_category_link( $term ) ) : '/kategori/cilt-yapisi/';
 	update_option( CR_OPTION, $saved );
 	cr_flush_options_cache();
 }
