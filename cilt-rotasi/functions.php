@@ -7,7 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'CR_VERSION', '1.1.0' );
+define( 'CR_VERSION', '1.2.0' );
 define( 'CR_DIR', get_template_directory() );
 define( 'CR_URI', get_template_directory_uri() );
 define( 'CR_OPTION', 'cilt_rotasi_options' );

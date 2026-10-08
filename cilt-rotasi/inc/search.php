@@ -46,6 +46,9 @@ function cr_search_rest( $req ) {
 		'icerik'       => 'İçerikler',
 		'urun_rehberi' => 'Ürün rehberleri',
 	);
+	if ( ! cr_products_on() ) {
+		unset( $types['urun_rehberi'] );
+	}
 	$total = 0;
 	foreach ( $types as $type => $label ) {
 		if ( $only && $only !== $type ) {

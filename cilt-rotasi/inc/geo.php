@@ -320,7 +320,7 @@ function cr_llms_txt() {
 		$out .= "\n";
 	}
 
-	$prod = get_posts(
+	$prod = ! cr_products_on() ? array() : get_posts(
 		array(
 			'post_type'      => 'urun_rehberi',
 			'posts_per_page' => 100,

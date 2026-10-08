@@ -25,7 +25,7 @@ while ( have_posts() ) :
 	$lvl      = array( '1' => 'Sınırlı', '2' => 'Orta', '3' => 'Güçlü' );
 	$irr      = array( '1' => 'Düşük', '2' => 'Orta', '3' => 'Yüksek' );
 	$content  = apply_filters( 'the_content', get_the_content() ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals
-	$products = cr_products_with_ingredient( get_the_title(), $inci, 3 );
+	$products = cr_products_on() ? cr_products_with_ingredient( get_the_title(), $inci, 3 ) : array();
 
 	$facts = array();
 	if ( cr_meta( '_cr_skin_types' ) ) {

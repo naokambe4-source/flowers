@@ -99,7 +99,7 @@ function cr_live_fab() {
 	if ( ! cr_can_edit() || ! cr_opt( 'live_edit_button' ) ) {
 		return;
 	}
-	echo '<button type="button" class="cr-live-fab cr-live-toggle" aria-label="Canlı düzenleyiciyi aç">' . cr_icon( 'edit', 18 ) . '<span>Canlı Düzenle</span></button>'; // phpcs:ignore
+	echo '<button type="button" class="cr-live-fab cr-live-toggle" aria-label="Canlı düzenleyiciyi aç">' . cr_icon( 'edit', 18 ) . '<span>Düzenle</span></button>'; // phpcs:ignore
 }
 add_action( 'wp_footer', 'cr_live_fab', 5 );
 

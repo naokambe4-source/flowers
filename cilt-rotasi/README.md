@@ -42,6 +42,20 @@ Ayrıca: markalı giriş ekranı, tüm yönetime Cilt Rotası görünümü, üst
 - Yazı düzenleme ekranında canlı Google önizlemesi, karakter sayaçları ve anlık kontrol listesi bulunan **SEO · AEO · GEO** kutusu vardır.
 - Yoast, Rank Math, AIOSEO veya SEOPress etkinse tema meta etiketlerini kendiliğinden kapatır; sözlük, SSS, HowTo, ürün şemaları ve GEO dosyaları çalışmaya devam eder.
 
+## v1.2 revizyonları (1.10.26 listesi)
+
+- Header: “İçerikler” → **Sözlük**, “Ürün Rehberi” → **Blog** (/rehberler/); “İncele” butonu kaldırıldı.
+- Hero: “Bağımsız Kozmetik Platformu” etiketi ve iki buton kaldırıldı (panelden yazı girilirse geri gelir).
+- Öne çıkan blok: “Blog Yazısını Oku” → ilgili blog yazısına gider.
+- Kategoriler: Cilt Yapısı / Cilt Problemleri / Bakım Rutini header sayfalarına gider; Aktif İçerikler landing sayfası hazır olana kadar bağlantısız (panelden bağlantı eklenebilir).
+- Ürün kataloğu ana sayfadan kalktı. **Ürün rehberi** panelde “Ana Sayfa → Ürün rehberi ve kataloğu → Ürün rehberini sitede yayınla” anahtarıyla kapalı: ürün sayfaları ziyaretçileri bloga yönlendirir; arama, site haritası, llms.txt ve sözlükteki ürün bağlantıları gizlenir.
+- İhtiyacınıza göre rotalar: yalnızca görsel + açıklama (bağlantı alanı boş bırakıldıkça tıklanmaz).
+- Journal → **Blog** (“Cilt Rotası Blog”, “Tüm Blog Yazıları”); “Ürünler” filtresi kaldırıldı.
+- Bülten metninden “ürün incelemeleri” kalktı.
+- Footer: Kütüphane = header başlıkları; Kurumsal = Hakkımızda + İletişim; Yasal aynı.
+- Canlı düzenleyici yalnızca **Düzenle** düğmesine (veya üst çubuktaki Canlı Düzenle’ye) basınca açılır; Vazgeç/Kapat ile tamamen kapanır.
+- Mevcut kurulumlar güncellenince bu değişiklikler (menüler dahil) otomatik uygulanır; yüklediğin görseller ve diğer metinler korunur.
+
 ## Ön yüz
 
 - Editoryal tasarım dili (v1.1): Cormorant Garamond başlıklar, keskin köşeler, çizgili eyebrow'lar, kare/alt çizgili butonlar, #1A2F25 / #B8905B / #FAF9F5 paleti. Tüm renkler ve yazı tipleri panelden değişir.

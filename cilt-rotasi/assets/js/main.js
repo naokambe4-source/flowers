@@ -701,7 +701,7 @@
 	}
 
 	/* ---------- Okunma sayacı (etkileşimden sonra) ---------- */
-	if (C.track && C.postId) {
+	if (+C.track && +C.postId) {
 		setTimeout(function () {
 			if (doc.visibilityState === 'hidden') { return; }
 			var k = 'cr_v_' + C.postId;

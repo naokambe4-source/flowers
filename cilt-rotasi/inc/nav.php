@@ -22,8 +22,8 @@ function cr_default_menu_items() {
 		array( 'title' => 'Cilt Yapısı', 'url' => $cat( 'cilt-yapisi', '/kategori/cilt-yapisi/' ) ),
 		array( 'title' => 'Cilt Problemleri', 'url' => $cat( 'cilt-problemleri', '/kategori/cilt-problemleri/' ), 'mega' => true ),
 		array( 'title' => 'Cilt Bakım Rutini', 'url' => $cat( 'cilt-bakim-rutini', '/kategori/cilt-bakim-rutini/' ) ),
-		array( 'title' => 'İçerikler', 'url' => get_post_type_archive_link( 'icerik' ) ),
-		array( 'title' => 'Ürün Rehberi', 'url' => get_post_type_archive_link( 'urun_rehberi' ) ),
+		array( 'title' => 'Sözlük', 'url' => get_post_type_archive_link( 'icerik' ) ),
+		array( 'title' => 'Blog', 'url' => cr_blog_url() ),
 	);
 }
 
@@ -239,16 +239,17 @@ function cr_footer_menu( $location ) {
 		return array( 'title' => $title, 'url' => $t ? get_category_link( $t ) : home_url( '/kategori/' . $slug . '/' ) );
 	};
 	$sets = array(
-		'footer_1' => array(
-			$cat( 'cilt-yapisi', 'Cilt Yapısı' ),
-			$cat( 'cilt-problemleri', 'Cilt Problemleri' ),
-			$cat( 'cilt-bakim-rutini', 'Rutinler' ),
-			array( 'title' => 'İçerik Sözlüğü', 'url' => get_post_type_archive_link( 'icerik' ) ),
+		'footer_1' => array_values(
+			array_filter(
+				cr_default_menu_items(),
+				function ( $it ) {
+					return untrailingslashit( $it['url'] ) !== untrailingslashit( home_url( '/' ) );
+				}
+			)
 		),
 		'footer_2' => array(
 			$page( 'hakkimizda', 'Hakkımızda' ),
 			$page( 'iletisim', 'İletişim' ),
-			$page( 'yayin-ilkeleri', 'Yayın İlkeleri' ),
 		),
 		'footer_3' => array(
 			$page( 'gizlilik', 'Gizlilik' ),

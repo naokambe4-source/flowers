@@ -639,15 +639,244 @@ function cr_guides_route() {
 add_action( 'rest_api_init', 'cr_guides_route' );
 
 /**
- * Sürüm geçişi: v1.0 varsayılanlarıyla kayıtlı kalmış değerleri kaldırır; böylece yeni editoryal
- * tasarımın varsayılanları devreye girer. Kullanıcının değiştirdiği değerlere dokunulmaz.
+ * Ürün rehberi sitede yayında mı?
+ *
+ * @return bool
+ */
+function cr_products_on() {
+	return (bool) cr_opt( 'products_on' );
+}
+
+/**
+ * Blog (yazılar) sayfasının adresi.
+ *
+ * @return string
+ */
+function cr_blog_url() {
+	$pid = (int) get_option( 'page_for_posts' );
+	if ( $pid && 'publish' === get_post_status( $pid ) ) {
+		return get_permalink( $pid );
+	}
+	return cr_url( cr_opt( 'bn_explore_url' ) );
+}
+
+/**
+ * Ürün rehberi kapalıyken ürün sayfalarını ziyaretçiler için bloga yönlendir; site haritasından çıkar.
+ */
+function cr_products_gate() {
+	if ( cr_products_on() || cr_can_edit() ) {
+		return;
+	}
+	if ( is_post_type_archive( 'urun_rehberi' ) || is_singular( 'urun_rehberi' ) || is_tax( 'urun_turu' ) ) {
+		wp_safe_redirect( cr_blog_url(), 302 );
+		exit;
+	}
+}
+add_action( 'template_redirect', 'cr_products_gate', 1 );
+
+add_filter(
+	'wp_sitemaps_post_types',
+	function ( $types ) {
+		if ( ! cr_products_on() ) {
+			unset( $types['urun_rehberi'] );
+		}
+		return $types;
+	}
+);
+add_filter(
+	'wp_sitemaps_taxonomies',
+	function ( $tax ) {
+		if ( ! cr_products_on() ) {
+			unset( $tax['urun_turu'] );
+		}
+		return $tax;
+	}
+);
+
+/**
+ * Türkçe güvenli küçük harf (PHP'de “İ” → “i̇” olmasın).
+ *
+ * @param string $s Metin.
+ * @return string
+ */
+function cr_tr_lower( $s ) {
+	return mb_strtolower( str_replace( array( 'İ', 'I' ), array( 'i', 'ı' ), trim( wp_strip_all_tags( (string) $s ) ) ), 'UTF-8' );
+}
+
+/**
+ * v1.2 revizyonu: menüleri ve kayıtlı ana sayfa ayarlarını yeni yapıya taşır.
+ * Header: İçerikler → Sözlük, Ürün Rehberi → Blog. Footer: Kütüphane = header başlıkları, Kurumsal = Hakkımızda + İletişim.
+ */
+function cr_migrate_12() {
+	$saved = get_option( CR_OPTION, array() );
+	$saved = is_array( $saved ) ? $saved : array();
+
+	// Kaldırılan öğeler: header butonu, hero üst etiketi ve hero butonları.
+	foreach ( array( 'header_cta_text', 'header_cta_url', 'hero_eyebrow', 'hero_cta1_text', 'hero_cta1_url', 'hero_cta2_text', 'hero_cta2_url' ) as $k ) {
+		unset( $saved[ $k ] );
+	}
+	// Öne çıkan blok bir blog yazısına gider.
+	if ( isset( $saved['ed_eyebrow'] ) && false !== mb_strpos( cr_tr_lower( $saved['ed_eyebrow'] ), 'inceleme' ) ) {
+		unset( $saved['ed_eyebrow'] );
+	}
+	unset( $saved['ed_cta'] );
+	if ( isset( $saved['ed_url'] ) && ( '' === trim( $saved['ed_url'] ) || false !== strpos( $saved['ed_url'], 'urun-rehberi' ) ) ) {
+		unset( $saved['ed_url'] );
+	}
+	// Kategoriler: header sayfalarına; Aktif İçerikler şimdilik bağlantısız (landing sayfası gelecek).
+	$cat_links = array(
+		'cilt yapısı'      => 'cilt-yapisi',
+		'cilt problemleri' => 'cilt-problemleri',
+		'bakım rutini'     => 'cilt-bakim-rutini',
+		'cilt bakım rutini' => 'cilt-bakim-rutini',
+	);
+	if ( ! empty( $saved['cat_items'] ) && is_array( $saved['cat_items'] ) ) {
+		foreach ( $saved['cat_items'] as $i => $it ) {
+			$t = cr_tr_lower( isset( $it['title'] ) ? $it['title'] : '' );
+			if ( isset( $cat_links[ $t ] ) ) {
+				$term = get_category_by_slug( $cat_links[ $t ] );
+				$saved['cat_items'][ $i ]['url'] = $term ? wp_make_link_relative( get_category_link( $term ) ) : '/kategori/' . $cat_links[ $t ] . '/';
+			} elseif ( false !== mb_strpos( $t, 'aktif' ) || ( isset( $it['url'] ) && false !== strpos( $it['url'], 'urun-rehberi' ) ) ) {
+				$saved['cat_items'][ $i ]['url'] = '';
+			}
+		}
+	}
+	// İhtiyaçlar: yalnızca görsel + açıklama.
+	if ( ! empty( $saved['needs_items'] ) && is_array( $saved['needs_items'] ) ) {
+		foreach ( $saved['needs_items'] as $i => $it ) {
+			$saved['needs_items'][ $i ]['url'] = '';
+		}
+	}
+	// Journal → Blog.
+	if ( isset( $saved['journal_eyebrow'] ) && false !== mb_strpos( cr_tr_lower( $saved['journal_eyebrow'] ), 'journal' ) ) {
+		unset( $saved['journal_eyebrow'] );
+	}
+	if ( isset( $saved['guides_filters'] ) ) {
+		$lines = array_filter(
+			preg_split( '/\r?\n/', (string) $saved['guides_filters'] ),
+			function ( $l ) {
+				return false === strpos( cr_tr_lower( $l ), 'urunler' ) && false === mb_strpos( cr_tr_lower( $l ), 'ürünler' );
+			}
+		);
+		$saved['guides_filters'] = implode( "\n", $lines );
+	}
+	if ( isset( $saved['bn_explore'] ) && 'Keşfet' === $saved['bn_explore'] ) {
+		unset( $saved['bn_explore'] );
+	}
+	if ( isset( $saved['blog_title'] ) && 'Cilt Rotası Rehberleri' === $saved['blog_title'] ) {
+		unset( $saved['blog_title'] );
+	}
+	if ( isset( $saved['blog_text'] ) && false !== mb_strpos( cr_tr_lower( $saved['blog_text'] ), 'ürün rehber' ) ) {
+		unset( $saved['blog_text'] );
+	}
+	// Bülten: “ürün incelemesi” ifadesi kalkar.
+	if ( isset( $saved['news_text'] ) && false !== mb_strpos( cr_tr_lower( $saved['news_text'] ), 'ürün inceleme' ) ) {
+		unset( $saved['news_text'] );
+	}
+	// Katalog bölümü kapanır.
+	if ( ! empty( $saved['sections'] ) && is_array( $saved['sections'] ) ) {
+		foreach ( $saved['sections'] as $i => $sec ) {
+			if ( isset( $sec['id'] ) && in_array( $sec['id'], array( 'catalog', 'products' ), true ) ) {
+				$saved['sections'][ $i ]['on'] = 0;
+			}
+		}
+	}
+	update_option( CR_OPTION, $saved );
+	cr_flush_options_cache();
+
+	cr_migrate_menus_12();
+}
+
+/**
+ * v1.2 menü güncellemesi (yalnızca temanın oluşturduğu/tanıdığı öğelere dokunur).
+ */
+function cr_migrate_menus_12() {
+	$locations = get_nav_menu_locations();
+	$blog      = cr_blog_url();
+	$sozluk    = get_post_type_archive_link( 'icerik' );
+
+	if ( ! empty( $locations['primary'] ) ) {
+		foreach ( (array) wp_get_nav_menu_items( $locations['primary'] ) as $item ) {
+			$title = trim( wp_strip_all_tags( $item->title ) );
+			if ( 'içerikler' === cr_tr_lower( $title ) || ( 'custom' === $item->type && untrailingslashit( $item->url ) === untrailingslashit( (string) $sozluk ) && 'Sözlük' !== $title ) ) {
+				cr_update_menu_item( $locations['primary'], $item, 'Sözlük', $sozluk );
+			} elseif ( 'ürün rehberi' === cr_tr_lower( $title ) || false !== strpos( (string) $item->url, '/urun-rehberi' ) ) {
+				cr_update_menu_item( $locations['primary'], $item, 'Blog', $blog );
+			}
+		}
+	}
+
+	// Footer Kütüphane: header başlıklarıyla aynı.
+	if ( ! empty( $locations['footer_1'] ) && ! empty( $locations['primary'] ) ) {
+		foreach ( (array) wp_get_nav_menu_items( $locations['footer_1'] ) as $item ) {
+			wp_delete_post( $item->ID, true );
+		}
+		$pos = 0;
+		foreach ( (array) wp_get_nav_menu_items( $locations['primary'] ) as $item ) {
+			if ( (int) $item->menu_item_parent || untrailingslashit( $item->url ) === untrailingslashit( home_url( '/' ) ) ) {
+				continue;
+			}
+			wp_update_nav_menu_item(
+				$locations['footer_1'],
+				0,
+				array(
+					'menu-item-title'     => $item->title,
+					'menu-item-type'      => $item->type,
+					'menu-item-object'    => $item->object,
+					'menu-item-object-id' => $item->object_id,
+					'menu-item-url'       => 'custom' === $item->type ? $item->url : '',
+					'menu-item-status'    => 'publish',
+					'menu-item-position'  => ++$pos,
+				)
+			);
+		}
+	}
+
+	// Footer Kurumsal: yalnızca Hakkımızda ve İletişim.
+	if ( ! empty( $locations['footer_2'] ) ) {
+		foreach ( (array) wp_get_nav_menu_items( $locations['footer_2'] ) as $item ) {
+			$t = cr_tr_lower( $item->title );
+			if ( ! in_array( $t, array( 'hakkımızda', 'iletişim' ), true ) ) {
+				wp_delete_post( $item->ID, true );
+			}
+		}
+	}
+}
+
+/**
+ * Bir menü öğesini başlık ve özel bağlantıyla günceller.
+ *
+ * @param int     $menu_id Menü.
+ * @param WP_Post $item    Öğe.
+ * @param string  $title   Yeni başlık.
+ * @param string  $url     Yeni adres.
+ */
+function cr_update_menu_item( $menu_id, $item, $title, $url ) {
+	wp_update_nav_menu_item(
+		$menu_id,
+		$item->ID,
+		array(
+			'menu-item-title'     => $title,
+			'menu-item-type'      => 'custom',
+			'menu-item-url'       => $url,
+			'menu-item-status'    => 'publish',
+			'menu-item-position'  => $item->menu_order,
+			'menu-item-parent-id' => $item->menu_item_parent,
+		)
+	);
+}
+
+/**
+ * Sürüm geçişleri. v1.1: v1.0 varsayılanlarıyla kayıtlı kalmış değerleri kaldırır; böylece yeni editoryal
+ * tasarımın varsayılanları devreye girer. Kullanıcının değiştirdiği değerlere dokunulmaz. v1.2: revizyon listesi.
  */
 function cr_migrate() {
-	if ( version_compare( (string) get_option( 'cr_theme_version', '1.0.0' ), CR_VERSION, '>=' ) ) {
+	$from = (string) get_option( 'cr_theme_version', '1.0.0' );
+	if ( version_compare( $from, CR_VERSION, '>=' ) ) {
 		return;
 	}
 	$saved = get_option( CR_OPTION, array() );
-	if ( is_array( $saved ) && $saved ) {
+	if ( version_compare( $from, '1.1.0', '<' ) && is_array( $saved ) && $saved ) {
 		$old = array(
 			'c_green' => '#24483F', 'c_green2' => '#3B5E53', 'c_sage' => '#AAB7A2', 'c_sage_light' => '#E6ECE1',
 			'c_cream' => '#FBF8F2', 'c_white' => '#FFFDFC', 'c_beige' => '#E9DDCE', 'c_gold' => '#C9A06B',
@@ -675,6 +904,9 @@ function cr_migrate() {
 		update_option( CR_OPTION, $saved );
 		cr_flush_options_cache();
 	}
+	if ( version_compare( $from, '1.2.0', '<' ) ) {
+		cr_migrate_12();
+	}
 	update_option( 'cr_theme_version', CR_VERSION );
 }
-add_action( 'init', 'cr_migrate', 1 );
+add_action( 'init', 'cr_migrate', 20 );

@@ -35,10 +35,16 @@ $mob     = cr_opt( 'hero_image_mobile' );
 				<span<?php echo cr_edit( 'hero_title_after' ); // phpcs:ignore ?>><?php cr_t( 'hero_title_after' ); ?></span>
 			</h1>
 			<p class="cr-hero__text"<?php echo cr_edit( 'hero_text' ); // phpcs:ignore ?>><?php cr_t( 'hero_text' ); ?></p>
-			<div class="cr-hero__ctas">
-				<a class="cr-btn cr-btn--solid" href="<?php echo esc_url( cr_url( cr_opt( 'hero_cta1_url' ) ) ); ?>"><span<?php echo cr_edit( 'hero_cta1_text' ); // phpcs:ignore ?>><?php cr_t( 'hero_cta1_text' ); ?></span></a>
-				<a class="cr-btn-line" href="<?php echo esc_url( cr_url( cr_opt( 'hero_cta2_url' ) ) ); ?>"><span<?php echo cr_edit( 'hero_cta2_text' ); // phpcs:ignore ?>><?php cr_t( 'hero_cta2_text' ); ?></span></a>
-			</div>
+			<?php if ( cr_opt( 'hero_cta1_text' ) || cr_opt( 'hero_cta2_text' ) ) : ?>
+				<div class="cr-hero__ctas">
+					<?php if ( cr_opt( 'hero_cta1_text' ) ) : ?>
+						<a class="cr-btn cr-btn--solid" href="<?php echo esc_url( cr_url( cr_opt( 'hero_cta1_url' ) ) ); ?>"><span<?php echo cr_edit( 'hero_cta1_text' ); // phpcs:ignore ?>><?php cr_t( 'hero_cta1_text' ); ?></span></a>
+					<?php endif; ?>
+					<?php if ( cr_opt( 'hero_cta2_text' ) ) : ?>
+						<a class="cr-btn-line" href="<?php echo esc_url( cr_url( cr_opt( 'hero_cta2_url' ) ) ); ?>"><span<?php echo cr_edit( 'hero_cta2_text' ); // phpcs:ignore ?>><?php cr_t( 'hero_cta2_text' ); ?></span></a>
+					<?php endif; ?>
+				</div>
+			<?php endif; ?>
 		</div>
 	</div>
 

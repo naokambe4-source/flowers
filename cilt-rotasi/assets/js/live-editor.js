@@ -6,6 +6,9 @@
 	'use strict';
 
 	var L = window.CRLive || {};
+	// wp_localize_script sayıları metne çevirir ("0" JS'te doğru sayılır); açıkça karşılaştır.
+	function flag(v) { return v === 1 || v === '1' || v === true; }
+	var isHome = flag(L.isHome);
 	var body = document.body;
 	var active = false;
 	var changes = { texts: {}, images: {}, design: {}, sections: null };
@@ -36,7 +39,7 @@
 				'<span class="crl-bar__count" data-l-count>Değişiklik yok</span>' +
 				'<span class="crl-bar__sep"></span>' +
 				'<button type="button" class="crl-btn" data-l-design>🎨 Tasarım</button>' +
-				(L.isHome ? '<button type="button" class="crl-btn" data-l-sections>☰ Bölümler</button>' : '') +
+				(isHome ? '<button type="button" class="crl-btn" data-l-sections>☰ Bölümler</button>' : '') +
 				(L.editUrl ? '<a class="crl-btn" href="' + L.editUrl + '">✎ Bu sayfayı düzenle</a>' : '') +
 				'<a class="crl-btn" href="' + L.panel + '">⚙ Panel</a>' +
 				'<span class="crl-bar__sep"></span>' +
@@ -48,7 +51,8 @@
 		$('body').append(bar);
 		bar.on('click', '[data-l-save]', save);
 		bar.on('click', '[data-l-cancel]', function () {
-			if (!dirty || window.confirm('Kaydedilmemiş değişiklikler silinsin mi?')) { dirty = 0; window.location.reload(); }
+			if (!dirty) { toggle(false); return; }
+			if (window.confirm('Kaydedilmemiş değişiklikler silinsin mi?')) { dirty = 0; window.location.reload(); }
 		});
 		bar.on('click', '[data-l-close]', function () {
 			if (dirty && !window.confirm('Kaydedilmemiş değişiklikler var. Yine de kapatılsın mı?')) { return; }
@@ -326,5 +330,14 @@
 	window.addEventListener('beforeunload', function (e) {
 		if (dirty) { e.preventDefault(); e.returnValue = ''; }
 	});
-	if (L.autoOpen) { $(function () { toggle(true); }); }
+	// Yalnızca "Canlı düzenle" bağlantısıyla gelindiyse (?cr_edit=1) açılır; parametre adres çubuğundan silinir,
+	// böylece yenileme ya da Vazgeç düzenleyiciyi tekrar açmaz.
+	if (flag(L.autoOpen)) {
+		$(function () { toggle(true); });
+		try {
+			var u = new URL(window.location.href);
+			u.searchParams.delete('cr_edit');
+			window.history.replaceState(null, '', u.toString());
+		} catch (err) { /* eski tarayıcı */ }
+	}
 })(jQuery);

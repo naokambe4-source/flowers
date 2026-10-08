@@ -412,7 +412,8 @@ add_filter( 'the_content_feed', 'cr_feed_image' );
 function cr_search_query( $q ) {
 	if ( ! is_admin() && $q->is_main_query() && $q->is_search() ) {
 		$type = isset( $_GET['tur'] ) ? sanitize_key( wp_unslash( $_GET['tur'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification
-		$q->set( 'post_type', in_array( $type, array( 'post', 'icerik', 'urun_rehberi' ), true ) ? $type : array( 'post', 'icerik', 'urun_rehberi', 'page' ) );
+		$types = cr_products_on() ? array( 'post', 'icerik', 'urun_rehberi' ) : array( 'post', 'icerik' );
+		$q->set( 'post_type', in_array( $type, $types, true ) ? $type : array_merge( $types, array( 'page' ) ) );
 	}
 	if ( ! is_admin() && $q->is_main_query() && ( $q->is_archive() || $q->is_home() ) && isset( $_GET['siralama'] ) && 'populer' === $_GET['siralama'] ) { // phpcs:ignore WordPress.Security.NonceVerification
 		$q->set(

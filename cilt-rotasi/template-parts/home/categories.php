@@ -19,7 +19,8 @@ if ( ! $items ) {
 		</header>
 		<div class="cr-cats__grid">
 			<?php foreach ( $items as $i => $it ) : ?>
-				<a class="cr-cat cr-reveal" href="<?php echo esc_url( cr_url( $it['url'] ) ); ?>">
+				<?php $tag = ! empty( $it['url'] ) ? 'a' : 'div'; ?>
+				<<?php echo $tag; // phpcs:ignore ?> class="cr-cat cr-reveal<?php echo 'div' === $tag ? ' is-static' : ''; ?>"<?php echo 'a' === $tag ? ' href="' . esc_url( cr_url( $it['url'] ) ) . '"' : ''; // phpcs:ignore ?>>
 					<span class="cr-cat__media"<?php echo cr_edit_img( 'cat_items.' . $i . '.image' ); // phpcs:ignore ?>>
 						<?php echo cr_img( $it['image'], 'cr-card', array( 'alt' => $it['title'], 'class' => 'cr-zoom', 'sizes' => '(max-width: 640px) 100vw, (max-width: 1100px) 50vw, 25vw' ) ); // phpcs:ignore ?>
 					</span>
@@ -28,7 +29,7 @@ if ( ! $items ) {
 					<?php endif; ?>
 					<h3 class="cr-cat__title"<?php echo cr_edit( 'cat_items.' . $i . '.title' ); // phpcs:ignore ?>><?php echo esc_html( $it['title'] ); ?></h3>
 					<p class="cr-cat__text"<?php echo cr_edit( 'cat_items.' . $i . '.text' ); // phpcs:ignore ?>><?php echo esc_html( $it['text'] ); ?></p>
-				</a>
+				</<?php echo $tag; // phpcs:ignore ?>>
 			<?php endforeach; ?>
 		</div>
 	</div>

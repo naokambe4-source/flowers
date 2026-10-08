@@ -30,7 +30,7 @@ get_header();
 			<div class="cr-empty-state" data-saved-empty hidden>
 				<?php echo cr_icon( 'bookmark', 40 ); // phpcs:ignore ?>
 				<p<?php echo cr_edit( 'saved_empty' ); // phpcs:ignore ?>><?php cr_t( 'saved_empty' ); ?></p>
-				<a class="cr-btn cr-btn--primary" href="<?php echo esc_url( cr_url( cr_opt( 'bn_explore_url' ) ) ); ?>">Rehberleri keşfet</a>
+				<a class="cr-btn cr-btn--primary" href="<?php echo esc_url( cr_blog_url() ); ?>">Blog yazılarını keşfet</a>
 			</div>
 		</div>
 		<?php

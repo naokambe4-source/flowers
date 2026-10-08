@@ -53,7 +53,7 @@ if ( $cr_is_tax ) {
 } elseif ( is_home() ) {
 	$cr_title   = cr_opt( 'blog_title' );
 	$cr_desc    = cr_opt( 'blog_text' );
-	$cr_eyebrow = 'Tüm rehberler';
+	$cr_eyebrow = 'Tüm yazılar';
 	$cr_chips   = get_categories( array( 'hide_empty' => true, 'parent' => 0, 'exclude' => array( (int) get_option( 'default_category' ) ) ) );
 } else {
 	$cr_title = wp_strip_all_tags( get_the_archive_title() );
@@ -145,7 +145,7 @@ $cr_order = isset( $_GET['siralama'] ) ? sanitize_key( wp_unslash( $_GET['sirala
 			<div class="cr-empty-state">
 				<?php echo cr_icon( 'leaf', 40 ); // phpcs:ignore ?>
 				<p>Bu başlıkta henüz içerik yok. Yakında burada olacak.</p>
-				<a class="cr-btn cr-btn--ghost" href="<?php echo esc_url( cr_url( cr_opt( 'bn_explore_url' ) ) ); ?>">Tüm rehberler</a>
+				<a class="cr-btn cr-btn--ghost" href="<?php echo esc_url( cr_blog_url() ); ?>">Tüm blog yazıları</a>
 			</div>
 		<?php endif; ?>
 	</div>

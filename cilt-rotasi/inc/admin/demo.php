@@ -316,20 +316,20 @@ function cr_demo_menus( $page_id ) {
 				array( 'title' => 'Cilt Yapısı', 'cat' => 'cilt-yapisi' ),
 				array( 'title' => 'Cilt Problemleri', 'cat' => 'cilt-problemleri' ),
 				array( 'title' => 'Cilt Bakım Rutini', 'cat' => 'cilt-bakim-rutini' ),
-				array( 'title' => 'İçerikler', 'url' => home_url( '/icerik/' ) ),
-				array( 'title' => 'Ürün Rehberi', 'url' => home_url( '/urun-rehberi/' ) ),
+				array( 'title' => 'Sözlük', 'url' => home_url( '/icerik/' ) ),
+				array( 'title' => 'Blog', 'url' => cr_blog_url() ),
 			)
 		);
 	}
 	if ( empty( $locations['footer_1'] ) ) {
 		$locations['footer_1'] = $make(
-			'Cilt Rotası — Footer Keşfet',
+			'Cilt Rotası — Footer Kütüphane',
 			array(
 				array( 'title' => 'Cilt Yapısı', 'cat' => 'cilt-yapisi' ),
 				array( 'title' => 'Cilt Problemleri', 'cat' => 'cilt-problemleri' ),
-				array( 'title' => 'Rutinler', 'cat' => 'cilt-bakim-rutini' ),
-				array( 'title' => 'İçerik Sözlüğü', 'url' => home_url( '/icerik/' ) ),
-				array( 'title' => 'Cilt Testi', 'url' => home_url( '/cilt-testi/' ) ),
+				array( 'title' => 'Cilt Bakım Rutini', 'cat' => 'cilt-bakim-rutini' ),
+				array( 'title' => 'Sözlük', 'url' => home_url( '/icerik/' ) ),
+				array( 'title' => 'Blog', 'url' => cr_blog_url() ),
 			)
 		);
 	}
@@ -339,7 +339,6 @@ function cr_demo_menus( $page_id ) {
 			array(
 				array( 'title' => 'Hakkımızda', 'page' => isset( $page_id['hakkimizda'] ) ? $page_id['hakkimizda'] : 0 ),
 				array( 'title' => 'İletişim', 'page' => isset( $page_id['iletisim'] ) ? $page_id['iletisim'] : 0 ),
-				array( 'title' => 'Yayın İlkeleri', 'page' => isset( $page_id['yayin-ilkeleri'] ) ? $page_id['yayin-ilkeleri'] : 0 ),
 			)
 		);
 	}

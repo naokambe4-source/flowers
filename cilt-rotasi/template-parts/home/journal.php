@@ -7,7 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 $filters = cr_opt( 'journal_filters_on' ) ? cr_pairs( cr_opt( 'guides_filters' ) ) : array();
-$all     = cr_url( cr_opt( 'bn_explore_url' ) );
+$all     = cr_blog_url();
 ?>
 <section class="cr-section cr-journal"<?php echo cr_section_attr( 'journal' ); // phpcs:ignore ?>>
 	<div class="cr-container">
@@ -16,10 +16,10 @@ $all     = cr_url( cr_opt( 'bn_explore_url' ) );
 				<p class="cr-eyebrow"<?php echo cr_edit( 'journal_eyebrow' ); // phpcs:ignore ?>><?php cr_t( 'journal_eyebrow' ); ?></p>
 				<h2 class="cr-h2"<?php echo cr_edit( 'journal_title' ); // phpcs:ignore ?>><?php cr_t( 'journal_title' ); ?></h2>
 			</div>
-			<a class="cr-link-arrow cr-hide-mobile" href="<?php echo esc_url( $all ); ?>">Tüm Yazıları Gör <?php echo cr_icon( 'arrow-right', 16 ); // phpcs:ignore ?></a>
+			<a class="cr-link-arrow cr-hide-mobile" href="<?php echo esc_url( $all ); ?>"><span<?php echo cr_edit( 'journal_link' ); // phpcs:ignore ?>><?php cr_t( 'journal_link' ); ?></span> <?php echo cr_icon( 'arrow-right', 16 ); // phpcs:ignore ?></a>
 		</header>
 		<?php if ( $filters ) : ?>
-			<div class="cr-tabs-line cr-tabs-line--mb" role="tablist" aria-label="Rehber filtreleri" data-guides-filters>
+			<div class="cr-tabs-line cr-tabs-line--mb" role="tablist" aria-label="Blog filtreleri" data-guides-filters>
 				<button type="button" role="tab" class="is-active" aria-selected="true" data-cat="">Tümü</button>
 				<?php foreach ( $filters as $f ) : ?>
 					<?php
@@ -35,7 +35,7 @@ $all     = cr_url( cr_opt( 'bn_explore_url' ) );
 			<?php echo cr_guides_grid( '', (int) cr_opt( 'guides_count', 6 ) ); // phpcs:ignore ?>
 		</div>
 		<div class="cr-center cr-show-mobile">
-			<a class="cr-btn-line" href="<?php echo esc_url( $all ); ?>">Tüm Yazıları Gör</a>
+			<a class="cr-btn-line" href="<?php echo esc_url( $all ); ?>"><?php cr_t( 'journal_link' ); ?></a>
 		</div>
 	</div>
 </section>

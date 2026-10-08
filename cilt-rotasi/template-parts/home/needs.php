@@ -19,13 +19,14 @@ if ( ! $items ) {
 		</header>
 		<div class="cr-needs__grid">
 			<?php foreach ( $items as $i => $it ) : ?>
-				<a class="cr-need cr-reveal" href="<?php echo esc_url( cr_url( $it['url'] ) ); ?>">
+				<?php $tag = ! empty( $it['url'] ) ? 'a' : 'div'; ?>
+				<<?php echo $tag; // phpcs:ignore ?> class="cr-need cr-reveal<?php echo 'div' === $tag ? ' is-static' : ''; ?>"<?php echo 'a' === $tag ? ' href="' . esc_url( cr_url( $it['url'] ) ) . '"' : ''; // phpcs:ignore ?>>
 					<span class="cr-need__media"<?php echo cr_edit_img( 'needs_items.' . $i . '.image' ); // phpcs:ignore ?>>
 						<?php echo cr_img( $it['image'], 'cr-wide', array( 'alt' => $it['title'], 'class' => 'cr-zoom', 'sizes' => '(max-width: 640px) 100vw, 33vw' ) ); // phpcs:ignore ?>
 					</span>
 					<h3 class="cr-need__title"<?php echo cr_edit( 'needs_items.' . $i . '.title' ); // phpcs:ignore ?>><?php echo esc_html( $it['title'] ); ?></h3>
 					<p class="cr-need__text"<?php echo cr_edit( 'needs_items.' . $i . '.text' ); // phpcs:ignore ?>><?php echo esc_html( $it['text'] ); ?></p>
-				</a>
+				</<?php echo $tag; // phpcs:ignore ?>>
 			<?php endforeach; ?>
 		</div>
 	</div>

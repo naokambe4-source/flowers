@@ -22,7 +22,7 @@ get_header();
 		</form>
 		<div class="cr-404__links">
 			<a class="cr-btn cr-btn--ghost" href="<?php echo esc_url( home_url( '/' ) ); ?>">Ana sayfa</a>
-			<a class="cr-btn cr-btn--ghost" href="<?php echo esc_url( cr_url( cr_opt( 'bn_explore_url' ) ) ); ?>">Rehberler</a>
+			<a class="cr-btn cr-btn--ghost" href="<?php echo esc_url( cr_blog_url() ); ?>">Blog</a>
 			<a class="cr-btn cr-btn--ghost" href="<?php echo esc_url( get_post_type_archive_link( 'icerik' ) ); ?>">İçerik sözlüğü</a>
 		</div>
 	</div>

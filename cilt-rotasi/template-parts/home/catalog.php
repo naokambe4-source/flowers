@@ -6,6 +6,9 @@
  */
 
 defined( 'ABSPATH' ) || exit;
+if ( ! cr_products_on() ) {
+	return;
+}
 
 $source = cr_opt( 'catalog_source', 'auto' );
 $count  = (int) cr_opt( 'catalog_count', 8 );

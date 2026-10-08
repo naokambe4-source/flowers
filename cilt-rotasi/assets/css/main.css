@@ -1048,3 +1048,6 @@ a.cr-keyingr__item:hover .cr-keyingr__go { color: var(--cr-gold); transform: rot
 	body { background: #fff; padding: 0; }
 	.cr-article__layout { display: block; }
 }
+
+/* Bağlantısız (statik) kartlar */
+.cr-cat.is-static:hover .cr-cat__title, .cr-need.is-static:hover .cr-need__title { color: var(--cr-green); }

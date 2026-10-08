@@ -22,7 +22,9 @@ $popular = cr_lines( cr_opt( 'search_popular' ) );
 			<button type="button" role="tab" class="is-active" data-search-type="" aria-selected="true">Tümü</button>
 			<button type="button" role="tab" data-search-type="post" aria-selected="false">Makaleler</button>
 			<button type="button" role="tab" data-search-type="icerik" aria-selected="false">İçerikler</button>
-			<button type="button" role="tab" data-search-type="urun_rehberi" aria-selected="false">Ürün rehberleri</button>
+			<?php if ( cr_products_on() ) : ?>
+				<button type="button" role="tab" data-search-type="urun_rehberi" aria-selected="false">Ürün rehberleri</button>
+			<?php endif; ?>
 		</div>
 		<div class="cr-search__body">
 			<div class="cr-search__empty" data-search-empty>
@@ -38,7 +40,11 @@ $popular = cr_lines( cr_opt( 'search_popular' ) );
 				<div class="cr-search__quick">
 					<a href="<?php echo esc_url( get_post_type_archive_link( 'icerik' ) ); ?>"><?php echo cr_icon( 'flask', 20 ); // phpcs:ignore ?> İçerik sözlüğü</a>
 					<a href="<?php echo esc_url( cr_url( cr_opt( 'quiz_url' ) ) ); ?>"><?php echo cr_icon( 'target', 20 ); // phpcs:ignore ?> Cilt testi</a>
-					<a href="<?php echo esc_url( get_post_type_archive_link( 'urun_rehberi' ) ); ?>"><?php echo cr_icon( 'drop', 20 ); // phpcs:ignore ?> Ürün rehberi</a>
+					<?php if ( cr_products_on() ) : ?>
+						<a href="<?php echo esc_url( get_post_type_archive_link( 'urun_rehberi' ) ); ?>"><?php echo cr_icon( 'drop', 20 ); // phpcs:ignore ?> Ürün rehberi</a>
+					<?php else : ?>
+						<a href="<?php echo esc_url( cr_blog_url() ); ?>"><?php echo cr_icon( 'book', 20 ); // phpcs:ignore ?> Blog</a>
+					<?php endif; ?>
 					<a href="<?php echo esc_url( cr_saved_url() ); ?>"><?php echo cr_icon( 'bookmark', 20 ); // phpcs:ignore ?> Kaydedilenler</a>
 				</div>
 				<p class="cr-search__recent-wrap" hidden><span class="cr-search__label">Son aramaların</span><span class="cr-chips" data-search-recent></span></p>
