@@ -250,7 +250,7 @@ function cr_body_class( $classes ) {
 	if ( cr_opt( 'announce_on' ) ) {
 		$classes[] = 'has-announce';
 	}
-	if ( is_front_page() && ! cr_opt( 'announce_on' ) ) {
+	if ( is_front_page() && ! cr_opt( 'announce_on' ) && cr_opt( 'header_transparent' ) ) {
 		$first = null;
 		foreach ( cr_sections() as $s ) {
 			if ( $s['on'] ) {

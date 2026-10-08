@@ -288,6 +288,7 @@ body.has-bottom-nav { padding-bottom: calc(var(--cr-bottom-h) + env(safe-area-in
 /* ---------- 9. Hero ---------- */
 .cr-hero { position: relative; display: flex; align-items: center; width: 100%; min-height: max(620px, 100svh); overflow: hidden; background: var(--cr-cream); isolation: isolate; }
 body:not(.cr-over-hero) .cr-hero { min-height: max(560px, calc(100svh - var(--cr-header-h))); }
+body:not(.cr-over-hero) .cr-hero__inner { padding-top: 56px; }
 .cr-hero__bg { position: absolute; inset: 0; z-index: -1; }
 .cr-hero__bg picture, .cr-hero__img { width: 100%; height: 100%; }
 .cr-hero__img { object-fit: cover; }

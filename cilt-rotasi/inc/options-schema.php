@@ -181,6 +181,7 @@ function cr_options_schema() {
 						array( 'id' => 'header_cta_url', 'type' => 'url', 'label' => 'Buton bağlantısı', 'default' => '/rehberler/' ),
 						array( 'id' => 'header_search', 'type' => 'toggle', 'label' => 'Arama ikonu', 'default' => 1 ),
 						array( 'id' => 'header_saved', 'type' => 'toggle', 'label' => 'Kaydedilenler ikonu', 'default' => 1 ),
+						array( 'id' => 'header_transparent', 'type' => 'toggle', 'label' => 'Ana sayfada header hero üzerinde şeffaf başlasın', 'desc' => 'Kapalıyken header her zaman dolu (krem) zeminle görünür.', 'default' => 0 ),
 						array( 'id' => 'announce_on', 'type' => 'toggle', 'label' => 'Üst duyuru bandı', 'default' => 0 ),
 						array( 'id' => 'announce_text', 'type' => 'text', 'label' => 'Duyuru metni', 'default' => 'Yeni: 2 dakikalık cilt testiyle bakım rotanı oluştur.' ),
 						array( 'id' => 'announce_url', 'type' => 'url', 'label' => 'Duyuru bağlantısı', 'default' => '/cilt-testi/' ),

@@ -53,6 +53,7 @@ Ayrıca: markalı giriş ekranı, tüm yönetime Cilt Rotası görünümü, üst
 - Journal → **Blog** (“Cilt Rotası Blog”, “Tüm Blog Yazıları”); “Ürünler” filtresi kaldırıldı.
 - Bülten metninden “ürün incelemeleri” kalktı.
 - Footer: Kütüphane = header başlıkları; Kurumsal = Hakkımızda + İletişim; Yasal aynı.
+- Header ana sayfada da baştan dolu (krem) zeminli; şeffaf başlangıç istenirse Header ayarlarından açılabilir.
 - Canlı düzenleyici yalnızca **Düzenle** düğmesine (veya üst çubuktaki Canlı Düzenle’ye) basınca açılır; Vazgeç/Kapat ile tamamen kapanır.
 - Mevcut kurulumlar güncellenince bu değişiklikler (menüler dahil) otomatik uygulanır; yüklediğin görseller ve diğer metinler korunur.
 
