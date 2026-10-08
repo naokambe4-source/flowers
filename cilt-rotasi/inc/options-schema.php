@@ -226,10 +226,10 @@ function cr_options_schema() {
 						array( 'id' => 'hero_title_accent', 'type' => 'text', 'label' => 'Başlık — vurgulu kısım', 'default' => 'Doğru Rotayı' ),
 						array( 'id' => 'hero_title_after', 'type' => 'text', 'label' => 'Başlık — devamı', 'default' => 'Keşfet.' ),
 						array( 'id' => 'hero_text', 'type' => 'textarea', 'label' => 'Açıklama', 'default' => 'Kozmetik ürünleri, aktif içerikleri ve bakım rutinlerini sade, anlaşılır ve kanıta dayalı bilimsel rehberlerle yeniden tanımlıyoruz.' ),
-						array( 'id' => 'hero_cta1_text', 'type' => 'text', 'label' => 'Birincil buton', 'desc' => 'Boş bırakılırsa buton gösterilmez.', 'default' => '' ),
+						array( 'id' => 'hero_cta1_text', 'type' => 'text', 'label' => 'Birincil buton', 'desc' => 'Boş bırakılırsa buton gösterilmez.', 'default' => 'Uzman Bilgilerini Oku' ),
 						array( 'id' => 'hero_cta1_url', 'type' => 'url', 'label' => 'Birincil buton bağlantısı', 'default' => '/rehberler/' ),
-						array( 'id' => 'hero_cta2_text', 'type' => 'text', 'label' => 'İkincil buton', 'desc' => 'Boş bırakılırsa buton gösterilmez.', 'default' => '' ),
-						array( 'id' => 'hero_cta2_url', 'type' => 'url', 'label' => 'İkincil buton bağlantısı', 'default' => '/rehberler/' ),
+						array( 'id' => 'hero_cta2_text', 'type' => 'text', 'label' => 'İkincil buton', 'desc' => 'Boş bırakılırsa buton gösterilmez.', 'default' => 'Cildini Tanı' ),
+						array( 'id' => 'hero_cta2_url', 'type' => 'url', 'label' => 'İkincil buton bağlantısı', 'default' => '/kategori/cilt-yapisi/' ),
 					),
 				),
 				array(
@@ -283,7 +283,7 @@ function cr_options_schema() {
 							'default' => array(
 								array( 'title' => 'Cilt Yapısı', 'tag' => '01 / Temel', 'text' => 'Bariyer, sebum dengesi ve doğal mikrobiyom analizi.', 'image' => cr_default_img( 'structure' ), 'url' => '/kategori/cilt-yapisi/' ),
 								array( 'title' => 'Cilt Problemleri', 'tag' => '02 / Çözüm', 'text' => 'Akne, kızarıklık, leke ve dehidrasyon yönetimi.', 'image' => cr_default_img( 'problems' ), 'url' => '/kategori/cilt-problemleri/' ),
-								array( 'title' => 'Aktif İçerikler', 'tag' => '03 / Bilim', 'text' => 'Asitler, vitaminler ve hedeflenmiş molekül arşivi.', 'image' => cr_default_img( 'actives' ), 'url' => '' ),
+								array( 'title' => 'Aktif İçerikler', 'tag' => '03 / Bilim', 'text' => 'Asitler, vitaminler ve hedeflenmiş molekül arşivi.', 'image' => cr_default_img( 'actives' ), 'url' => '/aktif-icerikler/' ),
 								array( 'title' => 'Bakım Rutini', 'tag' => '04 / Uygulama', 'text' => 'Cilt tipine göre kişiselleştirilmiş protokoller.', 'image' => cr_default_img( 'routine' ), 'url' => '/kategori/cilt-bakim-rutini/' ),
 							),
 						),

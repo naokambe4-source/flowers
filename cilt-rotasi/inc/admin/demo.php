@@ -229,6 +229,7 @@ function cr_run_setup( $samples = true, $sideload = false ) {
 	update_option( 'show_on_front', 'page' );
 	update_option( 'page_on_front', $home );
 	update_option( 'page_for_posts', $blog );
+	cr_actives_page();
 	$done[] = 'sayfalar';
 
 	/* Menüler */

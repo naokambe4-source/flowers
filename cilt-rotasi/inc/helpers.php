@@ -907,6 +907,67 @@ function cr_migrate() {
 	if ( version_compare( $from, '1.2.0', '<' ) ) {
 		cr_migrate_12();
 	}
+	if ( version_compare( $from, '1.2.2', '<' ) ) {
+		cr_migrate_122();
+	}
 	update_option( 'cr_theme_version', CR_VERSION );
 }
 add_action( 'init', 'cr_migrate', 20 );
+
+/**
+ * “Aktif İçerikler” landing sayfasını (yoksa) oluşturur.
+ *
+ * @return int Sayfa ID.
+ */
+function cr_actives_page() {
+	$p = get_page_by_path( 'aktif-icerikler' );
+	if ( $p ) {
+		if ( ! get_post_meta( $p->ID, '_wp_page_template', true ) || 'default' === get_post_meta( $p->ID, '_wp_page_template', true ) ) {
+			update_post_meta( $p->ID, '_wp_page_template', 'page-templates/template-aktif-icerikler.php' );
+		}
+		return (int) $p->ID;
+	}
+	$id = wp_insert_post(
+		array(
+			'post_type'    => 'page',
+			'post_status'  => 'publish',
+			'post_title'   => 'Aktif İçerikler',
+			'post_name'    => 'aktif-icerikler',
+			'post_excerpt' => 'Asitler, vitaminler, peptitler ve bariyer lipidleri: etiketteki aktiflerin ne yaptığını, kime uygun olduğunu ve nasıl kombinleneceğini sade bir dille anlatıyoruz.',
+			'post_content' => '',
+		)
+	);
+	if ( $id && ! is_wp_error( $id ) ) {
+		update_post_meta( $id, '_wp_page_template', 'page-templates/template-aktif-icerikler.php' );
+		return (int) $id;
+	}
+	return 0;
+}
+
+/**
+ * v1.2.2: hero butonları geri gelir — “Uzman Bilgilerini Oku” → Blog, “Cildini Tanı” → Cilt Yapısı;
+ * Aktif İçerikler landing sayfası açılır ve ana sayfa kartı ona bağlanır.
+ */
+function cr_migrate_122() {
+	$saved = get_option( CR_OPTION, array() );
+	$saved = is_array( $saved ) ? $saved : array();
+	foreach ( array( 'hero_cta1_text', 'hero_cta2_text' ) as $k ) {
+		if ( isset( $saved[ $k ] ) && '' === trim( (string) $saved[ $k ] ) ) {
+			unset( $saved[ $k ] );
+		}
+	}
+	// Aktif İçerikler kartı yeni landing sayfasına bağlanır.
+	$pid = cr_actives_page();
+	if ( $pid && ! empty( $saved['cat_items'] ) && is_array( $saved['cat_items'] ) ) {
+		foreach ( $saved['cat_items'] as $i => $it ) {
+			if ( false !== mb_strpos( cr_tr_lower( isset( $it['title'] ) ? $it['title'] : '' ), 'aktif' ) && empty( $it['url'] ) ) {
+				$saved['cat_items'][ $i ]['url'] = wp_make_link_relative( get_permalink( $pid ) );
+			}
+		}
+	}
+	$saved['hero_cta1_url'] = wp_make_link_relative( cr_blog_url() );
+	$term                   = get_category_by_slug( 'cilt-yapisi' );
+	$saved['hero_cta2_url'] = $term ? wp_make_link_relative( get_category_link( $term ) ) : '/kategori/cilt-yapisi/';
+	update_option( CR_OPTION, $saved );
+	cr_flush_options_cache();
+}

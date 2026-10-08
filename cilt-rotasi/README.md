@@ -45,9 +45,9 @@ Ayrıca: markalı giriş ekranı, tüm yönetime Cilt Rotası görünümü, üst
 ## v1.2 revizyonları (1.10.26 listesi)
 
 - Header: “İçerikler” → **Sözlük**, “Ürün Rehberi” → **Blog** (/rehberler/); “İncele” butonu kaldırıldı.
-- Hero: “Bağımsız Kozmetik Platformu” etiketi ve iki buton kaldırıldı (panelden yazı girilirse geri gelir).
+- Hero: “Bağımsız Kozmetik Platformu” etiketi kaldırıldı; butonlar “Uzman Bilgilerini Oku” → Blog ve “Cildini Tanı” → Cilt Yapısı (v1.2.2).
 - Öne çıkan blok: “Blog Yazısını Oku” → ilgili blog yazısına gider.
-- Kategoriler: Cilt Yapısı / Cilt Problemleri / Bakım Rutini header sayfalarına gider; Aktif İçerikler landing sayfası hazır olana kadar bağlantısız (panelden bağlantı eklenebilir).
+- Kategoriler: Cilt Yapısı / Cilt Problemleri / Bakım Rutini header sayfalarına gider; Aktif İçerikler yeni **/aktif-icerikler/** landing sayfasına gider (Sayfalar → Aktif İçerikler; şablon “Aktif İçerikler (landing)”). Sayfaya yazılan metin üstte görünür; altta içerik grupları ve sözlükten öne çıkan aktifler otomatik listelenir.
 - Ürün kataloğu ana sayfadan kalktı. **Ürün rehberi** panelde “Ana Sayfa → Ürün rehberi ve kataloğu → Ürün rehberini sitede yayınla” anahtarıyla kapalı: ürün sayfaları ziyaretçileri bloga yönlendirir; arama, site haritası, llms.txt ve sözlükteki ürün bağlantıları gizlenir.
 - İhtiyacınıza göre rotalar: yalnızca görsel + açıklama (bağlantı alanı boş bırakıldıkça tıklanmaz).
 - Journal → **Blog** (“Cilt Rotası Blog”, “Tüm Blog Yazıları”); “Ürünler” filtresi kaldırıldı.
