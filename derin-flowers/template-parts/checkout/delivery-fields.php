@@ -38,7 +38,8 @@ $df_phone     = function ( $name, $label, $value, $cc_value ) use ( $df_codes ) 
 ?>
 				<?php /* 1 — Teslimat */ ?>
 				<section class="df-step" id="df-step-delivery">
-					<h2 class="df-step__title"><span class="df-step__num">1</span>Teslimat</h2>
+					<h2 class="df-step__title"><span class="df-step__num">1</span>Teslimat bilgileri</h2>
+					<p class="df-step__lead">Çiçeklerinizin ne zaman ve nasıl ulaşacağını seçin.</p>
 
 					<?php if ( $df_pickup_on ) : ?>
 						<fieldset class="df-types">
@@ -47,14 +48,16 @@ $df_phone     = function ( $name, $label, $value, $cc_value ) use ( $df_codes ) 
 								<input type="radio" name="df_type" value="address" <?php checked( $df_type, 'address' ); ?>>
 								<span class="df-type__box">
 									<?php df_the_icon( 'truck', array( 'size' => 26 ) ); ?>
-									<span><strong>Adrese Teslim</strong><small><?php echo esc_html( df_opt( 'df_default_city', 'İzmir' ) ); ?>'in seçili bölgelerine</small></span>
+									<span><strong>Adrese teslim</strong><small><?php echo esc_html( df_opt( 'df_default_city', 'İzmir' ) ); ?>'in seçili bölgelerine</small></span>
+									<i class="df-radio" aria-hidden="true"></i>
 								</span>
 							</label>
 							<label class="df-type">
 								<input type="radio" name="df_type" value="pickup" <?php checked( $df_type, 'pickup' ); ?>>
 								<span class="df-type__box">
 									<?php df_the_icon( 'store', array( 'size' => 26 ) ); ?>
-									<span><strong>Mağazadan Teslim</strong><small><?php echo esc_html( $df_stores ? $df_stores[0]['name'] : 'Ücretsiz' ); ?></small></span>
+									<span><strong>Mağazadan teslim</strong><small><?php echo esc_html( $df_stores ? $df_stores[0]['name'] : 'Ücretsiz' ); ?></small></span>
+									<i class="df-radio" aria-hidden="true"></i>
 								</span>
 							</label>
 						</fieldset>
@@ -62,9 +65,30 @@ $df_phone     = function ( $name, $label, $value, $cc_value ) use ( $df_codes ) 
 						<input type="hidden" name="df_type" value="address">
 					<?php endif; ?>
 
+					<div class="df-zone" data-df-for="address"<?php echo 'pickup' === $df_type ? ' hidden' : ''; ?>>
+						<p class="form-row form-row-wide validate-required df-field" id="df_district_field">
+							<label for="df_district">Teslimat bölgesi&nbsp;<abbr class="required" title="zorunlu">*</abbr></label>
+							<span class="df-zone__pin" aria-hidden="true"><?php df_the_icon( 'pin', array( 'size' => 20 ) ); ?></span>
+							<select name="df_district" id="df_district" class="df-district" data-placeholder="Gönderim adresi seçin">
+								<option value="">Gönderim adresi seçin</option>
+								<?php foreach ( $df_groups as $df_city => $df_items ) : ?>
+									<optgroup label="<?php echo esc_attr( $df_city ); ?>">
+										<?php foreach ( $df_items as $df_d ) : ?>
+											<option value="<?php echo esc_attr( $df_d['key'] ); ?>" data-fee="<?php echo esc_attr( $df_d['fee'] ); ?>" <?php selected( $df_district, $df_d['key'] ); ?>>
+												<?php echo esc_html( $df_d['name'] . ' — ' . ( $df_d['fee'] > 0 ? wp_strip_all_tags( wc_price( $df_d['fee'] ) ) : 'Ücretsiz' ) ); ?>
+											</option>
+										<?php endforeach; ?>
+									</optgroup>
+								<?php endforeach; ?>
+							</select>
+							<span class="df-field__hint" data-df-fee-hint></span>
+						</p>
+					</div>
+
 					<div class="df-when">
 						<div class="df-when__date" id="df_date_field">
 							<span class="df-label" id="df-date-label">Teslimat tarihi <abbr class="required" title="zorunlu">*</abbr></span>
+							<span class="df-when__sub">Teslim etmek istediğiniz günü seçin.</span>
 							<div class="df-cal" data-df-calendar aria-labelledby="df-date-label">
 								<div class="df-cal__quick" data-df-cal-quick></div>
 								<div class="df-cal__box">
@@ -86,7 +110,7 @@ $df_phone     = function ( $name, $label, $value, $cc_value ) use ( $df_codes ) 
 							<p class="df-when__selected" data-df-date-text>Önce takvimden bir gün seçin.</p>
 							<div class="df-slots" data-df-slots role="radiogroup" aria-label="Saat aralığı"></div>
 							<input type="hidden" id="df_slot_saved" value="<?php echo esc_attr( df_checkout_value( 'slot' ) ); ?>">
-							<p class="df-when__note"><?php df_the_icon( 'info', array( 'size' => 16 ) ); ?><span><?php echo esc_html( df_vars( 'Aynı gün teslimat için son sipariş saati {cutoff}.' ) ); ?></span></p>
+							<p class="df-when__note"><?php df_the_icon( 'info', array( 'size' => 16 ) ); ?><span><?php echo esc_html( df_vars( 'Aynı gün veya ileri tarihli teslimat seçebilirsiniz. Aynı gün için son sipariş saati {cutoff}.' ) ); ?></span></p>
 						</div>
 					</div>
 				</section>
@@ -125,22 +149,6 @@ $df_phone     = function ( $name, $label, $value, $cc_value ) use ( $df_codes ) 
 					</div>
 
 					<div class="df-addr" data-df-for="address"<?php echo 'pickup' === $df_type ? ' hidden' : ''; ?>>
-						<p class="form-row form-row-wide validate-required df-field" id="df_district_field">
-							<label for="df_district">Teslimat Bölgesi&nbsp;<abbr class="required" title="zorunlu">*</abbr></label>
-							<select name="df_district" id="df_district" class="df-district" data-placeholder="Gönderim adresi seçin">
-								<option value="">Gönderim adresi seçin</option>
-								<?php foreach ( $df_groups as $df_city => $df_items ) : ?>
-									<optgroup label="<?php echo esc_attr( $df_city ); ?>">
-										<?php foreach ( $df_items as $df_d ) : ?>
-											<option value="<?php echo esc_attr( $df_d['key'] ); ?>" data-fee="<?php echo esc_attr( $df_d['fee'] ); ?>" <?php selected( $df_district, $df_d['key'] ); ?>>
-												<?php echo esc_html( $df_d['name'] . ' — ' . ( $df_d['fee'] > 0 ? wp_strip_all_tags( wc_price( $df_d['fee'] ) ) : 'Ücretsiz' ) ); ?>
-											</option>
-										<?php endforeach; ?>
-									</optgroup>
-								<?php endforeach; ?>
-							</select>
-							<span class="df-field__hint" data-df-fee-hint></span>
-						</p>
 						<p class="form-row form-row-wide validate-required df-field" id="df_address_field">
 							<label for="df_address">Alıcı Adresi&nbsp;<abbr class="required" title="zorunlu">*</abbr></label>
 							<textarea class="input-text" name="df_address" id="df_address" rows="3" placeholder="Mahalle, cadde/sokak, bina no, daire no" autocomplete="street-address"><?php echo esc_textarea( df_checkout_value( 'address' ) ); ?></textarea>

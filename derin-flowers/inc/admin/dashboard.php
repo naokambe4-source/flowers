@@ -936,9 +936,10 @@ function df_app_print() {
 					<h2><?php echo count( $orders ); ?> sipariş</h2>
 					<div class="df-app-actions">
 						<label class="df-app-select-all"><input type="checkbox" data-df-check-all> Tümünü seç</label>
+						<button class="button button-primary" name="type" value="perfo">Delikli fiş (kart + bilgi)</button>
 						<button class="button" name="type" value="card">Kartları yazdır</button>
 						<button class="button" name="type" value="slip">Fişleri yazdır</button>
-						<button class="button button-primary" name="type" value="both">Kart + fiş</button>
+						<button class="button" name="type" value="both">Kart + A5 fiş</button>
 					</div>
 				</header>
 				<?php if ( $orders ) : ?>
@@ -981,6 +982,9 @@ function df_print_bulk() {
 	$ids  = array_filter( $ids );
 	if ( ! $ids ) {
 		wp_die( 'Yazdırmak için en az bir sipariş seçin.' );
+	}
+	if ( 'perfo' === $type && function_exists( 'df_print_perfo' ) ) {
+		df_print_perfo( $ids );
 	}
 	$fonts = df_fonts_url();
 	?>

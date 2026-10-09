@@ -94,7 +94,7 @@ function df_obox_render( $post_or_order ) {
 	$from    = 'yes' === $order->get_meta( '_df_note_anon' ) ? 'İsimsiz' : (string) $order->get_meta( '_df_note_from' );
 	$address = (string) $order->get_meta( '_df_address' );
 	$region  = (string) $order->get_meta( '_df_district' );
-	$print   = wp_nonce_url( admin_url( 'admin-post.php?action=df_print_bulk&type=both&ids[]=' . $order->get_id() ), 'df_print_bulk' );
+	$print   = wp_nonce_url( admin_url( 'admin-post.php?action=df_print_bulk&type=perfo&ids[]=' . $order->get_id() ), 'df_print_bulk' );
 	$slip    = wp_nonce_url( admin_url( 'admin-post.php?action=df_print_bulk&type=slip&ids[]=' . $order->get_id() ), 'df_print_bulk' );
 	$card    = wp_nonce_url( admin_url( 'admin-post.php?action=df_print_card&order=' . $order->get_id() ), 'df_print_card_' . $order->get_id() );
 	?>
@@ -120,8 +120,8 @@ function df_obox_render( $post_or_order ) {
 				</div>
 			</div>
 			<div class="dfo-hero__acts">
-				<a class="dfo-btn" href="<?php echo esc_url( $print ); ?>" target="_blank"><span class="dashicons dashicons-printer"></span>Kart + fiş yazdır</a>
-				<a class="dfo-btn dfo-btn--ghost" href="<?php echo esc_url( $slip ); ?>" target="_blank">Sadece fiş</a>
+				<a class="dfo-btn" href="<?php echo esc_url( $print ); ?>" target="_blank"><span class="dashicons dashicons-printer"></span>Delikli fiş yazdır</a>
+				<a class="dfo-btn dfo-btn--ghost" href="<?php echo esc_url( $slip ); ?>" target="_blank">A5 fiş</a>
 				<?php if ( $note ) : ?>
 					<a class="dfo-btn dfo-btn--ghost" href="<?php echo esc_url( $card ); ?>" target="_blank">Sadece kart</a>
 				<?php endif; ?>

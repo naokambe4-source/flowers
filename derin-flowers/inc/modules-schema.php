@@ -24,12 +24,38 @@ function df_modules_schema( $schema ) {
 			array( 'id' => 'sku_prefix', 'type' => 'text', 'label' => 'Kod öneki', 'default' => 'AYZ', 'third' => true ),
 			array( 'id' => 'sku_digits', 'type' => 'number', 'label' => 'Rakam sayısı', 'default' => 4, 'min' => 3, 'max' => 8, 'third' => true ),
 			array( 'id' => 'var_templates', 'type' => 'lines', 'label' => 'Varyasyon şablonları (Şablon adı | Özellik adı | Seçenekler virgülle)', 'default' => "Gül adedi | Adet | 11 Gül, 21 Gül, 41 Gül, 51 Gül, 101 Gül\nBoy | Boy | Standart, Büyük, Premium\nRenk | Renk | Kırmızı, Beyaz, Pembe, Karışık", 'rows' => 4, 'code' => true ),
-			array( 'id' => 'title_pool', 'type' => 'lines', 'label' => 'Ürün başlık havuzu (her satır bir isim)', 'default' => '', 'rows' => 5, 'half' => true, 'desc' => 'Yeni ürün eklerken bu isimlerden seçilebilir; daha önce kullanılan isimler işaretlenir ve aynı başlık tekrar kullanılırsa uyarı verilir.' ),
+			array( 'id' => 'title_pool', 'type' => 'lines', 'label' => 'Ek başlıklar (her satır bir isim — asıl havuz: Ürünler → Başlık Havuzu)', 'default' => '', 'rows' => 3, 'half' => true, 'desc' => 'Başlık havuzunun tamamı (Excel\'den gelen 232 başlık, koleksiyon, renk, duygu bilgileriyle) Ürünler → Başlık Havuzu sayfasında yönetilir.' ),
 			array( 'id' => 'title_dupe_warn', 'type' => 'toggle', 'label' => 'Aynı ürün başlığı kullanılırsa uyar', 'default' => 1, 'half' => true ),
 			array( 'id' => 'img_seo_name', 'type' => 'toggle', 'label' => 'Görsel dosya adlarını SEO uyumlu yap (Türkçe karakter → kırmızı-gul-buketi.jpg)', 'default' => 1, 'half' => true ),
 			array( 'id' => 'img_seo_alt', 'type' => 'toggle', 'label' => 'ALT metni boş ürün görsellerine ürün adını yaz', 'default' => 1, 'half' => true ),
 			array( 'id' => 'img_max', 'type' => 'number', 'label' => 'Yüklenen görselin en büyük kenarı (px)', 'default' => 2000, 'min' => 1200, 'max' => 4000, 'half' => true, 'desc' => 'Daha büyük görseller bu boyuta küçültülür (WordPress büyük görsel sınırı).' ),
 			array( 'id' => 'img_webp', 'type' => 'toggle', 'label' => 'Yeni yüklenen JPEG/PNG görsellerin boyutlarını WebP üret', 'default' => 0, 'half' => true, 'desc' => 'Sunucunuz WebP destekliyorsa açın. LiteSpeed Cache\'in WebP özelliği de kullanılabilir.' ),
+		),
+	);
+
+	$schema['product']['groups'][] = array(
+		'title'  => 'Yapay zekâ ürün içeriği',
+		'desc'   => 'Ürün ekranındaki "Ürün Asistanı" kutusu: başlığa göre kısa / uzun açıklama, SEO başlığı ve açıklaması, görsel ALT metni ve etiket önerir. Hiçbir şey kendiliğinden yayınlanmaz; siz kontrol edip kaydedersiniz. SEO alanları Rank Math (ya da Yoast) alanlarına yazılır.',
+		'fields' => array(
+			array( 'id' => 'pai_on', 'type' => 'toggle', 'label' => 'Ürün Asistanı açık', 'default' => 1, 'half' => true ),
+			array(
+				'id'      => 'pai_provider',
+				'type'    => 'select',
+				'label'   => 'Yapay zekâ sağlayıcısı',
+				'default' => 'openai',
+				'half'    => true,
+				'options' => array(
+					'openai' => 'ChatGPT (OpenAI)',
+					'gemini' => 'Gemini (Google)',
+					'claude' => 'Claude (Anthropic)',
+				),
+			),
+			array( 'id' => 'pai_openai_key', 'type' => 'text', 'label' => 'OpenAI API anahtarı', 'half' => true, 'desc' => 'platform.openai.com → API keys' ),
+			array( 'id' => 'pai_openai_model', 'type' => 'text', 'label' => 'OpenAI modeli', 'default' => 'gpt-4.1-mini', 'half' => true ),
+			array( 'id' => 'pai_gemini_key', 'type' => 'text', 'label' => 'Gemini API anahtarı', 'half' => true, 'desc' => 'aistudio.google.com → Get API key' ),
+			array( 'id' => 'pai_gemini_model', 'type' => 'text', 'label' => 'Gemini modeli', 'default' => 'gemini-2.5-flash', 'half' => true ),
+			array( 'id' => 'pai_brand', 'type' => 'textarea', 'label' => 'Marka bilgisi (yapay zekâya verilir)', 'default' => "Derin Flowers, 1989'dan beri İzmir'de çiçek tasarımı yapan bir çiçekçi. İzmir içinde aynı gün teslimat yapılır. Dil: sıcak, zarif, abartısız; gerçek olmayan bilgi yazılmaz.", 'rows' => 3 ),
+			array( 'id' => 'auto_tags', 'type' => 'toggle', 'label' => 'Etiketi olmayan ürünlere otomatik etiket ata (kategori, çiçek, renk, özel gün, seçeneklerden)', 'default' => 1 ),
 		),
 	);
 
@@ -69,6 +95,20 @@ function df_modules_schema( $schema ) {
 		),
 	);
 	$schema['delivery']['groups'][] = array(
+		'title'  => 'Fiş baskısı (delikli kâğıt)',
+		'desc'   => 'Yazdırma Merkezi → "Delikli fiş" baskısı: sol tarafta koparılan not kartı, sağda ürün görseli ve teslimat bilgileri, ek ürün (hediye) varsa en üstte. Ölçüleri kâğıdınıza göre milimetre olarak ayarlayın; önce düz kâğıda deneme baskısı alın.',
+		'fields' => array(
+			array( 'id' => 'slip_per_page', 'type' => 'select', 'label' => 'Bir A4\'te kaç fiş', 'default' => '3', 'third' => true, 'options' => array( '3' => '3 fiş (A4 üçe bölünür)', '4' => '4 fiş (A4 dörde bölünür)' ) ),
+			array( 'id' => 'slip_card_mm', 'type' => 'number', 'label' => 'Delikli çizgi soldan (mm)', 'default' => 70, 'min' => 40, 'max' => 120, 'third' => true ),
+			array( 'id' => 'slip_margin_mm', 'type' => 'number', 'label' => 'Fiş iç boşluğu (mm)', 'default' => 6, 'min' => 2, 'max' => 15, 'third' => true ),
+			array( 'id' => 'slip_shift_x', 'type' => 'number', 'label' => 'Yazıcı kayması yatay (mm, eksi olabilir)', 'default' => 0, 'min' => -10, 'max' => 10, 'third' => true ),
+			array( 'id' => 'slip_shift_y', 'type' => 'number', 'label' => 'Yazıcı kayması dikey (mm, eksi olabilir)', 'default' => 0, 'min' => -10, 'max' => 10, 'third' => true ),
+			array( 'id' => 'slip_image', 'type' => 'toggle', 'label' => 'Ürün görselini bas', 'default' => 1, 'third' => true ),
+			array( 'id' => 'slip_logo', 'type' => 'image', 'label' => 'Kart logosu (boşsa site logosu / metin logo)', 'half' => true ),
+		),
+	);
+
+	$schema['delivery']['groups'][] = array(
 		'title'  => 'Sipariş arşivi',
 		'desc'   => 'Teslim edilen siparişler belirtilen gün sonra "Arşiv" durumuna alınır; aktif sipariş listesinden çıkar, raporlarda sayılmaya devam eder. Siparişler → Arşiv sekmesinden ya da sipariş numarasıyla aranarak her zaman bulunur.',
 		'fields' => array(
@@ -80,9 +120,12 @@ function df_modules_schema( $schema ) {
 		'title'  => 'Müşteri deneyimi & bildirimler',
 		'desc'   => 'Bildirim bağlantısı: sipariş olaylarında (yeni sipariş, hazırlanıyor, yolda, teslim edildi) seçtiğiniz adrese JSON gönderilir; SMS firması, Zapier/Make veya kendi sisteminiz bağlanabilir. E-fatura bağlantısı: teslim edilen sipariş e-fatura sağlayıcınızın adresine imzalı (HMAC-SHA256) olarak aktarılır.',
 		'fields' => array(
-			array( 'id' => 'review_url', 'type' => 'url', 'label' => 'Google yorum bağlantısı', 'half' => true, 'desc' => 'Google İşletme Profili → "Yorum iste" bağlantısı.' ),
+			array( 'id' => 'review_url', 'type' => 'url', 'label' => 'Değerlendirme bağlantısı (Google yorum)', 'half' => true, 'desc' => 'Google İşletme Profili → "Yorum iste" bağlantısı.' ),
 			array( 'id' => 'review_on', 'type' => 'toggle', 'label' => 'Teslimden sonra müşteriye yorum daveti e-postası', 'default' => 1, 'half' => true ),
-			array( 'id' => 'review_text', 'type' => 'textarea', 'label' => 'Yorum daveti metni', 'default' => "Çiçekleriniz teslim edildi, sevdiklerinizi mutlu ettiysek ne mutlu bize!\nDeneyiminizi birkaç kelimeyle paylaşırsanız çok seviniriz:", 'rows' => 2 ),
+			array( 'id' => 'review_text', 'type' => 'textarea', 'label' => 'Yorum daveti metni', 'default' => "Çiçekleriniz teslim edildi, sevdiklerinizi mutlu ettiysek ne mutlu bize!\nAldığınız hizmeti değerlendirir misiniz?", 'rows' => 2 ),
+			array( 'id' => 'wa_on', 'type' => 'toggle', 'label' => 'Teslim edilince WhatsApp\'tan değerlendirme mesajı gönder (WasenderAPI)', 'default' => 0, 'half' => true ),
+			array( 'id' => 'wa_key', 'type' => 'text', 'label' => 'WasenderAPI anahtarı', 'half' => true, 'desc' => 'wasenderapi.com → oturumu bağlayın → API Key.' ),
+			array( 'id' => 'wa_text', 'type' => 'textarea', 'label' => 'WhatsApp mesajı ({ad}, {siparis}, {alici}, {link})', 'default' => "Merhaba {ad}, {siparis} numaralı siparişiniz {alici} adlı alıcıya teslim edildi. 💐\nAldığınız hizmeti değerlendirir misiniz? {link}\nDerin Flowers", 'rows' => 3 ),
 			array( 'id' => 'hook_url', 'type' => 'url', 'label' => 'Bildirim bağlantısı (webhook — SMS / otomasyon)', 'half' => true ),
 			array( 'id' => 'hook_secret', 'type' => 'text', 'label' => 'Bildirim gizli anahtarı (opsiyonel)', 'half' => true ),
 			array( 'id' => 'efatura_url', 'type' => 'url', 'label' => 'E-fatura sağlayıcı bağlantısı', 'half' => true ),

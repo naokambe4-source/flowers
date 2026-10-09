@@ -416,7 +416,7 @@ form.checkout_coupon .form-row-first { flex: 1; }
 .df-slot input:checked + span { border-color: var(--df-text); box-shadow: inset 0 0 0 1px var(--df-text); background: var(--df-ivory); }
 .df-slot input:focus-visible + span { outline: 2px solid var(--df-accent); outline-offset: 2px; }
 .df-slots__empty { color: var(--df-muted); font-size: 14px; padding: 14px; background: var(--df-ivory); }
-.df-when__note { display: flex; align-items: center; gap: 8px; margin: 14px 0 0; font-size: 13px; color: var(--df-muted); }
+.df-when__note { display: flex; align-items: flex-start; gap: 8px; margin: 14px 0 0; font-size: 13px; color: var(--df-muted); }
 
 /* Bölge seçimi (selectWoo) */
 .df-checkout .select2-container { width: 100% !important; }
@@ -848,3 +848,61 @@ body.df-modal-open { overflow: hidden; }
 /* Hediye adımı */
 .df-gifts__opt { font-family: var(--df-font-body); font-size: 12px; font-weight: 400; color: var(--df-muted); }
 .df-quick .df-gifts .df-gifts__grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
+
+/* ---------- Teslimat bilgileri: kartlı tarih / saat seçimi (v1.11) ---------- */
+.df-step { --df-pick: var(--df-success, #5E7B61); }
+.df-step__lead { margin: -16px 0 22px; color: var(--df-muted); font-size: 14.5px; }
+.df-quick .df-step__lead { margin: 0 16px 14px; }
+.df-radio { flex: none; width: 22px; height: 22px; margin-left: auto; border: 1.5px solid #cfc6bd; border-radius: 50%; background: #fff; position: relative; transition: border-color .2s; }
+.df-radio::after { content: ""; position: absolute; inset: 4px; border-radius: 50%; background: var(--df-pick); transform: scale(0); transition: transform .2s; }
+.df-type__box, .df-store__box { border-radius: 10px; }
+.df-type input:checked + .df-type__box { border-color: var(--df-pick); background: color-mix(in srgb, var(--df-pick) 9%, #fff); box-shadow: inset 0 0 0 1px var(--df-pick); }
+.df-type input:checked + .df-type__box .df-icon { color: var(--df-text); }
+.df-type input:checked + .df-type__box .df-radio { border-color: var(--df-pick); }
+.df-type input:checked + .df-type__box .df-radio::after { transform: scale(1); }
+.df-type__box .df-icon { color: var(--df-text); }
+.df-zone { margin: 0 0 24px; }
+.df-zone .df-field { position: relative; margin: 0; }
+.df-zone__pin { position: absolute; left: 16px; bottom: 0; height: 52px; display: flex; align-items: center; color: var(--df-text); pointer-events: none; z-index: 1; }
+.df-zone select.df-district { width: 100%; min-height: 52px; padding-left: 46px; border-radius: 10px; }
+.df-zone .select2-container .select2-selection--single { padding-left: 34px; }
+.df-zone .df-field__hint { display: block; margin-top: 6px; }
+.df-when { grid-template-columns: 1fr !important; gap: 24px; }
+.df-when__sub { display: block; margin: -4px 0 12px; color: var(--df-muted); font-size: 13.5px; }
+.df-when__selected { display: none; }
+.df-cal__quick { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 0; }
+.df-cal__chip { flex-direction: row; align-items: center; justify-content: flex-start; gap: 10px; min-height: 76px; padding: 12px 14px; border-radius: 10px; text-align: left; color: var(--df-text); cursor: pointer; }
+.df-cal__chip .df-cal__ico { flex: none; color: var(--df-text); }
+.df-cal__chip-t { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.df-cal__chip strong { font-family: var(--df-font-heading); font-size: 17px; font-weight: 500; white-space: nowrap; }
+.df-cal__chip .df-cal__ico { width: 22px; height: 22px; }
+.df-cal__chip-t > span { font-size: 13px; color: var(--df-muted); }
+.df-cal__chip.is-selected { background: color-mix(in srgb, var(--df-pick) 9%, #fff); border-color: var(--df-pick); box-shadow: inset 0 0 0 1px var(--df-pick); color: var(--df-text); }
+.df-cal__chip.is-selected strong, .df-cal__chip.is-selected .df-cal__ico { color: var(--df-text); }
+.df-cal__chip.is-selected .df-cal__chip-t > span { color: var(--df-muted); }
+.df-cal__chip.is-selected .df-radio { border-color: var(--df-pick); }
+.df-cal__chip.is-selected .df-radio::after { transform: scale(1); }
+.df-cal__chip:disabled { opacity: .45; cursor: not-allowed; }
+.df-cal__more.is-open { border-color: var(--df-text); }
+.df-cal:not(.is-open) .df-cal__box { display: none; }
+.df-cal.is-open .df-cal__box { margin-top: 12px; border-radius: 10px; }
+.df-slots { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.df-slot span { justify-content: flex-start; gap: 14px; min-height: 58px; padding: 14px 18px; border-radius: 10px; font-size: 16px; }
+.df-slot span b { font-weight: 500; font-variant-numeric: tabular-nums; }
+.df-slot .df-slot__ico { flex: none; color: var(--df-text); }
+.df-slot input:checked + span { border-color: var(--df-pick); background: color-mix(in srgb, var(--df-pick) 9%, #fff); box-shadow: inset 0 0 0 1px var(--df-pick); }
+.df-slot input:checked + span .df-radio { border-color: var(--df-pick); }
+.df-slot input:checked + span .df-radio::after { transform: scale(1); }
+.df-slots__empty { grid-column: 1 / -1; border-radius: 10px; }
+.df-when__note { display: flex; align-items: flex-start; gap: 8px; margin-top: 14px; color: var(--df-muted); font-size: 13.5px; }
+.df-step__next { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; height: 54px; margin: 22px 0 0 !important; padding: 0 22px; border-radius: 8px; background: var(--df-pick); font-family: var(--df-font-heading); font-size: 19px; letter-spacing: .01em; }
+.df-step__next:hover { background: color-mix(in srgb, var(--df-pick) 82%, #000); }
+.df-quick .df-step.is-open > .df-step__next { width: calc(100% - 32px); margin: 22px 16px 0 !important; }
+.df-when__note .df-icon { flex: none; margin-top: 2px; }
+@media (max-width: 767px) {
+	.df-cal__quick { grid-template-columns: 1fr 1fr; }
+	.df-cal__more { grid-column: 1 / -1; }
+	.df-cal__chip { min-height: 64px; padding: 12px; }
+	.df-cal__chip strong { font-size: 16px; }
+	.df-slots { grid-template-columns: 1fr; }
+}

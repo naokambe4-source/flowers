@@ -45,7 +45,8 @@ function df_print_history( $order ) {
 	$names = array(
 		'card' => 'Kart',
 		'slip' => 'Fiş',
-		'both' => 'Kart + fiş',
+		'both'  => 'Kart + fiş',
+		'perfo' => 'Delikli fiş',
 	);
 	$out   = array();
 	foreach ( (array) $order->get_meta( '_df_print_log' ) as $r ) {
@@ -290,3 +291,144 @@ function df_efatura_send( $order_id ) {
 	$order->save();
 }
 add_action( 'df_efatura_send', 'df_efatura_send' );
+
+/* -------------------------------------------------------------------------
+ * WhatsApp değerlendirme mesajı (WasenderAPI)
+ * ---------------------------------------------------------------------- */
+
+/**
+ * Mesaj gidecek numara (+905xxxxxxxxx): gönderici, yoksa fatura telefonu.
+ *
+ * @param WC_Order $order Sipariş.
+ * @return string
+ */
+function df_wa_phone( $order ) {
+	$d = preg_replace( '/\D/', '', (string) $order->get_meta( '_df_sender_phone' ) );
+	if ( strlen( $d ) < 10 ) {
+		$d = preg_replace( '/\D/', '', (string) $order->get_billing_phone() );
+	}
+	if ( 10 === strlen( $d ) && '5' === $d[0] ) {
+		$d = '90' . $d;
+	} elseif ( 11 === strlen( $d ) && '0' === $d[0] ) {
+		$d = '9' . $d;
+	}
+	return strlen( $d ) >= 11 ? '+' . $d : '';
+}
+
+/**
+ * Değerlendirme mesajı metni.
+ *
+ * @param WC_Order $order Sipariş.
+ * @return string
+ */
+function df_wa_text( $order ) {
+	$name = trim( (string) $order->get_meta( '_df_sender_name' ) );
+	if ( '' === $name ) {
+		$name = $order->get_billing_first_name();
+	}
+	$link = (string) df_opt( 'review_url' );
+	$text = (string) df_opt( 'wa_text', "Merhaba {ad}, {siparis} numaralı siparişiniz {alici} adlı alıcıya teslim edildi.\nAldığınız hizmeti değerlendirir misiniz? {link}" );
+	$text = strtr(
+		$text,
+		array(
+			'{ad}'      => $name,
+			'{siparis}' => '#' . $order->get_order_number(),
+			'{alici}'   => (string) $order->get_meta( '_df_recipient_name' ),
+			'{link}'    => $link,
+		)
+	);
+	return trim( preg_replace( '/[ \t]+/', ' ', $text ) );
+}
+
+/**
+ * WasenderAPI ile mesaj gönder.
+ *
+ * @param string $to   +905xxxxxxxxx.
+ * @param string $text Mesaj.
+ * @return true|WP_Error
+ */
+function df_wa_send( $to, $text ) {
+	$key = trim( (string) df_opt( 'wa_key' ) );
+	if ( '' === $key || '' === $to ) {
+		return new WP_Error( 'df_wa', 'API anahtarı ya da telefon yok.' );
+	}
+	$res = wp_remote_post(
+		'https://www.wasenderapi.com/api/send-message',
+		array(
+			'timeout' => 20,
+			'headers' => array(
+				'Authorization' => 'Bearer ' . $key,
+				'Content-Type'  => 'application/json',
+			),
+			'body'    => wp_json_encode(
+				array(
+					'to'   => $to,
+					'text' => $text,
+				)
+			),
+		)
+	);
+	if ( is_wp_error( $res ) ) {
+		return $res;
+	}
+	$code = (int) wp_remote_retrieve_response_code( $res );
+	$body = json_decode( wp_remote_retrieve_body( $res ), true );
+	if ( $code >= 200 && $code < 300 && ( ! is_array( $body ) || ! isset( $body['success'] ) || $body['success'] ) ) {
+		return true;
+	}
+	return new WP_Error( 'df_wa', 'WhatsApp gönderilemedi (HTTP ' . $code . ( isset( $body['message'] ) ? ': ' . sanitize_text_field( (string) $body['message'] ) : '' ) . ').' );
+}
+
+/**
+ * Teslim edilince değerlendirme mesajını sıraya al (kuryenin ekranı beklemesin).
+ *
+ * @param int $order_id Sipariş.
+ */
+function df_wa_on_completed( $order_id ) {
+	if ( df_opt( 'wa_on', 0 ) && df_opt( 'wa_key' ) ) {
+		wp_schedule_single_event( time(), 'df_wa_review', array( (int) $order_id ) );
+	}
+}
+add_action( 'woocommerce_order_status_completed', 'df_wa_on_completed', 30 );
+
+/**
+ * Değerlendirme mesajını gönder (bir sipariş için bir kez).
+ *
+ * @param int  $order_id Sipariş.
+ * @param bool $force    Daha önce gönderildiyse de gönder.
+ * @return true|WP_Error
+ */
+function df_wa_review( $order_id, $force = false ) {
+	$order = wc_get_order( $order_id );
+	if ( ! $order ) {
+		return new WP_Error( 'df_wa', 'Sipariş yok.' );
+	}
+	if ( ! $force && $order->get_meta( '_df_wa_review' ) ) {
+		return true;
+	}
+	$to  = df_wa_phone( $order );
+	$res = df_wa_send( $to, df_wa_text( $order ) );
+	if ( true === $res ) {
+		$order->update_meta_data( '_df_wa_review', time() );
+		$order->add_order_note( 'WhatsApp değerlendirme mesajı gönderildi (' . $to . ').' );
+	} else {
+		$order->add_order_note( 'WhatsApp değerlendirme mesajı gönderilemedi: ' . $res->get_error_message() );
+	}
+	$order->save();
+	return $res;
+}
+add_action( 'df_wa_review', 'df_wa_review' );
+
+/**
+ * Elle "WhatsApp'tan gönder" (sipariş ekranı).
+ */
+function df_wa_review_manual() {
+	$id = isset( $_GET['order'] ) ? absint( $_GET['order'] ) : 0;
+	if ( ! current_user_can( 'edit_shop_orders' ) || ! check_admin_referer( 'df_wa_review_' . $id ) ) {
+		wp_die( 'Yetkiniz yok.' );
+	}
+	df_wa_review( $id, true );
+	wp_safe_redirect( wp_get_referer() ? wp_get_referer() : admin_url() );
+	exit;
+}
+add_action( 'admin_post_df_wa_review', 'df_wa_review_manual' );

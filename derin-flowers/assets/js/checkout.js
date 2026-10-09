@@ -74,13 +74,31 @@
 		return '<span>' + w + '</span>';
 	} ).join( '' ) );
 
+	var ICON_CAL = '<svg class="df-cal__ico" viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="1.5"/><path d="M3.5 9.5h17M8 3v4M16 3v4"/><circle cx="12" cy="15" r="1.1" fill="currentColor" stroke="none"/></svg>';
+	var ICON_CLOCK = '<svg class="df-slot__ico" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>';
+	var tomorrowStr = fmt( new Date( today.getFullYear(), today.getMonth(), today.getDate() + 1 ) );
+	function chip( k, title ) {
+		var ok = !! available[ k ];
+		return '<button type="button" class="df-cal__chip' + ( k === sel ? ' is-selected' : '' ) + '" data-date="' + k + '"' + ( ok ? '' : ' disabled' ) + ' aria-pressed="' + ( k === sel ? 'true' : 'false' ) + '">' + ICON_CAL +
+			'<span class="df-cal__chip-t"><strong>' + title + '</strong><span>' + ( ok ? human( k ) : ( C.i18n.closed || 'Teslimat yok' ) ) + '</span></span><i class="df-radio" aria-hidden="true"></i></button>';
+	}
 	function renderQuick() {
-		var keys = Object.keys( available ).sort().slice( 0, 3 );
-		var html = keys.map( function ( k ) {
-			return '<button type="button" class="df-cal__chip' + ( k === sel ? ' is-selected' : '' ) + '" data-date="' + k + '"><strong>' + relLabel( k ) + '</strong><span>' + human( k ) + '</span></button>';
-		} ).join( '' );
+		var later = sel && sel !== todayStr && sel !== tomorrowStr;
+		var open = $cal.hasClass( 'is-open' );
+		var html = chip( todayStr, C.i18n.today ) + chip( tomorrowStr, C.i18n.tomorrow ) +
+			'<button type="button" class="df-cal__chip df-cal__more' + ( later ? ' is-selected' : '' ) + ( open ? ' is-open' : '' ) + '" data-df-cal-more aria-expanded="' + ( open ? 'true' : 'false' ) + '">' + ICON_CAL +
+			'<span class="df-cal__chip-t"><strong>' + ( C.i18n.later || 'İleri tarih seç' ) + '</strong><span>' + ( later ? human( sel, true ) : ( C.i18n.fromCal || 'Takvimden seçin' ) ) + '</span></span><i class="df-radio" aria-hidden="true"></i></button>';
 		$cal.find( '[data-df-cal-quick]' ).html( html );
 	}
+	// Bugün ve yarın teslimat yoksa ya da seçili gün ileri bir tarihse takvim açık başlar.
+	if ( ( ! available[ todayStr ] && ! available[ tomorrowStr ] && ! sel ) ) {
+		$cal.addClass( 'is-open' );
+	}
+	$cal.on( 'click', '[data-df-cal-more]', function () {
+		$cal.toggleClass( 'is-open' );
+		renderQuick();
+		renderMonth();
+	} );
 
 	function renderMonth() {
 		var y = view.getFullYear();
@@ -112,7 +130,7 @@
 	function renderSlots() {
 		if ( ! sel ) {
 			$dateText.text( C.i18n.pickDate );
-			$slots.html( '' );
+			$slots.html( '<p class="df-slots__empty">' + C.i18n.pickDate + '</p>' );
 			return;
 		}
 		$dateText.text( relLabel( sel ) === C.wlong[ parse( sel ).getDay() ] ? human( sel, true ) : relLabel( sel ) + ', ' + human( sel ) );
@@ -127,7 +145,7 @@
 		var html = keys.map( function ( k ) {
 			var s = C.slots[ k ] || { label: k, fee: 0 };
 			var fee = s.fee > 0 ? '<small>+' + s.fee.toLocaleString( 'tr-TR' ) + ' ' + C.currency + '</small>' : '';
-			return '<label class="df-slot"><input type="radio" name="df_slot" value="' + k + '"' + ( k === savedSlot ? ' checked' : '' ) + '><span>' + s.label + fee + '</span></label>';
+			return '<label class="df-slot"><input type="radio" name="df_slot" value="' + k + '"' + ( k === savedSlot ? ' checked' : '' ) + '><span>' + ICON_CLOCK + '<b>' + s.label.replace( ' - ', ' – ' ) + '</b>' + fee + '<i class="df-radio" aria-hidden="true"></i></span></label>';
 		} ).join( '' );
 		$slots.html( html );
 	}
@@ -140,6 +158,7 @@
 		$date.val( k ).trigger( 'change' );
 		var d = parse( k );
 		view = new Date( d.getFullYear(), d.getMonth(), 1 );
+		$cal.removeClass( 'is-open' );
 		renderQuick();
 		renderMonth();
 		renderSlots();
@@ -513,7 +532,7 @@
 	// "Devam" düğmesi: bir sonraki adımı aç.
 	$steps.each( function ( i ) {
 		if ( i < $steps.length - 1 ) {
-			$( '<button type="button" class="df-step__next">Devam</button>' ).appendTo( this ).on( 'click', function () {
+			$( '<button type="button" class="df-step__next">Devam et <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg></button>' ).appendTo( this ).on( 'click', function () {
 				var $next = $steps.eq( i + 1 );
 				// Adım kapanınca sayfa kısalır; sonraki adımın başlığı düğmenin olduğu yerde kalsın,
 				// sonra yumuşakça başlığın altına kaysın (sıçrama olmasın).

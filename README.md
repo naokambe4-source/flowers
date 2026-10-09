@@ -42,6 +42,15 @@ Araçlar sayfasında ayarları **JSON dışa/içe aktarma** ve sıfırlama da va
 - **Üyelik**: sekmeli Giriş / Üye Ol, ad-soyad-telefon-KVKK alanları, Hesabım kısayol kartları.
 - **Favoriler** (üye + ziyaretçi), canlı ürün araması, mini sepet çekmecesi, ürün kategorisine ikon + kapak görseli, menü öğelerine ikon seçimi, bülten aboneleri + CSV.
 
+## v1.11 — Ürün Asistanı, delikli fiş, WhatsApp değerlendirme, yeni teslimat seçimi
+
+- **Başlık Havuzu** (Ürünler → Başlık Havuzu): Excel'deki 232 başlık koleksiyon, çiçek, renk, duygu bilgileriyle; kullanıldı / boşta, arama ve filtre, yeni başlık ekleme, CSV yükleme, "Taslak ürün oluştur".
+- **Ürün Asistanı** (ürün ekranı): havuzdan başlık seçimi (Türkçe alt başlık otomatik), aynı başlık uyarısı, ChatGPT / Gemini / Claude ile kısa ve uzun açıklama, SEO başlığı / açıklaması, odak kelime, ALT metni, etiket. Taslak gelir, yönetici onaylar. SEO alanları Rank Math / Yoast alanlarına yazılır. Anahtar yoksa şablon metin.
+- **Otomatik etiket**: etiketi olmayan ürüne kategori, çiçek, renk, özel gün ve seçeneklerden etiket.
+- **Delikli fiş baskısı**: A4'te 3 ya da 4 fiş; solda koparılan not kartı (logo, not, imza), sağda ürün görseli ve teslimat bilgileri; ek ürün (hediye) en üstte. Ölçüler mm olarak ayarlanır.
+- **Değerlendirme mesajı**: teslim edilince WhatsApp (WasenderAPI) ve e-posta ile "Aldığınız hizmeti değerlendirir misiniz?" + bağlantı.
+- **Yeni teslimat seçimi**: kartlı teslimat türü, bölge seçimi ilk adımda, Bugün / Yarın / İleri tarih seç (takvim sadece istenince), kartlı saat aralıkları, tam genişlik "Devam et".
+
 ## v1.10.2 — Yeni ayarlar görünmüyordu (düzeltme)
 
 - Ayar paneli yeni sekmeleri (Lokasyon SEO, Bakım modu, Ürün kodu & başlık havuzu, Çalışma modu & kapasite, Kurye ekranı, Arşiv) gösterip kaydetmiyordu; ilçe sayfaları bu yüzden açılmıyordu. Düzeltildi.

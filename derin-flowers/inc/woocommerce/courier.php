@@ -400,9 +400,15 @@ function df_courier_proof_render( $post ) {
 	$html  = $order ? df_courier_proof_html( $order ) : '';
 	echo $html ? $html : '<p style="color:#777">Kurye teslim ettiğinde fotoğraf ve teslim bilgisi burada görünür.</p>'; // phpcs:ignore
 	if ( $order && in_array( $order->get_status(), array( 'completed', 'df-archived' ), true ) && function_exists( 'df_review_whatsapp' ) ) {
-		$wa = df_review_whatsapp( $order );
-		if ( $wa ) {
-			echo '<p><a class="button" href="' . esc_url( $wa ) . '" target="_blank" rel="noopener">★ Google yorum daveti (WhatsApp)</a></p>';
+		$sent = (int) $order->get_meta( '_df_wa_review' );
+		if ( df_opt( 'wa_on', 0 ) && df_opt( 'wa_key' ) ) {
+			echo '<p>' . ( $sent ? '<span style="color:#3f5e45">✓ Değerlendirme mesajı WhatsApp\'tan gönderildi (' . esc_html( wp_date( 'j M H:i', $sent ) ) . ')</span><br>' : '' );
+			echo '<a class="button" href="' . esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=df_wa_review&order=' . $order->get_id() ), 'df_wa_review_' . $order->get_id() ) ) . '">' . ( $sent ? 'Tekrar gönder' : 'Değerlendirme mesajını WhatsApp\'tan gönder' ) . '</a></p>';
+		} else {
+			$wa = df_review_whatsapp( $order );
+			if ( $wa ) {
+				echo '<p><a class="button" href="' . esc_url( $wa ) . '" target="_blank" rel="noopener">★ Değerlendirme daveti (WhatsApp)</a></p>';
+			}
 		}
 	}
 	if ( $order && function_exists( 'df_print_history' ) ) {
