@@ -789,34 +789,49 @@ function df_pai_call( $prov, $prompt ) {
 		return isset( $b['choices'][0]['message']['content'] ) ? (string) $b['choices'][0]['message']['content'] : '';
 	}
 	if ( 'gemini' === $prov ) {
-		$model = rawurlencode( (string) df_opt( 'pai_gemini_model', 'gemini-2.5-flash' ) );
-		$res   = wp_remote_post(
-			'https://generativelanguage.googleapis.com/v1beta/models/' . $model . ':generateContent',
-			array(
-				'timeout' => 60,
-				'headers' => array(
-					'Content-Type'   => 'application/json',
-					'x-goog-api-key' => $key,
-				),
-				'body'    => wp_json_encode(
-					array(
-						'contents'         => array(
-							array(
-								'role'  => 'user',
-								'parts' => array( array( 'text' => $prompt ) ),
+		$model = (string) df_opt( 'pai_gemini_model', 'gemini-3.8-flash' );
+		for ( $try = 0; $try < 2; $try++ ) {
+			$res = wp_remote_post(
+				'https://generativelanguage.googleapis.com/v1beta/models/' . rawurlencode( $model ) . ':generateContent',
+				array(
+					'timeout' => 60,
+					'headers' => array(
+						'Content-Type'   => 'application/json',
+						'x-goog-api-key' => $key,
+					),
+					'body'    => wp_json_encode(
+						array(
+							'contents'         => array(
+								array(
+									'role'  => 'user',
+									'parts' => array( array( 'text' => $prompt ) ),
+								),
 							),
-						),
-						'generationConfig' => array( 'responseMimeType' => 'application/json' ),
-					)
-				),
-			)
-		);
-		if ( is_wp_error( $res ) ) {
-			return $res;
-		}
-		$b = json_decode( wp_remote_retrieve_body( $res ), true );
-		if ( 200 !== (int) wp_remote_retrieve_response_code( $res ) ) {
-			return new WP_Error( 'df_pai', isset( $b['error']['message'] ) ? 'Gemini: ' . $b['error']['message'] : 'Gemini yanıt vermedi.' );
+							'generationConfig' => array( 'responseMimeType' => 'application/json' ),
+						)
+					),
+				)
+			);
+			if ( is_wp_error( $res ) ) {
+				return $res;
+			}
+			$b = json_decode( wp_remote_retrieve_body( $res ), true );
+			if ( 200 === (int) wp_remote_retrieve_response_code( $res ) ) {
+				break;
+			}
+			$msg = isset( $b['error']['message'] ) ? (string) $b['error']['message'] : '';
+			// Google eski modeli kapatıp yenisini önerirse önerilen modelle bir kez daha dene ve ayara kaydet.
+			if ( 0 === $try && preg_match( '#use (?:models/)?(gemini-[a-z0-9.\-]+)#i', $msg, $m ) && strtolower( $m[1] ) !== strtolower( $model ) ) {
+				$model = strtolower( $m[1] );
+				$opts  = get_option( DF_OPTION );
+				if ( is_array( $opts ) ) {
+					$opts['pai_gemini_model'] = $model;
+					$opts['__df_clean']       = 1;
+					update_option( DF_OPTION, $opts );
+				}
+				continue;
+			}
+			return new WP_Error( 'df_pai', '' !== $msg ? 'Gemini: ' . $msg : 'Gemini yanıt vermedi.' );
 		}
 		$text = '';
 		foreach ( (array) ( isset( $b['candidates'][0]['content']['parts'] ) ? $b['candidates'][0]['content']['parts'] : array() ) as $part ) {
