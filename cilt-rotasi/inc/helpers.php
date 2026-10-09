@@ -132,12 +132,42 @@ function cr_url( $url ) {
 			$url = substr( $url, strlen( $base ) );
 			$url = '' === $url ? '/' : $url;
 		}
+		// Kalıcı bağlantılar tarihli/kategorili ise “/yazi-adi/” bağlantısı yönlendirmeye düşmesin: doğrudan gerçek adres.
+		if ( preg_match( '#^/([a-z0-9-]+)/?$#', $url, $m ) && '/%postname%/' !== get_option( 'permalink_structure' ) ) {
+			static $slug_cache = array();
+			if ( ! array_key_exists( $m[1], $slug_cache ) ) {
+				$p                    = get_page_by_path( $m[1], OBJECT, array( 'page', 'post' ) );
+				$slug_cache[ $m[1] ] = ( $p && 'publish' === $p->post_status ) ? get_permalink( $p ) : '';
+			}
+			if ( $slug_cache[ $m[1] ] ) {
+				return $slug_cache[ $m[1] ];
+			}
+		}
 		return home_url( $url );
 	}
 	if ( '#' === $url[0] ) {
 		return $url;
 	}
 	return $url;
+}
+
+/**
+ * Harici bir görsel adresi medya kütüphanesine aktarıldıysa ek kimliğini döndürür (Araçlar → Görselleri aktar).
+ * Böylece tüm şablonlar küçük boyutlu, srcset'li WebP sürümleri otomatik kullanır.
+ *
+ * @param mixed $value Ek kimliği veya adres.
+ * @return mixed
+ */
+function cr_local_img( $value ) {
+	static $map = null;
+	if ( ! is_string( $value ) || '' === $value || is_numeric( $value ) ) {
+		return $value;
+	}
+	if ( null === $map ) {
+		$map = get_option( 'cr_img_map', array() );
+		$map = is_array( $map ) ? $map : array();
+	}
+	return isset( $map[ $value ] ) && get_post( (int) $map[ $value ] ) ? (int) $map[ $value ] : $value;
 }
 
 /**
@@ -148,6 +178,7 @@ function cr_url( $url ) {
  * @return string
  */
 function cr_img_url( $value, $size = 'large' ) {
+	$value = cr_local_img( $value );
 	if ( is_numeric( $value ) && (int) $value > 0 ) {
 		$src = wp_get_attachment_image_url( (int) $value, $size );
 		return $src ? $src : '';
@@ -164,7 +195,8 @@ function cr_img_url( $value, $size = 'large' ) {
  * @return string
  */
 function cr_img( $value, $size = 'large', $attr = array() ) {
-	$attr = wp_parse_args(
+	$value = cr_local_img( $value );
+	$attr  = wp_parse_args(
 		$attr,
 		array(
 			'alt'      => '',
@@ -334,7 +366,7 @@ function cr_post_image_url( $post_id, $size = 'large' ) {
 	if ( has_post_thumbnail( $post_id ) ) {
 		return (string) get_the_post_thumbnail_url( $post_id, $size );
 	}
-	return (string) get_post_meta( $post_id, '_cr_ext_image', true );
+	return cr_img_url( get_post_meta( $post_id, '_cr_ext_image', true ), $size );
 }
 
 /**
@@ -966,6 +998,15 @@ function cr_migrate() {
 	}
 	if ( version_compare( $from, '1.2.3', '<' ) ) {
 		cr_migrate_123();
+	}
+	if ( version_compare( $from, '1.3.0', '<' ) ) {
+		// Mobil alt menü ekranda çok yer kaplıyordu: kapalı (Panel › Header › Mobil alt menü ile açılabilir).
+		$o = get_option( CR_OPTION, array() );
+		if ( is_array( $o ) ) {
+			$o['bottom_nav'] = 0;
+			update_option( CR_OPTION, $o );
+			cr_flush_options_cache();
+		}
 	}
 	update_option( 'cr_theme_version', CR_VERSION );
 }

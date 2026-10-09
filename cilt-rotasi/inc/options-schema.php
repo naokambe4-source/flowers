@@ -163,6 +163,7 @@ function cr_options_schema() {
 						array( 'id' => 'container', 'type' => 'number', 'label' => 'Maksimum içerik genişliği (px)', 'default' => 1360, 'min' => 1100, 'max' => 1440 ),
 						array( 'id' => 'radius', 'type' => 'number', 'label' => 'Köşe yuvarlaklığı (px)', 'desc' => 'Editoryal tasarım için 0 (keskin köşe) önerilir.', 'default' => 0, 'min' => 0, 'max' => 40 ),
 						array( 'id' => 'section_space', 'type' => 'number', 'label' => 'Bölüm dikey boşluğu (px, masaüstü)', 'default' => 112, 'min' => 48, 'max' => 180 ),
+						array( 'id' => 'img_webp', 'type' => 'toggle', 'label' => 'Yüklenen görselleri WebP olarak küçült', 'desc' => 'Yeni yüklenen görsellerin site içinde kullanılan boyutları WebP üretilir (genelde %70–90 daha hafif).', 'default' => 1 ),
 						array( 'id' => 'animations', 'type' => 'toggle', 'label' => 'Yumuşak giriş animasyonları', 'desc' => '“Hareketi azalt” tercihi olan ziyaretçilerde her zaman kapalıdır.', 'default' => 1 ),
 					),
 				),
@@ -192,7 +193,7 @@ function cr_options_schema() {
 					'title'  => 'Mobil alt menü',
 					'desc'   => 'Ekranın altında sabit, iPhone güvenli alan uyumlu gezinme çubuğu.',
 					'fields' => array(
-						array( 'id' => 'bottom_nav', 'type' => 'toggle', 'label' => 'Mobil alt menüyü göster', 'default' => 1 ),
+						array( 'id' => 'bottom_nav', 'type' => 'toggle', 'label' => 'Mobil alt menüyü göster', 'desc' => 'Kapalıyken mobilde gezinme header’daki menü düğmesinden yapılır; ekranda daha fazla içerik görünür.', 'default' => 0 ),
 						array( 'id' => 'bn_home', 'type' => 'text', 'label' => '1. Ana Sayfa etiketi', 'default' => 'Ana Sayfa' ),
 						array( 'id' => 'bn_explore', 'type' => 'text', 'label' => '2. sekme etiketi (blog)', 'default' => 'Blog' ),
 						array( 'id' => 'bn_explore_url', 'type' => 'url', 'label' => 'Keşfet bağlantısı', 'default' => '/rehberler/' ),

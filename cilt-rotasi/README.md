@@ -42,6 +42,17 @@ Ayrıca: markalı giriş ekranı, tüm yönetime Cilt Rotası görünümü, üst
 - Yazı düzenleme ekranında canlı Google önizlemesi, karakter sayaçları ve anlık kontrol listesi bulunan **SEO · AEO · GEO** kutusu vardır.
 - Yoast, Rank Math, AIOSEO veya SEOPress etkinse tema meta etiketlerini kendiliğinden kapatır; sözlük, SSS, HowTo, ürün şemaları ve GEO dosyaları çalışmaya devam eder.
 
+## v1.3 — yerleşim, hız ve SEO
+
+- Header düz (opak) zeminli; aşağı kaydırınca gizlenir, yukarı kaydırınca geri gelir — içerik header'ın altında kalmaz.
+- Mobil alt menü varsayılan kapalı (Panel › Header › Mobil alt menü). Mobil header 64px.
+- Sözlük filtre çubuğu yalnızca masaüstünde yapışkan; mobilde ekranı kaplamaz. Breadcrumb mobilde kaymaz, alt satıra iner.
+- **Araçlar › Görselleri siteye aktar**: harici (hizliresim vb.) görselleri medya kütüphanesine indirir; site otomatik olarak küçük, WebP ve srcset'li sürümleri kullanır (2–3 MB PNG → 50–200 KB). Ayarlar değişmez.
+- Yüklenen görsellerin boyutları WebP üretilir (Panel › Genel › WebP).
+- Hero görseli tam boyut yerine 1600px sürümle ve srcset'li ön yüklemeyle gelir.
+- Tarihli kalıcı bağlantılarda tema içi “/yazi-adi/” bağlantıları yönlendirmesiz gerçek adrese gider.
+- Kontrol paneli › **SEO ve hız sağlığı**: harici görsel, kalıcı bağlantı yapısı, alan adı/alt klasör ve yazar adı kontrolleri.
+
 ## v1.2 revizyonları (1.10.26 listesi)
 
 - Header: “İçerikler” → **Sözlük**, “Ürün Rehberi” → **Blog** (/rehberler/); “İncele” butonu kaldırıldı.

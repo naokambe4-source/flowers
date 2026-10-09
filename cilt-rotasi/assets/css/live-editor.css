@@ -1,12 +1,13 @@
 /* Cilt Rotası — Canlı düzenleyici */
 .cr-live-fab {
-	position: fixed; left: 16px; bottom: calc(84px + env(safe-area-inset-bottom)); z-index: 150;
+	position: fixed; left: 16px; bottom: calc(16px + env(safe-area-inset-bottom)); z-index: 150;
 	display: inline-flex; align-items: center; gap: 8px; height: 46px; padding: 0 18px 0 14px;
 	border: 0; border-radius: 999px; background: #1d3a33; color: #fff; font-weight: 700; font-size: 14px;
 	box-shadow: 0 12px 30px -10px rgba(20, 40, 34, .6); cursor: pointer;
 }
 .cr-live-fab:hover { background: #24483F; }
-@media (min-width: 900px) { .cr-live-fab { bottom: 20px; } }
+.has-bottom-nav .cr-live-fab { bottom: calc(var(--cr-bottom-h) + 16px + env(safe-area-inset-bottom)); }
+@media (min-width: 900px) { .cr-live-fab, .has-bottom-nav .cr-live-fab { bottom: 20px; } }
 .cr-editing .cr-live-fab { display: none; }
 
 .crl-bar {

@@ -16,10 +16,10 @@ $mob     = cr_opt( 'hero_image_mobile' );
 		<?php if ( $mob ) : ?>
 			<picture>
 				<source media="(max-width: 767px)" srcset="<?php echo esc_url( cr_img_url( $mob, 'cr-hero' ) ); ?>">
-				<?php echo cr_img( $desk, 'full', array( 'alt' => cr_opt( 'hero_image_alt' ), 'class' => 'cr-hero__img', 'loading' => 'eager', 'fetchpriority' => 'high', 'sizes' => '100vw', 'style' => 'object-position:' . esc_attr( $focus ) ) ); // phpcs:ignore ?>
+				<?php echo cr_img( $desk, 'cr-hero', array( 'alt' => cr_opt( 'hero_image_alt' ), 'class' => 'cr-hero__img', 'loading' => 'eager', 'fetchpriority' => 'high', 'sizes' => '100vw', 'style' => 'object-position:' . esc_attr( $focus ) ) ); // phpcs:ignore ?>
 			</picture>
 		<?php else : ?>
-			<?php echo cr_img( $desk, 'full', array( 'alt' => cr_opt( 'hero_image_alt' ), 'class' => 'cr-hero__img', 'loading' => 'eager', 'fetchpriority' => 'high', 'sizes' => '100vw', 'style' => 'object-position:' . esc_attr( $focus ) ) ); // phpcs:ignore ?>
+			<?php echo cr_img( $desk, 'cr-hero', array( 'alt' => cr_opt( 'hero_image_alt' ), 'class' => 'cr-hero__img', 'loading' => 'eager', 'fetchpriority' => 'high', 'sizes' => '100vw', 'style' => 'object-position:' . esc_attr( $focus ) ) ); // phpcs:ignore ?>
 		<?php endif; ?>
 		<span class="cr-hero__shade" aria-hidden="true"></span>
 	</div>

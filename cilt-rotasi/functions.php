@@ -7,7 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'CR_VERSION', '1.2.3' );
+define( 'CR_VERSION', '1.3.0' );
 define( 'CR_DIR', get_template_directory() );
 define( 'CR_URI', get_template_directory_uri() );
 define( 'CR_OPTION', 'cilt_rotasi_options' );
@@ -35,6 +35,7 @@ if ( is_admin() ) {
 	require CR_DIR . '/inc/admin/meta-boxes.php';
 	require CR_DIR . '/inc/admin/seo-columns.php';
 	require CR_DIR . '/inc/admin/tools.php';
+	require CR_DIR . '/inc/admin/images.php';
 	require CR_DIR . '/inc/admin/demo.php';
 	require CR_DIR . '/inc/admin/skin.php';
 }

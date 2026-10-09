@@ -60,11 +60,19 @@
 
 	function onScroll() {
 		var y = window.scrollY;
-		if (header) { header.classList.toggle('is-scrolled', y > 40); }
-		if (bottom) {
-			if (y > lastY + 6 && y > 240) { bottom.classList.add('is-hidden'); }
-			else if (y < lastY - 6 || y < 240) { bottom.classList.remove('is-hidden'); }
+		// Aşağı kaydırınca header (ve varsa alt menü) gizlenir, yukarı kaydırınca geri gelir.
+		var hide = null;
+		if (y > lastY + 6 && y > 160) { hide = true; }
+		else if (y < lastY - 6 || y < 160) { hide = false; }
+		if (body.classList.contains('cr-lock') || body.classList.contains('cr-editing') || (header && header.contains(document.activeElement) && document.activeElement !== document.body)) { hide = false; }
+		if (header) {
+			header.classList.toggle('is-scrolled', y > 40);
+			if (hide !== null) {
+				header.classList.toggle('is-hidden', hide);
+				body.classList.toggle('cr-head-hidden', hide);
+			}
 		}
+		if (bottom && hide !== null) { bottom.classList.toggle('is-hidden', hide); }
 		if (progress && article) {
 			var r = article.getBoundingClientRect();
 			var total = r.height - window.innerHeight * 0.6;
@@ -78,6 +86,12 @@
 	window.addEventListener('scroll', function () {
 		if (!ticking) { window.requestAnimationFrame(onScroll); ticking = true; }
 	}, { passive: true });
+	if (header) {
+		header.addEventListener('focusin', function () {
+			header.classList.remove('is-hidden');
+			body.classList.remove('cr-head-hidden');
+		});
+	}
 
 	/* ---------- Parallax (hafif) ---------- */
 	var pEls = (reduce || !body.classList.contains('cr-anim')) ? [] : $$('[data-parallax]');

@@ -183,14 +183,19 @@ function cr_head_perf() {
 		echo '<link rel="preconnect" href="https://fonts.googleapis.com">' . "\n";
 		echo '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' . "\n";
 	}
-	$lcp = '';
+	$lcp    = '';
+	$srcset = '';
 	if ( is_front_page() ) {
-		$lcp = cr_img_url( cr_opt( 'hero_image' ), 'full' );
+		$hero = cr_local_img( cr_opt( 'hero_image' ) );
+		$lcp  = cr_img_url( $hero, 'cr-hero' );
+		if ( is_numeric( $hero ) ) {
+			$srcset = (string) wp_get_attachment_image_srcset( (int) $hero, 'cr-hero' );
+		}
 	} elseif ( is_singular( array( 'post', 'urun_rehberi' ) ) ) {
 		$lcp = cr_post_image_url( get_the_ID(), 'cr-hero' );
 	}
 	if ( $lcp ) {
-		echo '<link rel="preload" as="image" href="' . esc_url( $lcp ) . '" fetchpriority="high">' . "\n";
+		echo '<link rel="preload" as="image" href="' . esc_url( $lcp ) . '"' . ( $srcset ? ' imagesrcset="' . esc_attr( $srcset ) . '" imagesizes="100vw"' : '' ) . ' fetchpriority="high">' . "\n";
 	}
 	echo '<meta name="theme-color" content="' . esc_attr( cr_opt( 'c_cream', '#FBF8F2' ) ) . '">' . "\n";
 }
@@ -470,3 +475,17 @@ function cr_lang_attr( $out ) {
 	return $out;
 }
 add_filter( 'language_attributes', 'cr_lang_attr' );
+
+/**
+ * Yüklenen görsellerin küçük boyutlarını WebP olarak üret (sunucu destekliyorsa). PNG/JPEG'e göre çok daha hafif.
+ */
+add_filter(
+	'image_editor_output_format',
+	function ( $formats ) {
+		if ( cr_opt( 'img_webp' ) && wp_image_editor_supports( array( 'mime_type' => 'image/webp' ) ) ) {
+			$formats['image/png']  = 'image/webp';
+			$formats['image/jpeg'] = 'image/webp';
+		}
+		return $formats;
+	}
+);

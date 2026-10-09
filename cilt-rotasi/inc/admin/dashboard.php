@@ -325,6 +325,30 @@ function cr_dashboard_page() {
 				</div>
 			</section>
 
+			<?php
+			$sub_path   = untrailingslashit( (string) wp_parse_url( home_url(), PHP_URL_PATH ) );
+			$pl         = (string) get_option( 'permalink_structure' );
+			$ext_count  = function_exists( 'cr_ext_images_pending' ) ? count( cr_ext_images_pending() ) : 0;
+			$bad_author = '';
+			foreach ( get_users( array( 'has_published_posts' => array( 'post' ), 'fields' => array( 'ID', 'display_name', 'user_login' ) ) ) as $au ) {
+				if ( 'admin' === strtolower( $au->display_name ) || $au->display_name === $au->user_login ) {
+					$bad_author = $au->display_name;
+					break;
+				}
+			}
+			?>
+			<section class="cr-card-a">
+				<header class="cr-card-a__head"><h2>SEO ve hız sağlığı</h2><p>Temanın düzeltemeyeceği, senin ayarlaman gereken konular.</p></header>
+				<div class="cr-card-a__body">
+					<ul class="cr-health">
+						<li class="<?php echo $ext_count ? 'has-issue' : 'is-ok'; ?>"><span>Görseller sitede barındırılıyor</span><?php echo $ext_count ? '<a href="' . esc_url( admin_url( 'admin.php?page=cilt-rotasi-araclar' ) ) . '">' . (int) $ext_count . ' harici görsel — aktar</a>' : '<em>Evet</em>'; ?></li>
+						<li class="<?php echo '/%postname%/' === $pl ? 'is-ok' : 'has-issue'; ?>"><span>Yazı adresleri kısa (/yazi-adi/)</span><em><?php echo '/%postname%/' === $pl ? 'Evet' : 'Tarihli/uzun: Ayarlar › Kalıcı bağlantılar › “Yazı adı”'; ?></em></li>
+						<li class="<?php echo $sub_path ? 'has-issue' : 'is-ok'; ?>"><span>Kendi alan adında</span><em><?php echo $sub_path ? 'Alt klasörde (' . esc_html( $sub_path ) . '/): robots.txt ve site haritası kök alan adından okunmaz; site haritasını Search Console’a elle ekle' : 'Evet'; ?></em></li>
+						<li class="<?php echo $bad_author ? 'has-issue' : 'is-ok'; ?>"><span>Yazar adı gerçek (E-E-A-T)</span><em><?php echo $bad_author ? '“' . esc_html( $bad_author ) . '” görünüyor: Kullanıcılar › Profil › Herkese açık ad' : 'Evet'; ?></em></li>
+					</ul>
+				</div>
+			</section>
+
 			<section class="cr-card-a">
 				<header class="cr-card-a__head"><h2>Yapay zekâ görünürlüğü (GEO)</h2></header>
 				<div class="cr-card-a__body">
@@ -332,7 +356,7 @@ function cr_dashboard_page() {
 						<li class="<?php echo cr_opt( 'geo_llms' ) ? 'is-ok' : 'has-issue'; ?>"><span>llms.txt</span><?php echo cr_opt( 'geo_llms' ) ? '<a href="' . esc_url( home_url( '/llms.txt' ) ) . '" target="_blank">Görüntüle ↗</a>' : '<em>Kapalı</em>'; ?></li>
 						<li class="<?php echo cr_opt( 'geo_llms' ) ? 'is-ok' : 'has-issue'; ?>"><span>llms-full.txt</span><?php echo cr_opt( 'geo_llms' ) ? '<a href="' . esc_url( home_url( '/llms-full.txt' ) ) . '" target="_blank">Görüntüle ↗</a>' : '<em>Kapalı</em>'; ?></li>
 						<li class="is-ok"><span>XML site haritası</span><a href="<?php echo esc_url( home_url( '/wp-sitemap.xml' ) ); ?>" target="_blank">Görüntüle ↗</a></li>
-						<li class="is-ok"><span>robots.txt</span><a href="<?php echo esc_url( home_url( '/robots.txt' ) ); ?>" target="_blank">Görüntüle ↗</a></li>
+						<li class="<?php echo $sub_path ? 'has-issue' : 'is-ok'; ?>"><span>robots.txt</span><?php echo $sub_path ? '<em>Alt klasör kurulumunda tema robots.txt yayınlayamaz</em>' : '<a href="' . esc_url( home_url( '/robots.txt' ) ) . '" target="_blank">Görüntüle ↗</a>'; ?></li>
 						<li class="<?php echo 'block' === cr_opt( 'geo_ai_bots' ) ? 'has-issue' : 'is-ok'; ?>"><span>Yapay zekâ botları</span><em><?php echo esc_html( array( 'allow' => 'İzinli', 'search' => 'Yalnızca arama botları', 'block' => 'Engelli' )[ cr_opt( 'geo_ai_bots', 'allow' ) ] ); ?></em></li>
 						<li class="<?php echo get_option( 'blog_public' ) ? 'is-ok' : 'has-issue'; ?>"><span>Arama motorlarına açık</span><em><?php echo get_option( 'blog_public' ) ? 'Evet' : 'Hayır — Ayarlar › Okuma'; ?></em></li>
 						<li class="<?php echo get_option( 'permalink_structure' ) ? 'is-ok' : 'has-issue'; ?>"><span>Okunaklı kalıcı bağlantılar</span><em><?php echo get_option( 'permalink_structure' ) ? 'Açık' : 'Kapalı'; ?></em></li>
