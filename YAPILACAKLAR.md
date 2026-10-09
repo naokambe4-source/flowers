@@ -29,3 +29,20 @@ Bu dosya müşterinin istediği ama henüz yapılmamış işlerin notudur. Yapı
 - E-posta: mevcut (v1.10'da tamamlandı e-postasına eklendi) — korunacak.
 - WhatsApp: otomatik gönderim için WasenderAPI (https://wasenderapi.com/api-docs) bağlanacak;
   API anahtarı panelden girilecek. Şu an sadece elle "WhatsApp ile gönder" düğmesi var.
+
+## 4. Ürün etiketleri otomatik
+- Ürün kaydedilirken etiketler otomatik atansın (yapay zekâ önerisiyle ya da ürün adı, kategori, renk ve çiçek
+  türünden). Örnek: "kırmızı gül", "doğum günü", "kutuda çiçek". Yönetici sonradan silip ekleyebilir.
+- Madde 1'deki yapay zekâ içeriğiyle birlikte yapılacak.
+
+## 5. Ürün detayında teslimat / tarih seçimi — yeni tasarım (müşterinin gönderdiği görsele göre)
+- Başlık "Teslimat bilgileri" + alt yazı "Çiçeklerinizin ne zaman ve nasıl ulaşacağını seçin."
+- Teslimat türü: iki büyük kart (ikon + başlık + alt yazı + sağda yuvarlak seçim işareti):
+  "Adrese teslim — İzmir'in seçili bölgelerine" / "Mağazadan teslim — Alsancak Atölye". Seçili kart yeşil çerçeve + açık yeşil zemin.
+- Teslimat bölgesi: konum ikonlu tek açılır liste ("Karşıyaka · Bostanlı" gibi).
+- Teslimat tarihi: üç kart — "Bugün (8 Ekim)", "Yarın (9 Ekim)", "İleri tarih seç (Takvimden seçin)".
+  Takvim yalnızca "İleri tarih seç"e basılınca açılır (şu an takvim hep açık ve uzun).
+- Teslimat saati: saat aralıkları saat ikonlu kartlar halinde (09:00–13:00, 14:00–18:00), sağda seçim işareti.
+- Altında bilgi satırı: "Aynı gün veya ileri tarihli teslimat seçebilirsiniz."
+- Tam genişlik yeşil "Devam et →" düğmesi.
+- Renkler: krem zemin, koyu yeşil vurgu, başlıklar serif. Sol tarafta ürün görseli + fiyat/adet/toplam özeti.
