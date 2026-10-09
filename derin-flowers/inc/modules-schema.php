@@ -54,6 +54,7 @@ function df_modules_schema( $schema ) {
 			array( 'id' => 'pai_openai_model', 'type' => 'text', 'label' => 'OpenAI modeli', 'default' => 'gpt-4.1-mini', 'half' => true ),
 			array( 'id' => 'pai_gemini_key', 'type' => 'text', 'label' => 'Gemini API anahtarı', 'half' => true, 'desc' => 'aistudio.google.com → Get API key' ),
 			array( 'id' => 'pai_gemini_model', 'type' => 'text', 'label' => 'Gemini modeli', 'default' => 'gemini-3.8-flash', 'half' => true ),
+			array( 'id' => 'pai_gemini_backup', 'type' => 'text', 'label' => 'Yedek Gemini modeli (ana model yoğunsa)', 'default' => 'gemini-flash-lite-latest', 'half' => true ),
 			array( 'id' => 'pai_brand', 'type' => 'textarea', 'label' => 'Marka bilgisi (yapay zekâya verilir)', 'default' => "Derin Flowers, 1989'dan beri İzmir'de çiçek tasarımı yapan bir çiçekçi. İzmir içinde aynı gün teslimat yapılır. Dil: sıcak, zarif, abartısız; gerçek olmayan bilgi yazılmaz.", 'rows' => 3 ),
 			array( 'id' => 'auto_tags', 'type' => 'toggle', 'label' => 'Etiketi olmayan ürünlere otomatik etiket ata (kategori, çiçek, renk, özel gün, seçeneklerden)', 'default' => 1 ),
 		),

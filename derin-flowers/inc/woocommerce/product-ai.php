@@ -845,10 +845,11 @@ function df_pai_call( $prov, $prompt ) {
 		return isset( $b['choices'][0]['message']['content'] ) ? (string) $b['choices'][0]['message']['content'] : '';
 	}
 	if ( 'gemini' === $prov ) {
-		$model = (string) df_opt( 'pai_gemini_model', 'gemini-3.8-flash' );
-		$switched = false;
-		$busy     = 0;
-		for ( $try = 0; $try < 6; $try++ ) {
+		$model = ! empty( $GLOBALS['df_pai_gemini_model'] ) ? (string) $GLOBALS['df_pai_gemini_model'] : (string) df_opt( 'pai_gemini_model', 'gemini-3.8-flash' );
+		$switched    = false;
+		$used_backup = false;
+		$busy        = 0;
+		for ( $try = 0; $try < 8; $try++ ) {
 			$res = wp_remote_post(
 				'https://generativelanguage.googleapis.com/v1beta/models/' . rawurlencode( $model ) . ':generateContent',
 				array(
@@ -880,9 +881,18 @@ function df_pai_call( $prov, $prompt ) {
 			$msg  = isset( $b['error']['message'] ) ? (string) $b['error']['message'] : '';
 			$code = (int) wp_remote_retrieve_response_code( $res );
 			// Geçici yoğunluk (503 / 429 / 500): kısa bekleyip tekrar dene.
-			if ( ( in_array( $code, array( 429, 500, 503 ), true ) || preg_match( '/high demand|overloaded|unavailable|try again/i', $msg ) ) && $busy < df_pai_busy_retries() ) {
+			$is_busy = in_array( $code, array( 429, 500, 503 ), true ) || preg_match( '/high demand|overloaded|unavailable|try again/i', $msg );
+			if ( $is_busy && $busy < df_pai_busy_retries() ) {
 				++$busy;
 				sleep( $busy );
+				continue;
+			}
+			// Ana model yoğunsa yedek (daha hafif) modele geç.
+			$backup = trim( (string) df_opt( 'pai_gemini_backup', 'gemini-flash-lite-latest' ) );
+			if ( $is_busy && ! $used_backup && '' !== $backup && strtolower( $backup ) !== strtolower( $model ) ) {
+				$model       = $backup;
+				$used_backup = true;
+				$busy        = df_pai_busy_retries() - 1;
 				continue;
 			}
 			// Google eski modeli kapatıp yenisini önerirse önerilen modelle bir kez daha dene ve ayara kaydet.

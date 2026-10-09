@@ -441,7 +441,12 @@ function df_ai_notes_remote( $in ) {
 	if ( '' === $prov || ! function_exists( 'df_pai_call' ) ) {
 		return new WP_Error( 'df_ai', 'Yapay zekâ anahtarı girilmemiş.' );
 	}
+	// Müşteri beklemesin: kart notunda hafif (hızlı) Gemini modeli kullanılır.
+	if ( 'gemini' === $prov && '' !== trim( (string) df_opt( 'pai_gemini_backup', 'gemini-flash-lite-latest' ) ) ) {
+		$GLOBALS['df_pai_gemini_model'] = trim( (string) df_opt( 'pai_gemini_backup', 'gemini-flash-lite-latest' ) );
+	}
 	$text = df_pai_call( $prov, df_ai_note_prompt( $in ) );
+	unset( $GLOBALS['df_pai_gemini_model'] );
 	if ( is_wp_error( $text ) ) {
 		return $text;
 	}
