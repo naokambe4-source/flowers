@@ -795,6 +795,15 @@ function df_pai_prompt( $in ) {
 }
 
 /**
+ * Yoğunlukta kaç kez yeniden denensin (ürün ekranında 3, müşterinin kart notunda 1 — müşteri beklemesin).
+ *
+ * @return int
+ */
+function df_pai_busy_retries() {
+	return isset( $GLOBALS['df_pai_busy_retries'] ) ? (int) $GLOBALS['df_pai_busy_retries'] : 1;
+}
+
+/**
  * Sağlayıcıya sor, metin yanıtı döndür.
  *
  * @param string $prov   Sağlayıcı.
@@ -837,7 +846,9 @@ function df_pai_call( $prov, $prompt ) {
 	}
 	if ( 'gemini' === $prov ) {
 		$model = (string) df_opt( 'pai_gemini_model', 'gemini-3.8-flash' );
-		for ( $try = 0; $try < 2; $try++ ) {
+		$switched = false;
+		$busy     = 0;
+		for ( $try = 0; $try < 6; $try++ ) {
 			$res = wp_remote_post(
 				'https://generativelanguage.googleapis.com/v1beta/models/' . rawurlencode( $model ) . ':generateContent',
 				array(
@@ -866,10 +877,18 @@ function df_pai_call( $prov, $prompt ) {
 			if ( 200 === (int) wp_remote_retrieve_response_code( $res ) ) {
 				break;
 			}
-			$msg = isset( $b['error']['message'] ) ? (string) $b['error']['message'] : '';
+			$msg  = isset( $b['error']['message'] ) ? (string) $b['error']['message'] : '';
+			$code = (int) wp_remote_retrieve_response_code( $res );
+			// Geçici yoğunluk (503 / 429 / 500): kısa bekleyip tekrar dene.
+			if ( ( in_array( $code, array( 429, 500, 503 ), true ) || preg_match( '/high demand|overloaded|unavailable|try again/i', $msg ) ) && $busy < df_pai_busy_retries() ) {
+				++$busy;
+				sleep( $busy );
+				continue;
+			}
 			// Google eski modeli kapatıp yenisini önerirse önerilen modelle bir kez daha dene ve ayara kaydet.
-			if ( 0 === $try && preg_match( '#use (?:models/)?(gemini-[a-z0-9.\-]+)#i', $msg, $m ) && strtolower( $m[1] ) !== strtolower( $model ) ) {
-				$model = strtolower( $m[1] );
+			if ( ! $switched && preg_match( '#use (?:models/)?(gemini-[a-z0-9.\-]+)#i', $msg, $m ) && strtolower( $m[1] ) !== strtolower( $model ) ) {
+				$model    = strtolower( $m[1] );
+				$switched = true;
 				$opts  = get_option( DF_OPTION );
 				if ( is_array( $opts ) ) {
 					$opts['pai_gemini_model'] = $model;
@@ -878,7 +897,7 @@ function df_pai_call( $prov, $prompt ) {
 				}
 				continue;
 			}
-			return new WP_Error( 'df_pai', '' !== $msg ? 'Gemini: ' . $msg : 'Gemini yanıt vermedi.' );
+			return new WP_Error( $busy ? 'df_pai_busy' : 'df_pai', '' !== $msg ? 'Gemini: ' . $msg : 'Gemini yanıt vermedi.' );
 		}
 		$text = '';
 		foreach ( (array) ( isset( $b['candidates'][0]['content']['parts'] ) ? $b['candidates'][0]['content']['parts'] : array() ) as $part ) {
@@ -991,8 +1010,12 @@ function df_pai_generate() {
 	if ( '' === df_pai_key( $prov ) ) {
 		wp_send_json_success( df_pai_template( $in ) + array( 'note' => 'Yapay zekâ anahtarı girilmediği için içerik hazır şablonla oluşturuldu. Gerçek yapay zekâ metni için ayarlardan anahtar girin.' ) );
 	}
+	$GLOBALS['df_pai_busy_retries'] = 3;
 	$text = df_pai_call( $prov, df_pai_prompt( $in ) );
 	if ( is_wp_error( $text ) ) {
+		if ( 'df_pai_busy' === $text->get_error_code() ) {
+			wp_send_json_success( df_pai_template( $in ) + array( 'note' => 'Yapay zekâ şu an çok yoğun (Google tarafında geçici bir durum). Beklememeniz için hazır şablon metin getirildi; birkaç dakika sonra düğmeye tekrar basarak yapay zekâ metnini alabilirsiniz.' ) );
+		}
 		wp_send_json_error( $text->get_error_message() );
 	}
 	$json = preg_match( '/\{.*\}/s', (string) $text, $m ) ? json_decode( $m[0], true ) : null;
