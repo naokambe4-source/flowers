@@ -839,7 +839,7 @@ function df_options_schema() {
 						array( 'id' => 'note_intro', 'type' => 'text', 'label' => 'Not alanı açıklaması', 'default' => 'Notunuz özel kartımıza el yazısı tadında basılarak çiçeğinize eklenir.', 'half' => true ),
 						array( 'id' => 'note_templates', 'type' => 'lines', 'label' => 'Hazır mesajlar (Kategori | Mesaj)', 'default' => df_default_note_templates(), 'rows' => 10 ),
 						array( 'id' => 'ai_on', 'type' => 'toggle', 'label' => '"Yapay zekâ ile yaz" düğmesi (kart notu önerisi)', 'default' => 1, 'half' => true ),
-						array( 'id' => 'ai_key', 'type' => 'text', 'label' => 'Claude API anahtarı (opsiyonel)', 'half' => true, 'desc' => 'console.anthropic.com adresinden alınır. Boş bırakılırsa öneriler hazır mesajlardan, alıcı adı ve seçilen tona göre kişiselleştirilerek üretilir.' ),
+						array( 'id' => 'ai_key', 'type' => 'text', 'label' => 'Claude API anahtarı (opsiyonel)', 'half' => true, 'desc' => 'Kart notu önerileri Ürün & Mağaza → Yapay zekâ ürün içeriği bölümünde seçilen sağlayıcıdan (Gemini / ChatGPT) alınır; bu alan yalnızca Claude kullanılacaksa doldurulur. Hiçbir anahtar yoksa hazır mesajlardan öneri yapılır.' ),
 						array( 'id' => 'ai_model', 'type' => 'text', 'label' => 'Model', 'default' => 'claude-opus-5-5', 'half' => true ),
 						array( 'id' => 'ai_limit', 'type' => 'number', 'label' => 'Ziyaretçi başına saatlik öneri sınırı', 'default' => 15, 'min' => 1, 'max' => 100, 'half' => true ),
 					),

@@ -487,7 +487,7 @@ function df_pai_box( $post ) {
 	?>
 	<div class="df-pai" data-df-pai data-auto="<?php echo isset( $_GET['df_pai'] ) ? '1' : '0'; // phpcs:ignore ?>">
 		<div class="df-pai__row">
-			<label class="df-pai__lbl" for="df-pai-pool">1 · Başlık havuzundan seç</label>
+			<label class="df-pai__lbl" for="df-pai-pool"><span class="df-pai__n">1</span>Başlık havuzundan seç</label>
 			<div class="df-pai__pool">
 				<input type="text" id="df-pai-pool" list="df-pai-pool-list" placeholder="Yazmaya başlayın: Whispers, Kalbimin, kırmızı, yıldönümü…" autocomplete="off">
 				<datalist id="df-pai-pool-list">
@@ -502,26 +502,32 @@ function df_pai_box( $post ) {
 		</div>
 
 		<div class="df-pai__row">
-			<label class="df-pai__lbl" for="df-pai-notes">2 · Ürün bilgileri (yapay zekâya verilir)</label>
+			<label class="df-pai__lbl" for="df-pai-notes"><span class="df-pai__n">2</span>Ürün bilgileri <small>— ne kadar ayrıntı, o kadar iyi metin</small></label>
 			<textarea id="df-pai-notes" rows="2" data-pai-notes placeholder="Örn. 21 adet kırmızı gül, okaliptüs, siyah kutu, sevgiliye ve yıldönümü için"><?php echo $cur ? esc_textarea( df_pai_meta_line( $cur ) ) : ''; ?></textarea>
-			<div class="df-pai__go">
-				<button type="button" class="button button-primary button-large" data-pai-go<?php disabled( ! df_opt( 'pai_on', 1 ) ); ?>>✨ <?php echo $has_key ? esc_html( $names[ $prov ] . ' ile içerik oluştur' ) : 'Şablonla içerik oluştur'; ?></button>
-				<span class="df-pai__hint"><?php echo $has_key ? 'Taslak gelir; kontrol edip "Ürüne uygula" deyin, sonra ürünü güncelleyin.' : 'Yapay zekâ anahtarı girilmemiş: içerik hazır şablonla üretilir. Anahtar için Site Ayarları → Ürün & Mağaza → Yapay zekâ ürün içeriği.'; ?></span>
-				<span class="spinner" data-pai-spin></span>
-			</div>
-			<p class="df-pai__err" data-pai-err hidden></p>
 		</div>
 
+		<div class="df-pai__ai<?php echo $has_key ? ' is-live' : ''; ?>">
+			<div class="df-pai__ai-text">
+				<span class="df-pai__badge"><i></i><?php echo $has_key ? esc_html( $names[ $prov ] . ' bağlı' ) : 'Yapay zekâ bağlı değil'; ?></span>
+				<strong>Ürün metnini yapay zekâ yazsın</strong>
+				<span><?php echo $has_key ? 'Açıklama, SEO başlığı, Google açıklaması, görsel ALT metni ve etiketler hazırlanır. Taslak gelir; kontrol edip "Ürüne uygula" deyin.' : 'Anahtar girilmediği için hazır şablon metin üretilir. Anahtar: Site Ayarları → Ürün & Mağaza → Yapay zekâ ürün içeriği.'; ?></span>
+			</div>
+			<button type="button" class="df-pai__btn" data-pai-go<?php disabled( ! df_opt( 'pai_on', 1 ) ); ?>><svg class="df-pai__spark" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M12 2.5l1.9 5.6 5.6 1.9-5.6 1.9L12 17.5l-1.9-5.6L4.5 10l5.6-1.9L12 2.5z"/><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9L19 15z" opacity=".75"/></svg><span class="df-pai__btn-t"><?php echo $has_key ? esc_html( $names[ $prov ] . ' ile içerik oluştur' ) : 'Şablonla içerik oluştur'; ?></span><span class="df-pai__spin" data-pai-spin></span></button>
+		</div>
+		<p class="df-pai__err" data-pai-err hidden></p>
+
 		<div class="df-pai__result" data-pai-result hidden>
-			<label class="df-pai__lbl">3 · Taslak (düzenleyebilirsiniz)</label>
+			<label class="df-pai__lbl"><span class="df-pai__n">3</span>Taslak <small>— istediğiniz yeri düzeltebilirsiniz</small></label>
 			<label>Kısa açıklama<textarea rows="2" data-pai-f="short"></textarea></label>
 			<label>Uzun açıklama<textarea rows="7" data-pai-f="long"></textarea></label>
-			<button type="button" class="button button-primary" data-pai-apply>Ürüne uygula</button>
-			<span class="df-pai__ok" data-pai-ok hidden>Uygulandı ✓ Kontrol edip sağdaki "Güncelle / Yayınla" düğmesine basın.</span>
+			<div class="df-pai__apply">
+				<button type="button" class="df-pai__btn df-pai__btn--dark" data-pai-apply>Ürüne uygula</button>
+				<span class="df-pai__ok" data-pai-ok hidden>✓ Uygulandı. Kontrol edip sağdaki "Güncelle / Yayınla" düğmesine basın.</span>
+			</div>
 		</div>
 
 		<div class="df-pai__row df-pai__seo">
-			<label class="df-pai__lbl">SEO (Google'da görünecek)</label>
+			<label class="df-pai__lbl"><span class="df-pai__n">G</span>Google'da görünecek bilgiler (SEO)</label>
 			<label>SEO başlığı <small data-pai-count="seo_title"></small><input type="text" name="df_seo_title" data-pai-f="seo_title" maxlength="80" value="<?php echo esc_attr( df_seo_get( $post->ID, 'title' ) ); ?>" placeholder="Örn. Kırmızı Gül Buketi | İzmir Aynı Gün Teslimat"></label>
 			<label>SEO açıklaması <small data-pai-count="seo_desc"></small><textarea name="df_seo_desc" rows="2" data-pai-f="seo_desc" maxlength="200"><?php echo esc_textarea( df_seo_get( $post->ID, 'desc' ) ); ?></textarea></label>
 			<div class="df-pai__two">
@@ -532,14 +538,39 @@ function df_pai_box( $post ) {
 		</div>
 	</div>
 	<style>
-		.df-pai__row{margin-bottom:16px}.df-pai__lbl{display:block;font-weight:600;font-size:13px;margin-bottom:6px;color:#2b2522}
-		.df-pai input[type=text],.df-pai textarea{width:100%}.df-pai label{display:block;margin-bottom:10px}
-		.df-pai__meta{margin:6px 0 0;color:#6b625c;font-size:12px}.df-pai__warn,.df-pai__err{margin:6px 0 0;padding:8px 12px;border-radius:6px;background:#fdecea;color:#8a1f11}
-		.df-pai__go{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:8px}.df-pai__hint{color:#6b625c;font-size:12px;max-width:520px}
-		.df-pai__result{background:#faf7f2;border:1px solid #eadfd5;border-radius:10px;padding:14px;margin-bottom:16px}
-		.df-pai__ok{margin-left:10px;color:#3f5e45;font-weight:600}.df-pai__two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-		.df-pai small{font-weight:400;color:#6b625c}.df-pai small.is-bad{color:#b32d2e}.df-pai .spinner{float:none;margin:0}
-		.df-pai__seo{border-top:1px solid #eee;padding-top:14px}
+		#df-pai .inside{padding:16px 18px 6px}
+		.df-pai__row{margin-bottom:18px}
+		.df-pai__lbl{display:flex;align-items:center;gap:8px;font-weight:600;font-size:13.5px;margin-bottom:8px;color:#2b2522}
+		.df-pai__lbl small{font-weight:400;color:#8a7f79}
+		.df-pai__n{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:#2b2522;color:#fff;font-size:11.5px;font-weight:600;flex:none}
+		.df-pai input[type=text],.df-pai textarea{width:100%;border-color:#dcd3ca;border-radius:8px;padding:8px 12px}
+		.df-pai input[type=text]{min-height:40px}.df-pai input:focus,.df-pai textarea:focus{border-color:#5e7b61;box-shadow:0 0 0 1px #5e7b61}
+		.df-pai label{display:block;margin-bottom:12px}
+		.df-pai__meta{margin:6px 0 0;color:#6b625c;font-size:12px}
+		.df-pai__warn,.df-pai__err{margin:8px 0 0;padding:10px 14px;border-radius:8px;background:#fdecea;color:#8a1f11}
+		.df-pai__ai{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;margin:0 0 16px;padding:18px 20px;border-radius:12px;background:linear-gradient(135deg,#f3f6f1 0%,#faf7f2 60%,#f6efe8 100%);border:1px solid #dfe6db}
+		.df-pai__ai.is-live{border-color:#c9d6c3}
+		.df-pai__ai-text{display:flex;flex-direction:column;gap:4px;flex:1 1 360px;min-width:0}
+		.df-pai__ai-text strong{font-size:15px;color:#2b2522}
+		.df-pai__ai-text > span:last-child{color:#6b625c;font-size:12.5px;line-height:1.5}
+		.df-pai__badge{display:inline-flex;align-items:center;gap:6px;align-self:flex-start;padding:3px 10px;border-radius:20px;background:#fff;border:1px solid #e3ddd6;font-size:11.5px;font-weight:600;color:#6b625c}
+		.df-pai__badge i{width:7px;height:7px;border-radius:50%;background:#c9a24a}
+		.df-pai__ai.is-live .df-pai__badge{color:#3f5e45}.df-pai__ai.is-live .df-pai__badge i{background:#3f8f4f;box-shadow:0 0 0 3px rgba(63,143,79,.18)}
+		.df-pai__btn{display:inline-flex;align-items:center;gap:10px;min-height:46px;padding:0 22px;border:0;border-radius:10px;background:linear-gradient(135deg,#5e7b61,#3f5e45);color:#fff;font-size:14px;font-weight:600;cursor:pointer;box-shadow:0 6px 18px -8px rgba(63,94,69,.7);transition:transform .15s,box-shadow .15s,opacity .15s;white-space:nowrap}
+		.df-pai__btn:hover{transform:translateY(-1px);box-shadow:0 10px 22px -8px rgba(63,94,69,.8);color:#fff}
+		.df-pai__btn:disabled{opacity:.6;cursor:wait;transform:none}
+		.df-pai__btn--dark{background:#2b2522;box-shadow:none;min-height:40px}
+		.df-pai__spark{flex:none}
+		.df-pai__spin{display:none;width:16px;height:16px;border:2px solid rgba(255,255,255,.5);border-top-color:#fff;border-radius:50%;animation:dfpaispin .7s linear infinite}
+		.df-pai__spin.is-active{display:inline-block;order:-1}
+		.df-pai__btn:has(.df-pai__spin.is-active) .df-pai__spark{display:none}
+		@keyframes dfpaispin{to{transform:rotate(360deg)}}
+		.df-pai__result{background:#fff;border:1px solid #c9d6c3;border-radius:12px;padding:16px 18px;margin-bottom:18px;box-shadow:0 8px 24px -16px rgba(63,94,69,.5)}
+		.df-pai__apply{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+		.df-pai__ok{color:#3f5e45;font-weight:600}.df-pai__two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+		.df-pai small{font-weight:400;color:#6b625c}.df-pai small.is-bad{color:#b32d2e}
+		.df-pai__seo{border-top:1px solid #eee;padding-top:16px}
+		@media(max-width:782px){.df-pai__two{grid-template-columns:1fr}.df-pai__btn{width:100%;justify-content:center}}
 	</style>
 	<script>
 	( function () {
@@ -594,6 +625,22 @@ function df_pai_box( $post ) {
 			var ta = document.getElementById( id );
 			if ( ta ) { ta.value = html; }
 		}
+		function htmlToText( h ) {
+			return h.replace( /<li>/g, '- ' ).replace( /<\/li>\s*/g, '\n' ).replace( /<\/p>\s*/g, '\n\n' ).replace( /<\/?ul>\s*/g, '' ).replace( /<[^>]+>/g, '' ).replace( /&amp;/g, '&' ).replace( /\n{3,}/g, '\n\n' ).trim();
+		}
+		function esc( t ) { var d = document.createElement( 'div' ); d.textContent = t; return d.innerHTML; }
+		function textToHtml( t ) {
+			var out = '', list = [];
+			t.split( /\n/ ).forEach( function ( line ) {
+				line = line.trim();
+				var m = line.match( /^[-•*]\s+(.*)$/ );
+				if ( m ) { list.push( '<li>' + esc( m[1] ) + '</li>' ); return; }
+				if ( list.length ) { out += '<ul>\n' + list.join( '\n' ) + '\n</ul>\n'; list = []; }
+				if ( line ) { out += '<p>' + esc( line ) + '</p>\n'; }
+			} );
+			if ( list.length ) { out += '<ul>\n' + list.join( '\n' ) + '\n</ul>\n'; }
+			return out.trim();
+		}
 		function cats() {
 			return Array.prototype.map.call( document.querySelectorAll( '#product_catchecklist input:checked' ), function ( i ) {
 				return i.parentNode.textContent.trim();
@@ -612,7 +659,7 @@ function df_pai_box( $post ) {
 			fetch( ajaxurl, { method: 'POST', body: fd, credentials: 'same-origin' } ).then( function ( r ) { return r.json(); } ).then( function ( r ) {
 				if ( ! r || ! r.success ) { throw new Error( r && r.data ? r.data : 'Yanıt alınamadı.' ); }
 				var d = r.data;
-				f( 'short' ).value = d.short || ''; f( 'long' ).value = d.long || '';
+				f( 'short' ).value = d.short || ''; f( 'long' ).value = htmlToText( d.long || '' );
 				f( 'seo_title' ).value = d.seo_title || ''; f( 'seo_desc' ).value = d.seo_desc || '';
 				f( 'keyword' ).value = d.keyword || ''; f( 'alt' ).value = d.alt || ''; f( 'tags' ).value = ( d.tags || [] ).join( ', ' );
 				$( '[data-pai-result]' ).hidden = false; $( '[data-pai-ok]' ).hidden = true;
@@ -626,7 +673,7 @@ function df_pai_box( $post ) {
 		$( '[data-pai-go]' ).addEventListener( 'click', go );
 		$( '[data-pai-apply]' ).addEventListener( 'click', function () {
 			editorSet( 'excerpt', f( 'short' ).value.replace( /\n/g, '<br>' ) );
-			editorSet( 'content', f( 'long' ).value );
+			editorSet( 'content', textToHtml( f( 'long' ).value ) );
 			$( '[data-pai-ok]' ).hidden = false;
 		} );
 		if ( '1' === box.getAttribute( 'data-auto' ) ) {

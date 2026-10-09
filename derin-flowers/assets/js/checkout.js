@@ -390,7 +390,7 @@
 			return;
 		}
 		$b.prop( 'disabled', true ).addClass( 'is-busy' );
-		$out.html( '<span class="df-ai__wait">Notlar hazırlanıyor…</span>' );
+		$out.html( '<span class="df-ai__wait df-ai__wait--busy">Size özel notlar yazılıyor…</span>' );
 		$.post( C.ai.ajax, {
 			action: 'df_ai_note',
 			nonce: C.ai.nonce,
@@ -404,7 +404,12 @@
 			if ( res && res.success && res.data.notes.length ) {
 				$out.html( res.data.notes.map( function ( t ) {
 					return $( '<button type="button" class="df-ai__pick"></button>' ).text( t ).prop( 'outerHTML' );
-				} ).join( '' ) + '<small class="df-ai__tip">Beğendiğiniz nota dokunun; sonra dilediğiniz gibi düzenleyebilirsiniz.</small>' );
+				} ).join( '' ) + '<small class="df-ai__tip">Beğendiğiniz nota dokunun; sonra dilediğiniz gibi düzenleyebilirsiniz.</small>' +
+					( res.data.admin ? '<small class="df-ai__admin"></small>' : '' ) );
+				if ( res.data.admin ) {
+					$out.find( '.df-ai__admin' ).text( res.data.admin );
+				}
+				$b.find( 'span' ).text( 'Yeniden öner' );
 			} else {
 				$out.html( '<span class="df-ai__wait">' + ( ( res && res.data && res.data.message ) || 'Şu an öneri alınamadı, hazır mesajlardan seçebilirsiniz.' ) + '</span>' );
 			}

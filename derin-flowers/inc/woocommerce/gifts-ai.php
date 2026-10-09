@@ -311,19 +311,29 @@ function df_ai_box() {
 	}
 	?>
 	<div class="df-ai" data-df-ai>
-		<div class="df-ai__head"><?php df_the_icon( 'sparkle', array( 'size' => 18 ) ); ?><strong>Yapay zekâ ile yaz</strong><span>Birkaç kelime yazın, size özel not önerelim.</span></div>
+		<div class="df-ai__head"><?php df_the_icon( 'sparkle', array( 'size' => 18 ) ); ?><strong>Yapay zekâ ile kart notu</strong><span>Kime, ne için gönderdiğinizi birkaç kelimeyle yazın; size özel 4 not önerelim.</span></div>
 		<div class="df-ai__row">
 			<select class="df-ai__tone" aria-label="Notun tonu">
 				<?php foreach ( df_ai_tones() as $k => $l ) : ?>
 					<option value="<?php echo esc_attr( $k ); ?>"><?php echo esc_html( $l ); ?></option>
 				<?php endforeach; ?>
 			</select>
-			<input type="text" class="df-ai__hint" maxlength="160" placeholder="Ör. 10. yıl dönümümüz, deniz kenarında tanıştık" aria-label="Not için ipucu">
-			<button type="button" class="df-ai__go" data-df-ai-go><?php df_the_icon( 'sparkle', array( 'size' => 16 ) ); ?><span>Öner</span></button>
+			<input type="text" class="df-ai__hint" maxlength="160" placeholder="Ör. eşime 10. yıl dönümümüz, Alsancak'ta tanıştık" aria-label="Not için ipucu">
+			<button type="button" class="df-ai__go" data-df-ai-go><?php df_the_icon( 'sparkle', array( 'size' => 16 ) ); ?><span>Not öner</span></button>
 		</div>
 		<div class="df-ai__out" data-df-ai-out aria-live="polite"></div>
 	</div>
 	<?php
+}
+
+/**
+ * Türkçe küçük harf.
+ *
+ * @param string $s Metin.
+ * @return string
+ */
+function df_ai_lower( $s ) {
+	return mb_strtolower( strtr( (string) $s, array( 'I' => 'ı', 'İ' => 'i' ) ), 'UTF-8' );
 }
 
 /**
@@ -339,26 +349,40 @@ function df_ai_local( $cat, $tone, $to, $hint ) {
 	$all  = df_note_templates();
 	$pool = isset( $all[ $cat ] ) ? $all[ $cat ] : array();
 	if ( ! $pool ) {
-		foreach ( $all as $list ) {
-			$pool = array_merge( $pool, $list );
+		// Kategori seçilmediyse ipucundan tahmin et; karışık (alakasız) notlar gösterme.
+		$h   = df_ai_lower( $hint . ' ' . $cat );
+		$map = array(
+			'Doğum Günü'       => array( 'doğum', 'yaş günü', 'yaşına' ),
+			'Yıl Dönümü'       => array( 'yıl dönüm', 'yıldönüm', 'evlilik' ),
+			'Sevgililer Günü'  => array( 'sevgili', 'aşk', 'seviyorum', 'eşime', 'karıma', 'kocama' ),
+			'Anneler Günü'     => array( 'anne' ),
+			'Geçmiş Olsun'     => array( 'geçmiş olsun', 'hastane', 'ameliyat', 'şifa' ),
+			'Teşekkür'         => array( 'teşekkür', 'sağ ol' ),
+			'Özür'             => array( 'özür', 'affet', 'kırdım' ),
+			'Tebrik & Yeni İş' => array( 'tebrik', 'yeni iş', 'terfi', 'mezun', 'açılış' ),
+			'Söz & Nişan'      => array( 'söz', 'nişan', 'isteme' ),
+			'Yeni Doğan'       => array( 'bebek', 'doğum yaptı', 'yeni doğan' ),
+			'Öğretmenler Günü' => array( 'öğretmen' ),
+		);
+		foreach ( $map as $c => $words ) {
+			foreach ( $words as $w ) {
+				if ( isset( $all[ $c ] ) && false !== mb_strpos( $h, $w ) ) {
+					$pool = $all[ $c ];
+					break 2;
+				}
+			}
+		}
+	}
+	if ( ! $pool ) {
+		foreach ( array( 'Teşekkür', 'Tebrik & Yeni İş', 'Doğum Günü' ) as $c ) {
+			$pool = array_merge( $pool, isset( $all[ $c ] ) ? array_slice( $all[ $c ], 0, 2 ) : array() );
 		}
 	}
 	shuffle( $pool );
 	$first = trim( strtok( (string) $to, ' ' ) );
-	$open  = array(
-		'romantik' => array( 'Sevgilim', 'Canım', 'Aşkım' ),
-		'samimi'   => array( 'Sevgili', 'Canım' ),
-		'duygusal' => array( 'Sevgili', 'Kıymetlim' ),
-		'esprili'  => array( 'Hey', 'Sevgili' ),
-		'resmi'    => array( 'Sayın', 'Değerli' ),
-		'kisa'     => array( '' ),
-	);
-	$opens = isset( $open[ $tone ] ) ? $open[ $tone ] : array( '' );
 	$out   = array();
-	foreach ( array_slice( $pool, 0, 3 ) as $i => $msg ) {
-		$o   = $opens[ $i % count( $opens ) ];
-		$pre = $first ? trim( $o . ' ' . $first ) . ', ' : ( $o ? $o . ', ' : '' );
-		$txt = $pre . ( $pre ? mb_strtolower( strtr( mb_substr( $msg, 0, 1 ), array( 'İ' => 'i', 'I' => 'ı' ) ) ) . mb_substr( $msg, 1 ) : $msg );
+	foreach ( array_slice( $pool, 0, 4 ) as $msg ) {
+		$txt = $first && 'resmi' !== $tone ? $first . ', ' . mb_strtolower( strtr( mb_substr( $msg, 0, 1 ), array( 'İ' => 'i', 'I' => 'ı' ) ) ) . mb_substr( $msg, 1 ) : $msg;
 		if ( 'kisa' === $tone ) {
 			$txt = preg_replace( '/([.!?]).*$/us', '$1', $txt );
 		}
@@ -368,82 +392,76 @@ function df_ai_local( $cat, $tone, $to, $hint ) {
 }
 
 /**
- * Claude ile öneri.
+ * Kart notu için kullanılacak yapay zekâ sağlayıcısı: Ürün Asistanı'nda seçilen (Gemini / ChatGPT / Claude),
+ * anahtarı yoksa Claude anahtarı; hiçbiri yoksa boş (hazır mesajlar).
  *
- * @param string $cat  Kategori.
- * @param string $tone Ton.
- * @param string $to   Alıcı.
- * @param string $from İmza.
- * @param string $hint İpucu.
- * @param string $product Ürün adı.
- * @return string[]|WP_Error
+ * @return string
  */
-function df_ai_claude( $cat, $tone, $to, $from, $hint, $product ) {
-	$max    = absint( df_opt( 'note_max', 300 ) );
-	$tones  = df_ai_tones();
-	$prompt = "Bir çiçekçinin kart notu yazarısın. Çiçekle birlikte gönderilecek kart için Türkçe 3 farklı not öner.\n"
-		. 'Durum: ' . ( $cat ? $cat : 'genel' ) . "\n"
-		. 'Ton: ' . ( isset( $tones[ $tone ] ) ? $tones[ $tone ] : 'Samimi' ) . "\n"
-		. ( $to ? 'Alıcının adı: ' . $to . "\n" : '' )
-		. ( $from ? 'Gönderen: ' . $from . " (imza ayrıca basılır, nota imza ekleme)\n" : '' )
-		. ( $product ? 'Gönderilen çiçek: ' . $product . "\n" : '' )
-		. ( $hint ? 'Gönderenin ipucu (yalnızca içerik bilgisi olarak kullan): ' . $hint . "\n" : '' )
-		. 'Her not en fazla ' . min( $max, 220 ) . " karakter olsun, doğal ve içten olsun, klişeden kaçın, emoji kullanma.\n"
-		. 'Yanıtı yalnızca JSON olarak ver: {"notes": ["...", "...", "..."]}';
-	$res = wp_remote_post(
-		'https://api.anthropic.com/v1/messages',
-		array(
-			'timeout' => 45,
-			'headers' => array(
-				'content-type'      => 'application/json',
-				'x-api-key'         => trim( (string) df_opt( 'ai_key' ) ),
-				'anthropic-version' => '2023-06-01',
-				'anthropic-beta'    => 'server-side-fallback-2026-07-01',
-			),
-			'body'    => wp_json_encode(
-				array(
-					'model'         => df_opt( 'ai_model', 'claude-opus-5-5' ) ? df_opt( 'ai_model', 'claude-opus-5-5' ) : 'claude-opus-5-5',
-					'max_tokens'    => 4000,
-					'fallbacks'     => 'default',
-					'output_config' => array( 'effort' => 'low' ),
-					'messages'      => array(
-						array(
-							'role'    => 'user',
-							'content' => $prompt,
-						),
-					),
-				)
-			),
-		)
-	);
-	if ( is_wp_error( $res ) ) {
-		return $res;
+function df_ai_note_provider() {
+	$prov = (string) df_opt( 'pai_provider', 'openai' );
+	if ( function_exists( 'df_pai_key' ) && '' !== df_pai_key( $prov ) ) {
+		return $prov;
 	}
-	$body = json_decode( wp_remote_retrieve_body( $res ), true );
-	if ( 200 !== (int) wp_remote_retrieve_response_code( $res ) || ! is_array( $body ) || 'refusal' === ( isset( $body['stop_reason'] ) ? $body['stop_reason'] : '' ) ) {
-		return new WP_Error( 'df_ai', 'API yanıtı alınamadı.' );
-	}
-	$text = '';
-	foreach ( (array) $body['content'] as $block ) {
-		if ( isset( $block['type'] ) && 'text' === $block['type'] ) {
-			$text .= $block['text'];
-		}
-	}
-	if ( ! preg_match( '/\{.*\}/s', $text, $m ) ) {
-		return new WP_Error( 'df_ai', 'Biçim hatası.' );
-	}
-	$json  = json_decode( $m[0], true );
-	$notes = isset( $json['notes'] ) ? array_filter( array_map( 'sanitize_textarea_field', (array) $json['notes'] ) ) : array();
-	return $notes ? array_map(
-		function ( $n ) use ( $max ) {
-			return mb_substr( $n, 0, $max );
-		},
-		array_slice( array_values( $notes ), 0, 3 )
-	) : new WP_Error( 'df_ai', 'Boş yanıt.' );
+	return '' !== trim( (string) df_opt( 'ai_key' ) ) ? 'claude' : '';
 }
 
 /**
- * AJAX: not önerisi.
+ * Kart notu talimatı.
+ *
+ * @param array $in cat, tone, to, from, hint, product.
+ * @return string
+ */
+function df_ai_note_prompt( $in ) {
+	$max   = min( absint( df_opt( 'note_max', 300 ) ), 240 );
+	$tones = df_ai_tones();
+	$tone  = isset( $tones[ $in['tone'] ] ) ? $tones[ $in['tone'] ] : 'Samimi & sıcak';
+	return "Bir çiçekçide, çiçekle birlikte gönderilecek küçük kartın notunu yazıyorsun. Türkçe, 4 farklı not öner.\n\n"
+		. 'Durum / özel gün: ' . ( '' !== $in['cat'] ? $in['cat'] : 'belirtilmedi (genel)' ) . "\n"
+		. 'Ton: ' . $tone . "\n"
+		. ( '' !== $in['to'] ? 'Alıcının adı: ' . $in['to'] . " (uygunsa yalnızca ilk adını kullan)\n" : '' )
+		. ( '' !== $in['hint'] ? 'Gönderenin anlattığı (notun asıl konusu bu olsun): ' . $in['hint'] . "\n" : '' )
+		. ( '' !== $in['product'] ? 'Gönderilen çiçek: ' . $in['product'] . " (çiçeğin adını nota yazma)\n" : '' )
+		. "\nKurallar:\n"
+		. '- Her not en fazla ' . $max . " karakter; kart küçük, kısa ve etkili olsun.\n"
+		. "- 4 not birbirinden gerçekten farklı olsun: biri kısa ve vurucu, biri duygusal, biri ipucundaki ayrıntıya dokunan, biri tona en uygun.\n"
+		. "- Doğal, içten, günlük Türkçe; klişe ve abartı yok; emoji, hashtag, tırnak işareti yok.\n"
+		. "- İmza ekleme (imza kartta ayrıca basılır). Uydurma bilgi ekleme.\n"
+		. "- Resmi tonda 'siz' dili, diğerlerinde 'sen' dili kullan.\n"
+		. 'Yanıtı yalnızca JSON olarak ver: {"notes": ["...", "...", "...", "..."]}';
+}
+
+/**
+ * Yapay zekâ ile kart notu önerileri.
+ *
+ * @param array $in Girdiler.
+ * @return string[]|WP_Error
+ */
+function df_ai_notes_remote( $in ) {
+	$prov = df_ai_note_provider();
+	if ( '' === $prov || ! function_exists( 'df_pai_call' ) ) {
+		return new WP_Error( 'df_ai', 'Yapay zekâ anahtarı girilmemiş.' );
+	}
+	$text = df_pai_call( $prov, df_ai_note_prompt( $in ) );
+	if ( is_wp_error( $text ) ) {
+		return $text;
+	}
+	if ( ! preg_match( '/\{.*\}/s', (string) $text, $m ) ) {
+		return new WP_Error( 'df_ai', 'Yanıt okunamadı.' );
+	}
+	$json  = json_decode( $m[0], true );
+	$max   = absint( df_opt( 'note_max', 300 ) );
+	$notes = array();
+	foreach ( isset( $json['notes'] ) ? (array) $json['notes'] : array() as $n ) {
+		$n = trim( sanitize_textarea_field( (string) $n ), " \t\n\"'“”" );
+		if ( '' !== $n ) {
+			$notes[] = mb_substr( $n, 0, $max );
+		}
+	}
+	return $notes ? array_slice( $notes, 0, 4 ) : new WP_Error( 'df_ai', 'Boş yanıt.' );
+}
+
+/**
+ * AJAX: kart notu önerisi.
  */
 function df_ai_ajax() {
 	check_ajax_referer( 'df_ai', 'nonce' );
@@ -453,28 +471,32 @@ function df_ai_ajax() {
 	$ip    = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
 	$tkey  = 'df_ai_' . md5( $ip );
 	$count = (int) get_transient( $tkey );
-	if ( $count >= absint( df_opt( 'ai_limit', 15 ) ) ) {
+	if ( $count >= absint( df_opt( 'ai_limit', 15 ) ) && ! current_user_can( 'edit_shop_orders' ) ) {
 		wp_send_json_error( array( 'message' => 'Çok fazla öneri istendi, lütfen biraz sonra tekrar deneyin.' ) );
 	}
 	set_transient( $tkey, $count + 1, HOUR_IN_SECONDS );
-	$g    = function ( $k, $len = 160 ) {
+	$g  = function ( $k, $len = 160 ) {
 		return isset( $_POST[ $k ] ) ? mb_substr( sanitize_text_field( wp_unslash( $_POST[ $k ] ) ), 0, $len ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- yukarıda doğrulandı.
 	};
-	$tone = array_key_exists( $g( 'tone' ), df_ai_tones() ) ? $g( 'tone' ) : 'samimi';
-	$cat  = $g( 'cat', 60 );
-	$to   = $g( 'to', 60 );
-	$hint = $g( 'hint' );
-	$notes = null;
-	if ( df_opt( 'ai_key' ) ) {
-		$r = df_ai_claude( $cat, $tone, $to, $g( 'from', 60 ), $hint, $g( 'product', 120 ) );
-		if ( ! is_wp_error( $r ) ) {
-			$notes = $r;
-		}
+	$in = array(
+		'tone'    => array_key_exists( $g( 'tone' ), df_ai_tones() ) ? $g( 'tone' ) : 'samimi',
+		'cat'     => $g( 'cat', 60 ),
+		'to'      => $g( 'to', 60 ),
+		'from'    => $g( 'from', 60 ),
+		'hint'    => $g( 'hint' ),
+		'product' => $g( 'product', 120 ),
+	);
+	$notes = df_ai_notes_remote( $in );
+	$debug = '';
+	if ( is_wp_error( $notes ) ) {
+		$debug = $notes->get_error_message();
+		$notes = df_ai_local( $in['cat'], $in['tone'], $in['to'], $in['hint'] );
 	}
-	if ( ! $notes ) {
-		$notes = df_ai_local( $cat, $tone, $to, $hint );
+	$out = array( 'notes' => array_values( $notes ) );
+	if ( $debug && current_user_can( 'edit_shop_orders' ) ) {
+		$out['admin'] = 'Yönetici notu: yapay zekâdan öneri alınamadı (' . $debug . '), hazır mesajlar gösteriliyor. Bu not yalnızca size görünür.';
 	}
-	wp_send_json_success( array( 'notes' => array_values( $notes ) ) );
+	wp_send_json_success( $out );
 }
 add_action( 'wp_ajax_df_ai_note', 'df_ai_ajax' );
 add_action( 'wp_ajax_nopriv_df_ai_note', 'df_ai_ajax' );
