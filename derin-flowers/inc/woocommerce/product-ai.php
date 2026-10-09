@@ -626,7 +626,10 @@ function df_pai_box( $post ) {
 			if ( ta ) { ta.value = html; }
 		}
 		function htmlToText( h ) {
-			return h.replace( /<li>/g, '- ' ).replace( /<\/li>\s*/g, '\n' ).replace( /<\/p>\s*/g, '\n\n' ).replace( /<\/?ul>\s*/g, '' ).replace( /<[^>]+>/g, '' ).replace( /&amp;/g, '&' ).replace( /\n{3,}/g, '\n\n' ).trim();
+			var t = h.replace( /<li>/g, '- ' ).replace( /<\/li>\s*/g, '\n' ).replace( /<\/p>\s*/g, '\n\n' ).replace( /<\/?ul>\s*/g, '' ).replace( /<[^>]+>/g, '' );
+			var ta = document.createElement( 'textarea' );
+			ta.innerHTML = t; // &#039; &amp; gibi kodları gerçek karaktere çevir.
+			return ta.value.replace( /\n{3,}/g, '\n\n' ).trim();
 		}
 		function esc( t ) { var d = document.createElement( 'div' ); d.textContent = t; return d.innerHTML; }
 		function textToHtml( t ) {
@@ -775,13 +778,13 @@ function df_pai_key( $prov ) {
 function df_pai_prompt( $in ) {
 	return "Bir Türk çiçekçinin e-ticaret sitesi için ürün içeriği yazan, Google SEO kurallarını bilen bir metin yazarısın.\n"
 		. 'Marka: ' . df_opt( 'pai_brand' ) . "\n\n"
-		. 'Ürün adı: ' . $in['title'] . "\n"
+		. 'Ürün adı: ' . $in['title'] . " (metinde ürün adını harfi harfine bu şekilde yaz, büyük/küçük harfini değiştirme)\n"
 		. ( $in['subtitle'] ? 'Türkçe anlamı / alt başlık: ' . $in['subtitle'] . "\n" : '' )
 		. ( $in['cats'] ? 'Kategoriler: ' . $in['cats'] . "\n" : '' )
 		. ( $in['price'] ? 'Fiyat: ' . $in['price'] . " TL\n" : '' )
 		. ( $in['notes'] ? 'Ürün bilgileri: ' . $in['notes'] . "\n" : '' )
 		. "\nKurallar:\n"
-		. "- Türkçe yaz. Doğal, sıcak ve zarif; abartı ve klişe yok, emoji yok.\n"
+		. "- Kusursuz Türkçe yaz: yazım ve noktalama hatası yapma, Türkçe karakterleri (ç, ğ, ı, İ, ö, ş, ü) doğru kullan, HTML kodu (&#039; gibi) yazma. Doğal, sıcak ve zarif; abartı ve klişe yok, emoji yok.\n"
 		. "- Verilmeyen bilgi uydurma (çiçek adedi, boy, içerik verilmediyse yazma).\n"
 		. "- Anahtar kelimeleri doğal kullan, aynı kelimeyi tekrar tekrar yığma.\n"
 		. "- short: 1-2 cümle, en fazla 220 karakter.\n"
@@ -1016,6 +1019,13 @@ function df_pai_generate() {
 	if ( '' === trim( $in['title'] ) ) {
 		wp_send_json_error( 'Ürün başlığı boş.' );
 	}
+	foreach ( $in as $k => $v ) {
+		$in[ $k ] = html_entity_decode( $v, ENT_QUOTES, 'UTF-8' );
+	}
+	// TAMAMI BÜYÜK HARF başlıklar Türkçe kurala göre düzeltilir (HEDİYE ÇİKOLATA → Hediye Çikolata).
+	if ( preg_match( '/\p{L}/u', $in['title'] ) && mb_strtoupper( $in['title'], 'UTF-8' ) === $in['title'] && function_exists( 'df_loc_title_case' ) ) {
+		$in['title'] = df_loc_title_case( $in['title'] );
+	}
 	$prov = df_opt( 'pai_provider', 'openai' );
 	if ( '' === df_pai_key( $prov ) ) {
 		wp_send_json_success( df_pai_template( $in ) + array( 'note' => 'Yapay zekâ anahtarı girilmediği için içerik hazır şablonla oluşturuldu. Gerçek yapay zekâ metni için ayarlardan anahtar girin.' ) );
@@ -1034,13 +1044,41 @@ function df_pai_generate() {
 	}
 	$out = array();
 	foreach ( array( 'short', 'long', 'seo_title', 'seo_desc', 'keyword', 'alt' ) as $k ) {
-		$out[ $k ] = isset( $json[ $k ] ) ? sanitize_textarea_field( (string) $json[ $k ] ) : '';
+		$v         = isset( $json[ $k ] ) ? html_entity_decode( (string) $json[ $k ], ENT_QUOTES, 'UTF-8' ) : '';
+		$out[ $k ] = df_pai_fix_name( sanitize_textarea_field( $v ), $in['title'] );
 	}
 	$out['long'] = df_pai_long_html( $out['long'] );
 	$out['tags'] = isset( $json['tags'] ) ? array_slice( array_values( array_filter( array_map( 'sanitize_text_field', (array) $json['tags'] ) ) ), 0, 8 ) : array();
 	wp_send_json_success( $out );
 }
 add_action( 'wp_ajax_df_pai_generate', 'df_pai_generate' );
+
+/**
+ * Metinde ürün adı farklı büyük/küçük harfle geçtiyse doğru yazımıyla değiştir (HEDİye → Hediye).
+ *
+ * @param string $text  Metin.
+ * @param string $title Doğru ürün adı.
+ * @return string
+ */
+function df_pai_fix_name( $text, $title ) {
+	$title = trim( $title );
+	$len   = mb_strlen( $title );
+	if ( '' === $title || '' === $text ) {
+		return $text;
+	}
+	$low   = df_pai_lower( $text );
+	$needle = df_pai_lower( $title );
+	if ( mb_strlen( $low ) !== mb_strlen( $text ) ) {
+		return $text; // Güvenli değil, dokunma.
+	}
+	$out = '';
+	$pos = 0;
+	while ( false !== ( $i = mb_strpos( $low, $needle, $pos ) ) ) { // phpcs:ignore
+		$out .= mb_substr( $text, $pos, $i - $pos ) . $title;
+		$pos  = $i + $len;
+	}
+	return $out . mb_substr( $text, $pos );
+}
 
 /**
  * Düz metni paragraf + liste HTML'ine çevir.
