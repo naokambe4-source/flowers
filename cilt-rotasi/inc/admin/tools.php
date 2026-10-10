@@ -129,6 +129,7 @@ function cr_tools_page() {
 		<?php cr_tools_notice(); ?>
 		<div class="cr-dash__grid">
 			<?php cr_images_card(); ?>
+			<?php cr_rm_card(); ?>
 			<section class="cr-card-a cr-card-a--hero">
 				<header class="cr-card-a__head"><h2>✨ Kurulum sihirbazı</h2><p>Sitenin iskeletini saniyeler içinde kurar. Var olan içerikleri silmez; aynı adla olanları atlar.</p></header>
 				<div class="cr-card-a__body">

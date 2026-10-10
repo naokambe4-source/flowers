@@ -95,11 +95,12 @@ function cr_render_meta_box( $post, $args ) {
 	echo '<div class="cr-admin cr-metabox" data-metabox="' . esc_attr( $key ) . '">';
 	if ( 'seo' === $key ) {
 		$audit = 'publish' === $post->post_status ? cr_seo_audit( $post->ID ) : null;
-		if ( cr_seo_plugin() ) {
-			echo '<div class="cr-notice">' . esc_html( cr_seo_plugin() ) . ' etkin: başlık/açıklama için eklentinin kutusunu kullanın. AEO ve GEO alanları bu temada çalışmaya devam eder.</div>';
+		$plugin = cr_seo_plugin();
+		if ( $plugin ) {
+			echo '<div class="cr-notice">' . esc_html( $plugin ) . ' etkin: SEO başlığı, meta açıklama, odak kelime, canonical, noindex ve paylaşım görseli ' . esc_html( $plugin ) . ' kutusundan girilir (tema alanları taşındı). Kısa cevap, SSS, adımlar, uzman kontrolü ve kaynaklar burada kalır ve ' . esc_html( $plugin ) . ' şemasına otomatik eklenir.</div>';
 		}
 		?>
-		<div class="cr-serp" data-serp>
+		<div class="cr-serp" data-serp<?php echo $plugin ? ' hidden' : ''; ?>>
 			<p class="cr-serp__label">Google önizlemesi</p>
 			<div class="cr-serp__box">
 				<div class="cr-serp__site"><span class="cr-serp__fav">♥</span><span><strong><?php echo esc_html( get_bloginfo( 'name' ) ); ?></strong><small><?php echo esc_html( preg_replace( '#^https?://#', '', untrailingslashit( get_permalink( $post ) ) ) ); ?></small></span></div>
@@ -136,6 +137,9 @@ function cr_render_meta_box( $post, $args ) {
 			foreach ( $box['fields'] as $k => $f ) {
 				if ( ( isset( $f['tab'] ) ? $f['tab'] : 'seo' ) !== $tab ) {
 					continue;
+				}
+				if ( $plugin && in_array( $k, array( '_cr_focus_kw', '_cr_seo_title', '_cr_seo_desc', '_cr_canonical', '_cr_noindex', '_cr_og_image' ), true ) ) {
+					continue; // SEO eklentisinin kutusunda.
 				}
 				echo '<div class="cr-mfield cr-mfield--' . esc_attr( $f['type'] ) . '"><label for="cr-m' . esc_attr( $k ) . '">' . esc_html( $f['label'] ) . ' <span class="cr-counter" data-counter-for="' . esc_attr( $k ) . '"></span></label><div>';
 				cr_meta_input( $k, $f, get_post_meta( $post->ID, $k, true ) );

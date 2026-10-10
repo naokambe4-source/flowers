@@ -540,8 +540,8 @@ function cr_schema_graph() {
  * JSON-LD çıktısı.
  */
 function cr_schema_output() {
-	if ( ! cr_opt( 'seo_enable' ) ) {
-		return;
+	if ( ! cr_opt( 'seo_enable' ) || ( function_exists( 'cr_rm_active' ) && cr_rm_active() ) ) {
+		return; // Rank Math etkinse ekler onun grafiğine eklenir (inc/rank-math.php).
 	}
 	$graph = cr_schema_graph();
 	if ( ! $graph ) {

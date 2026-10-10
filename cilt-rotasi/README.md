@@ -42,6 +42,18 @@ Ayrıca: markalı giriş ekranı, tüm yönetime Cilt Rotası görünümü, üst
 - Yazı düzenleme ekranında canlı Google önizlemesi, karakter sayaçları ve anlık kontrol listesi bulunan **SEO · AEO · GEO** kutusu vardır.
 - Yoast, Rank Math, AIOSEO veya SEOPress etkinse tema meta etiketlerini kendiliğinden kapatır; sözlük, SSS, HowTo, ürün şemaları ve GEO dosyaları çalışmaya devam eder.
 
+## v1.4 — Rank Math entegrasyonu (SEO · AEO · GEO)
+
+Rank Math çalışırken tek SEO motoru Rank Math'tir; tema çift etiket/şema basmaz ve AEO/GEO eklerini Rank Math'in tek JSON-LD grafiğine bağlar:
+
+- **Rank Math yönetir:** başlık, meta açıklama, canonical, robots meta, OG/Twitter, site haritası (sitemap_index.xml).
+- **Tema ekler (Rank Math grafiğine):** FAQPage (WebPage ile birleşik), HowTo, DefinedTerm + DefinedTermSet (sözlük), Product + Review (ürün rehberi), görünen kırıntıyla aynı BreadcrumbList, speakable (kısa cevap), MedicalWebPage + reviewedBy + lastReviewed (uzman kontrolü), citation (kaynaklar), about (cilt sorunları), timeRequired.
+- **Akıllı açıklama:** Rank Math açıklaması girilmemiş yazılarda kısa cevap → özet; arşivlerde temanın Türkçe açıklamaları; ana sayfada tema başlığı/açıklaması.
+- **İlk algılamada bir kez (ve Araçlar'dan tek tık):** kurum bilgisi (Organization + logo), başlık ayracı, şema tipleri (blog → BlogPosting, sözlük → Article), noindex kuralları (arama, boş terimler, tarih arşivleri), site haritası içerikleri; tema SEO alanları (başlık, açıklama, odak kelime, canonical, noindex, paylaşım görseli) Rank Math'e taşınır.
+- **Editör:** tema kutusundaki SEO alanları gizlenir (Rank Math kutusunda); Rank Math içerik analizi kısa cevap, öne çıkanlar, SSS ve adımları da sayar.
+- **robots.txt:** Rank Math › robots.txt düzenleyicisi boşsa tema içeriği (Rank Math site haritasıyla), doluysa Rank Math'inki. **llms.txt:** Rank Math'in llms modülü açılırsa onunki, değilse temanınki.
+- **Güvenlik ağı:** Rank Math kurulu ama sihirbazı tamamlanmamışsa (ön yüzde hiçbir şey basmaz) tema SEO'su devrede kalır ve panelde uyarı gösterilir.
+
 ## v1.3.1 — robots.txt ve adresler
 
 - /robots.txt tema tarafından doğrudan sunulur (taşımadan sonra kural eksik kalsa bile 404 vermez); tek, düzenli kural grubu + yapay zekâ botları + site haritası.

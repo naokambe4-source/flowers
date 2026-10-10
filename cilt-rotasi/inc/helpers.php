@@ -597,12 +597,29 @@ function cr_array_get( $arr, $path ) {
  *
  * @return string Eklenti adı ya da boş.
  */
+function cr_rm_active() {
+	static $on = null;
+	if ( null !== $on ) {
+		return $on;
+	}
+	$on = defined( 'RANK_MATH_VERSION' ) && class_exists( '\\RankMath\\Helper' );
+	if ( $on && method_exists( '\\RankMath\\Helper', 'is_invalid_registration' ) ) {
+		$on = ! \RankMath\Helper::is_invalid_registration();
+	}
+	return $on;
+}
+
+/**
+ * Etkin SEO eklentisinin adı (ön yüzde gerçekten çalışıyorsa).
+ *
+ * @return string
+ */
 function cr_seo_plugin() {
 	if ( defined( 'WPSEO_VERSION' ) ) {
 		return 'Yoast SEO';
 	}
-	if ( defined( 'RANK_MATH_VERSION' ) ) {
-		return 'Rank Math';
+	if ( defined( 'RANK_MATH_VERSION' ) && cr_rm_active() ) {
+		return 'Rank Math'; // Sihirbazı tamamlanmamış Rank Math hiçbir şey basmaz; o durumda tema SEO'su sürer.
 	}
 	if ( defined( 'AIOSEO_VERSION' ) ) {
 		return 'All in One SEO';

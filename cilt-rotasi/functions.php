@@ -7,7 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'CR_VERSION', '1.3.1' );
+define( 'CR_VERSION', '1.4.0' );
 define( 'CR_DIR', get_template_directory() );
 define( 'CR_URI', get_template_directory_uri() );
 define( 'CR_OPTION', 'cilt_rotasi_options' );
@@ -26,6 +26,7 @@ require CR_DIR . '/inc/search.php';
 require CR_DIR . '/inc/newsletter.php';
 require CR_DIR . '/inc/shortcodes.php';
 require CR_DIR . '/inc/live-editor.php';
+require CR_DIR . '/inc/rank-math.php';
 require CR_DIR . '/inc/login.php';
 
 if ( is_admin() ) {

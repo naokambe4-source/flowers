@@ -355,12 +355,12 @@ function cr_dashboard_page() {
 					<ul class="cr-health">
 						<li class="<?php echo cr_opt( 'geo_llms' ) ? 'is-ok' : 'has-issue'; ?>"><span>llms.txt</span><?php echo cr_opt( 'geo_llms' ) ? '<a href="' . esc_url( home_url( '/llms.txt' ) ) . '" target="_blank">Görüntüle ↗</a>' : '<em>Kapalı</em>'; ?></li>
 						<li class="<?php echo cr_opt( 'geo_llms' ) ? 'is-ok' : 'has-issue'; ?>"><span>llms-full.txt</span><?php echo cr_opt( 'geo_llms' ) ? '<a href="' . esc_url( home_url( '/llms-full.txt' ) ) . '" target="_blank">Görüntüle ↗</a>' : '<em>Kapalı</em>'; ?></li>
-						<li class="is-ok"><span>XML site haritası</span><a href="<?php echo esc_url( home_url( '/wp-sitemap.xml' ) ); ?>" target="_blank">Görüntüle ↗</a></li>
+						<li class="<?php echo cr_sitemap_url() ? 'is-ok' : 'has-issue'; ?>"><span>XML site haritası</span><?php echo cr_sitemap_url() ? '<a href="' . esc_url( cr_sitemap_url() ) . '" target="_blank">Görüntüle ↗</a>' : '<em>Kapalı</em>'; ?></li>
 						<li class="<?php echo $sub_path ? 'has-issue' : 'is-ok'; ?>"><span>robots.txt</span><?php echo $sub_path ? '<em>Alt klasör kurulumunda tema robots.txt yayınlayamaz</em>' : '<a href="' . esc_url( home_url( '/robots.txt' ) ) . '" target="_blank">Görüntüle ↗</a>'; ?></li>
 						<li class="<?php echo 'block' === cr_opt( 'geo_ai_bots' ) ? 'has-issue' : 'is-ok'; ?>"><span>Yapay zekâ botları</span><em><?php echo esc_html( array( 'allow' => 'İzinli', 'search' => 'Yalnızca arama botları', 'block' => 'Engelli' )[ cr_opt( 'geo_ai_bots', 'allow' ) ] ); ?></em></li>
 						<li class="<?php echo get_option( 'blog_public' ) ? 'is-ok' : 'has-issue'; ?>"><span>Arama motorlarına açık</span><em><?php echo get_option( 'blog_public' ) ? 'Evet' : 'Hayır — Ayarlar › Okuma'; ?></em></li>
 						<li class="<?php echo get_option( 'permalink_structure' ) ? 'is-ok' : 'has-issue'; ?>"><span>Okunaklı kalıcı bağlantılar</span><em><?php echo get_option( 'permalink_structure' ) ? 'Açık' : 'Kapalı'; ?></em></li>
-						<li class="<?php echo cr_seo_plugin() ? 'is-ok' : ( cr_opt( 'seo_enable' ) ? 'is-ok' : 'has-issue' ); ?>"><span>SEO motoru</span><em><?php echo esc_html( cr_seo_plugin() ? cr_seo_plugin() . ' (tema uyumlu)' : ( cr_opt( 'seo_enable' ) ? 'Cilt Rotası SEO' : 'Kapalı' ) ); ?></em></li>
+						<li class="<?php echo ( cr_rm_installed_inactive() || ( ! cr_seo_plugin() && ! cr_opt( 'seo_enable' ) ) ) ? 'has-issue' : 'is-ok'; ?>"><span>SEO motoru</span><em><?php echo esc_html( cr_seo_plugin() ? cr_seo_plugin() . ' + tema AEO/GEO şemaları' : ( cr_rm_installed_inactive() ? 'Rank Math sihirbazı tamamlanmamış — şimdilik Cilt Rotası SEO' : ( cr_opt( 'seo_enable' ) ? 'Cilt Rotası SEO' : 'Kapalı' ) ) ); ?></em></li>
 					</ul>
 				</div>
 			</section>

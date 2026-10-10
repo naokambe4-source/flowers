@@ -27,6 +27,9 @@ function cr_ai_bots() {
  * @return string
  */
 function cr_robots_txt( $output, $public ) {
+	if ( function_exists( 'cr_rm_owns_robots' ) && cr_rm_owns_robots() ) {
+		return $output; // Rank Math › Genel › robots.txt düzenleyicisine yazılan içerik geçerli.
+	}
 	if ( ! $public ) {
 		// Ayarlar › Okuma › “Arama motorlarının siteyi dizine eklemesini engelle” açık.
 		return "User-agent: *\nDisallow: /\n";
@@ -80,9 +83,9 @@ function cr_robots_txt( $output, $public ) {
 	}
 
 	$o .= "\n";
-	$sitemaps = function_exists( 'wp_sitemaps_get_server' ) && wp_sitemaps_get_server()->sitemaps_enabled();
-	if ( $sitemaps ) {
-		$o .= 'Sitemap: ' . home_url( '/wp-sitemap.xml' ) . "\n";
+	$sitemap = function_exists( 'cr_sitemap_url' ) ? cr_sitemap_url() : '';
+	if ( $sitemap ) {
+		$o .= 'Sitemap: ' . $sitemap . "\n";
 	}
 	// SEO eklentisinin kendi site haritası varsa onu da bildir.
 	if ( preg_match_all( '/^Sitemap:\s*(\S+)/mi', (string) $output, $m ) ) {
@@ -144,6 +147,9 @@ function cr_geo_request( $wp ) {
 	$rel  = ltrim( substr( (string) $path, strlen( (string) $base ) ), '/' );
 	if ( ! cr_opt( 'geo_llms' ) ) {
 		return;
+	}
+	if ( 'llms.txt' === $rel && function_exists( 'cr_rm_owns_llms' ) && cr_rm_owns_llms() ) {
+		return; // Rank Math'in llms.txt modülü açık: onu sun.
 	}
 	if ( 'llms.txt' === $rel ) {
 		cr_send_text( cr_llms_txt() );
