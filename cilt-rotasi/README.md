@@ -42,6 +42,12 @@ Ayrıca: markalı giriş ekranı, tüm yönetime Cilt Rotası görünümü, üst
 - Yazı düzenleme ekranında canlı Google önizlemesi, karakter sayaçları ve anlık kontrol listesi bulunan **SEO · AEO · GEO** kutusu vardır.
 - Yoast, Rank Math, AIOSEO veya SEOPress etkinse tema meta etiketlerini kendiliğinden kapatır; sözlük, SSS, HowTo, ürün şemaları ve GEO dosyaları çalışmaya devam eder.
 
+## v1.3.1 — robots.txt ve adresler
+
+- /robots.txt tema tarafından doğrudan sunulur (taşımadan sonra kural eksik kalsa bile 404 vermez); tek, düzenli kural grubu + yapay zekâ botları + site haritası.
+- Tarihli yazı adresleri (/2026/09/30/yazi/) otomatik olarak /yazi/ yapısına geçer; eski adresler 301 ile yönlenir.
+- Kullanıcı (yazar) site haritası kapalı; Kaydedilenler sayfası noindex.
+
 ## v1.3 — yerleşim, hız ve SEO
 
 - Header düz (opak) zeminli; aşağı kaydırınca gizlenir, yukarı kaydırınca geri gelir — içerik header'ın altında kalmaz.

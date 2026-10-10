@@ -1008,6 +1008,9 @@ function cr_migrate() {
 			cr_flush_options_cache();
 		}
 	}
+	if ( version_compare( $from, '1.3.1', '<' ) ) {
+		cr_migrate_131();
+	}
 	update_option( 'cr_theme_version', CR_VERSION );
 }
 add_action( 'init', 'cr_migrate', 20 );
@@ -1034,6 +1037,39 @@ function cr_migrate_123() {
 	}
 	flush_rewrite_rules( false );
 }
+
+/**
+ * v1.3.1: tarihli yazı adreslerini (/2026/09/30/yazi/) kısa yapıya (/yazi/) geçirir. Eski adresler WordPress
+ * tarafından yeni adrese 301 ile yönlendirilir. Kategori tabanı ve kurallar yenilenir.
+ */
+function cr_migrate_131() {
+	global $wp_rewrite;
+	$pl = (string) get_option( 'permalink_structure' );
+	if ( $pl && false !== strpos( $pl, '%postname%' ) && preg_match( '/%(year|monthnum|day|hour|minute|second|post_id)%/', $pl ) ) {
+		update_option( 'cr_old_permalink', $pl, false );
+		$wp_rewrite->set_permalink_structure( '/%postname%/' );
+	}
+	flush_rewrite_rules( false );
+}
+
+/**
+ * Kalıcı bağlantı yapısı değiştiyse eski tarihli adresleri yeni adrese 301 ile yönlendir.
+ * (WordPress'in tahmini yönlendirmesi kapalı olsa bile çalışır.)
+ */
+function cr_old_permalink_redirect() {
+	if ( ! is_404() || ! get_option( 'cr_old_permalink' ) || empty( $_SERVER['REQUEST_URI'] ) ) {
+		return;
+	}
+	$path = (string) wp_parse_url( esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ), PHP_URL_PATH );
+	if ( preg_match( '#/\d{4}/\d{1,2}(?:/\d{1,2})?/([^/]+)/?$#', $path, $m ) ) {
+		$p = get_page_by_path( sanitize_title( $m[1] ), OBJECT, 'post' );
+		if ( $p && 'publish' === $p->post_status ) {
+			wp_safe_redirect( get_permalink( $p ), 301 );
+			exit;
+		}
+	}
+}
+add_action( 'template_redirect', 'cr_old_permalink_redirect', 1 );
 
 /**
  * “Aktif İçerikler” landing sayfasını (yoksa) oluşturur.

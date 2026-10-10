@@ -1,0 +1,40 @@
+# Cilt Rotası — https://www.ciltrotasi.com/
+# Tüm arama motorları: içerik sayfaları açık; yönetim, arama sonucu ve kişisel sayfalar kapalı.
+
+User-agent: *
+Disallow: /wp-admin/
+Allow: /wp-admin/admin-ajax.php
+Disallow: /wp-login.php
+Disallow: /?s=
+Disallow: /*?s=
+Disallow: /search/
+Disallow: /*?replytocom=
+Disallow: /*?cr_edit=
+Disallow: /*?siralama=
+Disallow: /*?format=md
+Disallow: /urun-rehberi/
+
+# Yapay zekâ tarayıcıları (Panel › SEO · AEO · GEO)
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: Claude-SearchBot
+User-agent: Claude-User
+User-agent: Applebot
+User-agent: DuckAssistBot
+User-agent: MistralAI-User
+User-agent: GPTBot
+User-agent: Google-Extended
+User-agent: CCBot
+User-agent: ClaudeBot
+User-agent: anthropic-ai
+User-agent: Applebot-Extended
+User-agent: Bytespider
+User-agent: meta-externalagent
+User-agent: cohere-training-data-crawler
+Allow: /
+Disallow: /wp-admin/
+
+Sitemap: https://www.ciltrotasi.com/wp-sitemap.xml
+# LLM rehberi: https://www.ciltrotasi.com/llms.txt

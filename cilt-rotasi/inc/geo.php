@@ -28,42 +28,110 @@ function cr_ai_bots() {
  */
 function cr_robots_txt( $output, $public ) {
 	if ( ! $public ) {
-		return $output;
+		// Ayarlar › Okuma › “Arama motorlarının siteyi dizine eklemesini engelle” açık.
+		return "User-agent: *\nDisallow: /\n";
 	}
 	$bots = cr_ai_bots();
 	$mode = cr_opt( 'geo_ai_bots', 'allow' );
-	$out  = "\n# Cilt Rotası — yapay zekâ tarayıcıları\n";
-	if ( 'allow' === $mode ) {
-		foreach ( array_merge( $bots['search'], $bots['training'] ) as $b ) {
-			$out .= "User-agent: {$b}\n";
-		}
-		$out .= "Allow: /\nDisallow: /wp-admin/\n";
-	} elseif ( 'search' === $mode ) {
-		foreach ( $bots['search'] as $b ) {
-			$out .= "User-agent: {$b}\n";
-		}
-		$out .= "Allow: /\nDisallow: /wp-admin/\n\n";
-		foreach ( $bots['training'] as $b ) {
-			$out .= "User-agent: {$b}\n";
-		}
-		$out .= "Disallow: /\n";
-	} else {
-		foreach ( array_merge( $bots['search'], $bots['training'] ) as $b ) {
-			$out .= "User-agent: {$b}\n";
-		}
-		$out .= "Disallow: /\n";
+	$path = (string) wp_parse_url( home_url( '/' ), PHP_URL_PATH );
+	$path = '' === $path ? '/' : trailingslashit( $path );
+
+	$o  = '# ' . get_bloginfo( 'name' ) . ' — ' . home_url( '/' ) . "\n";
+	$o .= "# Tüm arama motorları: içerik sayfaları açık; yönetim, arama sonucu ve kişisel sayfalar kapalı.\n\n";
+	$o .= "User-agent: *\n";
+	$o .= "Disallow: {$path}wp-admin/\n";
+	$o .= "Allow: {$path}wp-admin/admin-ajax.php\n";
+	$o .= "Disallow: {$path}wp-login.php\n";
+	$o .= "Disallow: {$path}?s=\n";
+	$o .= "Disallow: {$path}*?s=\n";
+	$o .= "Disallow: {$path}search/\n";
+	$o .= "Disallow: {$path}*?replytocom=\n";
+	$o .= "Disallow: {$path}*?cr_edit=\n";
+	$o .= "Disallow: {$path}*?siralama=\n";
+	$o .= "Disallow: {$path}*?format=md\n";
+	if ( function_exists( 'cr_products_on' ) && ! cr_products_on() ) {
+		$o .= "Disallow: {$path}urun-rehberi/\n";
 	}
-	$out .= "\n# Arama sonuçları ve dahili sayfalar\nUser-agent: *\nDisallow: /?s=\nDisallow: /search/\nDisallow: /wp-admin/\nAllow: /wp-admin/admin-ajax.php\n";
 	$extra = trim( (string) cr_opt( 'geo_robots_extra' ) );
 	if ( $extra ) {
-		$out .= "\n" . $extra . "\n";
+		$o .= $extra . "\n";
+	}
+
+	$o .= "\n# Yapay zekâ tarayıcıları (Panel › SEO · AEO · GEO)\n";
+	if ( 'allow' === $mode ) {
+		foreach ( array_merge( $bots['search'], $bots['training'] ) as $b ) {
+			$o .= "User-agent: {$b}\n";
+		}
+		$o .= "Allow: {$path}\nDisallow: {$path}wp-admin/\n";
+	} elseif ( 'search' === $mode ) {
+		foreach ( $bots['search'] as $b ) {
+			$o .= "User-agent: {$b}\n";
+		}
+		$o .= "Allow: {$path}\nDisallow: {$path}wp-admin/\n\n";
+		foreach ( $bots['training'] as $b ) {
+			$o .= "User-agent: {$b}\n";
+		}
+		$o .= "Disallow: /\n";
+	} else {
+		foreach ( array_merge( $bots['search'], $bots['training'] ) as $b ) {
+			$o .= "User-agent: {$b}\n";
+		}
+		$o .= "Disallow: /\n";
+	}
+
+	$o .= "\n";
+	$sitemaps = function_exists( 'wp_sitemaps_get_server' ) && wp_sitemaps_get_server()->sitemaps_enabled();
+	if ( $sitemaps ) {
+		$o .= 'Sitemap: ' . home_url( '/wp-sitemap.xml' ) . "\n";
+	}
+	// SEO eklentisinin kendi site haritası varsa onu da bildir.
+	if ( preg_match_all( '/^Sitemap:\s*(\S+)/mi', (string) $output, $m ) ) {
+		foreach ( $m[1] as $sm ) {
+			if ( false === strpos( $o, $sm ) ) {
+				$o .= 'Sitemap: ' . $sm . "\n";
+			}
+		}
 	}
 	if ( cr_opt( 'geo_llms' ) ) {
-		$out .= '# LLM rehberi: ' . home_url( '/llms.txt' ) . "\n";
+		$o .= '# LLM rehberi: ' . home_url( '/llms.txt' ) . "\n";
 	}
-	return $output . $out;
+	return $o;
 }
 add_filter( 'robots_txt', 'cr_robots_txt', 20, 2 );
+
+/**
+ * /robots.txt'yi kalıcı bağlantı kurallarından bağımsız sun. Site alt klasörden kök alan adına taşındığında
+ * WordPress'in robots kuralı eksik kalabiliyor ve /robots.txt 404 veriyordu. (Kökte gerçek bir robots.txt
+ * dosyası varsa sunucu onu doğrudan verir; bu kod hiç çalışmaz.)
+ */
+function cr_serve_robots() {
+	if ( empty( $_SERVER['REQUEST_URI'] ) ) {
+		return;
+	}
+	$home = (string) wp_parse_url( home_url( '/' ), PHP_URL_PATH );
+	if ( '' !== $home && '/' !== $home ) {
+		return; // Alt klasör kurulumunda robots.txt kök alan adına aittir.
+	}
+	$path = (string) wp_parse_url( esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ), PHP_URL_PATH );
+	if ( '/robots.txt' === $path ) {
+		status_header( 200 );
+		do_robots();
+		exit;
+	}
+}
+add_action( 'init', 'cr_serve_robots', 0 );
+
+/**
+ * Kullanıcı (yazar) site haritası kullanıcı adlarını açığa çıkarır ve ince içerikli sayfalar listeler: kapat.
+ */
+add_filter(
+	'wp_sitemaps_add_provider',
+	function ( $provider, $name ) {
+		return 'users' === $name ? false : $provider;
+	},
+	10,
+	2
+);
 
 /**
  * /llms.txt, /llms-full.txt ve ?format=md isteklerini yakalar.

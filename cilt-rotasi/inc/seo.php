@@ -184,6 +184,8 @@ function cr_robots( $robots ) {
 		$noindex = true;
 	} elseif ( is_404() ) {
 		$noindex = true;
+	} elseif ( is_page_template( 'page-templates/template-kaydedilenler.php' ) ) {
+		$noindex = true; // Ziyaretçiye özel liste; arama sonucunda boş görünür.
 	}
 	if ( $noindex ) {
 		$robots['noindex'] = true;
