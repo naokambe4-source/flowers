@@ -8,7 +8,8 @@
  *  - WebPage: speakable (kısa cevap), MedicalWebPage + reviewedBy + lastReviewed (uzman kontrolü)
  *  - Article: citation (kaynaklar), about (cilt sorunları), timeRequired
  * Ayrıca: boş meta açıklamalarda kısa cevap/özet, ana sayfa başlığı, robots.txt ve site haritası uyumu,
- * Rank Math içerik analizine kısa cevap + SSS metni, tek tıkla önerilen Rank Math ayarları.
+ * Rank Math içerik analizine kısa cevap + SSS metni, isteğe bağlı (butonla) önerilen Rank Math ayarları.
+ * Rank Math'te girilen her değer (başlık, açıklama, robots.txt, şema) önceliklidir; tema yalnızca boşları doldurur.
  *
  * Not: Rank Math, kurulum sihirbazında hesap bağlanmadan / “atla” denmeden ön yüzde hiçbir şey basmaz.
  * Bu durumda cr_rm_active() false döner ve tema SEO'su devrede kalır (site SEO'suz kalmaz).
@@ -315,6 +316,7 @@ function cr_rm_owns_llms() {
 
 /**
  * Rank Math'i Cilt Rotası için yapılandırır ve tema SEO alanlarını Rank Math'e taşır.
+ * Yalnızca Araçlar sayfasındaki butonla çalışır; tema Rank Math ayarlarını kendiliğinden değiştirmez.
  *
  * @return array Yapılanlar.
  */
@@ -444,18 +446,6 @@ function cr_rm_configure() {
 }
 
 /**
- * Rank Math ilk kez çalışır hâlde algılandığında önerilen ayarları bir kez uygula.
- */
-function cr_rm_maybe_configure() {
-	if ( ! cr_rm_active() || get_option( 'cr_rm_configured' ) || ! current_user_can( 'manage_options' ) ) {
-		return;
-	}
-	cr_rm_configure();
-	set_transient( 'cr_rm_configured_notice', 1, 10 * MINUTE_IN_SECONDS );
-}
-add_action( 'admin_init', 'cr_rm_maybe_configure', 20 );
-
-/**
  * Yönetim bildirimleri: sihirbaz tamamlanmamışsa uyar; ayarlar uygulandıysa bildir.
  */
 function cr_rm_notices() {
@@ -463,12 +453,9 @@ function cr_rm_notices() {
 		return;
 	}
 	if ( cr_rm_installed_inactive() ) {
-		echo '<div class="notice notice-warning"><p><strong>Cilt Rotası:</strong> Rank Math kurulu ama ön yüzde henüz çalışmıyor (kurulum sihirbazında hesap bağlanmamış ya da “Atla” denmemiş). Bu sürede sitenin SEO’sunu tema yönetiyor. <a href="' . esc_url( admin_url( 'admin.php?page=rank-math-wizard' ) ) . '">Rank Math sihirbazını tamamla</a> — tamamlandığında tema SEO’yu Rank Math’e devreder ve önerilen ayarları otomatik uygular.</p></div>';
+		echo '<div class="notice notice-warning"><p><strong>Cilt Rotası:</strong> Rank Math kurulu ama ön yüzde henüz çalışmıyor (kurulum sihirbazında hesap bağlanmamış ya da “Atla” denmemiş). Bu sürede sitenin SEO’sunu tema yönetiyor. <a href="' . esc_url( admin_url( 'admin.php?page=rank-math-wizard' ) ) . '">Rank Math sihirbazını tamamla</a> — tamamlandığında tema SEO’yu Rank Math’e devreder (Rank Math ayarlarına dokunmaz).</p></div>';
 	}
-	if ( get_transient( 'cr_rm_configured_notice' ) ) {
-		delete_transient( 'cr_rm_configured_notice' );
-		echo '<div class="notice notice-success is-dismissible"><p><strong>Cilt Rotası:</strong> Rank Math algılandı; tema SEO’yu devretti ve önerilen ayarları uyguladı (kurum bilgisi, şema tipleri, site haritası, noindex kuralları, tema SEO alanlarının taşınması). Araçlar & Kurulum’dan tekrar çalıştırabilirsin.</p></div>';
-	}
+
 }
 add_action( 'admin_notices', 'cr_rm_notices' );
 
@@ -503,8 +490,8 @@ function cr_rm_card() {
 		</header>
 		<div class="cr-card-a__body cr-stack">
 			<?php if ( $on ) : ?>
-				<p class="description">Önerilen ayarlar: <?php echo get_option( 'cr_rm_configured' ) ? 'uygulandı (' . esc_html( wp_date( 'j F Y H:i', (int) get_option( 'cr_rm_configured' ) ) ) . ')' : 'henüz uygulanmadı'; ?>.</p>
-				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+				<p class="description">İsteğe bağlı. Butona basarsan şunlar Rank Math’e yazılır: kurum (Organization) bilgisi ve logo, başlık ayracı “—”, şema tipleri (blog → BlogPosting, sözlük → Article, sayfalar → yok), arama/boş terim/tarih arşivi noindex, site haritası içerikleri; temada girilmiş SEO başlık/açıklama/odak kelimeleri (Rank Math’te boş olanlar) taşınır. Rank Math’te zaten doldurduğun yazı alanları değişmez. Durum: <?php echo get_option( 'cr_rm_configured' ) ? 'uygulandı (' . esc_html( wp_date( 'j F Y H:i', (int) get_option( 'cr_rm_configured' ) ) ) . ')' : 'uygulanmadı'; ?>.</p>
+				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" onsubmit="return confirm('Önerilen ayarlar Rank Math’e yazılsın mı?')">
 					<input type="hidden" name="action" value="cr_rm_configure">
 					<?php wp_nonce_field( 'cr_rm_configure' ); ?>
 					<button class="cr-abtn" type="submit">Önerilen Rank Math ayarlarını uygula</button>

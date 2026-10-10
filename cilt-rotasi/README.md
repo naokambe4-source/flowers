@@ -49,9 +49,10 @@ Rank Math çalışırken tek SEO motoru Rank Math'tir; tema çift etiket/şema b
 - **Rank Math yönetir:** başlık, meta açıklama, canonical, robots meta, OG/Twitter, site haritası (sitemap_index.xml).
 - **Tema ekler (Rank Math grafiğine):** FAQPage (WebPage ile birleşik), HowTo, DefinedTerm + DefinedTermSet (sözlük), Product + Review (ürün rehberi), görünen kırıntıyla aynı BreadcrumbList, speakable (kısa cevap), MedicalWebPage + reviewedBy + lastReviewed (uzman kontrolü), citation (kaynaklar), about (cilt sorunları), timeRequired.
 - **Akıllı açıklama:** Rank Math açıklaması girilmemiş yazılarda kısa cevap → özet; arşivlerde temanın Türkçe açıklamaları; ana sayfada tema başlığı/açıklaması.
-- **İlk algılamada bir kez (ve Araçlar'dan tek tık):** kurum bilgisi (Organization + logo), başlık ayracı, şema tipleri (blog → BlogPosting, sözlük → Article), noindex kuralları (arama, boş terimler, tarih arşivleri), site haritası içerikleri; tema SEO alanları (başlık, açıklama, odak kelime, canonical, noindex, paylaşım görseli) Rank Math'e taşınır.
+- **Yalnızca Araçlar'daki butonla (isteğe bağlı; tema Rank Math ayarlarını kendiliğinden değiştirmez):** kurum bilgisi (Organization + logo), başlık ayracı, şema tipleri (blog → BlogPosting, sözlük → Article), noindex kuralları (arama, boş terimler, tarih arşivleri), site haritası içerikleri; tema SEO alanları (başlık, açıklama, odak kelime, canonical, noindex, paylaşım görseli) Rank Math'e taşınır.
 - **Editör:** tema kutusundaki SEO alanları gizlenir (Rank Math kutusunda); Rank Math içerik analizi kısa cevap, öne çıkanlar, SSS ve adımları da sayar.
 - **robots.txt:** Rank Math › robots.txt düzenleyicisi boşsa tema içeriği (Rank Math site haritasıyla), doluysa Rank Math'inki. **llms.txt:** Rank Math'in llms modülü açılırsa onunki, değilse temanınki.
+- **Öncelik her zaman Rank Math'te:** yazıya girilen başlık/açıklama, robots.txt düzenleyicisi, doğrulama kodları ve şema ayarları temanınkini geçersiz kılar; tema yalnızca boş kalanları doldurur ve şemaya ekleme yapar.
 - **Güvenlik ağı:** Rank Math kurulu ama sihirbazı tamamlanmamışsa (ön yüzde hiçbir şey basmaz) tema SEO'su devrede kalır ve panelde uyarı gösterilir.
 
 ## v1.3.1 — robots.txt ve adresler

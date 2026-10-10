@@ -311,7 +311,17 @@ function cr_verification() {
 		'verify_yandex'    => 'yandex-verification',
 		'verify_pinterest' => 'p:domain_verify',
 	);
+	$rm     = function_exists( 'cr_rm_active' ) && cr_rm_active() ? get_option( 'rank-math-options-general', array() ) : array();
+	$rm_key = array(
+		'verify_google'    => 'google_verify',
+		'verify_bing'      => 'bing_verify',
+		'verify_yandex'    => 'yandex_verify',
+		'verify_pinterest' => 'pinterest_verify',
+	);
 	foreach ( $map as $opt => $name ) {
+		if ( is_array( $rm ) && ! empty( $rm[ $rm_key[ $opt ] ] ) ) {
+			continue; // Rank Math'te girilmiş: o basar, çift etiket olmasın.
+		}
 		$v = trim( (string) cr_opt( $opt ) );
 		if ( $v ) {
 			if ( preg_match( '/content="([^"]+)"/', $v, $m ) ) {
