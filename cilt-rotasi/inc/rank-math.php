@@ -172,6 +172,60 @@ function cr_rm_json_ld( $data, $jsonld = null ) {
 		}
 	}
 
+	// Yayıncı (site kimliği): marka sitesi = Organization; logo ve sosyal profiller eksikse tamamla.
+	// Rank Math “kişi” varsayılanında ['Organization','Person'] ve logosuz yayıncı üretiyor; Google
+	// makale yayıncısı için logolu bir Organization bekler.
+	foreach ( $data as $k => $n ) {
+		$types = cr_rm_types( $n );
+		if ( ! in_array( 'Organization', $types, true ) || empty( $n['@id'] ) || false === strpos( (string) $n['@id'], '#' ) ) {
+			continue;
+		}
+		if ( in_array( 'Person', $types, true ) ) {
+			$n['@type'] = 'Organization';
+		}
+		if ( empty( $n['logo'] ) ) {
+			$logo = cr_local_img( cr_opt( 'org_logo' ) ? cr_opt( 'org_logo' ) : cr_opt( 'logo_image' ) );
+			if ( ! $logo && get_option( 'site_icon' ) ) {
+				$logo = (int) get_option( 'site_icon' );
+			}
+			$url = $logo ? cr_img_url( $logo, 'full' ) : '';
+			if ( $url ) {
+				$img = array(
+					'@type' => 'ImageObject',
+					'@id'   => home_url( '/#logo' ),
+					'url'   => $url,
+				);
+				if ( is_numeric( $logo ) ) {
+					$meta = wp_get_attachment_metadata( (int) $logo );
+					if ( ! empty( $meta['width'] ) ) {
+						$img['width']  = (int) $meta['width'];
+						$img['height'] = (int) $meta['height'];
+					}
+				}
+				$n['logo'] = $img;
+			}
+		}
+		if ( empty( $n['sameAs'] ) && function_exists( 'cr_social_links' ) ) {
+			$same = array_values( array_filter( (array) cr_social_links() ) );
+			if ( $same ) {
+				$n['sameAs'] = $same;
+			}
+		}
+		if ( empty( $n['description'] ) && get_bloginfo( 'description' ) ) {
+			$n['description'] = get_bloginfo( 'description' );
+		}
+		$data[ $k ] = $n;
+	}
+
+	// Makale başlığı (headline) yazının kendi başlığı olsun (“… - Cilt Rotası” eki olmadan, en çok 110 karakter).
+	if ( is_singular() ) {
+		foreach ( $data as $k => $n ) {
+			if ( array_intersect( array( 'Article', 'BlogPosting', 'NewsArticle' ), cr_rm_types( $n ) ) ) {
+				$data[ $k ]['headline'] = mb_substr( wp_strip_all_tags( html_entity_decode( get_the_title( get_queried_object_id() ), ENT_QUOTES, 'UTF-8' ) ), 0, 110 );
+			}
+		}
+	}
+
 	// Sözlük arşivi: DefinedTermSet.
 	if ( is_post_type_archive( 'icerik' ) && ! $has( 'DefinedTermSet' ) ) {
 		$data['cr_termset'] = array(

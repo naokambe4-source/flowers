@@ -42,6 +42,12 @@ Ayrıca: markalı giriş ekranı, tüm yönetime Cilt Rotası görünümü, üst
 - Yazı düzenleme ekranında canlı Google önizlemesi, karakter sayaçları ve anlık kontrol listesi bulunan **SEO · AEO · GEO** kutusu vardır.
 - Yoast, Rank Math, AIOSEO veya SEOPress etkinse tema meta etiketlerini kendiliğinden kapatır; sözlük, SSS, HowTo, ürün şemaları ve GEO dosyaları çalışmaya devam eder.
 
+## v1.4.3 — blog yazılarında schema düzeltmesi
+
+- Yayıncı (site kimliği) tek başına Organization; logo (tema logosu / site simgesi), sosyal profiller ve açıklama eklenir. Rank Math'in “kişi” varsayılanındaki logosuz ['Organization','Person'] düğümü Google'ın makale yayıncısı beklentisini karşılamıyordu.
+- Makale headline'ı yazının kendi başlığı (“… - Cilt Rotası” eki olmadan, en çok 110 karakter).
+- Rank Math ayarları değişmez; yalnızca şema çıktısı düzeltilir.
+
 ## v1.4.2 — site haritası ve tek adres
 
 - Tek adres: www'suz ve http istekleri (site haritaları, robots.txt, llms.txt dahil) 301 ile `https://www.` adresine gider; Search Console tek adres görür.
