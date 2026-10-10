@@ -42,6 +42,12 @@ Ayrıca: markalı giriş ekranı, tüm yönetime Cilt Rotası görünümü, üst
 - Yazı düzenleme ekranında canlı Google önizlemesi, karakter sayaçları ve anlık kontrol listesi bulunan **SEO · AEO · GEO** kutusu vardır.
 - Yoast, Rank Math, AIOSEO veya SEOPress etkinse tema meta etiketlerini kendiliğinden kapatır; sözlük, SSS, HowTo, ürün şemaları ve GEO dosyaları çalışmaya devam eder.
 
+## v1.4.2 — site haritası ve tek adres
+
+- Tek adres: www'suz ve http istekleri (site haritaları, robots.txt, llms.txt dahil) 301 ile `https://www.` adresine gider; Search Console tek adres görür.
+- Rank Math'te kapalı gelen `cilt_sorunu`, `cilt_tipi`, `icerik_grubu` site haritaları açılır (404 vermez); boş terimler listelenmez.
+- Kaydedilenler sayfası Rank Math açıkken de noindex ve site haritası dışında.
+
 ## v1.4 — Rank Math entegrasyonu (SEO · AEO · GEO)
 
 Rank Math çalışırken tek SEO motoru Rank Math'tir; tema çift etiket/şema basmaz ve AEO/GEO eklerini Rank Math'in tek JSON-LD grafiğine bağlar:

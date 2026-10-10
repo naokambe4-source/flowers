@@ -1028,6 +1028,10 @@ function cr_migrate() {
 	if ( version_compare( $from, '1.3.1', '<' ) ) {
 		cr_migrate_131();
 	}
+	if ( version_compare( $from, '1.4.2', '<' ) && defined( 'RANK_MATH_VERSION' ) && function_exists( 'cr_rm_enable_tax_sitemaps' ) ) {
+		cr_rm_enable_tax_sitemaps(); // /cilt_sorunu-sitemap.xml vb. 404 vermesin.
+		cr_rm_noindex_saved_page();
+	}
 	update_option( 'cr_theme_version', CR_VERSION );
 }
 add_action( 'init', 'cr_migrate', 20 );

@@ -437,6 +437,8 @@ function cr_rm_configure() {
 	}
 	$done[] = $moved . ' tema SEO alanı (başlık, açıklama, odak kelime, canonical, noindex, paylaşım görseli) Rank Math’e taşındı';
 
+	cr_rm_enable_tax_sitemaps();
+	cr_rm_noindex_saved_page();
 	update_option( 'cr_rm_configured', time(), false );
 	flush_rewrite_rules( false );
 	if ( function_exists( 'cr_purge_caches' ) ) {
@@ -522,3 +524,112 @@ function cr_rm_editor_js( $hook ) {
 	wp_add_inline_script( 'wp-hooks', $js );
 }
 add_action( 'admin_enqueue_scripts', 'cr_rm_editor_js', 30 );
+
+/* -------------------------------------------------------------------------
+ * Tek adres: http → https, www'suz → www (veya ayarlı alan adı).
+ * WordPress sayfaları yönlendirir ama site haritası, robots.txt ve llms.txt istekleri bu
+ * kontrolden geçmez; https://ciltrotasi.com/sitemap_index.xml de 200 dönünce Search Console
+ * farklı mülk/adres görüp haritayı reddedebiliyordu.
+ * ---------------------------------------------------------------------- */
+
+/**
+ * İstek ana adresle (Ayarlar › Genel › Site adresi) aynı host/şemada değilse 301 ile yönlendir.
+ */
+function cr_canonical_host() {
+	if ( is_admin() || wp_doing_ajax() || wp_doing_cron() || ( defined( 'WP_CLI' ) && WP_CLI ) || ( defined( 'REST_REQUEST' ) && REST_REQUEST ) ) {
+		return;
+	}
+	if ( empty( $_SERVER['HTTP_HOST'] ) || empty( $_SERVER['REQUEST_URI'] ) || headers_sent() ) {
+		return;
+	}
+	$method = isset( $_SERVER['REQUEST_METHOD'] ) ? strtoupper( sanitize_key( wp_unslash( $_SERVER['REQUEST_METHOD'] ) ) ) : 'GET';
+	if ( ! in_array( $method, array( 'GET', 'HEAD' ), true ) ) {
+		return;
+	}
+	$home   = wp_parse_url( home_url( '/' ) );
+	$h_host = isset( $home['host'] ) ? strtolower( $home['host'] ) : '';
+	$h_ssl  = isset( $home['scheme'] ) && 'https' === $home['scheme'];
+	$host   = strtolower( preg_replace( '/:\d+$/', '', sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ) ) ) );
+	if ( ! $h_host || 'localhost' === $h_host || preg_match( '/^\d+\.\d+\.\d+\.\d+$/', $h_host ) ) {
+		return;
+	}
+	// Yalnızca aynı alan adının www / www'suz çiftini düzelt (başka alan adlarına dokunma).
+	$same = ltrim( preg_replace( '/^www\./', '', $host ), '.' ) === ltrim( preg_replace( '/^www\./', '', $h_host ), '.' );
+	if ( ! $same ) {
+		return;
+	}
+	$ssl = is_ssl()
+		|| ( isset( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) && false !== stripos( sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) ), 'https' ) )
+		|| ( isset( $_SERVER['HTTP_CF_VISITOR'] ) && false !== stripos( sanitize_text_field( wp_unslash( $_SERVER['HTTP_CF_VISITOR'] ) ), 'https' ) );
+	if ( $host === $h_host && ( ! $h_ssl || $ssl ) ) {
+		return;
+	}
+	$uri = wp_unslash( $_SERVER['REQUEST_URI'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+	wp_redirect( ( $h_ssl ? 'https' : 'http' ) . '://' . $h_host . '/' . ltrim( $uri, '/' ), 301, 'Cilt Rotasi' ); // phpcs:ignore WordPress.Security.SafeRedirect
+	exit;
+}
+add_action( 'init', 'cr_canonical_host', -100 ); // robots.txt (init 0) ve site haritalarından önce.
+
+/* -------------------------------------------------------------------------
+ * Tema sınıflandırmaları (cilt sorunu, cilt tipi, içerik grubu) site haritasında.
+ * ---------------------------------------------------------------------- */
+
+/**
+ * Rank Math, özel sınıflandırmaların site haritasını varsayılan olarak kapalı kurar ve
+ * /cilt_sorunu-sitemap.xml 404 verir. Bu üç içerik merkezini (Akne, Leke, Niasinamid grubu…) açar.
+ * Rank Math'in başka hiçbir ayarına dokunmaz; istersen Rank Math › Site Haritası'ndan kapatabilirsin.
+ */
+function cr_rm_enable_tax_sitemaps() {
+	$s = get_option( 'rank-math-options-sitemap', array() );
+	if ( ! is_array( $s ) ) {
+		return;
+	}
+	$changed = false;
+	foreach ( array( 'cilt_sorunu', 'cilt_tipi', 'icerik_grubu' ) as $tx ) {
+		if ( empty( $s[ 'tax_' . $tx . '_sitemap' ] ) || 'on' !== $s[ 'tax_' . $tx . '_sitemap' ] ) {
+			$s[ 'tax_' . $tx . '_sitemap' ] = 'on';
+			$changed                        = true;
+		}
+	}
+	if ( $changed ) {
+		update_option( 'rank-math-options-sitemap', $s );
+		if ( class_exists( '\RankMath\Sitemap\Cache' ) && method_exists( '\RankMath\Sitemap\Cache', 'invalidate_storage' ) ) {
+			\RankMath\Sitemap\Cache::invalidate_storage();
+		}
+	}
+}
+
+/**
+ * Kaydedilenler sayfası ziyaretçiye özeldir (arama sonucunda boş görünür): Rank Math açıkken de noindex.
+ *
+ * @param array $robots Rank Math robots.
+ * @return array
+ */
+function cr_rm_robots( $robots ) {
+	if ( is_page_template( 'page-templates/template-kaydedilenler.php' ) ) {
+		$robots['index']  = 'noindex';
+		$robots['follow'] = 'follow';
+	}
+	return $robots;
+}
+add_filter( 'rank_math/frontend/robots', 'cr_rm_robots' );
+
+/**
+ * Kaydedilenler sayfasına Rank Math noindex işaretini koyar (site haritasından da çıkar).
+ */
+function cr_rm_noindex_saved_page() {
+	$pages = get_posts(
+		array(
+			'post_type'      => 'page',
+			'posts_per_page' => 5,
+			'fields'         => 'ids',
+			'meta_key'       => '_wp_page_template', // phpcs:ignore WordPress.DB.SlowDBQuery
+			'meta_value'     => 'page-templates/template-kaydedilenler.php', // phpcs:ignore WordPress.DB.SlowDBQuery
+		)
+	);
+	foreach ( $pages as $pid ) {
+		if ( ! get_post_meta( $pid, 'rank_math_robots', true ) ) {
+			update_post_meta( $pid, 'rank_math_robots', array( 'noindex', 'follow' ) );
+		}
+	}
+}
