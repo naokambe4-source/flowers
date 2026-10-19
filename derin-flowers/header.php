@@ -30,11 +30,7 @@ defined( 'ABSPATH' ) || exit;
 			</p>
 			<?php $df_langs = df_lang_links(); ?>
 			<?php if ( $df_langs ) : ?>
-				<nav class="df-topbar__langs notranslate" aria-label="Dil seçimi" translate="no">
-					<?php foreach ( $df_langs as $df_l ) : ?>
-						<a href="<?php echo esc_url( $df_l['url'] ); ?>"<?php echo $df_l['current'] ? ' aria-current="true" class="is-current"' : ' rel="nofollow"'; ?> lang="<?php echo esc_attr( strtolower( $df_l['code'] ) ); ?>"<?php echo function_exists( 'df_gt_on' ) && df_gt_on() ? ' data-df-lang="' . esc_attr( strtolower( $df_l['code'] ) ) . '" translate="no"' : ''; ?>><?php echo esc_html( $df_l['code'] ); ?></a>
-					<?php endforeach; ?>
-				</nav>
+				<?php df_lang_menu( $df_langs ); ?>
 			<?php else : ?>
 				<p class="df-topbar__right"><?php df_the_icon( 'clock', array( 'size' => 14 ) ); ?><span<?php echo df_e( 'topbar_right' ); // phpcs:ignore ?>><?php echo esc_html( df_opt( 'topbar_right' ) ); ?></span></p>
 			<?php endif; ?>

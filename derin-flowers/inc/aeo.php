@@ -39,7 +39,8 @@ function df_aeo_facts() {
 		'site'      => get_bloginfo( 'name' ),
 		'city'      => $city,
 		'cutoff'    => (string) df_opt( 'df_cutoff', '16:00' ),
-		'districts' => array_values( array_unique( $names ) ),
+		'districts' => df_aeo_main_districts( array_values( array_unique( $names ) ) ),
+		'card'      => df_aeo_has_card(),
 		'fee_min'   => $fees ? min( $fees ) : null,
 		'fee_max'   => $fees ? max( $fees ) : null,
 		'payments'  => $pay,
@@ -89,7 +90,7 @@ function df_aeo_faq( $name, $context = 'category' ) {
 	$f     = df_aeo_facts();
 	$lower = function_exists( 'df_ai_lower' ) ? df_ai_lower( $name ) : mb_strtolower( $name );
 	$dist  = $f['districts'] ? implode( ', ', array_slice( $f['districts'], 0, 14 ) ) . ( count( $f['districts'] ) > 14 ? ' ve diğer ilçeler' : '' ) : $f['city'] . ' merkez ilçeleri';
-	$pay   = $f['payments'] ? implode( ', ', $f['payments'] ) : 'Kredi/banka kartı (3D Secure) ve havale/EFT';
+	$pay   = $f['payments'] ? implode( ', ', $f['payments'] ) : 'Havale/EFT';
 	$items = array();
 	if ( 'product' === $context ) {
 		$items[] = array( 'q' => $name . ' aynı gün teslim edilir mi?', 'a' => 'Evet. Saat ' . $f['cutoff'] . '’a kadar verilen siparişler ' . $f['city'] . ' içinde aynı gün teslim edilir. Daha sonra verilen siparişler için ertesi gün veya istediğiniz ileri bir tarih ve saat aralığını seçebilirsiniz.' );
@@ -102,7 +103,7 @@ function df_aeo_faq( $name, $context = 'category' ) {
 	$items[] = array( 'q' => $f['city'] . '’e aynı gün ' . $lower . ' gönderebilir miyim?', 'a' => 'Evet. Saat ' . $f['cutoff'] . '’a kadar verilen ' . $lower . ' siparişleri ' . $f['city'] . ' içinde aynı gün teslim edilir. Teslimat tarihini ve saat aralığını sipariş sırasında siz seçersiniz.' );
 	$items[] = array( 'q' => 'Hangi ilçelere teslimat yapıyorsunuz?', 'a' => $dist . '. ' . df_aeo_fee_text() );
 	$items[] = array( 'q' => $name . ' siparişine not kartı ve hediye eklenebilir mi?', 'a' => 'Her siparişte kişiye özel not kartı ücretsizdir. Ürün sayfasındaki “Hediye Ekle” adımından çikolata, pasta veya peluş gibi hediyeleri de aynı teslimata ekleyebilirsiniz.' );
-	$items[] = array( 'q' => 'Ödeme nasıl yapılır, güvenli mi?', 'a' => $pay . ' ile ödeme yapabilirsiniz. Kart ödemeleri 3D Secure ile lisanslı ödeme kuruluşu üzerinden alınır; kart bilgileriniz sitemizde saklanmaz.' );
+	$items[] = array( 'q' => 'Ödeme nasıl yapılır, güvenli mi?', 'a' => $pay . ' ile ödeme yapabilirsiniz.' . ( $f['card'] ? ' Kart ödemeleri 3D Secure ile lisanslı ödeme kuruluşu üzerinden alınır; kart bilgileriniz sitemizde saklanmaz.' : ' Havale/EFT siparişlerinde banka bilgileri sipariş sonunda kopyalanabilir şekilde gösterilir; ödemeniz hesabımıza geçince siparişiniz hazırlanır.' ) );
 	if ( $f['phone'] ) {
 		$items[] = array( 'q' => 'Siparişimle ilgili size nasıl ulaşırım?', 'a' => $f['phone'] . ( $f['whatsapp'] ? ' numaralı telefondan veya WhatsApp’tan' : ' numaralı telefondan' ) . ' bize ulaşabilirsiniz.' . ( $f['hours'] ? ' Çalışma saatlerimiz: ' . $f['hours'] . '.' : '' ) );
 	}
@@ -151,7 +152,7 @@ function df_aeo_rank_math_schema( $data ) {
 		if ( empty( $entity['priceRange'] ) ) {
 			$data[ $k ]['priceRange'] = '₺₺';
 		}
-		$data[ $k ]['paymentAccepted'] = $f['payments'] ? implode( ', ', $f['payments'] ) : 'Kredi kartı, Banka kartı, Havale/EFT';
+		$data[ $k ]['paymentAccepted'] = $f['payments'] ? implode( ', ', $f['payments'] ) : 'Havale/EFT';
 		$data[ $k ]['currenciesAccepted'] = 'TRY';
 	}
 	return $data;
@@ -193,7 +194,7 @@ function df_aeo_llms() {
 	$L[]   = '- Aynı gün teslimat: saat ' . $f['cutoff'] . '’a kadar verilen siparişler aynı gün teslim edilir; teslimat tarihi ve saat aralığı müşteri tarafından seçilir.';
 	$L[]   = '- ' . df_aeo_fee_text();
 	$L[]   = '- Her siparişte ücretsiz kişiye özel not kartı.';
-	$L[]   = '- Ödeme: ' . ( $f['payments'] ? implode( ', ', $f['payments'] ) : 'kredi/banka kartı (3D Secure), havale/EFT' ) . '.';
+	$L[]   = '- Ödeme: ' . ( $f['payments'] ? implode( ', ', $f['payments'] ) : 'havale/EFT' ) . '.';
 	if ( $f['phone'] ) {
 		$L[] = '- Telefon: ' . $f['phone'] . ( $f['whatsapp'] ? ' · WhatsApp: +' . $f['whatsapp'] : '' );
 	}
@@ -221,11 +222,14 @@ function df_aeo_llms() {
 		}
 	}
 	if ( function_exists( 'wc_get_products' ) ) {
-		$products = wc_get_products( array( 'status' => 'publish', 'limit' => 40, 'orderby' => 'popularity', 'visibility' => 'catalog' ) );
+		$products = wc_get_products( array( 'status' => 'publish', 'limit' => 60, 'orderby' => 'popularity', 'visibility' => 'catalog' ) );
 		if ( $products ) {
 			$L[] = '';
 			$L[] = '## Ürünler (fiyatlar KDV dahil)';
 			foreach ( $products as $p ) {
+				if ( df_aeo_is_test( $p->get_name() ) ) {
+					continue;
+				}
 				$price = $p->get_price();
 				$L[]   = '- [' . html_entity_decode( $p->get_name(), ENT_QUOTES, 'UTF-8' ) . '](' . $p->get_permalink() . ')' . ( '' !== (string) $price ? ': ' . ( $p->is_type( 'variable' ) ? number_format_i18n( (float) $p->get_variation_price( 'min' ), 0 ) . ' TL’den başlayan' : number_format_i18n( (float) $price, 0 ) . ' TL' ) : '' ) . ( $p->is_in_stock() ? '' : ' (tükendi)' );
 			}
@@ -260,8 +264,60 @@ function df_aeo_llms() {
 		$L[] = '';
 		$L[] = '## Blog';
 		foreach ( $posts as $post ) {
+			if ( df_aeo_is_test( $post->post_title ) || 'hello-world' === $post->post_name ) {
+				continue;
+			}
 			$L[] = '- [' . html_entity_decode( get_the_title( $post ), ENT_QUOTES, 'UTF-8' ) . '](' . get_permalink( $post ) . ')';
 		}
 	}
 	return implode( "\n", $L ) . "\n";
+}
+
+
+/**
+ * Deneme / test kaydı mı? ("HEDİYE AYICIK TEST", "Deneme ürün", "Sample Page" …)
+ *
+ * @param string $name Ad.
+ * @return bool
+ */
+function df_aeo_is_test( $name ) {
+	$n = function_exists( 'df_ai_lower' ) ? df_ai_lower( (string) $name ) : mb_strtolower( (string) $name );
+	return (bool) preg_match( '/(^|[^\p{L}])(test|deneme|sample|örnek ürün|dummy)([^\p{L}]|$)/u', $n );
+}
+
+/**
+ * Kartla ödeme yöntemi açık mı (havale / kapıda ödeme dışında bir yöntem)?
+ *
+ * @return bool
+ */
+function df_aeo_has_card() {
+	if ( ! function_exists( 'WC' ) || ! WC()->payment_gateways() ) {
+		return false;
+	}
+	foreach ( WC()->payment_gateways()->get_available_payment_gateways() as $id => $g ) {
+		if ( ! in_array( $id, array( 'bacs', 'cod', 'cheque' ), true ) ) {
+			return true;
+		}
+	}
+	return false;
+}
+
+/**
+ * Hizmet bölgesi olarak gerçek ilçeler: ilçe sayfaları varsa onların adları, yoksa teslimat listesi.
+ *
+ * @param string[] $fallback Teslimat listesindeki adlar.
+ * @return string[]
+ */
+function df_aeo_main_districts( $fallback ) {
+	if ( function_exists( 'df_loc_items' ) && df_loc_items() ) {
+		$out = array();
+		foreach ( df_loc_items() as $loc ) {
+			$out[] = is_array( $loc ) && isset( $loc['name'] ) ? $loc['name'] : ( is_string( $loc ) ? $loc : '' );
+		}
+		$out = array_values( array_filter( $out ) );
+		if ( $out ) {
+			return $out;
+		}
+	}
+	return $fallback;
 }
