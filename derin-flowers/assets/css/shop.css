@@ -912,7 +912,7 @@ body.df-modal-open { overflow: hidden; }
 @keyframes df-spin { to { transform: rotate(360deg); } }
 
 /* ---------- Kategori: kapak bandı, başlık altında, açıklama ürünlerin altında (v1.12) ---------- */
-.df-catband { padding-top: clamp(12px, 2vw, 24px); }
+.df-catband { padding: clamp(12px, 2vw, 24px) 0 clamp(16px, 2.4vw, 32px); }
 .df-catband picture { display: block; }
 .df-catband__img { display: block; width: 100%; height: auto; border-radius: 6px; background: var(--df-sand); }
 .df-shophead.has-image.df-banner-h--short { padding: 70px 0 40px; }

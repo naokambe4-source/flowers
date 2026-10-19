@@ -571,3 +571,42 @@ function df_img_webp( $formats ) {
 	return $formats;
 }
 add_filter( 'image_editor_output_format', 'df_img_webp' );
+
+/**
+ * Üretilen görsel boyutlarının kalitesi (WordPress varsayılanı 82 — kapak ve ürün görsellerinde yumuşama yapar).
+ *
+ * @return int
+ */
+function df_img_quality() {
+	return max( 60, min( 100, (int) df_opt( 'img_quality', 90 ) ) );
+}
+add_filter( 'wp_editor_set_quality', 'df_img_quality' );
+add_filter( 'jpeg_quality', 'df_img_quality' );
+
+/**
+ * Kapak görseli için kalite kaybı olmayan adres: yüklenen orijinal dosya (yeniden sıkıştırılmaz).
+ * Orijinal çok büyükse (3000 px üstü) WordPress'in küçülttüğü ana dosya kullanılır.
+ *
+ * @param int $id Ek ID.
+ * @return array{0:string,1:int,2:int}|null Adres, genişlik, yükseklik.
+ */
+function df_img_original( $id ) {
+	$id   = absint( $id );
+	$meta = $id ? wp_get_attachment_metadata( $id ) : array();
+	if ( ! $id || ! is_array( $meta ) ) {
+		return null;
+	}
+	$w   = (int) ( $meta['width'] ?? 0 );
+	$h   = (int) ( $meta['height'] ?? 0 );
+	$url = wp_get_attachment_url( $id );
+	if ( ! empty( $meta['original_image'] ) && function_exists( 'wp_get_original_image_url' ) ) {
+		$path = wp_get_original_image_path( $id );
+		$size = $path && file_exists( $path ) ? wp_getimagesize( $path ) : false;
+		if ( $size && $size[0] <= 3000 ) {
+			$url = wp_get_original_image_url( $id );
+			$w   = (int) $size[0];
+			$h   = (int) $size[1];
+		}
+	}
+	return $url ? array( $url, $w, $h ) : null;
+}

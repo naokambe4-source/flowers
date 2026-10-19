@@ -25,30 +25,20 @@ $df_desc_h = $df_data['desc'] && ! is_paged() ? '<div class="df-catdesc__body">'
 <?php if ( $df_band ) : ?>
 	<div class="df-catband">
 		<div class="df-container">
-			<picture>
-				<?php if ( $df_bgm ) : ?>
-					<source media="(max-width: 700px)" srcset="<?php echo esc_url( $df_bgm ); ?>">
-				<?php endif; ?>
-				<?php
-				echo wp_get_attachment_image( // phpcs:ignore
-					$df_data['image'],
-					'full',
-					false,
-					array(
-						'class'         => 'df-catband__img',
-						'loading'       => 'eager',
-						'fetchpriority' => 'high',
-						'decoding'      => 'async',
-						'sizes'         => '(max-width: 1520px) 100vw, 1440px',
-						'alt'           => $df_data['title'],
-					)
-				);
-				?>
-			</picture>
+			<?php $df_o = df_img_original( $df_data['image'] ); ?>
+			<?php $df_om = $df_data['image_m'] ? df_img_original( $df_data['image_m'] ) : null; ?>
+			<?php if ( $df_o ) : ?>
+				<picture>
+					<?php if ( $df_om ) : ?>
+						<source media="(max-width: 700px)" srcset="<?php echo esc_url( $df_om[0] ); ?>" width="<?php echo (int) $df_om[1]; ?>" height="<?php echo (int) $df_om[2]; ?>">
+					<?php endif; ?>
+					<img class="df-catband__img" src="<?php echo esc_url( $df_o[0] ); ?>" width="<?php echo (int) $df_o[1]; ?>" height="<?php echo (int) $df_o[2]; ?>" alt="<?php echo esc_attr( $df_data['title'] ); ?>" loading="eager" fetchpriority="high" decoding="async">
+				</picture>
+			<?php endif; ?>
 		</div>
 	</div>
 <?php endif; ?>
-<header class="df-shophead<?php echo $df_bg && ! $df_band ? ' has-image ' . esc_attr( $df_hcls ) : ''; ?><?php echo $df_band ? ' is-under-band' : ''; ?><?php echo $df_bgm && ! $df_band ? ' has-mobile' : ''; ?>"<?php echo $df_sty && ! $df_band ? ' style="' . $df_sty . '"' : ''; // phpcs:ignore ?>>
+<header class="df-shophead<?php echo $df_bg && ! $df_band ? ' has-image ' . esc_attr( $df_hcls ) : ''; ?><?php echo $df_band ? ' is-under-band screen-reader-text' : ''; ?><?php echo $df_bgm && ! $df_band ? ' has-mobile' : ''; ?>"<?php echo $df_sty && ! $df_band ? ' style="' . $df_sty . '"' : ''; // phpcs:ignore ?>>
 	<div class="df-container df-shophead__inner">
 		<?php woocommerce_breadcrumb(); ?>
 		<?php if ( apply_filters( 'woocommerce_show_page_title', true ) ) : ?>
