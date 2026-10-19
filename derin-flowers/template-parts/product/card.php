@@ -117,7 +117,7 @@ $img_size = ( ! empty( $args['variant'] ) && 'vitrin' === $args['variant'] ) ? '
 				<?php if ( df_quick_add_allowed( $product ) ) : ?>
 					<a href="<?php echo esc_url( $product->add_to_cart_url() ); ?>" data-quantity="1" data-product_id="<?php echo esc_attr( $product->get_id() ); ?>" class="df-card__cart add_to_cart_button ajax_add_to_cart" aria-label="<?php echo esc_attr( sprintf( '%s sepete ekle', $name ) ); ?>" rel="nofollow"><?php df_the_icon( 'bag', array( 'size' => 18 ) ); ?></a>
 				<?php else : ?>
-					<a href="<?php echo esc_url( $link ); ?>" class="df-card__cart" aria-label="<?php echo esc_attr( sprintf( '%s ürününü incele', $name ) ); ?>"><?php df_the_icon( 'bag', array( 'size' => 18 ) ); ?></a>
+					<a href="<?php echo esc_url( $link ); ?>" class="df-card__view df-card__view--outline" aria-label="<?php echo esc_attr( sprintf( '%s ürününü incele', $name ) ); ?>"><?php echo esc_html( df_opt( 'card_btn_text', 'İncele' ) ); ?><?php df_the_icon( 'arrow-right', array( 'size' => 14 ) ); ?></a>
 				<?php endif; ?>
 			<?php endif; ?>
 		</div>
