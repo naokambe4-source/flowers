@@ -647,3 +647,20 @@ function df_cat_hero_color( $term, $saved = true ) {
 	$accent = df_opt( 'color_accent', '' );
 	return sanitize_hex_color( (string) $accent ) ? $accent : '#8E5E52';
 }
+
+
+/**
+ * Kapak görselinin odak noktası. Varsayılan sağ: görseller sağ tarafa yerleşir, ürün sağda kalır.
+ *
+ * @param string $pos Kayıtlı değer.
+ * @return string CSS object-position.
+ */
+function df_cat_hero_pos( $pos ) {
+	$map = array(
+		'mid'    => 'center center',
+		'left'   => 'left center',
+		'top'    => 'right top',
+		'bottom' => 'right bottom',
+	);
+	return isset( $map[ $pos ] ) ? $map[ $pos ] : 'right center';
+}

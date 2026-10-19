@@ -38,14 +38,15 @@ $df_om   = $df_data['image_m'] ? df_img_original( $df_data['image_m'] ) : null;
 			<?php if ( $df_om ) : ?>
 				<source media="(max-width: 700px)" srcset="<?php echo esc_url( $df_om[0] ); ?>">
 			<?php endif; ?>
-			<img src="<?php echo esc_url( $df_o[0] ); ?>" width="<?php echo (int) $df_o[1]; ?>" height="<?php echo (int) $df_o[2]; ?>" alt="<?php echo esc_attr( $df_data['title'] ); ?>" loading="eager" fetchpriority="high" decoding="async"<?php echo $df_data['pos'] ? ' style="object-position:' . esc_attr( $df_data['pos'] ) . '"' : ''; ?>>
+			<img src="<?php echo esc_url( $df_o[0] ); ?>" width="<?php echo (int) $df_o[1]; ?>" height="<?php echo (int) $df_o[2]; ?>" alt="<?php echo esc_attr( $df_data['title'] ); ?>" loading="eager" fetchpriority="high" decoding="async" style="object-position:<?php echo esc_attr( df_cat_hero_pos( $df_data['pos'] ) ); ?>">
 		</picture>
 	<?php endif; ?>
 	<div class="df-container df-cathero__inner">
 		<div class="df-cathero__text">
 			<div class="screen-reader-text"><?php woocommerce_breadcrumb(); ?></div>
 			<?php if ( apply_filters( 'woocommerce_show_page_title', true ) ) : ?>
-				<h1 class="df-cathero__title"><?php echo esc_html( $df_data['title'] ); ?></h1>
+				<?php $df_tl = mb_strlen( $df_data['title'] ); ?>
+				<h1 class="df-cathero__title df-cathero__title--<?php echo esc_attr( $df_tl <= 10 ? 's' : ( $df_tl <= 16 ? 'm' : ( $df_tl <= 24 ? 'l' : 'xl' ) ) ); ?>"><?php echo esc_html( $df_data['title'] ); ?></h1>
 			<?php endif; ?>
 			<?php $df_sub = trim( (string) df_opt( 'cat_hero_sub', '' ) ); ?>
 			<?php if ( $df_sub ) : ?>

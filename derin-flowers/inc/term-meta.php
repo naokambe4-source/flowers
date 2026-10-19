@@ -89,8 +89,8 @@ function df_cat_edit_fields( $term ) {
 			<?php $pos = get_term_meta( $term->term_id, 'df_banner_pos', true ); ?>
 			<input type="hidden" name="df_banner_text" value="below">
 			<select name="df_banner_pos" id="df_banner_pos">
-				<?php foreach ( array( 'center' => 'Odak: orta', 'top' => 'Odak: üst', 'bottom' => 'Odak: alt', 'left' => 'Odak: sol', 'right' => 'Odak: sağ' ) as $k => $l ) : ?>
-					<option value="<?php echo esc_attr( $k ); ?>" <?php selected( $pos ? $pos : 'center', $k ); ?>><?php echo esc_html( $l ); ?></option>
+				<?php foreach ( array( 'right' => 'Odak: sağ (önerilen)', 'top' => 'Odak: sağ üst', 'bottom' => 'Odak: sağ alt', 'mid' => 'Odak: orta', 'left' => 'Odak: sol' ) as $k => $l ) : ?>
+					<option value="<?php echo esc_attr( $k ); ?>" <?php selected( in_array( $pos, array( 'top', 'bottom', 'mid', 'left' ), true ) ? $pos : 'right', $k ); ?>><?php echo esc_html( $l ); ?></option>
 				<?php endforeach; ?>
 			</select>
 			<p class="description">Görsel başlığın <strong>sağ tarafında</strong> durur ve sol kenarı degradeye yumuşakça karışır. Sadece buket/ürün fotoğrafı yükleyin, <strong>üzerinde yazı olmasın</strong> (başlığı tema yazar). Önerilen ölçü: <strong>1600 × 1000 px</strong>, JPG. Kapak yüklemezseniz kategori görseli, o da yoksa kategorideki ilk ürünün görseli kullanılır.</p>
@@ -196,7 +196,7 @@ function df_cat_save_fields( $term_id ) {
 	}
 	if ( isset( $_POST['df_banner_pos'] ) ) {
 		$pos = sanitize_key( wp_unslash( $_POST['df_banner_pos'] ) );
-		update_term_meta( $term_id, 'df_banner_pos', in_array( $pos, array( 'center', 'top', 'bottom', 'left', 'right' ), true ) ? $pos : 'center' );
+		update_term_meta( $term_id, 'df_banner_pos', in_array( $pos, array( 'right', 'top', 'bottom', 'mid', 'left' ), true ) ? $pos : 'right' );
 	}
 	foreach ( array( 'df_promo_text', 'df_promo_btn' ) as $k ) {
 		if ( isset( $_POST[ $k ] ) ) {
