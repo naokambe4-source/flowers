@@ -708,7 +708,7 @@ function df_section_design_css( $o ) {
 function df_logo( $context = 'header' ) {
 	$img_id = absint( 'footer' === $context && df_opt( 'footer_logo' ) ? df_opt( 'footer_logo' ) : df_opt( 'logo_image' ) );
 	$tag    = 'div'; // Ana sayfada H1 hero başlığıdır, logo div olarak kalır.
-	echo '<' . $tag . ' class="df-logo df-logo--' . esc_attr( $context ) . '">';
+	echo '<' . $tag . ' class="df-logo df-logo--' . esc_attr( $context ) . ' notranslate" translate="no">';
 	echo '<a href="' . esc_url( home_url( '/' ) ) . '" rel="home" aria-label="' . esc_attr( get_bloginfo( 'name' ) ) . '">';
 	if ( $img_id ) {
 		echo wp_get_attachment_image(
@@ -876,3 +876,16 @@ function df_migrate_1100() {
 	update_option( 'df_mig_1100', 1, false );
 }
 add_action( 'init', 'df_migrate_1100', 1 );
+
+/**
+ * Rank Math gerçekten çalışıyor mu? (Kurulum sihirbazı bitmeden Rank Math hiçbir SEO etiketi
+ * üretmez; o sürede temanın kendi SEO'su devrede kalır.)
+ *
+ * @return bool
+ */
+function df_rank_math_live() {
+	if ( ! defined( 'RANK_MATH_VERSION' ) ) {
+		return false;
+	}
+	return ! ( class_exists( '\RankMath\Helper' ) && method_exists( '\RankMath\Helper', 'is_invalid_registration' ) && \RankMath\Helper::is_invalid_registration() );
+}

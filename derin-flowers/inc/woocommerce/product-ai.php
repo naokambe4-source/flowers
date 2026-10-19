@@ -1257,7 +1257,7 @@ add_action( 'woocommerce_new_product', 'df_auto_tags_new', 30 );
  * @return bool
  */
 function df_seo_plugin() {
-	return defined( 'WPSEO_VERSION' ) || defined( 'RANK_MATH_VERSION' ) || defined( 'AIOSEO_VERSION' ) || defined( 'SEOPRESS_VERSION' );
+	return defined( 'WPSEO_VERSION' ) || df_rank_math_live() || defined( 'AIOSEO_VERSION' ) || defined( 'SEOPRESS_VERSION' );
 }
 
 /**

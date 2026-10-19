@@ -113,7 +113,7 @@ function df_pc_request_check() {
 function df_pc_file() {
 	$host = isset( $_SERVER['HTTP_HOST'] ) ? strtolower( sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ) ) ) : '';
 	$path = strtolower( (string) wp_parse_url( isset( $_SERVER['REQUEST_URI'] ) ? (string) wp_unslash( $_SERVER['REQUEST_URI'] ) : '/', PHP_URL_PATH ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
-	return df_pc_dir() . '/' . md5( ( is_ssl() ? 'https' : 'http' ) . '://' . $host . $path ) . '.html';
+	return df_pc_dir() . '/' . md5( ( defined( 'DF_VERSION' ) ? DF_VERSION : '' ) . ( is_ssl() ? 'https' : 'http' ) . '://' . $host . $path ) . '.html';
 }
 
 /**

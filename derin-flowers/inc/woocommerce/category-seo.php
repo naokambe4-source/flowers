@@ -133,7 +133,7 @@ function df_cat_seo_meta( $t ) {
  */
 function df_cat_seo_title( $title ) {
 	$t = df_cat_seo_term();
-	if ( ! $t || ( defined( 'RANK_MATH_VERSION' ) && 'pre_get_document_title' === current_filter() ) ) {
+	if ( ! $t || ( df_rank_math_live() && 'pre_get_document_title' === current_filter() ) ) {
 		return $title;
 	}
 	$own = trim( (string) get_term_meta( $t->term_id, 'df_seo_title', true ) );

@@ -349,7 +349,7 @@ function df_loc_head() {
 		return;
 	}
 	$m = df_loc_meta();
-	if ( ! defined( 'WPSEO_VERSION' ) && ! defined( 'RANK_MATH_VERSION' ) ) {
+	if ( ! defined( 'WPSEO_VERSION' ) && ! df_rank_math_live() ) {
 		echo '<meta name="description" content="' . esc_attr( $m['desc'] ) . '">' . "\n";
 		echo '<link rel="canonical" href="' . esc_url( $m['url'] ) . '">' . "\n";
 		echo '<meta property="og:type" content="website"><meta property="og:title" content="' . esc_attr( $m['title'] ) . '"><meta property="og:description" content="' . esc_attr( $m['desc'] ) . '"><meta property="og:url" content="' . esc_url( $m['url'] ) . '">' . "\n";
