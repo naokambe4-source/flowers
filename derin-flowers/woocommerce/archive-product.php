@@ -17,7 +17,15 @@ $df_sty  = $df_bg ? '--df-shophead:url(' . esc_url( $df_bg ) . ');' . ( $df_bgm 
 
 do_action( 'woocommerce_before_main_content' );
 ?>
-<header class="df-shophead<?php echo $df_bg ? ' has-image' : ''; ?><?php echo $df_bgm ? ' has-mobile' : ''; ?>"<?php echo $df_sty ? ' style="' . $df_sty . '"' : ''; // phpcs:ignore ?>>
+<?php
+$df_band   = $df_bg && ! $df_data['overlay'];
+$df_hcls   = 'df-banner-h--' . ( in_array( $df_data['height'], array( 'short', 'medium', 'tall' ), true ) ? $df_data['height'] : 'medium' );
+$df_desc_h = $df_data['desc'] && ! is_paged() ? '<div class="df-catdesc__body">' . wp_kses_post( $df_data['desc'] ) . '</div>' : '';
+?>
+<?php if ( $df_band ) : ?>
+	<div class="df-catband <?php echo esc_attr( $df_hcls ); ?><?php echo $df_bgm ? ' has-mobile' : ''; ?>" style="<?php echo $df_sty; // phpcs:ignore ?>" role="img" aria-label="<?php echo esc_attr( $df_data['title'] ); ?>"></div>
+<?php endif; ?>
+<header class="df-shophead<?php echo $df_bg && ! $df_band ? ' has-image ' . esc_attr( $df_hcls ) : ''; ?><?php echo $df_band ? ' is-under-band' : ''; ?><?php echo $df_bgm && ! $df_band ? ' has-mobile' : ''; ?>"<?php echo $df_sty && ! $df_band ? ' style="' . $df_sty . '"' : ''; // phpcs:ignore ?>>
 	<div class="df-container df-shophead__inner">
 		<?php woocommerce_breadcrumb(); ?>
 		<?php if ( apply_filters( 'woocommerce_show_page_title', true ) ) : ?>
@@ -26,8 +34,8 @@ do_action( 'woocommerce_before_main_content' );
 		<?php if ( $df_data['subtitle'] ) : ?>
 			<p class="df-shophead__sub"><?php echo esc_html( $df_data['subtitle'] ); ?></p>
 		<?php endif; ?>
-		<?php if ( $df_data['desc'] && ! is_paged() ) : ?>
-			<div class="df-shophead__desc"><?php echo wp_kses_post( wpautop( $df_data['desc'] ) ); ?></div>
+		<?php if ( $df_desc_h && $df_data['desc_top'] ) : ?>
+			<div class="df-shophead__desc df-catdesc is-top"><?php echo $df_desc_h; // phpcs:ignore ?></div>
 		<?php endif; ?>
 	</div>
 </header>
@@ -88,6 +96,29 @@ do_action( 'woocommerce_before_main_content' );
 		<?php do_action( 'woocommerce_no_products_found' ); ?>
 	<?php endif; ?>
 </div>
+<?php if ( $df_desc_h && ! $df_data['desc_top'] ) : ?>
+	<section class="df-catdesc" aria-label="<?php echo esc_attr( $df_data['title'] ); ?> hakkında">
+		<div class="df-container df-container--narrow">
+			<div class="df-catdesc__wrap" data-df-catdesc><?php echo $df_desc_h; // phpcs:ignore ?></div>
+			<button type="button" class="df-catdesc__more" data-df-catdesc-more hidden>Devamını oku</button>
+		</div>
+	</section>
+	<script>
+	( function () {
+		var w = document.querySelector( '[data-df-catdesc]' ), b = document.querySelector( '[data-df-catdesc-more]' );
+		if ( ! w || ! b ) { return; }
+		if ( w.scrollHeight > w.clientHeight + 20 ) {
+			b.hidden = false;
+			b.addEventListener( 'click', function () {
+				var open = w.classList.toggle( 'is-open' );
+				b.textContent = open ? 'Daha az göster' : 'Devamını oku';
+			} );
+		} else {
+			w.classList.add( 'is-open' );
+		}
+	}() );
+	</script>
+<?php endif; ?>
 <?php
 do_action( 'woocommerce_after_main_content' );
 get_footer( 'shop' );

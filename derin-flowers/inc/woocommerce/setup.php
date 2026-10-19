@@ -22,7 +22,13 @@ remove_action( 'woocommerce_before_main_content', 'woocommerce_breadcrumb', 20 )
  * @return int
  */
 function df_loop_per_page() {
-	return absint( df_opt( 'shop_per_page', 16 ) );
+	if ( is_product_taxonomy() ) {
+		$n = absint( get_term_meta( get_queried_object_id(), 'df_per_page', true ) );
+		if ( $n ) {
+			return min( 100, $n );
+		}
+	}
+	return absint( df_opt( 'shop_per_page', 20 ) );
 }
 add_filter( 'loop_shop_per_page', 'df_loop_per_page', 20 );
 
@@ -366,6 +372,9 @@ function df_archive_header_data() {
 		'image'    => 0,
 		'image_m'  => 0,
 		'pos'      => '',
+		'height'   => '',
+		'overlay'  => false,
+		'desc_top' => false,
 		'promo'    => array( 'text' => '', 'btn' => '', 'url' => '' ),
 		'children' => array(),
 	);
@@ -376,6 +385,10 @@ function df_archive_header_data() {
 		$data['image']    = absint( get_term_meta( $term->term_id, 'df_banner', true ) );
 		$data['image_m']  = absint( get_term_meta( $term->term_id, 'df_banner_mobile', true ) );
 		$data['pos']      = (string) get_term_meta( $term->term_id, 'df_banner_pos', true );
+		$data['height']   = (string) get_term_meta( $term->term_id, 'df_banner_h', true );
+		$data['overlay']  = 'over' === get_term_meta( $term->term_id, 'df_banner_text', true );
+		$data['desc_top'] = 'top' === get_term_meta( $term->term_id, 'df_desc_pos', true );
+		$data['desc']     = df_md_lite( (string) $term->description );
 		$data['promo']    = array(
 			'text' => (string) get_term_meta( $term->term_id, 'df_promo_text', true ),
 			'btn'  => (string) get_term_meta( $term->term_id, 'df_promo_btn', true ),
@@ -407,4 +420,66 @@ function df_archive_header_data() {
 		$data['children'] = $top;
 	}
 	return $data;
+}
+
+/**
+ * Kategori açıklamasındaki basit biçimleri HTML'e çevir: "## Başlık", "### Alt başlık",
+ * **kalın**, "- madde", boş satırla paragraf. Zaten HTML ise dokunmaz.
+ *
+ * @param string $text Metin.
+ * @return string
+ */
+function df_md_lite( $text ) {
+	$text = trim( str_replace( "\r", '', (string) $text ) );
+	if ( '' === $text ) {
+		return '';
+	}
+	if ( preg_match( '/<(p|h[1-6]|ul|ol|div|br)\b/i', $text ) && ! preg_match( '/^#{2,4}\s/m', $text ) ) {
+		return wp_kses_post( $text );
+	}
+	$html  = '';
+	$list  = array();
+	$para  = array();
+	$flush = function () use ( &$html, &$list, &$para ) {
+		if ( $para ) {
+			$html .= '<p>' . implode( '<br>', $para ) . "</p>\n";
+			$para  = array();
+		}
+		if ( $list ) {
+			$html .= "<ul>\n<li>" . implode( "</li>\n<li>", $list ) . "</li>\n</ul>\n";
+			$list  = array();
+		}
+	};
+	$inline = function ( $s ) {
+		$s = esc_html( $s );
+		$s = preg_replace( '/\*\*(.+?)\*\*/u', '<strong>$1</strong>', $s );
+		return preg_replace( '/(?<![\w*])\*(?!\s)(.+?)(?<!\s)\*(?![\w*])/u', '<em>$1</em>', $s );
+	};
+	foreach ( explode( "\n", $text ) as $line ) {
+		$line = trim( $line );
+		if ( '' === $line ) {
+			$flush();
+			continue;
+		}
+		if ( preg_match( '/^(#{2,4})\s*(.+?)\s*#*\s*$/u', $line, $m ) ) {
+			$flush();
+			$tag   = 2 === strlen( $m[1] ) ? 'h2' : 'h3';
+			$html .= '<' . $tag . '>' . $inline( rtrim( $m[2], ' .' ) ) . '</' . $tag . ">\n";
+			continue;
+		}
+		if ( preg_match( '/^[-*•]\s+(.+)$/u', $line, $m ) ) {
+			if ( $para ) {
+				$html .= '<p>' . implode( '<br>', $para ) . "</p>\n";
+				$para  = array();
+			}
+			$list[] = $inline( $m[1] );
+			continue;
+		}
+		if ( $list ) {
+			$flush();
+		}
+		$para[] = $inline( $line );
+	}
+	$flush();
+	return wp_kses_post( $html );
 }

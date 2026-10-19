@@ -728,7 +728,7 @@ function df_options_schema() {
 						array( 'id' => 'card_show_cat', 'type' => 'toggle', 'label' => 'Kategori etiketini göster', 'default' => 1, 'third' => true ),
 						array( 'id' => 'badge_new_days', 'type' => 'number', 'label' => '"Yeni" etiketi (gün)', 'default' => 14, 'min' => 0, 'max' => 90, 'third' => true ),
 						array( 'id' => 'shop_columns', 'type' => 'select', 'label' => 'Mağaza sütun sayısı', 'default' => '4', 'half' => true, 'options' => array( '3' => '3', '4' => '4' ) ),
-						array( 'id' => 'shop_per_page', 'type' => 'number', 'label' => 'Sayfa başına ürün', 'default' => 16, 'min' => 4, 'max' => 60, 'half' => true ),
+						array( 'id' => 'shop_per_page', 'type' => 'number', 'label' => 'Sayfa başına ürün (kategoriye özel sayı kategori ekranından verilebilir)', 'default' => 20, 'min' => 4, 'max' => 100, 'half' => true ),
 					),
 				),
 				array(

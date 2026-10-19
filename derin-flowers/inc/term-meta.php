@@ -95,6 +95,35 @@ function df_cat_edit_fields( $term ) {
 		</td>
 	</tr>
 	<tr class="form-field">
+		<th scope="row"><label for="df_banner_h">Kapak bandı yüksekliği</label></th>
+		<td>
+			<?php $bh = get_term_meta( $term->term_id, 'df_banner_h', true ); ?>
+			<select name="df_banner_h" id="df_banner_h">
+				<?php foreach ( array( 'short' => 'İnce bant (masaüstü 260px)', 'medium' => 'Orta (360px — önerilen)', 'tall' => 'Yüksek (480px)' ) as $k => $l ) : ?>
+					<option value="<?php echo esc_attr( $k ); ?>" <?php selected( $bh ? $bh : 'medium', $k ); ?>><?php echo esc_html( $l ); ?></option>
+				<?php endforeach; ?>
+			</select>
+			<?php $bt = get_term_meta( $term->term_id, 'df_banner_text', true ); ?>
+			<select name="df_banner_text">
+				<option value="below" <?php selected( $bt ? $bt : 'below', 'below' ); ?>>Başlık bandın altında (görsel tam görünür)</option>
+				<option value="over" <?php selected( $bt, 'over' ); ?>>Başlık bandın üstünde</option>
+			</select>
+			<p class="description">Geniş, yatay kapak görseli için önerilen ölçü: 2400 × 600 px.</p>
+		</td>
+	</tr>
+	<tr class="form-field">
+		<th scope="row"><label for="df_per_page">Sayfada kaç ürün</label></th>
+		<td>
+			<input type="number" min="0" max="100" name="df_per_page" id="df_per_page" value="<?php echo esc_attr( get_term_meta( $term->term_id, 'df_per_page', true ) ); ?>" style="width:100px" placeholder="20">
+			<?php $dp = get_term_meta( $term->term_id, 'df_desc_pos', true ); ?>
+			<select name="df_desc_pos" style="margin-left:8px">
+				<option value="bottom" <?php selected( $dp ? $dp : 'bottom', 'bottom' ); ?>>Kategori açıklaması ürünlerin altında</option>
+				<option value="top" <?php selected( $dp, 'top' ); ?>>Kategori açıklaması ürünlerin üstünde</option>
+			</select>
+			<p class="description">Boş bırakılırsa genel ayardaki sayı (20) kullanılır. Açıklamada "## Başlık", "**kalın**" ve "- madde" yazabilirsiniz; düzgün başlık ve liste olarak görünür.</p>
+		</td>
+	</tr>
+	<tr class="form-field">
 		<th scope="row"><label for="df_promo_text">Kampanya bandı</label></th>
 		<td>
 			<input type="text" name="df_promo_text" id="df_promo_text" value="<?php echo esc_attr( get_term_meta( $term->term_id, 'df_promo_text', true ) ); ?>" placeholder="Örn. Anneler Günü'ne özel tüm buketlerde aynı gün teslimat">
@@ -157,6 +186,15 @@ function df_cat_save_fields( $term_id ) {
 	}
 	if ( isset( $_POST['df_banner_mobile'] ) ) {
 		update_term_meta( $term_id, 'df_banner_mobile', absint( $_POST['df_banner_mobile'] ) );
+	}
+	foreach ( array( 'df_banner_h' => array( 'short', 'medium', 'tall' ), 'df_banner_text' => array( 'below', 'over' ), 'df_desc_pos' => array( 'bottom', 'top' ) ) as $k => $allowed ) {
+		if ( isset( $_POST[ $k ] ) ) {
+			$v = sanitize_key( wp_unslash( $_POST[ $k ] ) );
+			update_term_meta( $term_id, $k, in_array( $v, $allowed, true ) ? $v : $allowed[0] );
+		}
+	}
+	if ( isset( $_POST['df_per_page'] ) ) {
+		update_term_meta( $term_id, 'df_per_page', min( 100, absint( $_POST['df_per_page'] ) ) );
 	}
 	if ( isset( $_POST['df_banner_pos'] ) ) {
 		$pos = sanitize_key( wp_unslash( $_POST['df_banner_pos'] ) );
