@@ -309,3 +309,165 @@ function df_home_schema() {
 	echo '<script type="application/ld+json">' . str_replace( '%7Bsearch_term_string%7D', '{search_term_string}', wp_json_encode( array( '@context' => 'https://schema.org', '@graph' => array( $biz, $site ) ), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) ) . '</script>' . "\n";
 }
 add_action( 'wp_head', 'df_home_schema', 30 );
+
+/**
+ * Hazır SEO metni (data/category-seo.php): önce adres (slug), sonra sadeleştirilmiş ad, sonra yakın eşleşme.
+ * Listede olmayan kategoriler için ada göre değişen bir şablon üretilir.
+ *
+ * @param WP_Term $t Terim.
+ * @return array{h1:string,title:string,desc:string,kw:string,text:string}
+ */
+function df_cat_seo_preset( $t ) {
+	static $data = null;
+	if ( null === $data ) {
+		$data = (array) include DF_DIR . '/data/category-seo.php';
+	}
+	$alias = array(
+		'buket'           => 'buketler',
+		'gul'             => 'guller',
+		'gul-buketleri'   => 'guller',
+		'orkide'          => 'orkideler',
+		'kutuda-cicekler' => 'kutuda-cicek',
+		'vazoda-cicekler' => 'vazoda-cicek',
+		'ozel-gun'        => 'ozel-gunler',
+		'dogum-gunu-cicekleri' => 'dogum-gunu',
+		'sevgiliye-cicek' => 'sevgiliye',
+		'tebrik'          => 'tebrik-yeni-is',
+		'yeni-is'         => 'tebrik-yeni-is',
+		'yeni-dogan-cicekleri' => 'yeni-dogan',
+		'yildonumu'       => 'yil-donumu',
+		'soz-ve-nisan'    => 'soz-nisan',
+		'nisan'           => 'soz-nisan',
+		'koleksiyon'      => 'koleksiyonlar',
+		'hediye'          => 'hediyeler',
+		'saksi'           => 'saksi-cicekleri',
+		'acilis-cicekleri' => 'acilis',
+		'kirmizi-gul'     => 'kirmizi-guller',
+		'beyaz-gul'       => 'beyaz-guller',
+		'pembe-gul'       => 'pembe-guller',
+	);
+	foreach ( array( $t->slug, sanitize_title( $t->name ) ) as $k ) {
+		$k = isset( $alias[ $k ] ) ? $alias[ $k ] : $k;
+		if ( isset( $data[ $k ] ) ) {
+			return $data[ $k ];
+		}
+	}
+	$city = df_opt( 'df_default_city', 'İzmir' );
+	$site = get_bloginfo( 'name' );
+	$n    = $t->name;
+	$lo   = function_exists( 'df_ai_lower' ) ? df_ai_lower( $n ) : mb_strtolower( $n );
+	$v    = abs( crc32( $t->slug ) ) % 3;
+	$titles = array(
+		$n . ' | ' . $city . ' Çiçek Siparişi – ' . $site,
+		$n . ' | ' . $city . ' Aynı Gün Teslimat – ' . $site,
+		$n . ' | ' . $city . ' Online Çiçek – ' . $site,
+	);
+	$descs = array(
+		$city . '’e aynı gün ' . $lo . ' gönderin. Taze çiçekler, özenli paketleme ve ücretsiz kişiye özel not kartı ile ' . $site . '.',
+		$n . ' seçenekleri ' . $site . '’ta: ' . $city . ' içi aynı gün teslimat, teslimat gününü ve saatini siz seçin, not kartı ücretsiz.',
+		$site . ' atölyesinde elde hazırlanan ' . $lo . '. ' . $city . ' içi aynı gün teslimat ve ücretsiz not kartıyla online sipariş.',
+	);
+	return array(
+		'h1'    => $n,
+		'title' => mb_strlen( $titles[ $v ] ) > 65 ? $n . ' | ' . $city . ' – ' . $site : $titles[ $v ],
+		'desc'  => mb_substr( $descs[ $v ], 0, 158 ),
+		'kw'    => $lo . ', ' . $city . ' ' . $lo . ', ' . $lo . ' gönder',
+		'text'  => '',
+	);
+}
+
+/**
+ * Boş SEO alanlarını hazır metinlerle doldur (dolu alana dokunmaz). Rank Math alanlarına da yazar.
+ *
+ * @return int Güncellenen kategori sayısı.
+ */
+function df_cat_seo_fill() {
+	$terms = get_terms( array( 'taxonomy' => 'product_cat', 'hide_empty' => false ) );
+	if ( is_wp_error( $terms ) ) {
+		return 0;
+	}
+	$done = 0;
+	foreach ( $terms as $t ) {
+		if ( 'uncategorized' === $t->slug || (int) get_option( 'default_product_cat' ) === (int) $t->term_id ) {
+			continue;
+		}
+		$p   = df_cat_seo_preset( $t );
+		$set = array(
+			'df_h1'        => $p['h1'],
+			'df_seo_title' => $p['title'],
+			'df_seo_desc'  => $p['desc'],
+			'df_seo_kw'    => $p['kw'],
+		);
+		$mirror = array(
+			'df_seo_title' => 'rank_math_title',
+			'df_seo_desc'  => 'rank_math_description',
+		);
+		$changed = false;
+		foreach ( $set as $key => $val ) {
+			if ( '' === $val || '' !== trim( (string) get_term_meta( $t->term_id, $key, true ) ) ) {
+				continue;
+			}
+			update_term_meta( $t->term_id, $key, $val );
+			if ( isset( $mirror[ $key ] ) && '' === (string) get_term_meta( $t->term_id, $mirror[ $key ], true ) ) {
+				update_term_meta( $t->term_id, $mirror[ $key ], $val );
+			}
+			if ( 'df_seo_kw' === $key && '' === (string) get_term_meta( $t->term_id, 'rank_math_focus_keyword', true ) ) {
+				update_term_meta( $t->term_id, 'rank_math_focus_keyword', trim( (string) strtok( $val, ',' ) ) );
+			}
+			$changed = true;
+		}
+		if ( '' !== $p['text'] && '' === trim( (string) $t->description ) ) {
+			wp_update_term( $t->term_id, 'product_cat', array( 'description' => $p['text'] ) );
+			$changed = true;
+		}
+		$done += $changed ? 1 : 0;
+	}
+	return $done;
+}
+
+/**
+ * Tema güncellenince bir kez otomatik doldur.
+ */
+function df_cat_seo_autofill() {
+	if ( get_option( 'df_cat_seo_seeded' ) || ! current_user_can( 'manage_options' ) || ! taxonomy_exists( 'product_cat' ) ) {
+		return;
+	}
+	update_option( 'df_cat_seo_seeded', DF_VERSION, false );
+	df_cat_seo_fill();
+}
+add_action( 'admin_init', 'df_cat_seo_autofill' );
+
+/**
+ * Kategoriler listesinde "SEO alanlarını doldur" düğmesi.
+ */
+function df_cat_seo_fill_button() {
+	$url = wp_nonce_url( admin_url( 'admin-post.php?action=df_cat_seo_fill' ), 'df_cat_seo_fill' );
+	echo '<div class="notice notice-info inline" style="margin:12px 0;padding:10px 12px"><p style="margin:0"><strong>Kategori SEO’ları:</strong> Boş kalan H1, sayfa başlığı, Google açıklaması, anahtar kelimeler ve alt açıklama her kategori için hazır, özgün metinlerle doldurulur. Sizin yazdıklarınıza dokunulmaz. <a class="button button-primary" style="margin-left:8px" href="' . esc_url( $url ) . '">Boş SEO alanlarını doldur</a></p></div>';
+}
+add_action( 'product_cat_pre_add_form', 'df_cat_seo_fill_button' );
+
+/**
+ * Düğme işleyici.
+ */
+function df_cat_seo_fill_action() {
+	if ( ! current_user_can( 'manage_product_terms' ) && ! current_user_can( 'manage_options' ) ) {
+		wp_die( 'Yetkiniz yok.' );
+	}
+	check_admin_referer( 'df_cat_seo_fill' );
+	$n = df_cat_seo_fill();
+	wp_safe_redirect( add_query_arg( array( 'taxonomy' => 'product_cat', 'post_type' => 'product', 'df_seo_filled' => $n ), admin_url( 'edit-tags.php' ) ) );
+	exit;
+}
+add_action( 'admin_post_df_cat_seo_fill', 'df_cat_seo_fill_action' );
+
+/**
+ * Sonuç bildirimi.
+ */
+function df_cat_seo_fill_notice() {
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- yalnızca bilgi mesajı.
+	if ( isset( $_GET['df_seo_filled'] ) ) {
+		$n = absint( $_GET['df_seo_filled'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		echo '<div class="notice notice-success is-dismissible"><p>' . esc_html( $n ? $n . ' kategorinin boş SEO alanları dolduruldu.' : 'Doldurulacak boş alan bulunamadı — tüm kategoriler zaten dolu.' ) . '</p></div>';
+	}
+}
+add_action( 'admin_notices', 'df_cat_seo_fill_notice' );

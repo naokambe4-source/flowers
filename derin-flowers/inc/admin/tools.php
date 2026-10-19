@@ -173,6 +173,9 @@ function df_run_setup() {
 				}
 			}
 		}
+		if ( function_exists( 'df_cat_seo_fill' ) ) {
+			df_cat_seo_fill();
+		}
 		// Ana sayfa bağlantılarını gerçek kategori adreslerine bağla.
 		$link = function ( $slug ) use ( $ids ) {
 			if ( empty( $ids[ $slug ] ) ) {
