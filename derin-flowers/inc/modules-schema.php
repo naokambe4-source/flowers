@@ -171,6 +171,15 @@ function df_modules_schema( $schema ) {
 		'icon'   => 'dashicons-location-alt',
 		'groups' => array(
 			array(
+				'title'  => 'Genel SEO (ana sayfa ve paylaşım görseli)',
+				'desc'   => 'Rank Math / Yoast gibi bir SEO eklentisi kurulu değilken kullanılır. Sayfa ve yazılar için başlık ve açıklama, düzenleme ekranındaki "Google’da görünecek bilgiler" kutusundan girilir; boşsa otomatik doldurulur. Kategorilerin SEO alanları kategori düzenleme ekranındadır.',
+				'fields' => array(
+					array( 'id' => 'seo_home_title', 'type' => 'text', 'label' => 'Ana sayfa başlığı (Google)', 'default' => 'Derin Flowers | İzmir Çiçek Siparişi – Aynı Gün Teslimat', 'half' => true ),
+					array( 'id' => 'seo_home_desc', 'type' => 'textarea', 'label' => 'Ana sayfa Google açıklaması', 'default' => 'İzmir’e aynı gün çiçek gönderin. Gül buketleri, orkideler, kutuda ve vazoda çiçekler; taze çiçekler, özenli paketleme ve ücretsiz not kartı Derin Flowers’ta.', 'rows' => 2, 'half' => true ),
+					array( 'id' => 'seo_og_image', 'type' => 'image', 'label' => 'Paylaşım görseli (WhatsApp / Facebook önizlemesi, 1200 × 630 px)', 'half' => true, 'desc' => 'Görseli olmayan sayfalar paylaşıldığında bu görünür. Boşsa logo kullanılır.' ),
+				),
+			),
+			array(
 				'title'  => 'İlçe sayfaları',
 				'desc'   => 'Her ilçe için otomatik "{ilce} Çiçek Siparişi" sayfası oluşturulur (ör. /cicek-siparisi/bornova/). Sayfalar site haritasına eklenir, Google için yerel işletme bilgisi taşır. İlçeye özel metin yazdıkça Google sıralaması güçlenir.',
 				'fields' => array(

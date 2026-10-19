@@ -7,7 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'DF_VERSION', '1.14.3' );
+define( 'DF_VERSION', '1.14.4' );
 define( 'DF_DIR', get_template_directory() );
 define( 'DF_URI', get_template_directory_uri() );
 define( 'DF_OPTION', 'derin_options' );
@@ -66,3 +66,4 @@ if ( class_exists( 'WooCommerce' ) ) {
 		require DF_DIR . '/inc/admin/order-box.php';
 	}
 }
+require DF_DIR . '/inc/site-seo.php';
