@@ -928,14 +928,14 @@ body.df-modal-open { overflow: hidden; }
 .df-cathero__desc .df-catdesc__body, .df-cathero__desc .df-catdesc__body * { color: inherit; }
 @media (max-width: 760px) {
 	.df-cathero { background: linear-gradient(170deg, var(--df-ch) 0%, color-mix(in srgb, var(--df-ch) 70%, #fff) 100%); }
-	.df-cathero__media { width: 56%; -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, .7) 22%, #000 45%); mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, .7) 22%, #000 45%); }
+	.df-cathero__media { width: 58%; -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 16%); mask-image: linear-gradient(90deg, transparent 0%, #000 16%); }
 	.df-cathero__title { text-shadow: 0 1px 12px rgba(0, 0, 0, .22); }
 	.df-cathero__inner { min-height: 190px; padding-top: 28px; padding-bottom: 28px; }
-	.df-cathero__text { max-width: 54%; }
-	.df-cathero__title { font-size: calc(clamp(28px, 9.4vw, 42px) * var(--df-scale)); }
-	.df-cathero__title--m { font-size: calc(clamp(24px, 7.2vw, 34px) * var(--df-scale)); }
-	.df-cathero__title--l { font-size: calc(clamp(20px, 5.8vw, 28px) * var(--df-scale)); }
-	.df-cathero__title--xl { font-size: calc(clamp(18px, 5vw, 24px) * var(--df-scale)); }
+	.df-cathero__text { max-width: 44%; }
+	.df-cathero__title { font-size: calc(clamp(24px, 8.2vw, 38px) * var(--df-scale)); }
+	.df-cathero__title--m { font-size: calc(clamp(20px, 6.2vw, 30px) * var(--df-scale)); }
+	.df-cathero__title--l { font-size: calc(clamp(17px, 5vw, 24px) * var(--df-scale)); }
+	.df-cathero__title--xl { font-size: calc(clamp(15px, 4.4vw, 21px) * var(--df-scale)); }
 	.df-cathero__sub { margin-top: 8px; font-size: 13px; }
 }
 .df-shophead.has-image.df-banner-h--short { padding: 70px 0 40px; }
