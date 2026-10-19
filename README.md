@@ -42,6 +42,15 @@ Araçlar sayfasında ayarları **JSON dışa/içe aktarma** ve sıfırlama da va
 - **Üyelik**: sekmeli Giriş / Üye Ol, ad-soyad-telefon-KVKK alanları, Hesabım kısayol kartları.
 - **Favoriler** (üye + ziyaretçi), canlı ürün araması, mini sepet çekmecesi, ürün kategorisine ikon + kapak görseli, menü öğelerine ikon seçimi, bülten aboneleri + CSV.
 
+## v1.12–1.13 — Kategori sayfası, kategori SEO, yapısal veri, adres doğrulama, lokal SEO
+
+- **Kategori sayfası**: üstte sadece görsel kapak bandı (yükseklik seçilebilir), altında gerçek metin H1, ürünler, kategori açıklaması en altta "Devamını oku" ile; açıklamada ## başlık / **kalın** / - madde biçimi.
+- **Kategori SEO** (kategori düzenleme ekranı): H1, sayfa başlığı, meta açıklama, anahtar kelimeler; Rank Math alanlarına da yazılır.
+- **Yapısal veri (JSON-LD)**: kategori sayfasında CollectionPage + ürün listesi (ItemList), ana sayfada Florist + WebSite arama; ilçe sayfalarında Florist + SSS.
+- **Fiyat filtresi ve "Göster: 20 / 40 / 60"**, kategoriye özel ürün sayısı.
+- **Teslimat adresi doğrulama**: ücret seçilen bölgeye değil adresin bölgesine göre; adres daha pahalı bölgedeyse sipariş düşük ücretle tamamlanmaz, tek tıkla doğru bölge seçilir; doğrulanamayan adres "Beklemede" (inceleme). Harita: OpenStreetMap (ücretsiz) ya da Google Geocoding.
+- **Lokal SEO**: kısa adres biçimi /bornova-cicek-siparisi/, İzmir'in 30 ilçesi (pasif / planlı işaretli), eski adreslerden 301 yönlendirme.
+
 ## v1.11 — Ürün Asistanı, delikli fiş, WhatsApp değerlendirme, yeni teslimat seçimi
 
 - **Başlık Havuzu** (Ürünler → Başlık Havuzu): Excel'deki 232 başlık koleksiyon, çiçek, renk, duygu bilgileriyle; kullanıldı / boşta, arama ve filtre, yeni başlık ekleme, CSV yükleme, "Taslak ürün oluştur".

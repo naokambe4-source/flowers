@@ -38,10 +38,25 @@ function df_loc_items() {
 		if ( '' === $slug ) {
 			continue;
 		}
+		// Satır: İlçe | ilçeye özel metin | pasif / planlı (son iki alan isteğe bağlı).
+		$flags = array();
+		$texts = array();
+		foreach ( array_slice( $row, 1 ) as $part ) {
+			$k = df_loc_ascii( trim( $part ) );
+			if ( in_array( $k, array( 'pasif', 'kapali', 'planli' ), true ) ) {
+				$flags[] = 'planli' === $k ? 'planned' : 'off';
+			} elseif ( '' !== trim( $part ) ) {
+				$texts[] = trim( $part );
+			}
+		}
+		if ( in_array( 'off', $flags, true ) ) {
+			continue;
+		}
 		$cache[ $slug ] = array(
-			'name' => $name,
-			'text' => isset( $row[1] ) ? trim( implode( ' | ', array_slice( $row, 1 ) ) ) : '',
-			'slug' => $slug,
+			'name'    => $name,
+			'text'    => implode( ' ', $texts ),
+			'slug'    => $slug,
+			'planned' => in_array( 'planned', $flags, true ),
 		);
 	}
 	return $cache;
@@ -67,7 +82,19 @@ function df_loc_url( $slug = '' ) {
 	if ( ! get_option( 'permalink_structure' ) ) {
 		return add_query_arg( 'df_loc', $slug ? $slug : '__index', home_url( '/' ) );
 	}
+	if ( df_loc_flat() ) {
+		return home_url( user_trailingslashit( $slug ? $slug . '-' . df_loc_base() : df_loc_ascii( df_opt( 'df_default_city', 'İzmir' ) ) . '-' . df_loc_base() ) );
+	}
 	return home_url( user_trailingslashit( df_loc_base() . ( $slug ? '/' . $slug : '' ) ) );
+}
+
+/**
+ * Kısa adres biçimi (/bornova-cicek-siparisi/) mi?
+ *
+ * @return bool
+ */
+function df_loc_flat() {
+	return 'flat' === df_opt( 'loc_url_style', 'flat' );
 }
 
 /**
@@ -91,7 +118,12 @@ function df_loc_rewrite() {
 	add_rewrite_rule( '^' . $base . '/sitemap\.xml$', 'index.php?df_loc=__sitemap', 'top' );
 	add_rewrite_rule( '^' . $base . '/([^/]+)/?$', 'index.php?df_loc=$matches[1]', 'top' );
 	add_rewrite_rule( '^llms\.txt$', 'index.php?df_loc=__llms', 'top' );
-	$sig = md5( $base . '|' . DF_VERSION );
+	if ( df_loc_flat() ) {
+		$city = sanitize_title( df_loc_ascii( df_opt( 'df_default_city', 'İzmir' ) ) );
+		add_rewrite_rule( '^' . $city . '-' . $base . '/?$', 'index.php?df_loc=__index', 'top' );
+		add_rewrite_rule( '^([a-z0-9-]+)-' . $base . '/?$', 'index.php?df_loc=$matches[1]', 'top' );
+	}
+	$sig = md5( $base . '|' . DF_VERSION . '|' . df_opt( 'loc_url_style', 'flat' ) . '|' . df_opt( 'df_default_city', 'İzmir' ) );
 	if ( get_option( 'df_loc_rules' ) !== $sig ) {
 		update_option( 'df_loc_rules', $sig );
 		flush_rewrite_rules( false );
@@ -189,6 +221,15 @@ function df_loc_template_redirect() {
 	}
 	if ( '__llms' === $v ) {
 		df_loc_llms();
+	}
+	// Kısa adres biçimindeyken eski /cicek-siparisi/bornova/ adresleri kalıcı yönlenir (tek adres = SEO).
+	if ( df_loc_flat() && '' !== df_loc_current() && get_option( 'permalink_structure' ) ) {
+		$want = df_loc_url( '__index' === df_loc_current() ? '' : df_loc_current() );
+		$req  = function_exists( 'df_request_url' ) ? df_request_url() : '';
+		if ( $req && untrailingslashit( strtok( $req, '?' ) ) !== untrailingslashit( $want ) ) {
+			wp_safe_redirect( $want, 301 );
+			exit;
+		}
 	}
 	if ( '' === df_loc_current() ) {
 		global $wp_query;
@@ -400,7 +441,9 @@ function df_loc_faq( $loc ) {
 	$n     = $loc['name'];
 	$cut   = (string) df_opt( 'df_cutoff', '16:00' );
 	$zones = df_loc_zones( $loc );
-	$faq   = array(
+	$faq   = ! empty( $loc['planned'] ) ? array(
+		array( $n . "'ye çiçek gönderebilir miyim?", $n . ' adreslerine planlı teslimat yapıyoruz. Teslimat gününü ve saat aralığını sipariş sırasında seçersiniz; çiçekleriniz o gün özenle teslim edilir.' ),
+	) : array(
 		array( $n . "'ye aynı gün çiçek gönderebilir miyim?", 'Evet. Saat ' . $cut . "'a kadar verdiğiniz siparişler " . $n . ' adreslerine aynı gün teslim edilir. Teslimat tarihini ve saat aralığını sipariş sırasında siz seçersiniz.' ),
 	);
 	if ( null !== $zones['min'] ) {

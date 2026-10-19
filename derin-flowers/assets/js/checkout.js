@@ -205,6 +205,57 @@
 	renderSlots();
 
 	/* ---------------------------------------------------------------------
+	 * Adres doğrulama: adres başka (daha pahalı) bölgedeyse uyar, tek tıkla düzelt
+	 * ------------------------------------------------------------------ */
+	if ( C.addr && $( '#df_address' ).length ) {
+		var $addrBox = $( '<div class="df-addrcheck" aria-live="polite" hidden></div>' ).insertAfter( $( '#df_address_field' ) );
+		var addrTimer, addrLast = '';
+		var addrCheck = function () {
+			var a = $.trim( $( '#df_address' ).val() || '' ), d = $( '#df_district' ).val() || '', h = $.trim( $( '#df_address_hint' ).val() || '' );
+			var sig = a + '|' + d + '|' + h;
+			if ( a.length < 10 || ! d || sig === addrLast ) {
+				if ( a.length < 10 ) { $addrBox.prop( 'hidden', true ); }
+				return;
+			}
+			addrLast = sig;
+			$addrBox.prop( 'hidden', false ).attr( 'class', 'df-addrcheck is-wait' ).text( 'Adres kontrol ediliyor…' );
+			$.post( C.ai.ajax, { action: 'df_addr_check', nonce: C.addr.nonce, district: d, address: a, hint: h } ).done( function ( r ) {
+				var x = r && r.data ? r.data : {};
+				if ( 'mismatch' === x.status && x.zone ) {
+					$addrBox.attr( 'class', 'df-addrcheck is-bad' ).html( '' ).append(
+						$( '<strong></strong>' ).text( 'Adresiniz ' + x.zone.name + ' bölgesinde görünüyor.' ),
+						$( '<span></span>' ).text( ' Bu bölgenin teslimat ücreti: ' + x.zone.fee + '. Sipariş seçilen bölgeyle tamamlanamaz.' ),
+						$( '<button type="button" class="df-addrcheck__fix"></button>' ).text( 'Bölgeyi ' + x.zone.name + ' olarak değiştir' ).on( 'click', function () {
+							$( '#df_district' ).val( x.zone.key ).trigger( 'change' );
+						} )
+					);
+				} else if ( 'ok' === x.status ) {
+					if ( x.where ) {
+						$addrBox.attr( 'class', 'df-addrcheck is-ok' ).text( '✓ Adres doğrulandı: ' + x.where );
+					} else {
+						$addrBox.prop( 'hidden', true );
+					}
+				} else if ( 'unverified' === x.status ) {
+					$addrBox.attr( 'class', 'df-addrcheck is-warn' ).text( 'Adresin bölgesi otomatik bulunamadı. Mahalle, sokak ve bina numarasını kontrol edin; siparişiniz ekibimiz tarafından adres kontrolüyle onaylanır.' );
+				} else {
+					$addrBox.prop( 'hidden', true );
+				}
+			} ).fail( function () {
+				$addrBox.prop( 'hidden', true );
+			} );
+		};
+		$form.on( 'input', '#df_address, #df_address_hint', function () {
+			clearTimeout( addrTimer );
+			addrTimer = setTimeout( addrCheck, 1200 );
+		} );
+		$form.on( 'change blur', '#df_address, #df_address_hint', addrCheck );
+		$form.on( 'change', '#df_district', function () {
+			addrLast = '';
+			addrCheck();
+		} );
+	}
+
+	/* ---------------------------------------------------------------------
 	 * Teslimat türü
 	 * ------------------------------------------------------------------ */
 	function applyType() {

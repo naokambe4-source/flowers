@@ -86,6 +86,18 @@ function df_modules_schema( $schema ) {
 		),
 	);
 	$schema['delivery']['groups'][] = array(
+		'title'  => 'Teslimat adresi doğrulama (yol ücreti kontrolü)',
+		'desc'   => 'Teslimat ücreti müşterinin listeden seçtiği bölgeye göre değil, çiçeğin gideceği adresin bulunduğu bölgeye göre uygulanır. Müşteri Alsancak seçip Çiğli adresi yazarsa sipariş düşük ücretle tamamlanmaz; doğru bölge ve ücret gösterilir. Adres doğrulanamazsa sipariş incelemeye (Beklemede) düşer.',
+		'fields' => array(
+			array( 'id' => 'addr_check', 'type' => 'toggle', 'label' => 'Adres–bölge kontrolü açık', 'default' => 1, 'half' => true ),
+			array( 'id' => 'addr_geo', 'type' => 'select', 'label' => 'Harita doğrulaması', 'default' => 'osm', 'half' => true, 'options' => array( 'osm' => 'OpenStreetMap (ücretsiz)', 'google' => 'Google Haritalar (anahtar gerekir, daha isabetli)', 'off' => 'Kapalı (sadece adres metni)' ) ),
+			array( 'id' => 'addr_google_key', 'type' => 'text', 'label' => 'Google Geocoding API anahtarı', 'half' => true, 'desc' => 'Google Cloud → Geocoding API. Aylık ücretsiz kullanım kotası vardır.' ),
+			array( 'id' => 'addr_strict', 'type' => 'toggle', 'label' => 'Bölgesi bulunamayan adresleri "doğrulanamadı" say', 'default' => 1, 'half' => true ),
+			array( 'id' => 'addr_hold', 'type' => 'toggle', 'label' => 'Doğrulanamayan adresli siparişler ödeme sonrası "Beklemede" (inceleme) olsun', 'default' => 1, 'half' => true ),
+		),
+	);
+
+	$schema['delivery']['groups'][] = array(
 		'title'  => 'Kurye ekranı & teslim fotoğrafı',
 		'desc'   => 'Her kuryenin kendine özel, şifresiz bir telefon ekranı vardır (Yönetim Paneli → Kurye Yönetimi → "Kurye ekranı" bağlantısı). Kurye siparişlerini görür, "Yola çıktım" ve "Teslim ettim" der, teslim fotoğrafı çeker.',
 		'fields' => array(
@@ -153,8 +165,10 @@ function df_modules_schema( $schema ) {
 				'desc'   => 'Her ilçe için otomatik "{ilce} Çiçek Siparişi" sayfası oluşturulur (ör. /cicek-siparisi/bornova/). Sayfalar site haritasına eklenir, Google için yerel işletme bilgisi taşır. İlçeye özel metin yazdıkça Google sıralaması güçlenir.',
 				'fields' => array(
 					array( 'id' => 'loc_on', 'type' => 'toggle', 'label' => 'İlçe sayfaları açık', 'default' => 1, 'half' => true ),
-					array( 'id' => 'loc_base', 'type' => 'text', 'label' => 'Adres öneki', 'default' => 'cicek-siparisi', 'half' => true ),
-					array( 'id' => 'loc_items', 'type' => 'lines', 'label' => 'İlçeler (İlçe | ilçeye özel metin — opsiyonel)', 'default' => "Konak\nKarşıyaka\nBornova\nBayraklı\nBuca\nKarabağlar\nBalçova\nNarlıdere\nGaziemir\nÇiğli\nGüzelbahçe\nUrla\nÇeşme\nSeferihisar", 'rows' => 10 ),
+					array( 'id' => 'loc_base', 'type' => 'text', 'label' => 'Adres kelimesi', 'default' => 'cicek-siparisi', 'half' => true ),
+					array( 'id' => 'loc_url_style', 'type' => 'select', 'label' => 'Adres biçimi', 'default' => 'flat', 'half' => true, 'options' => array( 'flat' => 'Kısa: /bornova-cicek-siparisi/ (önerilen)', 'nested' => 'Klasör: /cicek-siparisi/bornova/' ) ),
+					array( 'id' => 'loc_items', 'type' => 'lines', 'label' => 'İlçeler (İlçe | ilçeye özel metin | pasif veya planlı)', 'default' => "Konak\nKarşıyaka\nBornova\nBayraklı\nBuca\nKarabağlar\nBalçova\nNarlıdere\nGaziemir\nÇiğli\nGüzelbahçe\nUrla\nÇeşme | planlı\nSeferihisar | planlı\nMenemen | pasif\nTorbalı | pasif\nMenderes | pasif\nKemalpaşa | pasif\nAliağa | pasif\nFoça | pasif\nSelçuk | pasif\nTire | pasif\nÖdemiş | pasif\nBergama | pasif\nDikili | pasif\nKaraburun | pasif\nBayındır | pasif\nKiraz | pasif\nBeydağ | pasif\nKınık | pasif", 'rows' => 12, 'desc' => 'İzmir\'in 30 ilçesi hazır. Teslimat yapmadığınız ilçeye "pasif" yazın (sayfası açılmaz). Uzak ilçeye "planlı" yazarsanız sayfada "Planlı teslimat" görünür. Her ilçeye kendi metnini yazmak (kopya metin olmaması) Google sıralaması için en önemli adımdır.' ),
+
 					array( 'id' => 'loc_title', 'type' => 'text', 'label' => 'Sayfa başlığı', 'default' => '{ilce} Çiçek Siparişi', 'half' => true ),
 					array( 'id' => 'loc_meta', 'type' => 'text', 'label' => 'Google açıklaması (meta description)', 'default' => '{ilce} çiçek siparişi: aynı gün teslimat, taze buketler, güller ve aranjmanlar. {ilce} adreslerine özenle hazırlanan çiçekler.', 'half' => true ),
 					array( 'id' => 'loc_intro', 'type' => 'textarea', 'label' => 'Genel metin (ilçeye özel metin yoksa)', 'default' => "{ilce}'deki sevdiklerinize çiçek göndermek hiç bu kadar kolay olmamıştı. Atölyemizde günlük taze çiçeklerle hazırlanan buketler, güller ve aranjmanlar, seçtiğiniz gün ve saat aralığında {ilce} adresine özenle teslim edilir.\nSaat {cutoff}'a kadar verilen siparişler aynı gün yola çıkar. Siparişinize ücretsiz, kişiye özel not kartı ekleyebilirsiniz.", 'rows' => 4 ),

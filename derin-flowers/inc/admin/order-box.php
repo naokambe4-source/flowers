@@ -138,6 +138,7 @@ function df_obox_render( $post_or_order ) {
 				<?php if ( $pickup ) : ?>
 					<div class="dfo-card__addr"><?php echo esc_html( $order->get_meta( '_df_store' ) ); ?></div>
 				<?php else : ?>
+					<?php echo function_exists( 'df_addr_admin_badge' ) ? df_addr_admin_badge( $order ) : ''; // phpcs:ignore ?>
 					<div class="dfo-card__addr"><?php echo esc_html( $address ); ?></div>
 					<?php if ( $region ) : ?>
 						<div class="dfo-card__sub"><?php echo esc_html( $region ); ?></div>

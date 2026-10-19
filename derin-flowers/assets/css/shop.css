@@ -940,3 +940,20 @@ body.df-modal-open { overflow: hidden; }
 	.df-catband, .df-catband.df-banner-h--short, .df-catband.df-banner-h--tall { height: 46vw; min-height: 170px; }
 	.df-catband.has-mobile { height: 90vw; background-image: var(--df-shophead-m); }
 }
+
+/* Adres doğrulama */
+.df-addrcheck { margin: -4px 0 14px; padding: 10px 14px; border-radius: 8px; font-size: 13.5px; line-height: 1.5; }
+.df-addrcheck.is-wait { background: var(--df-ivory); color: var(--df-muted); }
+.df-addrcheck.is-ok { background: #e9f2ea; color: #2f5236; }
+.df-addrcheck.is-warn { background: #fff4e5; color: #7a5200; }
+.df-addrcheck.is-bad { background: #fdecea; color: #8a1f11; border: 1px solid #f3b8b0; }
+.df-addrcheck__fix { display: block; margin-top: 8px; padding: 8px 14px; border: 0; border-radius: 6px; background: #8a1f11; color: #fff; font-size: 13px; font-weight: 600; cursor: pointer; }
+
+/* Fiyat filtresi ve ürün sayısı */
+.df-filters { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 24px; margin: -6px 0 22px; }
+.df-filters__price, .df-filters__per { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.df-filters__label { margin-right: 4px; color: var(--df-muted); font-size: 13px; }
+.df-fchip { display: inline-flex; align-items: center; min-height: 34px; padding: 0 14px; border: 1px solid var(--df-line); border-radius: 40px; background: #fff; color: var(--df-text); font-size: 13px; text-decoration: none; white-space: nowrap; transition: border-color .2s, background .2s; }
+.df-fchip:hover { border-color: var(--df-text); }
+.df-fchip.is-on { background: var(--df-text); border-color: var(--df-text); color: #fff; }
+@media (max-width: 700px) { .df-filters__price { flex-wrap: nowrap; overflow-x: auto; width: 100%; padding-bottom: 4px; } }

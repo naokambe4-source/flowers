@@ -57,7 +57,7 @@ get_header();
 		?>
 		<section class="df-loc__facts">
 			<div class="df-container df-loc__facts-grid">
-				<div class="df-loc__fact"><?php df_the_icon( 'clock', array( 'size' => 24 ) ); ?><strong>Aynı gün teslimat</strong><span>Saat <?php echo esc_html( df_opt( 'df_cutoff', '16:00' ) ); ?>'a kadar verilen siparişler</span></div>
+				<div class="df-loc__fact"><?php df_the_icon( 'clock', array( 'size' => 24 ) ); ?><?php if ( ! empty( $df_loc['planned'] ) ) : ?><strong>Planlı teslimat</strong><span>Teslimat gününü sipariş sırasında seçersiniz</span><?php else : ?><strong>Aynı gün teslimat</strong><span>Saat <?php echo esc_html( df_opt( 'df_cutoff', '16:00' ) ); ?>'a kadar verilen siparişler</span><?php endif; ?></div>
 				<?php if ( null !== $df_zones['min'] ) : ?>
 					<div class="df-loc__fact"><?php df_the_icon( 'truck', array( 'size' => 24 ) ); ?><strong><?php echo esc_html( $df_zones['min'] > 0 ? html_entity_decode( wp_strip_all_tags( wc_price( $df_zones['min'] ) ), ENT_QUOTES, 'UTF-8' ) . "'den başlayan" : 'Ücretsiz' ); ?></strong><span><?php echo esc_html( $df_loc['name'] ); ?> teslimat ücreti</span></div>
 				<?php endif; ?>

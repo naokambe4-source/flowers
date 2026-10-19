@@ -389,6 +389,8 @@ function df_validate_delivery( $p, $errors ) {
 		}
 		if ( mb_strlen( $p['address'] ) < 10 ) {
 			$errors->add( 'df_address', 'Lütfen <strong>alıcı adresini</strong> eksiksiz yazın (mahalle, sokak, bina ve daire no).', array( 'id' => 'df_address' ) );
+		} elseif ( isset( $districts[ $p['district'] ] ) && function_exists( 'df_addr_validate' ) ) {
+			df_addr_validate( $p, $errors ); // Adres başka (daha pahalı) bir bölgedeyse sipariş düşük ücretle geçmez.
 		}
 	}
 
@@ -743,6 +745,7 @@ function df_checkout_assets() {
 				),
 				'noteMax'   => absint( df_opt( 'note_max', 300 ) ),
 				'districts' => $districts,
+				'addr'      => df_opt( 'addr_check', 1 ) ? array( 'nonce' => wp_create_nonce( 'df_addr' ) ) : null,
 				'currency'  => html_entity_decode( get_woocommerce_currency_symbol() ),
 				'i18n'      => array(
 					'noSlots'   => 'Bu gün için uygun saat kalmadı.',

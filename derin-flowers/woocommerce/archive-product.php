@@ -80,6 +80,7 @@ $df_desc_h = $df_data['desc'] && ! is_paged() ? '<div class="df-catdesc__body">'
 			<?php woocommerce_result_count(); ?>
 			<?php woocommerce_catalog_ordering(); ?>
 		</div>
+		<?php df_shop_filters(); ?>
 		<?php
 		woocommerce_product_loop_start();
 		if ( wc_get_loop_prop( 'total' ) ) {
@@ -93,6 +94,7 @@ $df_desc_h = $df_data['desc'] && ! is_paged() ? '<div class="df-catdesc__body">'
 		do_action( 'woocommerce_after_shop_loop' );
 		?>
 	<?php else : ?>
+		<?php df_shop_filters(); ?>
 		<?php do_action( 'woocommerce_no_products_found' ); ?>
 	<?php endif; ?>
 </div>

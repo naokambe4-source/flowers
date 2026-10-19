@@ -22,6 +22,10 @@ remove_action( 'woocommerce_before_main_content', 'woocommerce_breadcrumb', 20 )
  * @return int
  */
 function df_loop_per_page() {
+	// Ziyaretçinin seçtiği "Göster: 20 / 40 / 60".
+	if ( isset( $_GET['per_page'] ) && in_array( (int) $_GET['per_page'], df_per_page_choices(), true ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		return (int) $_GET['per_page']; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	}
 	if ( is_product_taxonomy() ) {
 		$n = absint( get_term_meta( get_queried_object_id(), 'df_per_page', true ) );
 		if ( $n ) {
@@ -389,6 +393,10 @@ function df_archive_header_data() {
 		$data['overlay']  = 'over' === get_term_meta( $term->term_id, 'df_banner_text', true );
 		$data['desc_top'] = 'top' === get_term_meta( $term->term_id, 'df_desc_pos', true );
 		$data['desc']     = df_md_lite( (string) $term->description );
+		$h1               = trim( (string) get_term_meta( $term->term_id, 'df_h1', true ) );
+		if ( '' !== $h1 ) {
+			$data['title'] = $h1;
+		}
 		$data['promo']    = array(
 			'text' => (string) get_term_meta( $term->term_id, 'df_promo_text', true ),
 			'btn'  => (string) get_term_meta( $term->term_id, 'df_promo_btn', true ),
@@ -482,4 +490,78 @@ function df_md_lite( $text ) {
 	}
 	$flush();
 	return wp_kses_post( $html );
+}
+
+/**
+ * "Göster" seçenekleri (varsayılan sayı dahil).
+ *
+ * @return int[]
+ */
+function df_per_page_choices() {
+	$base = absint( df_opt( 'shop_per_page', 20 ) );
+	if ( function_exists( 'is_product_taxonomy' ) && is_product_taxonomy() ) {
+		$cat  = absint( get_term_meta( get_queried_object_id(), 'df_per_page', true ) );
+		$base = $cat ? $cat : $base;
+	}
+	$list = array_unique( array( $base, 20, 40, 60 ) );
+	sort( $list );
+	return array_values( array_filter( $list ) );
+}
+
+/**
+ * Fiyat aralıkları ("0-1000, 1000-2000, 3000+").
+ *
+ * @return array<int, array{min:float|null,max:float|null,label:string}>
+ */
+function df_price_ranges() {
+	$out = array();
+	foreach ( array_filter( array_map( 'trim', explode( ',', (string) df_opt( 'price_ranges', '0-1000, 1000-2000, 2000-3000, 3000+' ) ) ) ) as $r ) {
+		if ( preg_match( '/^(\d+)\s*\+$/', $r, $m ) ) {
+			$out[] = array( 'min' => (float) $m[1], 'max' => null, 'label' => wp_strip_all_tags( wc_price( $m[1], array( 'decimals' => 0 ) ) ) . ' ve üzeri' );
+		} elseif ( preg_match( '/^(\d+)\s*-\s*(\d+)$/', $r, $m ) ) {
+			$out[] = array( 'min' => (float) $m[1], 'max' => (float) $m[2], 'label' => ( (float) $m[1] > 0 ? number_format( (float) $m[1], 0, ',', '.' ) . ' – ' : '' ) . wp_strip_all_tags( wc_price( $m[2], array( 'decimals' => 0 ) ) ) . ( (float) $m[1] > 0 ? '' : ' altı' ) );
+		}
+	}
+	return $out;
+}
+
+/**
+ * Mağaza / kategori araç çubuğu: fiyat filtresi ve sayfada gösterilecek ürün sayısı.
+ */
+function df_shop_filters() {
+	if ( ! df_opt( 'shop_price_filter', 1 ) ) {
+		return;
+	}
+	// phpcs:disable WordPress.Security.NonceVerification.Recommended
+	$min    = isset( $_GET['min_price'] ) ? (float) $_GET['min_price'] : null;
+	$max    = isset( $_GET['max_price'] ) ? (float) $_GET['max_price'] : null;
+	$per    = isset( $_GET['per_page'] ) ? (int) $_GET['per_page'] : 0;
+	// phpcs:enable
+	$base   = remove_query_arg( array( 'min_price', 'max_price', 'paged', 'product-page' ) );
+	$base   = preg_replace( '#/page/\d+/?#', '/', $base );
+	$ranges = df_price_ranges();
+	echo '<div class="df-filters">';
+	if ( $ranges ) {
+		echo '<div class="df-filters__price" role="group" aria-label="Fiyat aralığı"><span class="df-filters__label">Fiyat:</span>';
+		echo '<a class="df-fchip' . ( null === $min && null === $max ? ' is-on' : '' ) . '" href="' . esc_url( $base ) . '">Tümü</a>';
+		foreach ( $ranges as $r ) {
+			$on   = $min === $r['min'] && $max === $r['max'];
+			$args = array( 'min_price' => (int) $r['min'] );
+			if ( null !== $r['max'] ) {
+				$args['max_price'] = (int) $r['max'];
+			}
+			echo '<a class="df-fchip' . ( $on ? ' is-on' : '' ) . '" href="' . esc_url( add_query_arg( $args, $base ) ) . '" rel="nofollow">' . esc_html( $r['label'] ) . '</a>';
+		}
+		echo '</div>';
+	}
+	$choices = df_per_page_choices();
+	if ( count( $choices ) > 1 ) {
+		$cur = $per ? $per : (int) df_loop_per_page();
+		echo '<div class="df-filters__per"><span class="df-filters__label">Göster:</span>';
+		foreach ( $choices as $c ) {
+			echo '<a class="df-fchip' . ( $c === $cur ? ' is-on' : '' ) . '" href="' . esc_url( add_query_arg( 'per_page', $c, remove_query_arg( array( 'paged' ), preg_replace( '#/page/\d+/?#', '/', remove_query_arg( 'per_page' ) ) ) ) ) . '" rel="nofollow">' . (int) $c . '</a>';
+		}
+		echo '</div>';
+	}
+	echo '</div>';
 }
