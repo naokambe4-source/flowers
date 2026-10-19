@@ -92,6 +92,12 @@ $social = df_social_links();
 						'depth'          => 1,
 					)
 				);
+			} elseif ( function_exists( 'df_legal_links' ) && df_legal_links() ) {
+				echo '<ul class="df-footer__legal">';
+				foreach ( df_legal_links() as $df_l ) {
+					echo '<li><a href="' . esc_url( $df_l['url'] ) . '">' . esc_html( $df_l['title'] ) . '</a></li>';
+				}
+				echo '</ul>';
 			}
 			?>
 			<?php if ( df_opt( 'footer_payment' ) ) : ?>

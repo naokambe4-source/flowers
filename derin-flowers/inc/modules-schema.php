@@ -147,6 +147,18 @@ function df_modules_schema( $schema ) {
 		),
 	);
 
+	$schema['admin']['groups'][] = array(
+		'title'  => 'Firma ve yasal bilgiler (sözleşmeler, KVKK)',
+		'desc'   => 'Mesafeli Satış Sözleşmesi, Ön Bilgilendirme Formu, İade ve İptal Koşulları, KVKK Aydınlatma Metni ve Gizlilik ve Çerez Politikası sayfaları bu bilgilerle otomatik dolar; adres, telefon ve e-posta İletişim ayarlarından gelir. Sayfalar footer alt satırında ve ödeme adımındaki onay kutusunda görünür. Silinen bir sayfayı geri getirmek için: <a href="' . esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=df_legal' ), 'df_legal' ) ) . '">Yasal sayfaları oluştur</a>. <strong>Metinler genel şablondur; yayından önce avukat veya mali müşavirinize kontrol ettirin.</strong>',
+		'fields' => array(
+			array( 'id' => 'legal_company', 'type' => 'text', 'label' => 'Ticari unvan (şahıs şirketinde ad soyad)', 'default' => '', 'half' => true ),
+			array( 'id' => 'legal_tax_office', 'type' => 'text', 'label' => 'Vergi dairesi', 'default' => '', 'half' => true ),
+			array( 'id' => 'legal_tax_no', 'type' => 'text', 'label' => 'Vergi no / TC kimlik no', 'default' => '', 'half' => true ),
+			array( 'id' => 'legal_mersis', 'type' => 'text', 'label' => 'MERSİS no (varsa)', 'default' => '', 'half' => true ),
+			array( 'id' => 'legal_kep', 'type' => 'text', 'label' => 'KEP adresi (varsa)', 'default' => '', 'half' => true ),
+		),
+	);
+
 	$df_hl_now = function_exists( 'df_hl_slug' ) && df_hl_slug() ? df_hl_url() : '';
 	$schema['admin']['groups'][] = array(
 		'title'  => 'Gizli giriş adresi (güvenlik)',

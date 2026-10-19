@@ -93,7 +93,7 @@ function df_single_delivery_note() {
 	}
 	$left = df_delivery_same_day_seconds_left();
 	$note = df_vars( df_opt( 'single_delivery_note' ) );
-	echo '<div class="df-single__delivery" data-df-countdown="' . esc_attr( max( 0, $left ) ) . '">';
+	echo '<div class="df-single__delivery" data-df-countdown="' . esc_attr( max( 0, $left ) ) . '" data-df-deadline="' . esc_attr( $left > 0 ? time() + $left : 0 ) . '">';
 	df_the_icon( 'truck', array( 'size' => 22 ) );
 	echo '<div>';
 	if ( $left > 0 ) {

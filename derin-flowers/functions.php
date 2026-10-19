@@ -7,11 +7,14 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'DF_VERSION', '1.14.4' );
+define( 'DF_VERSION', '1.15.0' );
 define( 'DF_DIR', get_template_directory() );
 define( 'DF_URI', get_template_directory_uri() );
 define( 'DF_OPTION', 'derin_options' );
 define( 'DF_OPTION_DRAFT', 'derin_options_draft' );
+
+// Sayfa önbelleği en başta: önbellekte hazır kopya varsa tema ve WooCommerce hiç yüklenmeden verilir.
+require DF_DIR . '/inc/page-cache.php';
 
 require DF_DIR . '/inc/icons.php';
 require DF_DIR . '/inc/options-schema.php';
@@ -27,6 +30,7 @@ require DF_DIR . '/inc/shortcodes.php';
 require DF_DIR . '/inc/live-editor.php';
 require DF_DIR . '/inc/login.php';
 require DF_DIR . '/inc/hide-login.php';
+require DF_DIR . '/inc/legal.php';
 require DF_DIR . '/inc/performance.php';
 require DF_DIR . '/inc/maintenance.php';
 require DF_DIR . '/inc/local-seo.php';

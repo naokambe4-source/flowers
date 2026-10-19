@@ -38,7 +38,7 @@ $left   = function_exists( 'df_delivery_same_day_seconds_left' ) ? df_delivery_s
 		<figure class="df-delivery__media"<?php echo df_i( 'del_image' ); // phpcs:ignore ?>>
 			<?php echo df_image( df_opt( 'del_image' ), 'df-portrait', array( 'sizes' => '(max-width: 900px) 100vw, 50vw', 'alt' => $title ), 'Teslimat / hazırlık görseli' ); // phpcs:ignore ?>
 			<?php if ( $left > 0 ) : ?>
-				<figcaption class="df-delivery__badge" data-df-countdown="<?php echo esc_attr( $left ); ?>">
+				<figcaption class="df-delivery__badge" data-df-countdown="<?php echo esc_attr( $left ); ?>" data-df-deadline="<?php echo esc_attr( time() + $left ); ?>">
 					<?php df_the_icon( 'clock', array( 'size' => 20 ) ); ?>
 					<span>Bugün teslimat için<br><strong data-df-countdown-text><?php echo esc_html( df_format_duration( $left ) ); ?></strong> kaldı</span>
 				</figcaption>

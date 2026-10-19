@@ -340,7 +340,19 @@
 		if ( ! left || ! out ) {
 			return;
 		}
-		var end = Date.now() + left * 1000;
+		// Son sipariş anı (önbellekten gelen sayfada da doğru süre).
+		var deadline = parseInt( el.getAttribute( 'data-df-deadline' ) || '0', 10 );
+		var end = deadline ? deadline * 1000 : Date.now() + left * 1000;
+		if ( deadline && end <= Date.now() ) {
+			var cd = el.querySelector( '.df-countdown' ) || el.querySelector( 'figcaption span' ) || out;
+			el.classList.add( 'is-expired' );
+			if ( el.matches( 'figcaption' ) ) {
+				el.hidden = true;
+			} else if ( cd ) {
+				cd.textContent = 'Bugünün teslimat saati doldu — yarın için sipariş verebilirsiniz';
+			}
+			return;
+		}
 		function tick() {
 			var s = Math.max( 0, Math.round( ( end - Date.now() ) / 1000 ) );
 			var h = Math.floor( s / 3600 );

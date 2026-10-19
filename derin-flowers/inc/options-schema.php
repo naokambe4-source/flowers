@@ -1008,6 +1008,8 @@ function df_options_schema() {
 		'title'  => 'Hız (PageSpeed)',
 		'desc'   => 'Sayfaların hızlı açılması için önerilen ayarlar açık gelir. Bir eklentiyle uyumsuzluk görürseniz ilgili ayarı kapatın. En iyi sonuç için LiteSpeed Cache\'te sayfa önbelleği ve WebP görsel dönüştürmeyi de açın.',
 		'fields' => array(
+			array( 'id' => 'cache_on', 'type' => 'toggle', 'label' => 'Sayfa önbelleği (siteyi çok hızlandırır)', 'default' => 1, 'half' => true, 'desc' => 'Ziyaretçilere sayfaların hazır kopyası verilir. Sepet, ödeme ve hesap sayfaları, giriş yapmış ve sepetinde ürün olan ziyaretçiler hariçtir. Ürün, fiyat, stok, kategori, menü veya ayar değişince kendiliğinden temizlenir; üst çubuktaki "Önbelleği temizle" ile elle de temizlenir. LiteSpeed Cache gibi bir önbellek eklentisi kurulursa bu ayar kendiliğinden devre dışı kalır.' ),
+			array( 'id' => 'cache_ttl', 'type' => 'number', 'label' => 'Önbellek süresi (saat)', 'default' => 6, 'min' => 1, 'max' => 10, 'half' => true, 'desc' => 'Gece yarısı ve aynı gün son sipariş saatinde kopyalar her durumda yenilenir.' ),
 			array( 'id' => 'perf_blocks', 'type' => 'toggle', 'label' => 'Kullanılmayan blok stillerini yükleme', 'default' => 1, 'half' => true ),
 			array( 'id' => 'perf_defer', 'type' => 'toggle', 'label' => 'Betikleri sayfayı bekletmeden yükle (defer)', 'default' => 1, 'half' => true ),
 			array( 'id' => 'perf_jquery_footer', 'type' => 'toggle', 'label' => 'jQuery\'yi de bekletmeden yükle (eklentiler bozulursa kapatın)', 'default' => 0, 'half' => true ),
