@@ -877,7 +877,7 @@ function df_options_schema() {
 					'fields' => array(
 						array( 'id' => 'contact_phone1', 'type' => 'text', 'label' => 'Telefon 1', 'default' => '0850 532 50 95', 'third' => true ),
 						array( 'id' => 'contact_phone2', 'type' => 'text', 'label' => 'Telefon 2 (GSM)', 'default' => '0540 284 0 444', 'third' => true ),
-						array( 'id' => 'contact_email', 'type' => 'text', 'label' => 'E-posta', 'default' => 'info@derinflowers.com', 'third' => true ),
+						array( 'id' => 'contact_email', 'type' => 'text', 'label' => 'E-posta', 'default' => 'info@derinflowers.net', 'third' => true ),
 						array( 'id' => 'contact_address', 'type' => 'textarea', 'label' => 'Adres', 'default' => "Alsancak, Konak\n1338 Sk 5/G Çankaya\n35700 Konak / İzmir", 'rows' => 3, 'half' => true ),
 						array( 'id' => 'contact_hours', 'type' => 'textarea', 'label' => 'Çalışma saatleri', 'default' => "Pazartesi - Cumartesi\n09.00 - 19.00", 'rows' => 3, 'half' => true ),
 						array( 'id' => 'contact_whatsapp', 'type' => 'text', 'label' => 'WhatsApp numarası (905xxxxxxxxx)', 'default' => '905402840444', 'half' => true ),

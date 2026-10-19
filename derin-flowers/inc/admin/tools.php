@@ -389,6 +389,102 @@ function df_import_settings() {
 add_action( 'admin_post_df_import', 'df_import_settings' );
 
 /**
+ * Alan adı değişikliği: eski adresle kaydedilmiş bağlantıları yeni adrese çevirir
+ * (tema ayarları, kategori alanları, menü bağlantıları, sayfa/ürün içerikleri).
+ *
+ * @param string $old Eski site adresi (ör. https://www.eski.com/klasor).
+ * @param string $new Yeni site adresi.
+ * @return array<string,int> Değişen kayıt sayıları.
+ */
+function df_domain_replace( $old, $new ) {
+	global $wpdb;
+	$old  = untrailingslashit( trim( $old ) );
+	$new  = untrailingslashit( trim( $new ) );
+	$bare = preg_replace( '#^(https?:)?//(www\.)?#i', '', $old );
+	$out  = array( 'options' => 0, 'terms' => 0, 'menus' => 0, 'posts' => 0 );
+	if ( '' === $bare || false === strpos( $bare, '.' ) || $bare === preg_replace( '#^(https?:)?//(www\.)?#i', '', $new ) ) {
+		return $out;
+	}
+	$froms = array();
+	foreach ( array( 'https://www.', 'http://www.', 'https://', 'http://', '//www.', '//' ) as $pre ) {
+		$froms[] = $pre . $bare;
+	}
+	$swap = function ( $v ) use ( &$swap, $froms, $new ) {
+		if ( is_array( $v ) ) {
+			return array_map( $swap, $v );
+		}
+		return is_string( $v ) ? str_replace( $froms, $new, $v ) : $v;
+	};
+	// 1. Tema ayarları.
+	$opts = get_option( DF_OPTION, array() );
+	if ( is_array( $opts ) ) {
+		$fixed = $swap( $opts );
+		if ( $fixed !== $opts ) {
+			$fixed['__df_clean'] = 1;
+			update_option( DF_OPTION, $fixed );
+			$out['options'] = 1;
+		}
+	}
+	$like = '%' . $wpdb->esc_like( $bare ) . '%';
+	// 2. Kategori alanları (kapak bağlantıları, şerit düğmeleri…).
+	$rows = $wpdb->get_results( $wpdb->prepare( "SELECT meta_id, term_id, meta_value FROM {$wpdb->termmeta} WHERE meta_value LIKE %s", $like ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+	foreach ( $rows as $r ) {
+		$wpdb->update( $wpdb->termmeta, array( 'meta_value' => maybe_serialize( $swap( maybe_unserialize( $r->meta_value ) ) ) ), array( 'meta_id' => $r->meta_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.SlowDBQuery
+		wp_cache_delete( $r->term_id, 'term_meta' );
+		++$out['terms'];
+	}
+	// 3. Menüdeki özel bağlantılar ve yazı alanları.
+	$rows = $wpdb->get_results( $wpdb->prepare( "SELECT meta_id, post_id, meta_value FROM {$wpdb->postmeta} WHERE meta_key NOT LIKE %s AND meta_value LIKE %s", $wpdb->esc_like( '_wp_' ) . '%', $like ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+	foreach ( $rows as $r ) {
+		$wpdb->update( $wpdb->postmeta, array( 'meta_value' => maybe_serialize( $swap( maybe_unserialize( $r->meta_value ) ) ) ), array( 'meta_id' => $r->meta_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.SlowDBQuery
+		wp_cache_delete( $r->post_id, 'post_meta' );
+		++$out['menus'];
+	}
+	// 4. Sayfa, ürün ve yazı içerikleri.
+	$ids = $wpdb->get_col( $wpdb->prepare( "SELECT ID FROM {$wpdb->posts} WHERE post_type NOT IN ('revision','attachment') AND ( post_content LIKE %s OR post_excerpt LIKE %s )", $like, $like ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+	foreach ( $ids as $id ) {
+		$post = get_post( $id );
+		$wpdb->update( $wpdb->posts, array( 'post_content' => $swap( $post->post_content ), 'post_excerpt' => $swap( $post->post_excerpt ) ), array( 'ID' => $id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		clean_post_cache( $id );
+		++$out['posts'];
+	}
+	return $out;
+}
+
+/**
+ * Kayıtlı ayarlarda geçen, bu siteye ait olmayan eski adres tahmini (görsel yollarından).
+ *
+ * @return string
+ */
+function df_domain_guess() {
+	$blob = wp_json_encode( get_option( DF_OPTION, array() ), JSON_UNESCAPED_SLASHES );
+	$host = wp_parse_url( home_url(), PHP_URL_HOST );
+	if ( $blob && preg_match_all( '#(https?://[^"\s]+?)/wp-content/uploads/#', $blob, $m ) ) {
+		foreach ( array_unique( $m[1] ) as $base ) {
+			if ( wp_parse_url( $base, PHP_URL_HOST ) !== $host ) {
+				return $base;
+			}
+		}
+	}
+	return '';
+}
+
+/**
+ * Düğme işleyici.
+ */
+function df_domain_action() {
+	if ( ! current_user_can( 'manage_options' ) || ! check_admin_referer( 'df_domain' ) ) {
+		wp_die( 'Yetkiniz yok.' );
+	}
+	$old = isset( $_POST['df_old_url'] ) ? esc_url_raw( wp_unslash( $_POST['df_old_url'] ) ) : '';
+	$res = df_domain_replace( $old, home_url() );
+	set_transient( 'df_domain_log', $res, 300 );
+	wp_safe_redirect( admin_url( 'admin.php?page=derin-flowers-tools&domain=1' ) );
+	exit;
+}
+add_action( 'admin_post_df_domain', 'df_domain_action' );
+
+/**
  * Hazır düzen: görseldeki ana sayfa kurgusunu uygular (içerik ve görseller korunur).
  */
 function df_apply_preset() {
@@ -655,6 +751,10 @@ function df_tools_page() {
 		<?php if ( isset( $_GET['campaign'] ) ) : ?>
 			<div class="notice notice-success"><p><?php echo (int) $_GET['campaign']; ?> kampanya bannerı eklendi. Fotoğraflarını <a href="<?php echo esc_url( admin_url( 'admin.php?page=df-studio' ) ); ?>">Tasarım Stüdyosu</a>'nda "Renkli kategori bannerları" bölümünden ekleyin; fotoğrafı olmayan banner sitede görünmez.</p></div>
 		<?php endif; ?>
+		<?php if ( isset( $_GET['domain'] ) ) : ?>
+			<?php $df_dl = (array) get_transient( 'df_domain_log' ); ?>
+			<div class="notice notice-success"><p><strong>Adresler güncellendi.</strong> Tema ayarları: <?php echo (int) ( $df_dl['options'] ?? 0 ) ? 'güncellendi' : 'değişiklik yok'; ?> · Kategori alanı: <?php echo (int) ( $df_dl['terms'] ?? 0 ); ?> · Menü/özel alan: <?php echo (int) ( $df_dl['menus'] ?? 0 ); ?> · Sayfa/ürün içeriği: <?php echo (int) ( $df_dl['posts'] ?? 0 ); ?></p></div>
+		<?php endif; ?>
 		<?php if ( isset( $_GET['reset'] ) ) : ?>
 			<div class="notice notice-success"><p>Tüm tema ayarları varsayılana döndürüldü.</p></div>
 		<?php endif; ?>
@@ -723,6 +823,19 @@ function df_tools_page() {
 						<?php wp_nonce_field( 'df_campaign' ); ?>
 						<input type="hidden" name="action" value="df_campaign">
 						<p><button class="button button-primary">Bannerları ekle</button></p>
+					</form>
+				</div>
+			</div>
+
+			<div class="df-group">
+				<div class="df-group__head"><h3>Alan adı değişikliği (siteyi yeni adrese taşıdıysanız)</h3></div>
+				<div class="df-group__body">
+					<p class="df-group__desc">Site şu an <strong><?php echo esc_html( home_url() ); ?></strong> adresinde. Eski adresle kaydedilmiş bağlantılar (tema ayarlarındaki düğme/banner linkleri ve görseller, kategori alanları, menüdeki özel bağlantılar, sayfa ve ürün açıklamalarındaki linkler) bu adrese çevrilir. Önce yedek almanız önerilir.</p>
+					<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" onsubmit="return confirm('Eski adres geçen tüm bağlantılar yeni adrese çevrilecek. Devam edilsin mi?');">
+						<?php wp_nonce_field( 'df_domain' ); ?>
+						<input type="hidden" name="action" value="df_domain">
+						<p><label>Eski site adresi<br><input type="url" name="df_old_url" class="regular-text" required value="<?php echo esc_attr( df_domain_guess() ); ?>" placeholder="https://www.eskiadres.com/klasor"></label></p>
+						<p><button class="button button-primary">Bağlantıları yeni adrese çevir</button></p>
 					</form>
 				</div>
 			</div>
