@@ -999,3 +999,21 @@ body.df-modal-open { overflow: hidden; }
 	.df-filters .df-fchip { justify-content: center; min-height: 44px; padding: 0 10px; font-size: 14px; white-space: normal; text-align: center; }
 	html.df-noscroll, html.df-noscroll body { overflow: hidden; }
 }
+
+/* Özel gül adedi (eklentiyle uyum) */
+.df-rosec { margin: 0 0 18px; border: 1px solid var(--df-line); border-radius: 10px; background: #fff; transition: border-color .2s, box-shadow .2s; }
+.df-rosec.is-on { border-color: var(--df-accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--df-accent) 12%, transparent); }
+.df-rosec__toggle { display: flex; align-items: center; gap: 10px; margin: 0; padding: 14px 16px; cursor: pointer; font-size: 15px; font-weight: 500; color: var(--df-text); }
+.df-rosec__toggle input { width: 18px; height: 18px; margin: 0; accent-color: var(--df-accent); }
+.df-rosec__toggle span { display: inline-flex; align-items: center; gap: 8px; }
+.df-rosec__toggle .df-icon { color: var(--df-accent); }
+.df-rosec__body { padding: 0 16px 16px; }
+.df-rosec__label { display: block; margin-bottom: 8px; font-size: 13px; color: var(--df-muted); }
+.df-rosec__row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.df-rosec__row input { width: 96px; min-height: 46px; text-align: center; font-size: 17px; font-weight: 600; -moz-appearance: textfield; }
+.df-rosec__row input::-webkit-outer-spin-button, .df-rosec__row input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.df-rosec__step { width: 46px; height: 46px; border: 1px solid var(--df-line); border-radius: 8px; background: var(--df-ivory); color: var(--df-text); font-size: 22px; line-height: 1; cursor: pointer; }
+.df-rosec__step:hover { border-color: var(--df-text); }
+.df-rosec__price { margin-left: auto; font-size: 18px; font-weight: 600; color: var(--df-text); }
+.df-rosec__hint { margin: 10px 0 0; font-size: 12.5px; line-height: 1.5; color: var(--df-muted); }
+form.df-rose-active .woocommerce-variation-price { display: none; }
