@@ -147,6 +147,15 @@ function df_modules_schema( $schema ) {
 		),
 	);
 
+	$df_hl_now = function_exists( 'df_hl_slug' ) && df_hl_slug() ? df_hl_url() : '';
+	$schema['admin']['groups'][] = array(
+		'title'  => 'Gizli giriş adresi (güvenlik)',
+		'desc'   => 'Yönetim girişini yalnızca sizin bildiğiniz bir adresten açar. Açıkken wp-login.php ve giriş yapılmamışken /wp-admin "sayfa bulunamadı"ya gider; botlar giriş ekranını bulamaz. Müşterilerin Hesabım sayfasından girişi etkilenmez.' . ( $df_hl_now ? ' <strong>Şu anki giriş adresiniz: ' . esc_html( $df_hl_now ) . '</strong> — bu adresi tarayıcınıza yer imi olarak kaydedin.' : '' ) . ' Adresi unutursanız: hosting dosya yöneticisinden wp-config.php dosyasına <code>define( \'DF_DISABLE_HIDE_LOGIN\', true );</code> satırını ekleyin, giriş eski haline döner.',
+		'fields' => array(
+			array( 'id' => 'login_slug', 'type' => 'text', 'label' => 'Gizli giriş adresi', 'default' => '', 'half' => true, 'desc' => 'Örnek: derin-panel-2026 → ' . esc_html( home_url( '/derin-panel-2026/' ) ) . ' . Boş bırakılırsa kapalıdır. Sadece harf, rakam ve tire; "admin", "login", "giris" kabul edilmez.' ),
+		),
+	);
+
 	$schema['admin']['groups'][] = array(
 		'title'  => 'Bakım modu',
 		'desc'   => 'Açıkken ziyaretçiler bakım sayfası görür (arama motorlarına "geçici" 503 bildirilir). Yöneticiler siteyi normal görür. Sadece sipariş alımını durdurmak için Teslimat → Çalışma modu → "Sipariş alımı kapalı" kullanın.',
