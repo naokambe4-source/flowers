@@ -289,6 +289,9 @@ function df_single_faq() {
 	if ( df_opt( 'faq_on_product' ) ) {
 		$items = array_merge( $items, (array) df_opt( 'faq_items', array() ) );
 	}
+	if ( ! $items && df_opt( 'aeo_faq', 1 ) && function_exists( 'df_aeo_faq' ) ) {
+		$items = df_aeo_faq( $product->get_name(), 'product' );
+	}
 	if ( ! $items ) {
 		return;
 	}

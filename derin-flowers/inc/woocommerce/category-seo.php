@@ -292,7 +292,7 @@ function df_home_schema() {
 	if ( $same ) {
 		$biz['sameAs'] = $same;
 	}
-	$biz['areaServed'] = array( '@type' => 'City', 'name' => df_opt( 'df_default_city', 'İzmir' ) );
+	$biz['areaServed'] = function_exists( 'df_aeo_area_served' ) ? df_aeo_area_served() : array( '@type' => 'City', 'name' => df_opt( 'df_default_city', 'İzmir' ) );
 	$site              = array(
 		'@type'           => 'WebSite',
 		'@id'             => $home . '#website',

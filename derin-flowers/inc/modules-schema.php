@@ -188,6 +188,7 @@ function df_modules_schema( $schema ) {
 				'fields' => array(
 					array( 'id' => 'seo_home_title', 'type' => 'text', 'label' => 'Ana sayfa başlığı (Google)', 'default' => 'Derin Flowers | İzmir Çiçek Siparişi – Aynı Gün Teslimat', 'half' => true ),
 					array( 'id' => 'seo_home_desc', 'type' => 'textarea', 'label' => 'Ana sayfa Google açıklaması', 'default' => 'İzmir’e aynı gün çiçek gönderin. Gül buketleri, orkideler, kutuda ve vazoda çiçekler; taze çiçekler, özenli paketleme ve ücretsiz not kartı Derin Flowers’ta.', 'rows' => 2, 'half' => true ),
+					array( 'id' => 'aeo_faq', 'type' => 'toggle', 'label' => 'Kategori ve ürünlerde otomatik "Sıkça sorulan sorular" (Google ve yapay zekâ cevapları için)', 'default' => 1, 'half' => true, 'desc' => 'Cevaplar ayarlarınızdaki gerçek bilgilerden (son sipariş saati, ilçeler, teslimat ücretleri, ödeme yöntemleri) üretilir. Ürüne kendi SSS’nizi girerseniz o kullanılır.' ),
 					array( 'id' => 'seo_og_image', 'type' => 'image', 'label' => 'Paylaşım görseli (WhatsApp / Facebook önizlemesi, 1200 × 630 px)', 'half' => true, 'desc' => 'Görseli olmayan sayfalar paylaşıldığında bu görünür. Boşsa logo kullanılır.' ),
 				),
 			),

@@ -35,6 +35,9 @@ function df_rm_apply() {
 	$t     = (array) get_option( 'rank-math-options-titles', array() );
 	$logo  = df_img_url( df_opt( 'logo_image' ), 'full' );
 	$phone = preg_replace( '/[^\d+]/', '', (string) df_opt( 'contact_phone1', '' ) );
+	if ( preg_match( '/^0(\d{10})$/', $phone, $m ) ) {
+		$phone = '+90' . $m[1];
+	}
 	$lines = array_values( array_filter( array_map( 'trim', explode( "\n", (string) df_opt( 'contact_address', '' ) ) ) ) );
 	$set   = array(
 		'title_separator'         => '–',
@@ -44,6 +47,14 @@ function df_rm_apply() {
 		'pt_product_description'  => '%excerpt%',
 		'tax_product_cat_title'   => '%term% | ' . $city . ' Çiçek Siparişi %sep% %sitename%',
 		'pt_page_title'           => '%title% %sep% %sitename%',
+		'pt_post_title'           => '%title% %sep% ' . $site . ' Blog',
+		'pt_post_description'     => '%excerpt%',
+		'pt_post_default_rich_snippet'   => 'article',
+		'pt_post_default_article_type'   => 'BlogPosting',
+		'pt_product_default_rich_snippet' => 'product',
+		'pt_page_default_rich_snippet'    => 'off',
+		'tax_category_title'      => '%term% %sep% Çiçek Rehberi %sep% %sitename%',
+		'tax_category_description' => '%term_description%',
 		'disable_author_archives' => 'on',
 		'knowledgegraph_type'     => 'company',
 		'knowledgegraph_name'     => $site,
@@ -79,6 +90,12 @@ function df_rm_apply() {
 		++$stats['settings'];
 	}
 	update_option( 'rank-math-options-titles', $t );
+	// Yerel SEO modülü (işletme "Çiçekçi" olarak görünsün).
+	$mods = (array) get_option( 'rank_math_modules', array() );
+	if ( ! in_array( 'local-seo', $mods, true ) ) {
+		$mods[] = 'local-seo';
+		update_option( 'rank_math_modules', array_values( $mods ) );
+	}
 
 	// 2. Site haritası.
 	$s       = (array) get_option( 'rank-math-options-sitemap', array() );
@@ -133,6 +150,7 @@ function df_rm_apply() {
 	// Ana sayfa sabit bir sayfaysa Rank Math başlığı o sayfadan alır.
 	$front = (int) get_option( 'page_on_front' );
 	if ( 'page' === get_option( 'show_on_front' ) && $front ) {
+		update_post_meta( $front, 'rank_math_rich_snippet', 'off' );
 		if ( '' === (string) get_post_meta( $front, 'rank_math_title', true ) && ! empty( $set['homepage_title'] ) ) {
 			update_post_meta( $front, 'rank_math_title', $set['homepage_title'] );
 		}
@@ -179,10 +197,25 @@ function df_rm_action() {
 add_action( 'admin_post_df_rm', 'df_rm_action' );
 
 /**
+ * Rank Math kurulumu tamamlanınca bir kez kendiliğinden uygula.
+ */
+function df_rm_auto() {
+	if ( ! function_exists( 'df_rank_math_live' ) || ! df_rank_math_live() || get_option( 'df_rm_applied' ) || ! current_user_can( 'manage_options' ) || wp_doing_ajax() ) {
+		return;
+	}
+	set_transient( 'df_rm_done', df_rm_apply(), 300 );
+}
+add_action( 'admin_init', 'df_rm_auto', 30 );
+
+/**
  * Rank Math kuruluysa bildirim ve düğme.
  */
 function df_rm_notice() {
 	if ( ! df_rm_active() || ! current_user_can( 'manage_options' ) ) {
+		return;
+	}
+	if ( function_exists( 'df_rank_math_live' ) && ! df_rank_math_live() ) {
+		echo '<div class="notice notice-warning"><p><strong>Rank Math henüz çalışmıyor:</strong> Rank Math → Kurulum Sihirbazı’nı açıp hesap bağlama adımında <em>Skip / Atla</em> deyin ve sihirbazı bitirin. O zamana kadar tema kendi SEO’sunu kullanmaya devam ediyor; sihirbaz bitince Derin Flowers SEO ayarları Rank Math’e kendiliğinden aktarılır.</p></div>';
 		return;
 	}
 	$done = get_transient( 'df_rm_done' );

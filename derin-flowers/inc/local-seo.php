@@ -540,6 +540,10 @@ function df_loc_llms() {
 		return;
 	}
 	header( 'Content-Type: text/plain; charset=utf-8' );
+	if ( function_exists( 'df_aeo_llms' ) ) {
+		echo df_aeo_llms(); // phpcs:ignore WordPress.Security.EscapeOutput
+		exit;
+	}
 	$city  = df_opt( 'df_default_city', 'İzmir' );
 	$lines = array( '# ' . get_bloginfo( 'name' ), '', '> ' . ( get_bloginfo( 'description' ) ? get_bloginfo( 'description' ) : $city . ' çiçekçi — online çiçek siparişi ve aynı gün teslimat.' ), '' );
 	$lines[] = 'Şehir: ' . $city . '. Aynı gün teslimat için son sipariş saati: ' . df_opt( 'df_cutoff', '16:00' ) . '.';

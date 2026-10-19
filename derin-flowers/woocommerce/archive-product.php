@@ -130,6 +130,7 @@ $df_om   = $df_imgm ? df_img_original( $df_imgm ) : null;
 		<?php do_action( 'woocommerce_no_products_found' ); ?>
 	<?php endif; ?>
 </div>
+<?php if ( function_exists( 'df_aeo_category_faq' ) ) { df_aeo_category_faq(); } ?>
 <?php if ( $df_desc_h && ! $df_data['desc_top'] ) : ?>
 	<section class="df-catdesc" aria-label="<?php echo esc_attr( $df_data['title'] ); ?> hakkında">
 		<div class="df-container df-container--narrow">
