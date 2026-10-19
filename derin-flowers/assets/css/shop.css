@@ -1017,3 +1017,34 @@ body.df-modal-open { overflow: hidden; }
 .df-rosec__price { margin-left: auto; font-size: 18px; font-weight: 600; color: var(--df-text); }
 .df-rosec__hint { margin: 10px 0 0; font-size: 12.5px; line-height: 1.5; color: var(--df-muted); }
 form.df-rose-active .woocommerce-variation-price { display: none; }
+
+/* Havale / EFT: sipariş sonunda banka bilgileri (kopyalanabilir) */
+.df-bacs { margin: 0 0 32px; padding: clamp(20px, 3vw, 32px); border: 2px solid var(--df-accent); border-radius: 14px; background: #fff; box-shadow: 0 18px 40px -24px rgba(var(--df-text-rgb), .35); }
+.df-bacs__head h2 { margin: 0 0 8px; font-size: calc(clamp(22px, 2.4vw, 30px) * var(--df-scale)); }
+.df-bacs__head p { margin: 0 0 18px; color: var(--df-muted); font-size: 15px; line-height: 1.6; }
+.df-bacs__acc { margin-bottom: 12px; border: 1px solid var(--df-line); border-radius: 10px; overflow: hidden; }
+.df-bacs__acc--pay { background: var(--df-ivory); }
+.df-bacs__bank { padding: 10px 16px; border-bottom: 1px solid var(--df-line); background: var(--df-ivory); font-weight: 600; font-size: 14px; }
+.df-bacs__row { display: grid; grid-template-columns: 96px 1fr auto; align-items: center; gap: 10px; padding: 12px 16px; }
+.df-bacs__row + .df-bacs__row { border-top: 1px solid var(--df-line); }
+.df-bacs__k { color: var(--df-muted); font-size: 13px; }
+.df-bacs__v { min-width: 0; font-size: 16px; font-weight: 600; color: var(--df-text); overflow-wrap: anywhere; }
+.df-bacs__row.is-big .df-bacs__v { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-size: clamp(15px, 1.9vw, 20px); letter-spacing: .02em; }
+.df-bacs__copy { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 14px; border: 1px solid var(--df-accent); border-radius: 8px; background: var(--df-accent); color: #fff; font: inherit; font-size: 13px; font-weight: 500; cursor: pointer; white-space: nowrap; transition: background .2s; }
+.df-bacs__copy:hover { background: var(--df-accent-dark); }
+.df-bacs__copy.is-done { background: var(--df-success); border-color: var(--df-success); }
+.df-bacs__note { margin: 6px 0 0; font-size: 13.5px; color: var(--df-muted); }
+.df-bacs__wa { display: inline-flex; align-items: center; gap: 8px; margin-top: 16px; padding: 12px 18px; border-radius: 8px; background: #25D366; color: #fff; font-weight: 500; text-decoration: none; }
+.df-bacs__wa:hover { color: #fff; filter: brightness(.95); }
+.df-bacs__empty { margin: 0 0 12px; }
+@media (max-width: 560px) {
+	.df-bacs__row { grid-template-columns: 1fr auto; row-gap: 2px; }
+	.df-bacs__k { grid-column: 1 / -1; }
+	.df-bacs__copy span { display: none; }
+	.df-bacs__copy { padding: 0 12px; }
+	.df-bacs__copy.is-done span { display: inline; }
+	.df-bacs__row.is-big { grid-template-columns: 1fr; row-gap: 8px; }
+	.df-bacs__row.is-big .df-bacs__v { font-size: clamp(14px, 4.3vw, 17px); letter-spacing: 0; overflow-wrap: normal; word-break: normal; }
+	.df-bacs__row.is-big .df-bacs__copy { justify-content: center; width: 100%; min-height: 46px; font-size: 15px; }
+	.df-bacs__row.is-big .df-bacs__copy span { display: inline; }
+}

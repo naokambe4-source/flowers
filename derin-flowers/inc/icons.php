@@ -34,6 +34,7 @@ function df_icon_library() {
 		'plus'        => array( 'Artı', '<path d="M12 5v14M5 12h14"/>' ),
 		'minus'       => array( 'Eksi', '<path d="M5 12h14"/>' ),
 		'check'       => array( 'Onay', '<path d="m5 12.5 4.5 4.5L19 7.5"/>' ),
+		'copy'        => array( 'Kopyala', '<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h8"/>' ),
 		'play'        => array( 'Oynat', '<path d="M8 5.5v13l10.5-6.5L8 5.5Z"/>' ),
 		'eye'         => array( 'Göz', '<path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/>' ),
 		'filter'      => array( 'Filtre', '<path d="M4 6h16M7 12h10M10 18h4"/>' ),
