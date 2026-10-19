@@ -84,31 +84,10 @@ function df_cat_edit_fields( $term ) {
 		</td>
 	</tr>
 	<tr class="form-field">
-		<th scope="row"><label for="df_banner_pos">Görsel odak noktası</label></th>
+		<th scope="row">Kapak görseli ölçüsü</th>
 		<td>
-			<?php $pos = get_term_meta( $term->term_id, 'df_banner_pos', true ); ?>
-			<select name="df_banner_pos" id="df_banner_pos">
-				<?php foreach ( array( 'center' => 'Orta', 'top' => 'Üst', 'bottom' => 'Alt', 'left' => 'Sol', 'right' => 'Sağ' ) as $k => $l ) : ?>
-					<option value="<?php echo esc_attr( $k ); ?>" <?php selected( $pos ? $pos : 'center', $k ); ?>><?php echo esc_html( $l ); ?></option>
-				<?php endforeach; ?>
-			</select>
-		</td>
-	</tr>
-	<tr class="form-field">
-		<th scope="row"><label for="df_banner_h">Kapak bandı yüksekliği</label></th>
-		<td>
-			<?php $bh = get_term_meta( $term->term_id, 'df_banner_h', true ); ?>
-			<select name="df_banner_h" id="df_banner_h">
-				<?php foreach ( array( 'short' => 'İnce bant (masaüstü 260px)', 'medium' => 'Orta (360px — önerilen)', 'tall' => 'Yüksek (480px)' ) as $k => $l ) : ?>
-					<option value="<?php echo esc_attr( $k ); ?>" <?php selected( $bh ? $bh : 'medium', $k ); ?>><?php echo esc_html( $l ); ?></option>
-				<?php endforeach; ?>
-			</select>
-			<?php $bt = get_term_meta( $term->term_id, 'df_banner_text', true ); ?>
-			<select name="df_banner_text">
-				<option value="below" <?php selected( $bt ? $bt : 'below', 'below' ); ?>>Başlık bandın altında (görsel tam görünür)</option>
-				<option value="over" <?php selected( $bt, 'over' ); ?>>Başlık bandın üstünde</option>
-			</select>
-			<p class="description">Geniş, yatay kapak görseli için önerilen ölçü: 2400 × 600 px.</p>
+			<input type="hidden" name="df_banner_text" value="below">
+			<p class="description">Kapak görseli <strong>kırpılmadan, yüklendiği oranda</strong> ve keskin gösterilir; üzerine yazı konmaz.<br>Önerilen ölçü: <strong>2400 × 800 px</strong> (3:1 yatay), JPG/WebP, 300–600 KB. Önemli kısımları ortada tutun. Telefon için ayrıca 1080 × 1080 px görsel yükleyebilirsiniz.</p>
 		</td>
 	</tr>
 	<tr class="form-field">

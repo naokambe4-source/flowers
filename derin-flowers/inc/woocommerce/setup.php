@@ -540,7 +540,9 @@ function df_shop_filters() {
 	$base   = remove_query_arg( array( 'min_price', 'max_price', 'paged', 'product-page' ) );
 	$base   = preg_replace( '#/page/\d+/?#', '/', $base );
 	$ranges = df_price_ranges();
-	echo '<div class="df-filters">';
+	echo '<div class="df-filters__backdrop" data-df-filters-close hidden></div>';
+	echo '<div class="df-filters" id="df-filters" role="dialog" aria-label="Filtrele">';
+	echo '<div class="df-filters__head"><strong>Filtrele</strong><button type="button" class="df-filters__x" data-df-filters-close aria-label="Kapat">' . df_icon( 'close', array( 'size' => 20 ) ) . '</button></div>'; // phpcs:ignore
 	if ( $ranges ) {
 		echo '<div class="df-filters__price" role="group" aria-label="Fiyat aralığı"><span class="df-filters__label">Fiyat:</span>';
 		echo '<a class="df-fchip' . ( null === $min && null === $max ? ' is-on' : '' ) . '" href="' . esc_url( $base ) . '">Tümü</a>';
@@ -564,4 +566,37 @@ function df_shop_filters() {
 		echo '</div>';
 	}
 	echo '</div>';
+	static $js = false;
+	if ( ! $js ) {
+		$js = true;
+		?>
+		<script>
+		( function () {
+			var box = document.getElementById( 'df-filters' ), bd = document.querySelector( '.df-filters__backdrop' ), btn = document.querySelector( '[data-df-filters-open]' );
+			if ( ! box || ! btn ) { return; }
+			function set( open ) {
+				box.classList.toggle( 'is-open', open );
+				bd.hidden = ! open;
+				btn.setAttribute( 'aria-expanded', open ? 'true' : 'false' );
+				document.documentElement.classList.toggle( 'df-noscroll', open );
+			}
+			btn.addEventListener( 'click', function () { set( true ); } );
+			document.querySelectorAll( '[data-df-filters-close]' ).forEach( function ( el ) { el.addEventListener( 'click', function () { set( false ); } ); } );
+			document.addEventListener( 'keydown', function ( e ) { if ( 'Escape' === e.key ) { set( false ); } } );
+		}() );
+		</script>
+		<?php
+	}
+}
+
+/**
+ * Mobilde "Filtrele" düğmesi (filtre paneli alttan açılır).
+ */
+function df_shop_filter_button() {
+	if ( ! df_opt( 'shop_price_filter', 1 ) || ( ! df_price_ranges() && count( df_per_page_choices() ) < 2 ) ) {
+		return;
+	}
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	$on = isset( $_GET['min_price'] ) || isset( $_GET['max_price'] );
+	echo '<button type="button" class="df-filterbtn" data-df-filters-open aria-controls="df-filters" aria-expanded="false">' . df_icon( 'filter', array( 'size' => 18 ) ) . '<span>Filtrele</span>' . ( $on ? '<i class="df-filterbtn__dot" aria-label="Filtre uygulanmış"></i>' : '' ) . '</button>'; // phpcs:ignore
 }

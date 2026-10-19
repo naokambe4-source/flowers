@@ -18,21 +18,41 @@ $df_sty  = $df_bg ? '--df-shophead:url(' . esc_url( $df_bg ) . ');' . ( $df_bgm 
 do_action( 'woocommerce_before_main_content' );
 ?>
 <?php
-$df_band   = $df_bg && ! $df_data['overlay'];
+$df_band   = (bool) $df_bg; // Kapak her zaman yalnızca görsel; başlık altında.
 $df_hcls   = 'df-banner-h--' . ( in_array( $df_data['height'], array( 'short', 'medium', 'tall' ), true ) ? $df_data['height'] : 'medium' );
 $df_desc_h = $df_data['desc'] && ! is_paged() ? '<div class="df-catdesc__body">' . wp_kses_post( $df_data['desc'] ) . '</div>' : '';
 ?>
 <?php if ( $df_band ) : ?>
-	<div class="df-catband <?php echo esc_attr( $df_hcls ); ?><?php echo $df_bgm ? ' has-mobile' : ''; ?>" style="<?php echo $df_sty; // phpcs:ignore ?>" role="img" aria-label="<?php echo esc_attr( $df_data['title'] ); ?>"></div>
+	<div class="df-catband">
+		<div class="df-container">
+			<picture>
+				<?php if ( $df_bgm ) : ?>
+					<source media="(max-width: 700px)" srcset="<?php echo esc_url( $df_bgm ); ?>">
+				<?php endif; ?>
+				<?php
+				echo wp_get_attachment_image( // phpcs:ignore
+					$df_data['image'],
+					'full',
+					false,
+					array(
+						'class'         => 'df-catband__img',
+						'loading'       => 'eager',
+						'fetchpriority' => 'high',
+						'decoding'      => 'async',
+						'sizes'         => '(max-width: 1520px) 100vw, 1440px',
+						'alt'           => $df_data['title'],
+					)
+				);
+				?>
+			</picture>
+		</div>
+	</div>
 <?php endif; ?>
 <header class="df-shophead<?php echo $df_bg && ! $df_band ? ' has-image ' . esc_attr( $df_hcls ) : ''; ?><?php echo $df_band ? ' is-under-band' : ''; ?><?php echo $df_bgm && ! $df_band ? ' has-mobile' : ''; ?>"<?php echo $df_sty && ! $df_band ? ' style="' . $df_sty . '"' : ''; // phpcs:ignore ?>>
 	<div class="df-container df-shophead__inner">
 		<?php woocommerce_breadcrumb(); ?>
 		<?php if ( apply_filters( 'woocommerce_show_page_title', true ) ) : ?>
 			<h1 class="df-shophead__title"><?php echo esc_html( $df_data['title'] ); ?></h1>
-		<?php endif; ?>
-		<?php if ( $df_data['subtitle'] ) : ?>
-			<p class="df-shophead__sub"><?php echo esc_html( $df_data['subtitle'] ); ?></p>
 		<?php endif; ?>
 		<?php if ( $df_desc_h && $df_data['desc_top'] ) : ?>
 			<div class="df-shophead__desc df-catdesc is-top"><?php echo $df_desc_h; // phpcs:ignore ?></div>
@@ -77,8 +97,11 @@ $df_desc_h = $df_data['desc'] && ! is_paged() ? '<div class="df-catdesc__body">'
 		do_action( 'woocommerce_before_shop_loop' );
 		?>
 		<div class="df-shop__toolbar">
-			<?php woocommerce_result_count(); ?>
-			<?php woocommerce_catalog_ordering(); ?>
+			<p class="df-shop__count"><?php echo esc_html( number_format_i18n( (int) wc_get_loop_prop( 'total' ) ) . ' ürün' ); ?></p>
+			<div class="df-shop__actions">
+				<?php df_shop_filter_button(); ?>
+				<?php woocommerce_catalog_ordering(); ?>
+			</div>
 		</div>
 		<?php df_shop_filters(); ?>
 		<?php

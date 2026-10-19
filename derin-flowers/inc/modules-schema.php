@@ -28,7 +28,7 @@ function df_modules_schema( $schema ) {
 			array( 'id' => 'title_dupe_warn', 'type' => 'toggle', 'label' => 'Aynı ürün başlığı kullanılırsa uyar', 'default' => 1, 'half' => true ),
 			array( 'id' => 'img_seo_name', 'type' => 'toggle', 'label' => 'Görsel dosya adlarını SEO uyumlu yap (Türkçe karakter → kırmızı-gul-buketi.jpg)', 'default' => 1, 'half' => true ),
 			array( 'id' => 'img_seo_alt', 'type' => 'toggle', 'label' => 'ALT metni boş ürün görsellerine ürün adını yaz', 'default' => 1, 'half' => true ),
-			array( 'id' => 'img_max', 'type' => 'number', 'label' => 'Yüklenen görselin en büyük kenarı (px)', 'default' => 2000, 'min' => 1200, 'max' => 4000, 'half' => true, 'desc' => 'Daha büyük görseller bu boyuta küçültülür (WordPress büyük görsel sınırı).' ),
+			array( 'id' => 'img_max', 'type' => 'number', 'label' => 'Yüklenen görselin en büyük kenarı (px)', 'default' => 2400, 'min' => 1200, 'max' => 4000, 'half' => true, 'desc' => 'Daha büyük görseller bu boyuta küçültülür (WordPress büyük görsel sınırı).' ),
 			array( 'id' => 'img_webp', 'type' => 'toggle', 'label' => 'Yeni yüklenen JPEG/PNG görsellerin boyutlarını WebP üret', 'default' => 0, 'half' => true, 'desc' => 'Sunucunuz WebP destekliyorsa açın. LiteSpeed Cache\'in WebP özelliği de kullanılabilir.' ),
 		),
 	);

@@ -912,9 +912,9 @@ body.df-modal-open { overflow: hidden; }
 @keyframes df-spin { to { transform: rotate(360deg); } }
 
 /* ---------- Kategori: kapak bandı, başlık altında, açıklama ürünlerin altında (v1.12) ---------- */
-.df-catband { width: 100%; height: 360px; background: var(--df-sand) var(--df-shophead) var(--df-shophead-pos, center) / cover no-repeat; }
-.df-catband.df-banner-h--short { height: 260px; }
-.df-catband.df-banner-h--tall { height: 480px; }
+.df-catband { padding-top: clamp(12px, 2vw, 24px); }
+.df-catband picture { display: block; }
+.df-catband__img { display: block; width: 100%; height: auto; border-radius: 6px; background: var(--df-sand); }
 .df-shophead.has-image.df-banner-h--short { padding: 70px 0 40px; }
 .df-shophead.has-image.df-banner-h--tall { padding: 170px 0 80px; }
 .df-shophead.is-under-band { padding: 26px 0 22px; background: var(--df-bg); }
@@ -937,8 +937,7 @@ body.df-modal-open { overflow: hidden; }
 .df-catdesc__more:hover { background: var(--df-text); color: #fff; }
 .df-catdesc.is-top { max-width: 760px; margin: 14px auto 0; text-align: center; border: 0; background: none; }
 @media (max-width: 700px) {
-	.df-catband, .df-catband.df-banner-h--short, .df-catband.df-banner-h--tall { height: 46vw; min-height: 170px; }
-	.df-catband.has-mobile { height: 90vw; background-image: var(--df-shophead-m); }
+	.df-catband__img { border-radius: 4px; }
 }
 
 /* Adres doğrulama */
@@ -956,4 +955,25 @@ body.df-modal-open { overflow: hidden; }
 .df-fchip { display: inline-flex; align-items: center; min-height: 34px; padding: 0 14px; border: 1px solid var(--df-line); border-radius: 40px; background: #fff; color: var(--df-text); font-size: 13px; text-decoration: none; white-space: nowrap; transition: border-color .2s, background .2s; }
 .df-fchip:hover { border-color: var(--df-text); }
 .df-fchip.is-on { background: var(--df-text); border-color: var(--df-text); color: #fff; }
-@media (max-width: 700px) { .df-filters__price { flex-wrap: nowrap; overflow-x: auto; width: 100%; padding-bottom: 4px; } }
+.df-shop__count { margin: 0; color: var(--df-muted); font-size: 14px; }
+.df-shop__actions { display: flex; align-items: center; gap: 10px; }
+.df-filterbtn, .df-filters__head, .df-filters__backdrop { display: none; }
+@media (max-width: 760px) {
+	.df-shop__toolbar { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 18px; }
+	.df-shop__count { flex: 1 1 100%; font-size: 13px; }
+	.df-shop__actions { flex: 1 1 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+	.df-shop__actions:has(> :only-child) { grid-template-columns: 1fr; }
+	.df-shop__actions .woocommerce-ordering select { width: 100%; min-width: 0; min-height: 46px; padding-right: 30px; font-size: 14px; text-overflow: ellipsis; }
+	.df-filterbtn { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 46px; padding: 0 14px; border: 1px solid var(--df-line); border-radius: var(--df-radius-btn, 0); background: #fff; color: var(--df-text); font: inherit; font-size: 14px; letter-spacing: .02em; cursor: pointer; }
+	.df-filterbtn__dot { position: absolute; top: 9px; right: 12px; width: 8px; height: 8px; border-radius: 50%; background: var(--df-accent); }
+	.df-filters__backdrop:not([hidden]) { display: block; position: fixed; inset: 0; z-index: 9998; background: rgba(20, 16, 14, .45); }
+	.df-filters { position: fixed; left: 0; right: 0; bottom: 0; z-index: 9999; display: block; max-height: 82vh; margin: 0; padding: 0 var(--df-gutter) calc(22px + env(safe-area-inset-bottom)); overflow-y: auto; border-radius: 18px 18px 0 0; background: #fff; box-shadow: 0 -12px 40px rgba(0, 0, 0, .18); transform: translateY(105%); visibility: hidden; transition: transform .3s ease, visibility .3s; }
+	.df-filters.is-open { transform: none; visibility: visible; }
+	.df-filters__head { position: sticky; top: 0; display: flex; align-items: center; justify-content: space-between; margin: 0 calc(var(--df-gutter) * -1) 6px; padding: 16px var(--df-gutter); border-bottom: 1px solid var(--df-line); background: #fff; font-size: 17px; }
+	.df-filters__x { display: inline-flex; padding: 6px; border: 0; background: none; color: var(--df-text); cursor: pointer; }
+	.df-filters__price, .df-filters__per { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 14px 0; }
+	.df-filters__per { grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--df-line); }
+	.df-filters__label { grid-column: 1 / -1; margin: 0 0 2px; color: var(--df-text); font-size: 14px; font-weight: 600; }
+	.df-filters .df-fchip { justify-content: center; min-height: 44px; padding: 0 10px; font-size: 14px; white-space: normal; text-align: center; }
+	html.df-noscroll, html.df-noscroll body { overflow: hidden; }
+}

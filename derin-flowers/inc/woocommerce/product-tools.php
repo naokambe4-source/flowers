@@ -553,7 +553,7 @@ add_action( 'woocommerce_new_product', 'df_img_seo_alt', 20 );
  * @return int
  */
 function df_img_max() {
-	return max( 1200, min( 4000, (int) df_opt( 'img_max', 2000 ) ) );
+	return max( 1200, min( 4000, (int) df_opt( 'img_max', 2400 ) ) );
 }
 add_filter( 'big_image_size_threshold', 'df_img_max' );
 

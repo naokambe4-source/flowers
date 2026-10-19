@@ -298,6 +298,7 @@ hr { border: 0; border-top: 1px solid var(--df-line); margin: 2em 0; }
 .df-card__fav { position: absolute; top: 10px; right: 10px; z-index: 2; }
 .df-card__action { position: absolute; left: 12px; right: 12px; bottom: 12px; z-index: 2; opacity: 0; transform: translateY(10px); transition: opacity .35s var(--df-ease), transform .35s var(--df-ease); }
 .df-card:hover .df-card__action, .df-card:focus-within .df-card__action { opacity: 1; transform: none; }
+@media (hover: none) { .df-card__action { display: none; } }
 .df-card__btn { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; height: 48px; background: rgba(255,255,255,.96); color: var(--df-text); font-size: 12px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; backdrop-filter: blur(4px); transition: background .25s, color .25s; }
 .df-card__btn:hover { background: var(--df-dark); color: #fff; }
 .df-card__btn.loading { opacity: .7; }
@@ -422,8 +423,7 @@ hr { border: 0; border-top: 1px solid var(--df-line); margin: 2em 0; }
 	.df-card__title { font-size: 18px; }
 	.df-card__cat { font-size: 10px; letter-spacing: .14em; }
 	.df-card__price { font-size: 15px; }
-	.df-card__action { opacity: 1; transform: none; left: 8px; right: 8px; bottom: 8px; }
-	.df-card__btn { height: 40px; font-size: 10.5px; letter-spacing: .12em; }
+	.df-card__action { display: none; }
 	.df-card__fav { top: 6px; right: 6px; }
 	.df-card__badges { top: 10px; left: 10px; }
 	.df-fav { width: 36px; height: 36px; }
