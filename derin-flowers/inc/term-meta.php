@@ -84,10 +84,16 @@ function df_cat_edit_fields( $term ) {
 		</td>
 	</tr>
 	<tr class="form-field">
-		<th scope="row">Kapak görseli ölçüsü</th>
+		<th scope="row"><label for="df_banner_pos">Kapak görseli</label></th>
 		<td>
+			<?php $pos = get_term_meta( $term->term_id, 'df_banner_pos', true ); ?>
 			<input type="hidden" name="df_banner_text" value="below">
-			<p class="description">Kapak görseli <strong>kırpılmadan, yüklendiği oranda</strong> ve keskin gösterilir; üzerine yazı konmaz.<br>Önerilen ölçü: <strong>2400 × 800 px</strong> (3:1 yatay), JPG/WebP, 300–600 KB. Önemli kısımları ortada tutun. Telefon için ayrıca 1080 × 1080 px görsel yükleyebilirsiniz.</p>
+			<select name="df_banner_pos" id="df_banner_pos">
+				<?php foreach ( array( 'center' => 'Odak: orta', 'top' => 'Odak: üst', 'bottom' => 'Odak: alt', 'left' => 'Odak: sol', 'right' => 'Odak: sağ' ) as $k => $l ) : ?>
+					<option value="<?php echo esc_attr( $k ); ?>" <?php selected( $pos ? $pos : 'center', $k ); ?>><?php echo esc_html( $l ); ?></option>
+				<?php endforeach; ?>
+			</select>
+			<p class="description">Görsel sayfanın tam genişliğinde arka plan olur; üzerine tema renginde degrade ve kategori adı gelir. <strong>Üzerinde yazı olmayan</strong> bir çiçek fotoğrafı yükleyin. Önerilen ölçü: <strong>2400 × 800 px</strong>, JPG. Kenarlar ekrana göre biraz kırpılabilir; önemli kısmı odak noktasıyla seçin.</p>
 		</td>
 	</tr>
 	<tr class="form-field">

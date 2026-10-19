@@ -11,41 +11,32 @@ defined( 'ABSPATH' ) || exit;
 get_header( 'shop' );
 
 $df_data = df_archive_header_data();
-$df_bg   = $df_data['image'] ? df_img_url( $df_data['image'], 'df-banner' ) : '';
-$df_bgm  = $df_data['image_m'] ? df_img_url( $df_data['image_m'], 'large' ) : '';
-$df_sty  = $df_bg ? '--df-shophead:url(' . esc_url( $df_bg ) . ');' . ( $df_bgm ? '--df-shophead-m:url(' . esc_url( $df_bgm ) . ');' : '' ) . ( $df_data['pos'] ? '--df-shophead-pos:' . esc_attr( $df_data['pos'] ) . ';' : '' ) : '';
 
 do_action( 'woocommerce_before_main_content' );
 ?>
 <?php
-$df_band   = (bool) $df_bg; // Kapak her zaman yalnızca görsel; başlık altında.
-$df_hcls   = 'df-banner-h--' . ( in_array( $df_data['height'], array( 'short', 'medium', 'tall' ), true ) ? $df_data['height'] : 'medium' );
 $df_desc_h = $df_data['desc'] && ! is_paged() ? '<div class="df-catdesc__body">' . wp_kses_post( $df_data['desc'] ) . '</div>' : '';
 ?>
-<?php if ( $df_band ) : ?>
-	<div class="df-catband">
-		<div class="df-container">
-			<?php $df_o = df_img_original( $df_data['image'] ); ?>
-			<?php $df_om = $df_data['image_m'] ? df_img_original( $df_data['image_m'] ) : null; ?>
-			<?php if ( $df_o ) : ?>
-				<picture>
-					<?php if ( $df_om ) : ?>
-						<source media="(max-width: 700px)" srcset="<?php echo esc_url( $df_om[0] ); ?>" width="<?php echo (int) $df_om[1]; ?>" height="<?php echo (int) $df_om[2]; ?>">
-					<?php endif; ?>
-					<img class="df-catband__img" src="<?php echo esc_url( $df_o[0] ); ?>" width="<?php echo (int) $df_o[1]; ?>" height="<?php echo (int) $df_o[2]; ?>" alt="<?php echo esc_attr( $df_data['title'] ); ?>" loading="eager" fetchpriority="high" decoding="async">
-				</picture>
+<?php
+$df_o  = $df_data['image'] ? df_img_original( $df_data['image'] ) : null;
+$df_om = $df_data['image_m'] ? df_img_original( $df_data['image_m'] ) : null;
+?>
+<header class="df-cathero<?php echo $df_o ? ' has-image' : ''; ?>">
+	<?php if ( $df_o ) : ?>
+		<picture class="df-cathero__bg">
+			<?php if ( $df_om ) : ?>
+				<source media="(max-width: 700px)" srcset="<?php echo esc_url( $df_om[0] ); ?>">
 			<?php endif; ?>
-		</div>
-	</div>
-<?php endif; ?>
-<header class="df-shophead<?php echo $df_bg && ! $df_band ? ' has-image ' . esc_attr( $df_hcls ) : ''; ?><?php echo $df_band ? ' is-under-band screen-reader-text' : ''; ?><?php echo $df_bgm && ! $df_band ? ' has-mobile' : ''; ?>"<?php echo $df_sty && ! $df_band ? ' style="' . $df_sty . '"' : ''; // phpcs:ignore ?>>
-	<div class="df-container df-shophead__inner">
-		<?php woocommerce_breadcrumb(); ?>
+			<img src="<?php echo esc_url( $df_o[0] ); ?>" width="<?php echo (int) $df_o[1]; ?>" height="<?php echo (int) $df_o[2]; ?>" alt="" loading="eager" fetchpriority="high" decoding="async"<?php echo $df_data['pos'] ? ' style="object-position:' . esc_attr( $df_data['pos'] ) . '"' : ''; ?>>
+		</picture>
+	<?php endif; ?>
+	<div class="df-container df-cathero__inner">
+		<div class="screen-reader-text"><?php woocommerce_breadcrumb(); ?></div>
 		<?php if ( apply_filters( 'woocommerce_show_page_title', true ) ) : ?>
-			<h1 class="df-shophead__title"><?php echo esc_html( $df_data['title'] ); ?></h1>
+			<h1 class="df-cathero__title"><?php echo esc_html( $df_data['title'] ); ?></h1>
 		<?php endif; ?>
 		<?php if ( $df_desc_h && $df_data['desc_top'] ) : ?>
-			<div class="df-shophead__desc df-catdesc is-top"><?php echo $df_desc_h; // phpcs:ignore ?></div>
+			<div class="df-cathero__desc"><?php echo $df_desc_h; // phpcs:ignore ?></div>
 		<?php endif; ?>
 	</div>
 </header>
