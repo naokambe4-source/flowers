@@ -93,7 +93,11 @@ function df_cat_edit_fields( $term ) {
 					<option value="<?php echo esc_attr( $k ); ?>" <?php selected( $pos ? $pos : 'center', $k ); ?>><?php echo esc_html( $l ); ?></option>
 				<?php endforeach; ?>
 			</select>
-			<p class="description">Görsel sayfanın tam genişliğinde arka plan olur; üzerine tema renginde degrade ve kategori adı gelir. <strong>Üzerinde yazı olmayan</strong> bir çiçek fotoğrafı yükleyin. Önerilen ölçü: <strong>2400 × 800 px</strong>, JPG. Kenarlar ekrana göre biraz kırpılabilir; önemli kısmı odak noktasıyla seçin.</p>
+			<p class="description">Görsel başlığın <strong>sağ tarafında</strong> durur ve sol kenarı degradeye yumuşakça karışır. Sadece buket/ürün fotoğrafı yükleyin, <strong>üzerinde yazı olmasın</strong> (başlığı tema yazar). Önerilen ölçü: <strong>1600 × 1000 px</strong>, JPG. Kapak yüklemezseniz kategori görseli, o da yoksa kategorideki ilk ürünün görseli kullanılır.</p>
+			<?php $hc = (string) get_term_meta( $term->term_id, 'df_hero_color', true ); ?>
+			<p style="margin-top:12px"><label>Degrade rengi: <input type="color" name="df_hero_color" value="<?php echo esc_attr( $hc ? $hc : df_cat_hero_color( $term ) ); ?>"></label>
+			<label style="margin-left:10px"><input type="checkbox" name="df_hero_color_reset" value="1"> Otomatik renge dön</label></p>
+			<p class="description">Örnek: Güller pembe (#E6197E), Orkideler mor (#8E44AD), Söz &amp; Nişan altın (#C29A5B).</p>
 		</td>
 	</tr>
 	<tr class="form-field">
@@ -180,6 +184,15 @@ function df_cat_save_fields( $term_id ) {
 	}
 	if ( isset( $_POST['df_per_page'] ) ) {
 		update_term_meta( $term_id, 'df_per_page', min( 100, absint( $_POST['df_per_page'] ) ) );
+	}
+	if ( ! empty( $_POST['df_hero_color_reset'] ) ) {
+		delete_term_meta( $term_id, 'df_hero_color' );
+	} elseif ( isset( $_POST['df_hero_color'] ) ) {
+		$hc = sanitize_hex_color( wp_unslash( $_POST['df_hero_color'] ) );
+		$t  = get_term( $term_id );
+		if ( $hc && ( ! $t instanceof WP_Term || strtolower( $hc ) !== strtolower( df_cat_hero_color( $t, false ) ) ) ) {
+			update_term_meta( $term_id, 'df_hero_color', $hc );
+		}
 	}
 	if ( isset( $_POST['df_banner_pos'] ) ) {
 		$pos = sanitize_key( wp_unslash( $_POST['df_banner_pos'] ) );

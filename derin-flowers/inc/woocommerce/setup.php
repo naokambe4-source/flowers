@@ -600,3 +600,50 @@ function df_shop_filter_button() {
 	$on = isset( $_GET['min_price'] ) || isset( $_GET['max_price'] );
 	echo '<button type="button" class="df-filterbtn" data-df-filters-open aria-controls="df-filters" aria-expanded="false">' . df_icon( 'filter', array( 'size' => 18 ) ) . '<span>Filtrele</span>' . ( $on ? '<i class="df-filterbtn__dot" aria-label="Filtre uygulanmış"></i>' : '' ) . '</button>'; // phpcs:ignore
 }
+
+
+/**
+ * Kategori başlığının degrade rengi: kategoride seçilen renk, yoksa kategoriye uygun hazır renk, yoksa tema rengi.
+ *
+ * @param WP_Term $term  Terim.
+ * @param bool    $saved Kaydedilmiş rengi de dikkate al.
+ * @return string Hex renk.
+ */
+function df_cat_hero_color( $term, $saved = true ) {
+	if ( $saved ) {
+		$c = sanitize_hex_color( (string) get_term_meta( $term->term_id, 'df_hero_color', true ) );
+		if ( $c ) {
+			return $c;
+		}
+	}
+	$map = array(
+		'gul'       => '#E6197E',
+		'sevgili'   => '#D7193F',
+		'kirmizi'   => '#D7193F',
+		'orkide'    => '#8E44AD',
+		'buket'     => '#E0567A',
+		'kutu'      => '#B03A5B',
+		'vazo'      => '#3E8E7E',
+		'ozel-gun'  => '#E2722F',
+		'dogum'     => '#F08A24',
+		'tebrik'    => '#2F7D6D',
+		'gecmis'    => '#4E9BB9',
+		'yeni-dogan' => '#6FA8DC',
+		'yil-donum' => '#C2185B',
+		'soz'       => '#C29A5B',
+		'nisan'     => '#C29A5B',
+		'koleksiyon' => '#5B4B8A',
+		'hediye'    => '#D9534F',
+		'saksi'     => '#4F8A4B',
+		'acilis'    => '#B8862B',
+		'anne'      => '#E86A92',
+	);
+	$slug = $term->slug . '-' . sanitize_title( $term->name );
+	foreach ( $map as $k => $c ) {
+		if ( false !== strpos( $slug, $k ) ) {
+			return $c;
+		}
+	}
+	$accent = df_opt( 'color_accent', '' );
+	return sanitize_hex_color( (string) $accent ) ? $accent : '#8E5E52';
+}

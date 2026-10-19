@@ -18,26 +18,43 @@ do_action( 'woocommerce_before_main_content' );
 $df_desc_h = $df_data['desc'] && ! is_paged() ? '<div class="df-catdesc__body">' . wp_kses_post( $df_data['desc'] ) . '</div>' : '';
 ?>
 <?php
-$df_o  = $df_data['image'] ? df_img_original( $df_data['image'] ) : null;
-$df_om = $df_data['image_m'] ? df_img_original( $df_data['image_m'] ) : null;
+$df_term = is_product_taxonomy() ? get_queried_object() : null;
+$df_img  = $df_data['image'];
+if ( ! $df_img && $df_term instanceof WP_Term ) {
+	// Kapak yoksa: kategori görseli, o da yoksa kategorideki ilk ürünün görseli.
+	$df_img = absint( get_term_meta( $df_term->term_id, 'thumbnail_id', true ) );
+	if ( ! $df_img ) {
+		$df_first = wc_get_products( array( 'limit' => 1, 'status' => 'publish', 'category' => array( $df_term->slug ), 'orderby' => 'menu_order', 'order' => 'ASC', 'return' => 'ids' ) );
+		$df_img   = $df_first ? (int) get_post_thumbnail_id( $df_first[0] ) : 0;
+	}
+}
+$df_o    = $df_img ? df_img_original( $df_img ) : null;
+$df_om   = $df_data['image_m'] ? df_img_original( $df_data['image_m'] ) : null;
 ?>
-<header class="df-cathero<?php echo $df_o ? ' has-image' : ''; ?>">
+<header class="df-cathero<?php echo $df_o ? ' has-image' : ''; ?>" style="--df-ch:<?php echo esc_attr( $df_term instanceof WP_Term ? df_cat_hero_color( $df_term ) : df_cat_hero_color( (object) array( 'term_id' => 0, 'slug' => '', 'name' => '' ), false ) ); ?>">
+	<div class="df-cathero__glow" aria-hidden="true"></div>
 	<?php if ( $df_o ) : ?>
-		<picture class="df-cathero__bg">
+		<picture class="df-cathero__media">
 			<?php if ( $df_om ) : ?>
 				<source media="(max-width: 700px)" srcset="<?php echo esc_url( $df_om[0] ); ?>">
 			<?php endif; ?>
-			<img src="<?php echo esc_url( $df_o[0] ); ?>" width="<?php echo (int) $df_o[1]; ?>" height="<?php echo (int) $df_o[2]; ?>" alt="" loading="eager" fetchpriority="high" decoding="async"<?php echo $df_data['pos'] ? ' style="object-position:' . esc_attr( $df_data['pos'] ) . '"' : ''; ?>>
+			<img src="<?php echo esc_url( $df_o[0] ); ?>" width="<?php echo (int) $df_o[1]; ?>" height="<?php echo (int) $df_o[2]; ?>" alt="<?php echo esc_attr( $df_data['title'] ); ?>" loading="eager" fetchpriority="high" decoding="async"<?php echo $df_data['pos'] ? ' style="object-position:' . esc_attr( $df_data['pos'] ) . '"' : ''; ?>>
 		</picture>
 	<?php endif; ?>
 	<div class="df-container df-cathero__inner">
-		<div class="screen-reader-text"><?php woocommerce_breadcrumb(); ?></div>
-		<?php if ( apply_filters( 'woocommerce_show_page_title', true ) ) : ?>
-			<h1 class="df-cathero__title"><?php echo esc_html( $df_data['title'] ); ?></h1>
-		<?php endif; ?>
-		<?php if ( $df_desc_h && $df_data['desc_top'] ) : ?>
-			<div class="df-cathero__desc"><?php echo $df_desc_h; // phpcs:ignore ?></div>
-		<?php endif; ?>
+		<div class="df-cathero__text">
+			<div class="screen-reader-text"><?php woocommerce_breadcrumb(); ?></div>
+			<?php if ( apply_filters( 'woocommerce_show_page_title', true ) ) : ?>
+				<h1 class="df-cathero__title"><?php echo esc_html( $df_data['title'] ); ?></h1>
+			<?php endif; ?>
+			<?php $df_sub = trim( (string) df_opt( 'cat_hero_sub', '' ) ); ?>
+			<?php if ( $df_sub ) : ?>
+				<p class="df-cathero__sub"><?php echo esc_html( $df_sub ); ?></p>
+			<?php endif; ?>
+			<?php if ( $df_desc_h && $df_data['desc_top'] ) : ?>
+				<div class="df-cathero__desc"><?php echo $df_desc_h; // phpcs:ignore ?></div>
+			<?php endif; ?>
+		</div>
 	</div>
 </header>
 <?php if ( '' !== $df_data['promo']['text'] && ! is_paged() ) : ?>
@@ -70,7 +87,7 @@ $df_om = $df_data['image_m'] ? df_img_original( $df_data['image_m'] ) : null;
 	</nav>
 <?php endif; ?>
 
-<div class="df-container df-shop">
+<div class="df-container df-shop" id="df-urunler">
 	<?php if ( woocommerce_product_loop() ) : ?>
 		<?php
 		remove_action( 'woocommerce_before_shop_loop', 'woocommerce_result_count', 20 );
