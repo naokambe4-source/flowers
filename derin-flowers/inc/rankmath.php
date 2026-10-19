@@ -175,6 +175,7 @@ function df_rm_apply() {
 			update_term_meta( $term->term_id, 'rank_math_focus_keyword', $kw );
 		}
 	}
+	df_rm_fill_all();
 	update_option( 'df_rm_applied', DF_VERSION, false );
 	if ( function_exists( 'df_pc_flush' ) ) {
 		df_pc_flush();
@@ -231,3 +232,191 @@ function df_rm_notice() {
 	echo '<div class="notice notice-info"><p><strong>Derin Flowers + Rank Math:</strong> Ana sayfa, ürün ve kategori başlıkları, yerel işletme (Çiçekçi) bilgileri, site haritası ve sayfaların SEO metinleri tek tıkla Rank Math\'e aktarılsın mı? <a class="button button-primary" style="margin-left:8px" href="' . esc_url( $url ) . '">Rank Math\'i Derin Flowers\'a göre ayarla</a></p></div>';
 }
 add_action( 'admin_notices', 'df_rm_notice' );
+
+/**
+ * Türkçe küçük harf.
+ *
+ * @param string $s Metin.
+ * @return string
+ */
+function df_rm_lower( $s ) {
+	$s = html_entity_decode( wp_strip_all_tags( (string) $s ), ENT_QUOTES, 'UTF-8' );
+	return function_exists( 'df_ai_lower' ) ? df_ai_lower( $s ) : mb_strtolower( strtr( $s, array( 'I' => 'ı', 'İ' => 'i' ) ), 'UTF-8' );
+}
+
+/**
+ * Ürün / yazı adından odak kelime: "Pembe Gül Buketi – Pastel Tonlarda…" → "pembe gül buketi".
+ *
+ * @param string $title Başlık.
+ * @param int    $words En fazla kelime.
+ * @return string
+ */
+function df_rm_kw_from_title( $title, $words = 5 ) {
+	$t = preg_split( '/\s*[:|]\s+|\s+[–\-]\s+/u', html_entity_decode( (string) $title, ENT_QUOTES, 'UTF-8' ) )[0];
+	$t = trim( preg_replace( '/[^\p{L}\p{N}\s&’\']/u', ' ', $t ) );
+	$w = array_slice( preg_split( '/\s+/u', $t ), 0, $words );
+	// Sonda kalan bağlaçları at ("söz ve nişan için" → "söz ve nişan").
+	$stop = array( 've', 'ile', 'için', 'icin', 'de', 'da', 'bir', 'en', 'daha', 'hangi', 'nasıl', 'ne' );
+	while ( count( $w ) > 1 && in_array( df_rm_lower( end( $w ) ), $stop, true ) ) {
+		array_pop( $w );
+	}
+	return df_rm_lower( implode( ' ', $w ) );
+}
+
+/**
+ * Hazır sayfalar için odak kelimeler.
+ *
+ * @return array<string,string>
+ */
+function df_rm_page_keywords() {
+	$c = df_rm_lower( df_opt( 'df_default_city', 'İzmir' ) );
+	return array(
+		'hakkimizda'                   => $c . ' çiçekçi',
+		'iletisim'                     => $c . ' çiçekçi iletişim',
+		'teslimat-bolgeleri'           => $c . ' çiçek teslimatı',
+		'blog'                         => 'çiçek bakımı ve hediye önerileri',
+		'siparis-takip'                => 'çiçek sipariş takip',
+		'mesafeli-satis-sozlesmesi'    => 'mesafeli satış sözleşmesi',
+		'on-bilgilendirme-formu'       => 'ön bilgilendirme formu',
+		'iade-ve-iptal-kosullari'      => 'iade ve iptal koşulları',
+		'kvkk-aydinlatma-metni'        => 'kvkk aydınlatma metni',
+		'gizlilik-ve-cerez-politikasi' => 'gizlilik ve çerez politikası',
+	);
+}
+
+/**
+ * Tek bir sayfa / ürün / yazı için boş Rank Math alanlarını doldur (odak kelime, açıklama).
+ *
+ * @param int $id Yazı.
+ * @return bool Değişti mi.
+ */
+function df_rm_fill_post( $id ) {
+	$post = get_post( $id );
+	if ( ! $post || 'publish' !== $post->post_status ) {
+		return false;
+	}
+	$city  = df_opt( 'df_default_city', 'İzmir' );
+	$cityl = df_rm_lower( $city );
+	$site  = get_bloginfo( 'name' );
+	$kw    = '';
+	$desc  = '';
+	$front = (int) get_option( 'page_on_front' );
+	$shop  = function_exists( 'wc_get_page_id' ) ? (int) wc_get_page_id( 'shop' ) : 0;
+	if ( $id === $front ) {
+		$kw   = $cityl . ' çiçek siparişi, ' . $cityl . ' çiçekçi, aynı gün çiçek teslimatı, online çiçek siparişi';
+		$desc = (string) df_opt( 'seo_home_desc', '' );
+	} elseif ( $id === $shop ) {
+		$kw = 'online çiçek siparişi ' . $cityl . ', ' . $cityl . ' çiçek gönder';
+	} elseif ( 'page' === $post->post_type ) {
+		$private = function_exists( 'df_site_seo_private_pages' ) ? df_site_seo_private_pages() : array();
+		if ( in_array( $id, $private, true ) && 'siparis-takip' !== $post->post_name ) {
+			return false; // Sepet, ödeme, hesap, favoriler: Google'a kapalı sayfalar.
+		}
+		$map = df_rm_page_keywords();
+		$kw  = isset( $map[ $post->post_name ] ) ? $map[ $post->post_name ] : df_rm_kw_from_title( $post->post_title, 4 );
+	} elseif ( 'product' === $post->post_type ) {
+		$name = df_rm_kw_from_title( $post->post_title );
+		$cats = wp_get_post_terms( $id, 'product_cat', array( 'fields' => 'all' ) );
+		$cat  = '';
+		foreach ( is_wp_error( $cats ) ? array() : $cats as $t ) {
+			if ( (int) get_option( 'default_product_cat' ) !== (int) $t->term_id ) {
+				$cat = df_rm_lower( $t->name );
+				break;
+			}
+		}
+		$kw   = $name . ( $cat ? ', ' . $cityl . ' ' . $cat : '' ) . ', ' . $cityl . ' çiçek siparişi';
+		$text = trim( preg_replace( '/\s+/u', ' ', wp_strip_all_tags( $post->post_excerpt ? $post->post_excerpt : strip_shortcodes( $post->post_content ) ) ) );
+		$desc = $text ? $text : html_entity_decode( $post->post_title, ENT_QUOTES, 'UTF-8' ) . ': ' . $city . '’e aynı gün teslimat, taze çiçekler ve ücretsiz not kartı. Online sipariş ' . $site . '’ta.';
+		// Odak kelime açıklamada geçsin.
+		if ( false === mb_stripos( df_rm_lower( $desc ), $name ) ) {
+			$desc = html_entity_decode( $post->post_title, ENT_QUOTES, 'UTF-8' ) . ' — ' . $desc;
+		}
+	} elseif ( 'post' === $post->post_type ) {
+		$kw   = df_rm_kw_from_title( $post->post_title, 6 );
+		$desc = trim( preg_replace( '/\s+/u', ' ', wp_strip_all_tags( $post->post_excerpt ? $post->post_excerpt : strip_shortcodes( $post->post_content ) ) ) );
+	} else {
+		return false;
+	}
+	if ( $desc && mb_strlen( $desc ) > 158 ) {
+		$desc = preg_replace( '/\s+\S*$/u', '', mb_substr( $desc, 0, 155 ) ) . '…';
+	}
+	$changed = false;
+	if ( $kw && '' === trim( (string) get_post_meta( $id, 'rank_math_focus_keyword', true ) ) ) {
+		update_post_meta( $id, 'rank_math_focus_keyword', $kw );
+		$changed = true;
+	}
+	if ( $desc && '' === trim( (string) get_post_meta( $id, 'rank_math_description', true ) ) ) {
+		update_post_meta( $id, 'rank_math_description', $desc );
+		$changed = true;
+	}
+	return $changed;
+}
+
+/**
+ * Tüm sayfa, ürün, yazı ve blog kategorileri için boş odak kelimeleri doldur.
+ *
+ * @return int Güncellenen kayıt sayısı.
+ */
+function df_rm_fill_all() {
+	$n   = 0;
+	$ids = get_posts( array( 'post_type' => array( 'page', 'product', 'post' ), 'post_status' => 'publish', 'numberposts' => -1, 'fields' => 'ids' ) );
+	foreach ( $ids as $id ) {
+		$n += df_rm_fill_post( (int) $id ) ? 1 : 0;
+	}
+	// Blog kategorileri ve ürün kategorileri (adından).
+	foreach ( array( 'category', 'product_cat' ) as $tax ) {
+		$terms = get_terms( array( 'taxonomy' => $tax, 'hide_empty' => false ) );
+		foreach ( is_wp_error( $terms ) ? array() : $terms as $t ) {
+			if ( in_array( (int) $t->term_id, array( (int) get_option( 'default_category' ), (int) get_option( 'default_product_cat' ) ), true ) ) {
+				continue;
+			}
+			if ( '' === trim( (string) get_term_meta( $t->term_id, 'rank_math_focus_keyword', true ) ) ) {
+				$kw = trim( (string) strtok( (string) get_term_meta( $t->term_id, 'df_seo_kw', true ), ',' ) );
+				update_term_meta( $t->term_id, 'rank_math_focus_keyword', $kw ? $kw : df_rm_lower( $t->name ) . ( 'product_cat' === $tax ? ' ' . df_rm_lower( df_opt( 'df_default_city', 'İzmir' ) ) : '' ) );
+				++$n;
+			}
+		}
+	}
+	return $n;
+}
+
+/**
+ * Kurulu sitede bir kez çalıştır; yeni eklenen ürün / sayfa / yazıda kaydederken doldur.
+ */
+function df_rm_fill_once() {
+	if ( ! function_exists( 'df_rank_math_live' ) || ! df_rank_math_live() || '2' === get_option( 'df_rm_kw_done' ) || ! current_user_can( 'manage_options' ) || wp_doing_ajax() ) {
+		return;
+	}
+	update_option( 'df_rm_kw_done', '2', false );
+	$n = df_rm_fill_all();
+	set_transient( 'df_rm_kw_n', $n, 300 );
+}
+add_action( 'admin_init', 'df_rm_fill_once', 40 );
+
+/**
+ * Kaydederken boş odak kelimeyi doldur.
+ *
+ * @param int $post_id Yazı.
+ */
+function df_rm_fill_on_save( $post_id ) {
+	if ( wp_is_post_revision( $post_id ) || wp_is_post_autosave( $post_id ) || ! function_exists( 'df_rank_math_live' ) || ! df_rank_math_live() ) {
+		return;
+	}
+	if ( in_array( get_post_type( $post_id ), array( 'page', 'product', 'post' ), true ) ) {
+		df_rm_fill_post( $post_id );
+	}
+}
+add_action( 'save_post', 'df_rm_fill_on_save', 99 );
+
+/**
+ * Bilgi notu.
+ */
+function df_rm_kw_notice() {
+	$n = get_transient( 'df_rm_kw_n' );
+	if ( false === $n ) {
+		return;
+	}
+	delete_transient( 'df_rm_kw_n' );
+	echo '<div class="notice notice-success is-dismissible"><p><strong>Odak anahtar kelimeler eklendi:</strong> ' . (int) $n . ' sayfa, ürün, yazı ve kategoriye odak kelime / Google açıklaması yazıldı. Sizin girdiğiniz alanlara dokunulmadı.</p></div>';
+}
+add_action( 'admin_notices', 'df_rm_kw_notice' );
