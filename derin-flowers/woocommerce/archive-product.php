@@ -28,10 +28,20 @@ if ( ! $df_img && $df_term instanceof WP_Term ) {
 		$df_img   = $df_first ? (int) get_post_thumbnail_id( $df_first[0] ) : 0;
 	}
 }
+$df_imgm = $df_data['image_m'];
+if ( ! $df_term instanceof WP_Term && is_shop() ) {
+	// Mağaza sayfası: kapak Tema Ayarları → Ürün & Mağaza'dan; yoksa ilk ürünün görseli.
+	$df_img  = absint( df_opt( 'shop_hero_image' ) );
+	$df_imgm = absint( df_opt( 'shop_hero_image_m' ) );
+	if ( ! $df_img ) {
+		$df_first = wc_get_products( array( 'limit' => 1, 'status' => 'publish', 'orderby' => 'menu_order', 'order' => 'ASC', 'return' => 'ids' ) );
+		$df_img   = $df_first ? (int) get_post_thumbnail_id( $df_first[0] ) : 0;
+	}
+}
 $df_o    = $df_img ? df_img_original( $df_img ) : null;
-$df_om   = $df_data['image_m'] ? df_img_original( $df_data['image_m'] ) : null;
+$df_om   = $df_imgm ? df_img_original( $df_imgm ) : null;
 ?>
-<header class="df-cathero<?php echo $df_o ? ' has-image' : ''; ?>" style="--df-ch:<?php echo esc_attr( $df_term instanceof WP_Term ? df_cat_hero_color( $df_term ) : df_cat_hero_color( (object) array( 'term_id' => 0, 'slug' => '', 'name' => '' ), false ) ); ?>">
+<header class="df-cathero<?php echo $df_o ? ' has-image' : ''; ?>" style="--df-ch:<?php echo esc_attr( $df_term instanceof WP_Term ? df_cat_hero_color( $df_term ) : ( sanitize_hex_color( (string) df_opt( 'shop_hero_color', '' ) ) ? df_opt( 'shop_hero_color' ) : df_cat_hero_color( (object) array( 'term_id' => 0, 'slug' => '', 'name' => '' ), false ) ) ); ?>">
 	<div class="df-cathero__glow" aria-hidden="true"></div>
 	<?php if ( $df_o ) : ?>
 		<picture class="df-cathero__media">
