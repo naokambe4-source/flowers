@@ -314,6 +314,13 @@ function df_rm_fill_post( $id ) {
 		}
 		$map = df_rm_page_keywords();
 		$kw  = isset( $map[ $post->post_name ] ) ? $map[ $post->post_name ] : df_rm_kw_from_title( $post->post_title, 4 );
+		$defs = function_exists( 'df_seo_page_defaults' ) ? df_seo_page_defaults() : array();
+		if ( isset( $defs[ $post->post_name ] ) ) {
+			$desc = $defs[ $post->post_name ][1];
+			if ( '' === trim( (string) get_post_meta( $id, 'rank_math_title', true ) ) ) {
+				update_post_meta( $id, 'rank_math_title', $defs[ $post->post_name ][0] );
+			}
+		}
 	} elseif ( 'product' === $post->post_type ) {
 		$name = df_rm_kw_from_title( $post->post_title );
 		$cats = wp_get_post_terms( $id, 'product_cat', array( 'fields' => 'all' ) );
@@ -325,6 +332,18 @@ function df_rm_fill_post( $id ) {
 			}
 		}
 		$kw   = $name . ( $cat ? ', ' . $cityl . ' ' . $cat : '' ) . ', ' . $cityl . ' çiçek siparişi';
+		// Uzun ürün adlarında şablon başlığı 60 karakteri aşar; kısa başlık yaz.
+		$ptitle = html_entity_decode( $post->post_title, ENT_QUOTES, 'UTF-8' );
+		if ( '' === trim( (string) get_post_meta( $id, 'rank_math_title', true ) ) && mb_strlen( $ptitle . ' | ' . $city . ' Çiçek Siparişi – ' . $site ) > 62 ) {
+			$short = preg_split( '/\s+[–\-|]\s+/u', $ptitle )[0];
+			$try   = array( $short . ' | ' . $city . ' – ' . $site, $short . ' – ' . $site, $short );
+			foreach ( $try as $cand ) {
+				if ( mb_strlen( $cand ) <= 62 ) {
+					break;
+				}
+			}
+			update_post_meta( $id, 'rank_math_title', $cand );
+		}
 		$text = trim( preg_replace( '/\s+/u', ' ', wp_strip_all_tags( $post->post_excerpt ? $post->post_excerpt : strip_shortcodes( $post->post_content ) ) ) );
 		$desc = $text ? $text : html_entity_decode( $post->post_title, ENT_QUOTES, 'UTF-8' ) . ': ' . $city . '’e aynı gün teslimat, taze çiçekler ve ücretsiz not kartı. Online sipariş ' . $site . '’ta.';
 		// Odak kelime açıklamada geçsin.
@@ -384,10 +403,11 @@ function df_rm_fill_all() {
  * Kurulu sitede bir kez çalıştır; yeni eklenen ürün / sayfa / yazıda kaydederken doldur.
  */
 function df_rm_fill_once() {
-	if ( ! function_exists( 'df_rank_math_live' ) || ! df_rank_math_live() || '2' === get_option( 'df_rm_kw_done' ) || ! current_user_can( 'manage_options' ) || wp_doing_ajax() ) {
+	if ( ! function_exists( 'df_rank_math_live' ) || ! df_rank_math_live() || '3' === get_option( 'df_rm_kw_done' ) || ! current_user_can( 'manage_options' ) || wp_doing_ajax() ) {
 		return;
 	}
-	update_option( 'df_rm_kw_done', '2', false );
+	update_option( 'df_rm_kw_done', '3', false );
+	df_rm_blog_category();
 	$n = df_rm_fill_all();
 	set_transient( 'df_rm_kw_n', $n, 300 );
 }
@@ -420,3 +440,72 @@ function df_rm_kw_notice() {
 	echo '<div class="notice notice-success is-dismissible"><p><strong>Odak anahtar kelimeler eklendi:</strong> ' . (int) $n . ' sayfa, ürün, yazı ve kategoriye odak kelime / Google açıklaması yazıldı. Sizin girdiğiniz alanlara dokunulmadı.</p></div>';
 }
 add_action( 'admin_notices', 'df_rm_kw_notice' );
+
+
+/**
+ * Blogun varsayılan kategorisi "Uncategorized / Genel" ise "Çiçek Rehberi" yap (açıklamalı).
+ */
+function df_rm_blog_category() {
+	$id = (int) get_option( 'default_category' );
+	$t  = $id ? get_term( $id, 'category' ) : null;
+	if ( ! $t instanceof WP_Term || ! in_array( strtolower( $t->slug ), array( 'uncategorized', 'genel', 'kategorilenmemis', 'kategorisiz' ), true ) ) {
+		return;
+	}
+	$site = get_bloginfo( 'name' );
+	$desc = 'Çiçek bakımı, çiçeklerin anlamları, özel günler için hediye önerileri ve ' . df_opt( 'df_default_city', 'İzmir' ) . '’den çiçek haberleri: ' . $site . ' Çiçek Rehberi.';
+	wp_update_term( $id, 'category', array( 'name' => 'Çiçek Rehberi', 'slug' => 'cicek-rehberi', 'description' => $desc ) );
+	update_term_meta( $id, 'rank_math_title', 'Çiçek Rehberi | Bakım ve Hediye Önerileri – ' . $site );
+	update_term_meta( $id, 'rank_math_description', $desc );
+	update_term_meta( $id, 'rank_math_focus_keyword', 'çiçek rehberi' );
+}
+
+/**
+ * Test / deneme ürün ve yazıları Google'a kapalı ve site haritası dışında.
+ *
+ * @param int $id Yazı.
+ * @return bool
+ */
+function df_seo_is_test_post( $id ) {
+	return $id && function_exists( 'df_aeo_is_test' ) && df_aeo_is_test( get_the_title( $id ) );
+}
+
+/**
+ * Rank Math robots: test kayıtlarına noindex.
+ *
+ * @param array $robots Robots.
+ * @return array
+ */
+function df_rm_test_robots( $robots ) {
+	if ( is_singular() && df_seo_is_test_post( get_queried_object_id() ) ) {
+		$robots['index'] = 'noindex';
+	}
+	return $robots;
+}
+add_filter( 'rank_math/frontend/robots', 'df_rm_test_robots' );
+
+/**
+ * Rank Math site haritası: test kayıtlarını çıkar.
+ *
+ * @param array  $url    Kayıt.
+ * @param string $type   Tür.
+ * @param object $object Nesne.
+ * @return array|false
+ */
+function df_rm_test_sitemap( $url, $type, $object ) {
+	return ( 'post' === $type && isset( $object->ID ) && df_seo_is_test_post( (int) $object->ID ) ) ? false : $url;
+}
+add_filter( 'rank_math/sitemap/entry', 'df_rm_test_sitemap', 10, 3 );
+
+/**
+ * SEO eklentisi yokken: test kayıtlarına noindex.
+ *
+ * @param array $robots Robots.
+ * @return array
+ */
+function df_core_test_robots( $robots ) {
+	if ( is_singular() && df_seo_is_test_post( get_queried_object_id() ) ) {
+		$robots['noindex'] = true;
+	}
+	return $robots;
+}
+add_filter( 'wp_robots', 'df_core_test_robots' );

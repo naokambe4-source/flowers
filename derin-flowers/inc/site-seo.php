@@ -35,6 +35,11 @@ function df_seo_page_defaults() {
 		'teslimat-bolgeleri'  => array( 'Teslimat Bölgeleri ve Ücretleri | ' . $city . ' – ' . $site, $city . ' içinde çiçek teslimatı yaptığımız ilçeler, teslimat ücretleri ve saat aralıkları. Aynı gün teslimat için son sipariş saatini öğrenin.' ),
 		'blog'                => array( 'Blog | Çiçek Bakımı ve Hediye Önerileri – ' . $site, 'Çiçek bakımı, özel günler için hediye önerileri, çiçeklerin anlamları ve ' . $city . '’den çiçek haberleri ' . $site . ' blogunda.' ),
 		'siparis-takip'       => array( 'Sipariş Takip | ' . $site, 'Sipariş numaranız ve e-posta adresinizle çiçek siparişinizin durumunu anında takip edin.' ),
+		'mesafeli-satis-sozlesmesi'    => array( 'Mesafeli Satış Sözleşmesi | ' . $site, $site . ' çiçek siparişlerinde satıcı ve alıcının hakları, teslimat, ödeme, cayma hakkı istisnası ve uyuşmazlık çözümü.' ),
+		'on-bilgilendirme-formu'       => array( 'Ön Bilgilendirme Formu | ' . $site, 'Sipariş öncesi ön bilgilendirme: satıcı bilgileri, ürün ve fiyat, teslimat ve ödeme şekli, çiçek siparişlerinde cayma hakkı ve başvuru yolları.' ),
+		'iade-ve-iptal-kosullari'      => array( 'İade ve İptal Koşulları | ' . $site, 'Çiçek siparişinizi nasıl iptal edersiniz, hasarlı veya farklı ürün geldiğinde ne yapılır, iade süresi ve yöntemi: ' . $site . ' iade ve iptal koşulları.' ),
+		'kvkk-aydinlatma-metni'        => array( 'KVKK Aydınlatma Metni | ' . $site, $site . ' kişisel verilerinizi hangi amaçla işler, kimlerle paylaşır, ne kadar saklar ve KVKK kapsamındaki haklarınızı nasıl kullanırsınız.' ),
+		'gizlilik-ve-cerez-politikasi' => array( 'Gizlilik ve Çerez Politikası | ' . $site, $site . ' sitesinde kullanılan çerezler, ödeme güvenliği ve gizlilik ilkeleri; çerez tercihlerinizi nasıl yönetebileceğiniz.' ),
 	);
 }
 
