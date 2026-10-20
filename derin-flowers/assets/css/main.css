@@ -526,3 +526,22 @@ hr { border: 0; border-top: 1px solid var(--df-line); margin: 2em 0; }
 .df-topbar:has(.df-lang.is-open) { z-index: 10001; }
 .df-lang__list, .df-lang__list a { text-align: left; }
 [dir="rtl"] .df-lang__list a, .df-lang__list a[lang="ar"], .df-lang__list a[lang="fa"], .df-lang__list a[lang="he"] { text-align: left; }
+
+/* Dil düğmesi: sağ altta, WhatsApp'ın üstünde */
+.df-lang--float { position: fixed; right: 20px; bottom: 86px; z-index: 81; }
+.df-lang--float.df-lang--solo { bottom: 20px; }
+.df-lang--float .df-lang__btn { width: 54px; height: 54px; min-height: 0; padding: 0; justify-content: center; flex-direction: column; gap: 2px; border: 1px solid var(--df-line); border-radius: 50%; background: #fff; box-shadow: var(--df-shadow-lg); font-size: 10px; letter-spacing: .04em; transition: transform .3s var(--df-ease); }
+.df-lang--float .df-lang__btn:hover { transform: translateY(-3px); }
+.df-lang--float .df-lang__btn > .df-icon { display: none; }
+.df-lang--float .df-lang__cur { flex-direction: column; gap: 3px; line-height: 1; }
+.df-lang--float .df-lang__flag { width: 24px; height: 18px; border-radius: 3px; }
+.df-lang--float .df-lang__list { top: auto; bottom: calc(100% + 10px); right: 0; }
+.df-lang--float.is-open { z-index: 10001; }
+@media (max-width: 782px) {
+	.df-lang--float { right: 14px; bottom: 74px; }
+	.df-lang--float.df-lang--solo { bottom: 14px; }
+	.df-lang--float .df-lang__btn { width: 50px; height: 50px; }
+	.df-lang--float .df-lang__list { position: fixed; top: auto; left: 12px; right: 12px; bottom: 12px; }
+	.df-langtoast { left: 12px; right: 76px; bottom: 16px; max-width: none; transform: none; justify-content: space-between; }
+	.df-langtoast.is-out { transform: translateY(20px); }
+}

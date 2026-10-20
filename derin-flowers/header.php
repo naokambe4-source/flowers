@@ -28,12 +28,7 @@ defined( 'ABSPATH' ) || exit;
 					<span<?php echo df_e( 'topbar_left' ); // phpcs:ignore ?>><?php echo esc_html( df_opt( 'topbar_left' ) ); ?></span>
 				<?php endif; ?>
 			</p>
-			<?php $df_langs = df_lang_links(); ?>
-			<?php if ( $df_langs ) : ?>
-				<?php df_lang_menu( $df_langs ); ?>
-			<?php else : ?>
-				<p class="df-topbar__right"><?php df_the_icon( 'clock', array( 'size' => 14 ) ); ?><span<?php echo df_e( 'topbar_right' ); // phpcs:ignore ?>><?php echo esc_html( df_opt( 'topbar_right' ) ); ?></span></p>
-			<?php endif; ?>
+			<p class="df-topbar__right"><?php df_the_icon( 'clock', array( 'size' => 14 ) ); ?><span<?php echo df_e( 'topbar_right' ); // phpcs:ignore ?>><?php echo esc_html( df_opt( 'topbar_right' ) ); ?></span></p>
 		</div>
 	</div>
 <?php endif; ?>

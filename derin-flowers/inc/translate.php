@@ -97,7 +97,7 @@ function df_lang_flag( $code ) {
  *
  * @param array $langs df_lang_links() çıktısı.
  */
-function df_lang_menu( $langs ) {
+function df_lang_menu( $langs, $float = false ) {
 	if ( ! $langs ) {
 		return;
 	}
@@ -110,7 +110,7 @@ function df_lang_menu( $langs ) {
 	}
 	$code = strtolower( $cur['code'] );
 	?>
-	<div class="df-lang notranslate" translate="no" data-df-langmenu>
+	<div class="df-lang notranslate<?php echo $float ? ' df-lang--float' . ( df_lang_wa_shown() ? '' : ' df-lang--solo' ) : ''; ?>" translate="no" data-df-langmenu>
 		<button type="button" class="df-lang__btn" aria-haspopup="true" aria-expanded="false" aria-label="Dil seçimi / Language">
 			<span class="df-lang__cur" data-df-lang-cur><?php echo df_lang_flag( $code ); // phpcs:ignore ?><span class="df-lang__code"><?php echo esc_html( strtoupper( $code ) ); ?></span></span>
 			<?php df_the_icon( 'chevron-down', array( 'size' => 14 ) ); ?>
@@ -125,6 +125,26 @@ function df_lang_menu( $langs ) {
 		</ul>
 	</div>
 	<?php
+}
+
+/**
+ * Sağ altta WhatsApp düğmesinin üstünde sabit dil düğmesi (mobil ve masaüstü).
+ */
+function df_lang_float() {
+	if ( is_admin() || ! function_exists( 'df_lang_links' ) ) {
+		return;
+	}
+	df_lang_menu( df_lang_links(), true );
+}
+add_action( 'wp_footer', 'df_lang_float', 6 );
+
+/**
+ * WhatsApp düğmesi bu sayfada görünüyor mu? (Dil düğmesi onun üstüne yerleşir.)
+ *
+ * @return bool
+ */
+function df_lang_wa_shown() {
+	return df_opt( 'whatsapp_float' ) && function_exists( 'df_whatsapp_url' ) && df_whatsapp_url() && ! ( df_wc() && ( is_checkout() || is_cart() ) );
 }
 
 /**
