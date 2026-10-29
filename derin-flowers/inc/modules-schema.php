@@ -47,7 +47,7 @@ function df_modules_schema( $schema ) {
 
 	$schema['product']['groups'][] = array(
 		'title'  => 'Gül adedi: kartta adet seçimi ve ek gül',
-		'desc'   => 'Kartlarda "Adet / Gül adedi" seçenekli ürünlerde 11 · 21 · 51 · 101 düğmeleri çıkar; seçilince kart fiyatı değişir ve ürüne o adet seçili gidilir. Ürün sayfasında "Buketinize ek gül ekleyin" ile paketin üstüne gül eklenir (örn. 101 + 50). Ürün bazında Ürün verileri → Genel sekmesinden açıp kapatabilir, birim fiyat girebilirsiniz.',
+		'desc'   => 'Kartlarda "Adet / Gül adedi" seçenekli ürünlerde 11 · 21 · 51 · 101 düğmeleri çıkar; seçilince kart fiyatı değişir ve ürüne o adet seçili gidilir. Ürün sayfasında "Buketinize ek gül ekleyin" ile paketin üstüne gül eklenir (örn. 101 + 50). Ürün bazında: Ürün → Ürün verileri → "Ek Gül" sekmesinden açıp kapatabilir, gül başı fiyatı, en fazla adedi ve hızlı ekleme düğmelerini belirleyebilirsiniz.',
 		'fields' => array(
 			array( 'id' => 'card_qty_chips', 'type' => 'toggle', 'label' => 'Kartlarda gül adedi seçimi', 'default' => 1, 'half' => true ),
 			array( 'id' => 'extra_on', 'type' => 'toggle', 'label' => 'Ürün sayfasında "Ek gül ekle"', 'default' => 1, 'half' => true ),
@@ -55,6 +55,7 @@ function df_modules_schema( $schema ) {
 			array( 'id' => 'extra_unit', 'type' => 'number', 'label' => 'Ek gül birim fiyatı (₺)', 'default' => 0, 'min' => 0, 'max' => 10000, 'half' => true, 'desc' => '0 bırakılırsa seçilen paketin gül başı fiyatı kullanılır (örn. 101 gül 8.900 ₺ → gül başı 88 ₺).' ),
 			array( 'id' => 'extra_max', 'type' => 'number', 'label' => 'En fazla ek gül', 'default' => 100, 'min' => 1, 'max' => 500, 'half' => true ),
 			array( 'id' => 'extra_step', 'type' => 'number', 'label' => '+ / − düğmesi kaçar artırsın', 'default' => 1, 'min' => 1, 'max' => 50, 'half' => true ),
+			array( 'id' => 'extra_chips', 'type' => 'text', 'label' => 'Hızlı ekleme düğmeleri (adet, virgülle)', 'default' => '10, 20, 50', 'half' => true ),
 		),
 	);
 

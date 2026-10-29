@@ -184,6 +184,7 @@ function df_extra_cfg( $product ) {
 		'unit' => (float) ( $product->get_meta( '_df_extra_unit' ) ? $product->get_meta( '_df_extra_unit' ) : df_opt( 'extra_unit', 0 ) ),
 		'max'  => max( 1, (int) ( $product->get_meta( '_df_extra_max' ) ? $product->get_meta( '_df_extra_max' ) : df_opt( 'extra_max', 100 ) ) ),
 		'step' => max( 1, (int) df_opt( 'extra_step', 1 ) ),
+		'chips' => array_values( array_filter( array_map( 'absint', explode( ',', (string) ( $product->get_meta( '_df_extra_chips' ) ? $product->get_meta( '_df_extra_chips' ) : df_opt( 'extra_chips', '10, 20, 50' ) ) ) ) ) ),
 	);
 }
 
@@ -253,7 +254,7 @@ function df_extra_field() {
 			<input type="number" name="df_extra_roses" value="0" min="0" max="<?php echo (int) $cfg['max']; ?>" step="<?php echo (int) $cfg['step']; ?>" inputmode="numeric" aria-label="Ek gül adedi">
 			<button type="button" class="df-rosec__step" data-df-extra-step="1" aria-label="Artır">+</button>
 			<div class="df-extra__quick">
-				<?php foreach ( array( 10, 20, 50 ) as $q ) : ?>
+				<?php foreach ( array_slice( $cfg['chips'], 0, 5 ) as $q ) : ?>
 					<?php if ( $q <= $cfg['max'] ) : ?>
 						<button type="button" class="df-extra__chip" data-df-extra-set="<?php echo (int) $q; ?>">+<?php echo (int) $q; ?></button>
 					<?php endif; ?>
@@ -385,24 +386,39 @@ function df_extra_order_item( $line, $key, $item ) {
 add_action( 'woocommerce_checkout_create_order_line_item', 'df_extra_order_item', 12, 3 );
 
 /**
- * Ürün düzenleme: Genel sekmesinde ek gül ayarları.
+ * Ürün verileri: "Ek Gül" sekmesi.
+ *
+ * @param array $tabs Sekmeler.
+ * @return array
+ */
+function df_extra_admin_tab( $tabs ) {
+	$tabs['df_extra'] = array( 'label' => 'Ek Gül', 'target' => 'df_extra_panel', 'class' => array( 'show_if_simple', 'show_if_variable' ), 'priority' => 64 );
+	return $tabs;
+}
+add_filter( 'woocommerce_product_data_tabs', 'df_extra_admin_tab' );
+
+/**
+ * Sekme içeriği.
  */
 function df_extra_admin_fields() {
-	echo '<div class="options_group">';
+	global $post;
+	$product = wc_get_product( $post );
+	$auto    = $product ? df_extra_unit_for( $product, $product->is_type( 'variable' ) && $product->get_children() ? wc_get_product( $product->get_children()[0] ) : null ) : 0;
+	echo '<div id="df_extra_panel" class="panel woocommerce_options_panel hidden"><div class="options_group">';
+	echo '<p class="form-field" style="margin:0;padding-top:12px"><strong>Ürün sayfasında "Buketinize ek gül ekleyin"</strong> — müşteri seçtiği paketin üstüne gül ekler (örn. 101 + 50 = 151 gül). Fiyat = paket fiyatı + ek gül × gül başı fiyat.</p>';
 	woocommerce_wp_select(
 		array(
-			'id'          => '_df_extra',
-			'label'       => 'Ek gül ekleme',
-			'options'     => array( '' => 'Genel ayara göre (Güller kategorisinde açık)', 'yes' => 'Bu üründe açık', 'no' => 'Bu üründe kapalı' ),
-			'desc_tip'    => true,
-			'description' => 'Ürün sayfasında "Buketinize ek gül ekleyin" alanı. Örn. 101 gül + 50 ek gül.',
+			'id'      => '_df_extra',
+			'label'   => 'Ek gül',
+			'options' => array( '' => 'Genel ayara göre (Güller kategorisinde açık)', 'yes' => 'Bu üründe açık', 'no' => 'Bu üründe kapalı' ),
 		)
 	);
-	woocommerce_wp_text_input( array( 'id' => '_df_extra_unit', 'label' => 'Ek gül birim fiyatı (₺)', 'type' => 'number', 'custom_attributes' => array( 'min' => '0', 'step' => '0.01' ), 'placeholder' => 'Boşsa paketin gül başı fiyatı', 'desc_tip' => true, 'description' => 'Boş bırakılırsa Tema Ayarları’ndaki fiyat, o da yoksa seçilen paket fiyatı ÷ gül sayısı kullanılır.' ) );
-	woocommerce_wp_text_input( array( 'id' => '_df_extra_max', 'label' => 'En fazla ek gül', 'type' => 'number', 'custom_attributes' => array( 'min' => '1', 'step' => '1' ), 'placeholder' => (string) df_opt( 'extra_max', 100 ) ) );
-	echo '</div>';
+	woocommerce_wp_text_input( array( 'id' => '_df_extra_unit', 'label' => 'Gül başı fiyat (₺)', 'type' => 'number', 'custom_attributes' => array( 'min' => '0', 'step' => '0.01' ), 'placeholder' => df_opt( 'extra_unit', 0 ) ? (string) df_opt( 'extra_unit' ) : 'Otomatik', 'description' => 'Boş bırakılırsa Tema Ayarları’ndaki fiyat; o da 0 ise seçilen paketin gül başı fiyatı kullanılır' . ( $auto ? ' (şu an ilk paket için ≈ ' . wp_strip_all_tags( wc_price( $auto ) ) . ')' : '' ) . '.' ) );
+	woocommerce_wp_text_input( array( 'id' => '_df_extra_max', 'label' => 'En fazla ek gül (adet)', 'type' => 'number', 'custom_attributes' => array( 'min' => '1', 'step' => '1' ), 'placeholder' => (string) df_opt( 'extra_max', 100 ) ) );
+	woocommerce_wp_text_input( array( 'id' => '_df_extra_chips', 'label' => 'Hızlı ekleme düğmeleri', 'placeholder' => (string) df_opt( 'extra_chips', '10, 20, 50' ), 'description' => 'Virgülle adetler, örn: 10, 25, 50. Müşteri tek dokunuşla ekler.' ) );
+	echo '</div></div>';
 }
-add_action( 'woocommerce_product_options_general_product_data', 'df_extra_admin_fields' );
+add_action( 'woocommerce_product_data_panels', 'df_extra_admin_fields' );
 
 /**
  * Kaydet.
@@ -418,6 +434,9 @@ function df_extra_admin_save( $product ) {
 	if ( isset( $_POST['_df_extra_unit'] ) ) {
 		$u = wc_format_decimal( wp_unslash( $_POST['_df_extra_unit'] ) );
 		$product->update_meta_data( '_df_extra_unit', '' === $u ? '' : max( 0, (float) $u ) );
+	}
+	if ( isset( $_POST['_df_extra_chips'] ) ) {
+		$product->update_meta_data( '_df_extra_chips', implode( ', ', array_filter( array_map( 'absint', explode( ',', sanitize_text_field( wp_unslash( $_POST['_df_extra_chips'] ) ) ) ) ) ) );
 	}
 	if ( isset( $_POST['_df_extra_max'] ) ) {
 		$x = absint( $_POST['_df_extra_max'] );
