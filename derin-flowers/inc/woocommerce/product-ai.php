@@ -506,6 +506,14 @@ function df_pai_box( $post ) {
 			<textarea id="df-pai-notes" rows="2" data-pai-notes placeholder="Örn. 21 adet kırmızı gül, okaliptüs, siyah kutu, sevgiliye ve yıldönümü için"><?php echo $cur ? esc_textarea( df_pai_meta_line( $cur ) ) : ''; ?></textarea>
 		</div>
 
+		<div class="df-pai__ai df-pai__vision<?php echo $has_key ? ' is-live' : ''; ?>">
+			<div class="df-pai__ai-text">
+				<span class="df-pai__badge"><i></i>Görselden otomatik</span>
+				<strong>📷 Fotoğraftan her şeyi oluştur</strong>
+				<span>Sağdaki <b>Ürün görseli</b>ne fotoğrafı ekleyin, <b>fiyatı</b> yazın ve bu düğmeye basın: ürün adı, kategori, kısa ve uzun açıklama, SEO (Rank Math), etiketler ve görsel ALT metni kendiliğinden dolar. Kontrol edip <b>Yayınla</b> deyin.</span>
+			</div>
+			<button type="button" class="df-pai__btn" data-pai-vision<?php disabled( ! df_opt( 'pai_on', 1 ) || ! $has_key ); ?>><span class="df-pai__btn-t">Görselden oluştur</span><span class="df-pai__spin" data-pai-vspin></span></button>
+		</div>
 		<div class="df-pai__ai<?php echo $has_key ? ' is-live' : ''; ?>">
 			<div class="df-pai__ai-text">
 				<span class="df-pai__badge"><i></i><?php echo $has_key ? esc_html( $names[ $prov ] . ' bağlı' ) : 'Yapay zekâ bağlı değil'; ?></span>
@@ -674,6 +682,40 @@ function df_pai_box( $post ) {
 			} ).finally( function () { btn.disabled = false; spin.classList.remove( 'is-active' ); } );
 		}
 		$( '[data-pai-go]' ).addEventListener( 'click', go );
+		var vbtn = $( '[data-pai-vision]' );
+		if ( vbtn ) {
+			vbtn.addEventListener( 'click', function () {
+				var err = $( '[data-pai-err]' ), spin = $( '[data-pai-vspin]' ), th = document.getElementById( '_thumbnail_id' );
+				if ( ! th || ! ( +th.value > 0 ) ) { err.hidden = false; err.style.background = ''; err.style.color = ''; err.textContent = 'Önce sağdaki "Ürün görseli" kutusundan fotoğraf ekleyin.'; return; }
+				err.hidden = true; vbtn.disabled = true; spin.classList.add( 'is-active' );
+				var fd = new FormData();
+				fd.append( 'action', 'df_pai_vision' ); fd.append( 'nonce', nonce ); fd.append( 'thumb', th.value );
+				fd.append( 'price', ( document.getElementById( '_regular_price' ) || {} ).value || '' ); fd.append( 'notes', notes.value );
+				fetch( ajaxurl, { method: 'POST', body: fd, credentials: 'same-origin' } ).then( function ( r ) { return r.json(); } ).then( function ( r ) {
+					if ( ! r || ! r.success ) { throw new Error( r && r.data ? r.data : 'Yanıt alınamadı.' ); }
+					var d = r.data, pt = document.getElementById( 'title' );
+					if ( pt ) { pt.value = d.name; pt.dispatchEvent( new Event( 'input', { bubbles: true } ) ); var lbl = document.getElementById( 'title-prompt-text' ); if ( lbl ) { lbl.classList.add( 'screen-reader-text' ); } }
+					if ( title && title !== pt ) { title.value = d.name; }
+					if ( d.cats && d.cats.length ) {
+						var def = <?php echo (int) get_option( 'default_product_cat' ); ?>;
+						document.querySelectorAll( '#product_catchecklist input[type=checkbox]' ).forEach( function ( c ) { if ( +c.value === def ) { c.checked = false; } } );
+						d.cats.forEach( function ( id ) { var c = document.querySelector( '#in-product_cat-' + id ); if ( c ) { c.checked = true; } } );
+					}
+					f( 'short' ).value = d.short || ''; f( 'long' ).value = htmlToText( d.long || '' );
+					f( 'seo_title' ).value = d.seo_title || ''; f( 'seo_desc' ).value = d.seo_desc || '';
+					f( 'keyword' ).value = d.keyword || ''; f( 'alt' ).value = d.alt || ''; f( 'tags' ).value = ( d.tags || [] ).join( ', ' );
+					editorSet( 'excerpt', ( d.short || '' ).replace( /\n/g, '<br>' ) );
+					editorSet( 'content', textToHtml( f( 'long' ).value ) );
+					$( '[data-pai-result]' ).hidden = false; $( '[data-pai-ok]' ).hidden = false;
+					count();
+					err.hidden = false; err.style.background = '#eaf6ec'; err.style.color = '#1e5b2c';
+					err.textContent = '✓ Ürün adı, kategori, açıklamalar, SEO ve etiketler dolduruldu. Fiyatı ve stoğu kontrol edip "Yayınla"ya basın.';
+					window.scrollTo( { top: 0, behavior: 'smooth' } );
+				} ).catch( function ( e ) {
+					err.hidden = false; err.style.background = ''; err.style.color = ''; err.textContent = 'Görselden oluşturulamadı: ' + e.message;
+				} ).finally( function () { vbtn.disabled = false; spin.classList.remove( 'is-active' ); } );
+			} );
+		}
 		$( '[data-pai-apply]' ).addEventListener( 'click', function () {
 			editorSet( 'excerpt', f( 'short' ).value.replace( /\n/g, '<br>' ) );
 			editorSet( 'content', textToHtml( f( 'long' ).value ) );
@@ -813,7 +855,7 @@ function df_pai_busy_retries() {
  * @param string $prompt Talimat.
  * @return string|WP_Error
  */
-function df_pai_call( $prov, $prompt ) {
+function df_pai_call( $prov, $prompt, $image = null ) {
 	$key = df_pai_key( $prov );
 	if ( 'openai' === $prov ) {
 		$res = wp_remote_post(
@@ -831,7 +873,10 @@ function df_pai_call( $prov, $prompt ) {
 						'messages'        => array(
 							array(
 								'role'    => 'user',
-								'content' => $prompt,
+								'content' => $image ? array(
+									array( 'type' => 'text', 'text' => $prompt ),
+									array( 'type' => 'image_url', 'image_url' => array( 'url' => 'data:' . $image['mime'] . ';base64,' . $image['data'] ) ),
+								) : $prompt,
 							),
 						),
 					)
@@ -866,7 +911,7 @@ function df_pai_call( $prov, $prompt ) {
 							'contents'         => array(
 								array(
 									'role'  => 'user',
-									'parts' => array( array( 'text' => $prompt ) ),
+									'parts' => $image ? array( array( 'text' => $prompt ), array( 'inline_data' => array( 'mime_type' => $image['mime'], 'data' => $image['data'] ) ) ) : array( array( 'text' => $prompt ) ),
 								),
 							),
 							'generationConfig' => array( 'responseMimeType' => 'application/json' ),
@@ -937,7 +982,10 @@ function df_pai_call( $prov, $prompt ) {
 					'messages'      => array(
 						array(
 							'role'    => 'user',
-							'content' => $prompt,
+							'content' => $image ? array(
+								array( 'type' => 'image', 'source' => array( 'type' => 'base64', 'media_type' => $image['mime'], 'data' => $image['data'] ) ),
+								array( 'type' => 'text', 'text' => $prompt ),
+							) : $prompt,
 						),
 					),
 				)
@@ -1052,6 +1100,131 @@ function df_pai_generate() {
 	wp_send_json_success( $out );
 }
 add_action( 'wp_ajax_df_pai_generate', 'df_pai_generate' );
+
+/**
+ * Görselden ürün: yapay zekâ fotoğrafa bakıp ad, kategori, açıklamalar, SEO, etiket ve ALT metni yazar.
+ */
+function df_pai_vision() {
+	check_ajax_referer( 'df_pai', 'nonce' );
+	if ( ! current_user_can( 'edit_products' ) || ! df_opt( 'pai_on', 1 ) ) {
+		wp_send_json_error( 'Yetkiniz yok.', 403 );
+	}
+	$thumb = isset( $_POST['thumb'] ) ? absint( $_POST['thumb'] ) : 0;
+	$price = isset( $_POST['price'] ) ? sanitize_text_field( wp_unslash( $_POST['price'] ) ) : '';
+	$notes = isset( $_POST['notes'] ) ? sanitize_textarea_field( wp_unslash( $_POST['notes'] ) ) : '';
+	if ( ! $thumb || ! wp_attachment_is_image( $thumb ) ) {
+		wp_send_json_error( 'Önce sağdaki "Ürün görseli" kutusundan fotoğraf ekleyin.' );
+	}
+	$prov = df_opt( 'pai_provider', 'openai' );
+	if ( '' === df_pai_key( $prov ) ) {
+		wp_send_json_error( 'Görselden oluşturmak için yapay zekâ anahtarı gerekli: Tema Ayarları → Ürün & Mağaza → Yapay zekâ ürün içeriği.' );
+	}
+	// Yapay zekâya gönderilecek görsel: orta boy kopya (hızlı ve ucuz).
+	$path = '';
+	foreach ( array( 'large', 'medium_large', 'full' ) as $size ) {
+		$src = image_get_intermediate_size( $thumb, $size );
+		if ( $src && ! empty( $src['path'] ) ) {
+			$path = trailingslashit( wp_get_upload_dir()['basedir'] ) . $src['path'];
+			break;
+		}
+	}
+	if ( ! $path || ! file_exists( $path ) ) {
+		$path = get_attached_file( $thumb );
+	}
+	if ( ! $path || ! file_exists( $path ) || filesize( $path ) > 8 * MB_IN_BYTES ) {
+		wp_send_json_error( 'Görsel dosyası okunamadı.' );
+	}
+	$mime = wp_check_filetype( $path )['type'];
+	$mime = in_array( $mime, array( 'image/jpeg', 'image/png', 'image/webp', 'image/gif' ), true ) ? $mime : 'image/jpeg';
+	$img  = array( 'mime' => $mime, 'data' => base64_encode( file_get_contents( $path ) ) ); // phpcs:ignore
+
+	// Kategori listesi (yapay zekâ bunlardan seçer).
+	$cats  = array();
+	$terms = get_terms( array( 'taxonomy' => 'product_cat', 'hide_empty' => false ) );
+	foreach ( is_wp_error( $terms ) ? array() : $terms as $t ) {
+		if ( (int) get_option( 'default_product_cat' ) === (int) $t->term_id ) {
+			continue;
+		}
+		$cats[ $t->slug ] = html_entity_decode( $t->name, ENT_QUOTES, 'UTF-8' ) . ( $t->parent && get_term( $t->parent ) ? ' (' . html_entity_decode( get_term( $t->parent )->name, ENT_QUOTES, 'UTF-8' ) . ' altında)' : '' );
+	}
+	$used   = function_exists( 'df_pool_used' ) ? (array) df_pool_used() : array();
+	$pool   = array();
+	foreach ( function_exists( 'df_pool_all' ) ? df_pool_all() : array() as $r ) {
+		if ( ! empty( $r['en'] ) && ! isset( $used[ df_pool_norm( $r['en'] ) ] ) && count( $pool ) < 60 ) {
+			$pool[] = $r['en'] . ( ! empty( $r['tr'] ) ? ' (' . $r['tr'] . ')' : '' );
+		}
+	}
+	$list = '';
+	foreach ( $cats as $slug => $name ) {
+		$list .= '- ' . $slug . ': ' . $name . "\n";
+	}
+	$prompt = "Bir Türk çiçekçinin (" . df_opt( 'pai_brand' ) . ") e-ticaret sitesi için, ekteki ürün fotoğrafına bakarak ürün kaydı hazırla. Google SEO kurallarını bilen bir metin yazarısın.\n"
+		. ( $price ? 'Fiyat: ' . $price . " TL\n" : '' )
+		. ( $notes ? 'Ek bilgi: ' . $notes . "\n" : '' )
+		. "\nKategoriler (yalnızca bu listeden, adres/slug olarak seç; 1-3 tane, en uygun olan önce):\n" . $list
+		. ( $pool ? "\nKullanılmamış ürün adı havuzu (fotoğrafa uyan varsa buradan seç, yoksa yeni ad üret):\n- " . implode( "\n- ", $pool ) . "\n" : '' )
+		. "\nKurallar:\n"
+		. "- Fotoğrafta gerçekten görüneni yaz: çiçek türü, renkler, ambalaj/kutu/vazo. Emin olmadığın şeyi (adet, boy) uydurma; gül adedi net sayılamıyorsa yazma.\n"
+		. "- name: zarif, akılda kalan ürün adı, en fazla 55 karakter, her kelimenin baş harfi büyük (Türkçe kurala göre), marka adı yazma.\n"
+		. "- Kusursuz Türkçe: yazım ve noktalama hatası yok, Türkçe karakterler doğru, emoji ve HTML yok, abartı ve klişe yok.\n"
+		. "- short: 1-2 cümle, en fazla 220 karakter.\n"
+		. "- long: 120-200 kelime; 2-3 kısa paragraf (paragraflar arasında boş satır) ve sonda 'Kimler için uygun' gibi kısa madde listesi (satır başı '- ').\n"
+		. "- seo_title: en fazla 60 karakter, ürün adı ve doğal biçimde 'İzmir'.\n"
+		. "- seo_desc: 140-155 karakter, odak kelimeyi ve aynı gün teslimat gibi gerçek bir faydayı içersin.\n"
+		. "- keyword: tek odak anahtar kelime, küçük harf (örn. 'izmir kırmızı gül buketi').\n"
+		. "- alt: görseli anlatan en fazla 120 karakterlik ALT metni.\n"
+		. "- tags: 5-8 küçük harfli Türkçe etiket.\n"
+		. 'Yanıtı yalnızca JSON olarak ver: {"name":"","categories":[""],"short":"","long":"","seo_title":"","seo_desc":"","keyword":"","alt":"","tags":[""]}';
+	$GLOBALS['df_pai_busy_retries'] = 3;
+	$text = df_pai_call( $prov, $prompt, $img );
+	if ( is_wp_error( $text ) ) {
+		wp_send_json_error( $text->get_error_message() );
+	}
+	$json = preg_match( '/\{.*\}/s', (string) $text, $m ) ? json_decode( $m[0], true ) : null;
+	if ( ! is_array( $json ) || empty( $json['name'] ) ) {
+		wp_send_json_error( 'Yapay zekâ yanıtı okunamadı, tekrar deneyin.' );
+	}
+	$name = sanitize_text_field( html_entity_decode( (string) $json['name'], ENT_QUOTES, 'UTF-8' ) );
+	if ( function_exists( 'df_loc_title_case' ) && mb_strtoupper( $name, 'UTF-8' ) === $name ) {
+		$name = df_loc_title_case( $name );
+	}
+	$out = array( 'name' => $name );
+	foreach ( array( 'short', 'long', 'seo_title', 'seo_desc', 'keyword', 'alt' ) as $k ) {
+		$v         = isset( $json[ $k ] ) ? html_entity_decode( (string) $json[ $k ], ENT_QUOTES, 'UTF-8' ) : '';
+		$out[ $k ] = df_pai_fix_name( sanitize_textarea_field( $v ), $name );
+	}
+	$out['long'] = df_pai_long_html( $out['long'] );
+	$out['tags'] = isset( $json['tags'] ) ? array_slice( array_values( array_filter( array_map( 'sanitize_text_field', (array) $json['tags'] ) ) ), 0, 8 ) : array();
+	$out['cats'] = array();
+	foreach ( (array) ( $json['categories'] ?? array() ) as $slug ) {
+		$t = get_term_by( 'slug', sanitize_title( (string) $slug ), 'product_cat' );
+		if ( $t && count( $out['cats'] ) < 3 ) {
+			$out['cats'][] = (int) $t->term_id;
+		}
+	}
+	wp_send_json_success( $out );
+}
+add_action( 'wp_ajax_df_pai_vision', 'df_pai_vision' );
+
+/**
+ * Rank Math kendi kutusunu bizden sonra (boş) kaydedip yapay zekâ SEO'sunu silmesin: en son biz yazarız.
+ *
+ * @param int $post_id Ürün.
+ */
+function df_pai_seo_last( $post_id ) {
+	// phpcs:disable WordPress.Security.NonceVerification.Missing -- df_pai_save içinde doğrulandı.
+	if ( 'product' !== get_post_type( $post_id ) || empty( $_POST['df_pai_nonce'] ) || ! wp_verify_nonce( sanitize_key( $_POST['df_pai_nonce'] ), 'df_pai_save' ) || wp_is_post_revision( $post_id ) || ! current_user_can( 'edit_post', $post_id ) ) {
+		return;
+	}
+	foreach ( array( 'df_seo_title' => 'rank_math_title', 'df_seo_desc' => 'rank_math_description', 'df_seo_kw' => 'rank_math_focus_keyword' ) as $field => $rm ) {
+		$v = isset( $_POST[ $field ] ) ? sanitize_text_field( wp_unslash( $_POST[ $field ] ) ) : '';
+		if ( '' !== $v ) {
+			update_post_meta( $post_id, $rm, $v );
+		}
+	}
+	// phpcs:enable
+}
+add_action( 'save_post', 'df_pai_seo_last', 999 );
 
 /**
  * Metinde ürün adı farklı büyük/küçük harfle geçtiyse doğru yazımıyla değiştir (HEDİye → Hediye).
