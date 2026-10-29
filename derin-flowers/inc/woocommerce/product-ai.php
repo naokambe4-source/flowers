@@ -712,6 +712,7 @@ function df_pai_box( $post ) {
 				var fd = new FormData();
 				fd.append( 'action', 'df_pai_vision' ); fd.append( 'nonce', nonce ); fd.append( 'thumb', th.value );
 				fd.append( 'price', ( document.getElementById( '_regular_price' ) || {} ).value || '' ); fd.append( 'notes', notes.value );
+				fd.append( 'gallery', ( document.getElementById( 'product_image_gallery' ) || {} ).value || '' );
 				fetch( ajaxurl, { method: 'POST', body: fd, credentials: 'same-origin' } ).then( function ( r ) { return r.json(); } ).then( function ( r ) {
 					if ( ! r || ! r.success ) { throw new Error( r && r.data ? r.data : 'Yanıt alınamadı.' ); }
 					var d = r.data, pt = document.getElementById( 'title' );
@@ -726,7 +727,7 @@ function df_pai_box( $post ) {
 					$( '[data-pai-result]' ).hidden = false; $( '[data-pai-ok]' ).hidden = false;
 					count(); rmSet();
 					err.hidden = false; err.style.background = '#eaf6ec'; err.style.color = '#1e5b2c';
-					err.textContent = '✓ Ürün adı, ' + ( nc ? 'kategori (' + ( d.cat_names || [] ).join( ', ' ) + '), ' : '' ) + 'açıklamalar, Rank Math SEO (odak kelime: ' + ( d.keyword || '-' ) + ') ve etiketler dolduruldu.' + ( nc ? '' : ' Kategori bulunamadı, sağdan elle seçin.' ) + ' Fiyatı kontrol edip "Yayınla"ya basın.';
+					err.textContent = '✓ Ürün adı, ' + ( nc ? 'kategori (' + ( d.cat_names || [] ).join( ', ' ) + '), ' : '' ) + 'açıklamalar, Rank Math SEO (odak kelime: ' + ( d.keyword || '-' ) + '), etiketler ve görsellerin başlık/ALT/açıklaması dolduruldu.' + ( nc ? '' : ' Kategori bulunamadı, sağdan elle seçin.' ) + ' Fiyatı kontrol edip "Yayınla"ya basın.';
 					window.scrollTo( { top: 0, behavior: 'smooth' } );
 				} ).catch( function ( e ) {
 					err.hidden = false; err.style.background = ''; err.style.color = ''; err.textContent = 'Görselden oluşturulamadı: ' + e.message;
@@ -1220,9 +1221,51 @@ function df_pai_vision() {
 	foreach ( $out['cats'] as $cid ) {
 		$out['cat_names'][] = html_entity_decode( get_term( $cid )->name, ENT_QUOTES, 'UTF-8' );
 	}
+	$gal = isset( $_POST['gallery'] ) ? array_filter( array_map( 'absint', explode( ',', sanitize_text_field( wp_unslash( $_POST['gallery'] ) ) ) ) ) : array();
+	df_pai_img_write( array_merge( array( $thumb ), $gal ), $name, $out['alt'], $out['seo_desc'] ? $out['seo_desc'] : $out['short'], true );
 	wp_send_json_success( $out );
 }
 add_action( 'wp_ajax_df_pai_vision', 'df_pai_vision' );
+
+/**
+ * Görsellere başlık, ALT, altyazı ve açıklama yaz.
+ *
+ * @param int[]  $ids   Görseller (ilki öne çıkan).
+ * @param string $name  Ürün adı.
+ * @param string $alt   Öne çıkan görselin ALT metni (boşsa ad + marka).
+ * @param string $desc  Açıklama.
+ * @param bool   $force Elle yazılanların üzerine yaz.
+ */
+function df_pai_img_write( $ids, $name, $alt, $desc, $force = false ) {
+	$brand = df_opt( 'pai_brand' ) ? df_opt( 'pai_brand' ) : get_bloginfo( 'name' );
+	$ids   = array_values( array_unique( array_filter( array_map( 'intval', (array) $ids ) ) ) );
+	foreach ( $ids as $i => $id ) {
+		$att = get_post( $id );
+		if ( ! $att || 'attachment' !== $att->post_type || ! current_user_can( 'edit_post', $id ) ) {
+			continue;
+		}
+		$n     = $i + 1;
+		$title = 0 === $i ? $name : $name . ' – Görsel ' . $n;
+		$a     = 0 === $i ? ( '' !== trim( (string) $alt ) ? $alt : $name . ' | İzmir çiçek siparişi, ' . $brand ) : $name . ' – farklı açıdan görünüm ' . $n . ' | ' . $brand;
+		$upd   = array( 'ID' => $id );
+		if ( $force || df_img_title_auto( $att->post_title, $id ) ) {
+			$upd['post_title'] = $title;
+		}
+		if ( $force || '' === trim( (string) $att->post_excerpt ) ) {
+			$upd['post_excerpt'] = $title;
+		}
+		if ( '' !== trim( (string) $desc ) && ( $force || '' === trim( (string) $att->post_content ) ) ) {
+			$upd['post_content'] = mb_substr( trim( wp_strip_all_tags( $desc ) ), 0, 300 );
+		}
+		if ( count( $upd ) > 1 ) {
+			wp_update_post( $upd );
+		}
+		$cur = trim( (string) get_post_meta( $id, '_wp_attachment_image_alt', true ) );
+		if ( $force || '' === $cur || df_img_title_auto( $cur, $id ) ) {
+			update_post_meta( $id, '_wp_attachment_image_alt', mb_substr( $a, 0, 125 ) );
+		}
+	}
+}
 
 /**
  * Yapay zekânın verdiği kategoriyi (numara, ad ya da adres) gerçek kategoriye eşle; hiçbiri tutmazsa ürün adından tahmin et.
@@ -1431,11 +1474,10 @@ function df_pai_img_meta( $post_id ) {
 	if ( ! $product || ! current_user_can( 'edit_product', $post_id ) ) {
 		return;
 	}
-	$name  = trim( wp_strip_all_tags( $product->get_name() ) );
+	$name = trim( wp_strip_all_tags( $product->get_name() ) );
 	if ( '' === $name || 'AUTO-DRAFT' === strtoupper( $name ) ) {
 		return;
 	}
-	$brand = df_opt( 'pai_brand' ) ? df_opt( 'pai_brand' ) : get_bloginfo( 'name' );
 	$cat   = '';
 	$terms = get_the_terms( $post_id, 'product_cat' );
 	foreach ( is_array( $terms ) ? $terms : array() as $t ) {
@@ -1444,36 +1486,12 @@ function df_pai_img_meta( $post_id ) {
 			break;
 		}
 	}
-	$short = trim( preg_replace( '/\s+/', ' ', wp_strip_all_tags( $product->get_short_description() ) ) );
-	$ids   = array_values( array_unique( array_filter( array_merge( array( (int) $product->get_image_id() ), array_map( 'intval', $product->get_gallery_image_ids() ) ) ) ) );
-	foreach ( $ids as $i => $id ) {
-		$att = get_post( $id );
-		if ( ! $att || 'attachment' !== $att->post_type ) {
-			continue;
-		}
-		$n     = $i + 1;
-		$title = 0 === $i ? $name : $name . ' – Görsel ' . $n;
-		$alt   = 0 === $i
-			? $name . ( $cat ? ' – ' . $cat : '' ) . ' | İzmir çiçek siparişi, ' . $brand
-			: $name . ' – farklı açıdan görünüm ' . $n . ' | ' . $brand;
-		$upd   = array( 'ID' => $id );
-		if ( df_img_title_auto( $att->post_title, $id ) ) {
-			$upd['post_title'] = $title;
-		}
-		if ( '' === trim( (string) $att->post_excerpt ) ) {
-			$upd['post_excerpt'] = $title;
-		}
-		if ( '' === trim( (string) $att->post_content ) && '' !== $short ) {
-			$upd['post_content'] = mb_substr( $short, 0, 300 );
-		}
-		if ( count( $upd ) > 1 ) {
-			wp_update_post( $upd );
-		}
-		$cur = trim( (string) get_post_meta( $id, '_wp_attachment_image_alt', true ) );
-		if ( '' === $cur || df_img_title_auto( $cur, $id ) ) {
-			update_post_meta( $id, '_wp_attachment_image_alt', mb_substr( $alt, 0, 125 ) );
-		}
-	}
+	// phpcs:ignore WordPress.Security.NonceVerification.Missing -- df_pai_save doğruladı; yalnızca metin okunur.
+	$alt   = isset( $_POST['df_img_alt'] ) ? sanitize_text_field( wp_unslash( $_POST['df_img_alt'] ) ) : '';
+	$alt   = '' !== $alt ? $alt : $name . ( $cat ? ' – ' . $cat : '' ) . ' | İzmir çiçek siparişi, ' . ( df_opt( 'pai_brand' ) ? df_opt( 'pai_brand' ) : get_bloginfo( 'name' ) );
+	$desc  = (string) get_post_meta( $post_id, 'rank_math_description', true );
+	$desc  = '' !== $desc ? $desc : trim( preg_replace( '/\s+/', ' ', wp_strip_all_tags( $product->get_short_description() ) ) );
+	df_pai_img_write( array_merge( array( (int) $product->get_image_id() ), $product->get_gallery_image_ids() ), $name, $alt, $desc );
 }
 add_action( 'woocommerce_process_product_meta', 'df_pai_img_meta', 70 );
 

@@ -96,6 +96,7 @@ function df_rm_apply() {
 		$mods[] = 'local-seo';
 		update_option( 'rank_math_modules', array_values( $mods ) );
 	}
+	df_rm_image_seo();
 
 	// 2. Site haritası.
 	$s       = (array) get_option( 'rank-math-options-sitemap', array() );
@@ -207,6 +208,34 @@ function df_rm_auto() {
 	set_transient( 'df_rm_done', df_rm_apply(), 300 );
 }
 add_action( 'admin_init', 'df_rm_auto', 30 );
+
+/**
+ * Rank Math "Görsel SEO": ALT/başlığı eksik görsellere sayfada ürün adını yazsın (temanın kaydettiği bilgilere ek güvence).
+ */
+function df_rm_image_seo() {
+	$mods = (array) get_option( 'rank_math_modules', array() );
+	if ( ! in_array( 'image-seo', $mods, true ) ) {
+		$mods[] = 'image-seo';
+		update_option( 'rank_math_modules', array_values( $mods ) );
+	}
+	$g                     = (array) get_option( 'rank-math-options-general', array() );
+	$g['add_img_alt']      = 'on';
+	$g['img_alt_format']   = '%title% | %sitename%';
+	$g['add_img_title']    = 'on';
+	$g['img_title_format'] = '%title% %count(title)%';
+	update_option( 'rank-math-options-general', $g );
+	update_option( 'df_rm_img_seo', 1, false );
+}
+
+/**
+ * Önceden kurulmuş sitelerde bir kez çalıştır.
+ */
+function df_rm_image_seo_once() {
+	if ( function_exists( 'df_rank_math_live' ) && df_rank_math_live() && ! get_option( 'df_rm_img_seo' ) && current_user_can( 'manage_options' ) && ! wp_doing_ajax() ) {
+		df_rm_image_seo();
+	}
+}
+add_action( 'admin_init', 'df_rm_image_seo_once', 31 );
 
 /**
  * Rank Math kuruluysa bildirim ve düğme.
