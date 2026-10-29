@@ -840,6 +840,8 @@ function df_tools_page() {
 				</div>
 			</div>
 
+			<?php if ( function_exists( 'df_imgc_box' ) ) { df_imgc_box(); } ?>
+
 			<div class="df-group">
 				<div class="df-group__head"><h3>Ayarları dışa / içe aktar</h3></div>
 				<div class="df-group__body">

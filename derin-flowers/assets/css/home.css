@@ -654,3 +654,12 @@ a.df-sstrip__card:hover { color: var(--df-text); transform: translateY(-2px); bo
 
 .df-vitrin--r4-5 .df-card__media { aspect-ratio: 4 / 5; }
 .df-vitrin--rfit .df-card__media { aspect-ratio: 1 / 1; }
+
+/* Ana sayfa: adaçayı pastel hero ve Güller kartı (v1.20) */
+:root { --df-sage-pastel: #DDE6D5; --df-sage-pastel-2: #EEF2E9; --df-sage-ink: #3F5641; }
+.df-herosplit .df-hero { background: linear-gradient(120deg, var(--df-sage-pastel) 0%, var(--df-sage-pastel-2) 55%, #F6F1EA 100%); }
+.df-sidebn--dark { background: var(--df-sage-pastel); color: var(--df-sage-ink); }
+.df-sidebn--dark .df-sidebn__media::before { background: linear-gradient(90deg, var(--df-sage-pastel) 0%, rgba(221, 230, 213, .6) 40%, rgba(221, 230, 213, 0) 70%); }
+.df-sidebn--dark:hover { color: var(--df-sage-ink); }
+.df-sidebn--dark .df-sidebn__title { color: var(--df-sage-ink); }
+@media (max-width: 900px) { .df-sidebn--dark .df-sidebn__media::before { background: linear-gradient(0deg, rgba(221, 230, 213, .94) 0%, rgba(221, 230, 213, 0) 70%); } }

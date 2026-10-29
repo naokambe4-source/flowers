@@ -552,3 +552,13 @@ hr { border: 0; border-top: 1px solid var(--df-line); margin: 2em 0; }
 .df-card__qtybtn:hover { border-color: var(--df-text); }
 .df-card__qtybtn.is-on { background: var(--df-text); border-color: var(--df-text); color: #fff; }
 @media (max-width: 782px) { .df-card__qty { gap: 4px; } .df-card__qtybtn { min-width: 32px; height: 28px; padding: 0 7px; font-size: 12px; } }
+
+/* Header'da dil düğmesi */
+.df-header__lang { display: flex; align-items: center; margin-right: 4px; }
+.df-header__lang .df-lang__btn { min-height: 38px; padding: 4px 10px 4px 8px; background: transparent; }
+.df-header__lang .df-lang__list { z-index: 200; }
+@media (max-width: 782px) {
+	.df-header__lang { margin-right: 0; }
+	.df-header__lang .df-lang__btn { min-height: 34px; padding: 3px 6px; border-color: transparent; }
+	.df-header__lang .df-lang__code, .df-header__lang .df-lang__btn > .df-icon { display: none; }
+}

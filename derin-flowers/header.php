@@ -28,12 +28,7 @@ defined( 'ABSPATH' ) || exit;
 					<span<?php echo df_e( 'topbar_left' ); // phpcs:ignore ?>><?php echo esc_html( df_opt( 'topbar_left' ) ); ?></span>
 				<?php endif; ?>
 			</p>
-			<?php $df_langs = function_exists( 'df_lang_links' ) ? df_lang_links() : array(); ?>
-			<?php if ( $df_langs && function_exists( 'df_lang_menu' ) ) : ?>
-				<?php df_lang_menu( $df_langs ); ?>
-			<?php else : ?>
-				<p class="df-topbar__right"><?php df_the_icon( 'clock', array( 'size' => 14 ) ); ?><span<?php echo df_e( 'topbar_right' ); // phpcs:ignore ?>><?php echo esc_html( df_opt( 'topbar_right' ) ); ?></span></p>
-			<?php endif; ?>
+			<p class="df-topbar__right"><?php df_the_icon( 'clock', array( 'size' => 14 ) ); ?><span<?php echo df_e( 'topbar_right' ); // phpcs:ignore ?>><?php echo esc_html( df_opt( 'topbar_right' ) ); ?></span></p>
 		</div>
 	</div>
 <?php endif; ?>
@@ -74,6 +69,9 @@ defined( 'ABSPATH' ) || exit;
 			<?php endif; ?>
 
 			<div class="df-header__right">
+				<?php if ( function_exists( 'df_lang_links' ) && function_exists( 'df_lang_menu' ) && df_lang_links() ) : ?>
+					<div class="df-header__lang"><?php df_lang_menu( df_lang_links() ); ?></div>
+				<?php endif; ?>
 				<?php if ( df_opt( 'header_show_search' ) ) : ?>
 					<button type="button" class="df-iconbtn" data-df-open="df-search" aria-controls="df-search" aria-expanded="false" aria-label="Ara">
 						<?php df_the_icon( 'search' ); ?><span class="df-iconbtn__label">Arama</span>

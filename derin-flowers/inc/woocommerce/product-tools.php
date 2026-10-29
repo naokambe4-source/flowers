@@ -564,7 +564,7 @@ add_filter( 'big_image_size_threshold', 'df_img_max' );
  * @return array
  */
 function df_img_webp( $formats ) {
-	if ( df_opt( 'img_webp', 0 ) && wp_image_editor_supports( array( 'mime_type' => 'image/webp' ) ) ) {
+	if ( df_opt( 'img_webp', 1 ) && wp_image_editor_supports( array( 'mime_type' => 'image/webp' ) ) ) {
 		$formats['image/jpeg'] = 'image/webp';
 		$formats['image/png']  = 'image/webp';
 	}
@@ -578,7 +578,7 @@ add_filter( 'image_editor_output_format', 'df_img_webp' );
  * @return int
  */
 function df_img_quality() {
-	return max( 60, min( 100, (int) df_opt( 'img_quality', 90 ) ) );
+	return max( 60, min( 100, (int) df_opt( 'img_quality', 82 ) ) );
 }
 add_filter( 'wp_editor_set_quality', 'df_img_quality' );
 add_filter( 'jpeg_quality', 'df_img_quality' );

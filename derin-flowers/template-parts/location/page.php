@@ -17,7 +17,19 @@ $df_shop  = df_wc() ? wc_get_page_permalink( 'shop' ) : home_url( '/' );
 get_header();
 ?>
 <div class="df-loc">
-	<header class="df-loc__hero">
+	<?php
+	$df_bimg = absint( df_opt( 'loc_banner' ) );
+	if ( ! $df_bimg && function_exists( 'wc_get_products' ) ) {
+		$df_cat = df_opt( 'loc_cat' );
+		$df_fp  = wc_get_products( array( 'limit' => 1, 'status' => 'publish', 'orderby' => 'popularity', 'return' => 'ids', 'category' => $df_cat ? array( is_numeric( $df_cat ) && get_term( (int) $df_cat ) ? get_term( (int) $df_cat )->slug : (string) $df_cat ) : array() ) );
+		$df_bimg = $df_fp ? (int) get_post_thumbnail_id( $df_fp[0] ) : 0;
+	}
+	$df_bsrc = $df_bimg ? ( function_exists( 'df_img_original' ) && df_img_original( $df_bimg ) ? df_img_original( $df_bimg )[0] : wp_get_attachment_image_url( $df_bimg, 'large' ) ) : '';
+	?>
+	<header class="df-loc__hero<?php echo $df_bsrc ? ' has-image' : ''; ?>" style="--df-lc:<?php echo esc_attr( sanitize_hex_color( (string) df_opt( 'loc_color', '#5E7B61' ) ) ? df_opt( 'loc_color', '#5E7B61' ) : '#5E7B61' ); ?>">
+		<?php if ( $df_bsrc ) : ?>
+			<img class="df-loc__bg" src="<?php echo esc_url( $df_bsrc ); ?>" alt="" loading="eager" fetchpriority="high" decoding="async">
+		<?php endif; ?>
 		<div class="df-container">
 			<nav class="df-loc__crumbs" aria-label="Sayfa yolu">
 				<a href="<?php echo esc_url( home_url( '/' ) ); ?>">Ana Sayfa</a><span aria-hidden="true">/</span>
@@ -29,6 +41,11 @@ get_header();
 			</nav>
 			<h1 class="df-loc__title"><?php echo esc_html( $df_meta['title'] ); ?></h1>
 			<p class="df-loc__lead"><?php echo esc_html( $df_meta['desc'] ); ?></p>
+			<ul class="df-loc__badges">
+				<li><?php df_the_icon( 'truck', array( 'size' => 16 ) ); ?> Aynı gün teslimat</li>
+				<li><?php df_the_icon( 'gift', array( 'size' => 16 ) ); ?> Ücretsiz not kartı</li>
+				<li><?php df_the_icon( 'lock', array( 'size' => 16 ) ); ?> Güvenli ödeme</li>
+			</ul>
 			<div class="df-loc__cta">
 				<a class="df-btn df-btn--solid" href="<?php echo esc_url( '__index' === $df_cur ? $df_shop : '#df-loc-products' ); ?>">Çiçekleri İncele</a>
 				<?php if ( $df_wa ) : ?>

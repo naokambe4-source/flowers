@@ -29,8 +29,8 @@ function df_modules_schema( $schema ) {
 			array( 'id' => 'img_seo_name', 'type' => 'toggle', 'label' => 'Görsel dosya adlarını SEO uyumlu yap (Türkçe karakter → kırmızı-gul-buketi.jpg)', 'default' => 1, 'half' => true ),
 			array( 'id' => 'img_seo_alt', 'type' => 'toggle', 'label' => 'ALT metni boş ürün görsellerine ürün adını yaz', 'default' => 1, 'half' => true ),
 			array( 'id' => 'img_max', 'type' => 'number', 'label' => 'Yüklenen görselin en büyük kenarı (px)', 'default' => 2400, 'min' => 1200, 'max' => 4000, 'half' => true, 'desc' => 'Daha büyük görseller bu boyuta küçültülür (WordPress büyük görsel sınırı).' ),
-			array( 'id' => 'img_quality', 'type' => 'number', 'label' => 'Görsel kalitesi (%)', 'default' => 90, 'min' => 60, 'max' => 100, 'half' => true, 'desc' => 'WordPress\'in ürettiği küçük boyutların sıkıştırma kalitesi. 90 önerilir (WordPress varsayılanı 82). Kategori kapakları her zaman orijinal dosyadan, sıkıştırılmadan gösterilir.' ),
-			array( 'id' => 'img_webp', 'type' => 'toggle', 'label' => 'Yeni yüklenen JPEG/PNG görsellerin boyutlarını WebP üret', 'default' => 0, 'half' => true, 'desc' => 'Sunucunuz WebP destekliyorsa açın. LiteSpeed Cache\'in WebP özelliği de kullanılabilir.' ),
+			array( 'id' => 'img_quality', 'type' => 'number', 'label' => 'Görsel kalitesi (%)', 'default' => 82, 'min' => 60, 'max' => 100, 'half' => true, 'desc' => 'WordPress\'in ürettiği küçük boyutların sıkıştırma kalitesi. 90 önerilir (WordPress varsayılanı 82). Kategori kapakları her zaman orijinal dosyadan, sıkıştırılmadan gösterilir.' ),
+			array( 'id' => 'img_webp', 'type' => 'toggle', 'label' => 'Yeni yüklenen JPEG/PNG görsellerin boyutlarını WebP üret', 'default' => 1, 'half' => true, 'desc' => 'Sunucunuz WebP destekliyorsa açın. LiteSpeed Cache\'in WebP özelliği de kullanılabilir.' ),
 		),
 	);
 
@@ -223,6 +223,8 @@ function df_modules_schema( $schema ) {
 					array( 'id' => 'loc_title', 'type' => 'text', 'label' => 'Sayfa başlığı', 'default' => '{ilce} Çiçek Siparişi', 'half' => true ),
 					array( 'id' => 'loc_meta', 'type' => 'text', 'label' => 'Google açıklaması (meta description)', 'default' => '{ilce} çiçek siparişi: aynı gün teslimat, taze buketler, güller ve aranjmanlar. {ilce} adreslerine özenle hazırlanan çiçekler.', 'half' => true ),
 					array( 'id' => 'loc_intro', 'type' => 'textarea', 'label' => 'Genel metin (ilçeye özel metin yoksa)', 'default' => "{ilce}'deki sevdiklerinize çiçek göndermek hiç bu kadar kolay olmamıştı. Atölyemizde günlük taze çiçeklerle hazırlanan buketler, güller ve aranjmanlar, seçtiğiniz gün ve saat aralığında {ilce} adresine özenle teslim edilir.\nSaat {cutoff}'a kadar verilen siparişler aynı gün yola çıkar. Siparişinize ücretsiz, kişiye özel not kartı ekleyebilirsiniz.", 'rows' => 4 ),
+					array( 'id' => 'loc_banner', 'type' => 'image', 'label' => 'İlçe sayfası banner görseli (sağ taraf)', 'half' => true, 'desc' => 'Buket fotoğrafı, üzerinde yazı olmasın; 1600 × 1000 px. Boşsa sayfadaki kategorinin en çok satan ürününün görseli kullanılır.' ),
+					array( 'id' => 'loc_color', 'type' => 'color', 'label' => 'İlçe banner rengi (degrade)', 'default' => '#5E7B61', 'half' => true ),
 					array( 'id' => 'loc_cat', 'type' => 'product_cat', 'label' => 'Sayfada gösterilecek ürün kategorisi (boşsa çok satanlar)', 'half' => true ),
 					array( 'id' => 'loc_count', 'type' => 'number', 'label' => 'Ürün sayısı', 'default' => 8, 'min' => 4, 'max' => 24, 'half' => true ),
 					array( 'id' => 'loc_home_links', 'type' => 'toggle', 'label' => 'Ana sayfadaki ilçe kısayolları ilçe sayfalarına gitsin', 'default' => 1, 'half' => true ),
