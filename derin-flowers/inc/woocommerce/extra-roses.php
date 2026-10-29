@@ -290,7 +290,7 @@ function df_extra_field() {
 	</script>
 	<?php
 }
-add_action( 'woocommerce_before_add_to_cart_button', 'df_extra_field', 2 );
+// İptal edildi (müşteri isteği): add_action( 'woocommerce_before_add_to_cart_button', 'df_extra_field', 2 );
 
 /**
  * Sepet satırına ek gül.
@@ -314,7 +314,7 @@ function df_extra_cart_data( $data, $product_id, $variation_id ) {
 	$data['df_extra'] = array( 'n' => min( $n, $cfg['max'] ) );
 	return $data;
 }
-add_filter( 'woocommerce_add_cart_item_data', 'df_extra_cart_data', 12, 3 );
+// İptal edildi (müşteri isteği): add_filter( 'woocommerce_add_cart_item_data', 'df_extra_cart_data', 12, 3 );
 
 /**
  * Fiyat: paket + ek gül × birim (her hesaplamada paketin güncel fiyatından).
@@ -395,7 +395,7 @@ function df_extra_admin_tab( $tabs ) {
 	$tabs['df_extra'] = array( 'label' => 'Ek Gül', 'target' => 'df_extra_panel', 'class' => array( 'show_if_simple', 'show_if_variable' ), 'priority' => 64 );
 	return $tabs;
 }
-add_filter( 'woocommerce_product_data_tabs', 'df_extra_admin_tab' );
+// İptal edildi (müşteri isteği): add_filter( 'woocommerce_product_data_tabs', 'df_extra_admin_tab' );
 
 /**
  * Sekme içeriği.
@@ -418,7 +418,7 @@ function df_extra_admin_fields() {
 	woocommerce_wp_text_input( array( 'id' => '_df_extra_chips', 'label' => 'Hızlı ekleme düğmeleri', 'placeholder' => (string) df_opt( 'extra_chips', '10, 20, 50' ), 'description' => 'Virgülle adetler, örn: 10, 25, 50. Müşteri tek dokunuşla ekler.' ) );
 	echo '</div></div>';
 }
-add_action( 'woocommerce_product_data_panels', 'df_extra_admin_fields' );
+// İptal edildi (müşteri isteği): add_action( 'woocommerce_product_data_panels', 'df_extra_admin_fields' );
 
 /**
  * Kaydet.
@@ -444,4 +444,4 @@ function df_extra_admin_save( $product ) {
 	}
 	// phpcs:enable
 }
-add_action( 'woocommerce_admin_process_product_object', 'df_extra_admin_save' );
+// İptal edildi (müşteri isteği): add_action( 'woocommerce_admin_process_product_object', 'df_extra_admin_save' );
