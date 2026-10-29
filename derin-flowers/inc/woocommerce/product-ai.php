@@ -506,21 +506,13 @@ function df_pai_box( $post ) {
 			<textarea id="df-pai-notes" rows="2" data-pai-notes placeholder="Örn. 21 adet kırmızı gül, okaliptüs, siyah kutu, sevgiliye ve yıldönümü için"><?php echo $cur ? esc_textarea( df_pai_meta_line( $cur ) ) : ''; ?></textarea>
 		</div>
 
-		<div class="df-pai__ai df-pai__vision<?php echo $has_key ? ' is-live' : ''; ?>">
-			<div class="df-pai__ai-text">
-				<span class="df-pai__badge"><i></i>Görselden otomatik</span>
-				<strong>📷 Fotoğraftan her şeyi oluştur</strong>
-				<span>Sağdaki <b>Ürün görseli</b>ne fotoğrafı ekleyin, <b>fiyatı</b> yazın ve bu düğmeye basın: ürün adı, kategori, kısa ve uzun açıklama, SEO (Rank Math), etiketler ve görsel ALT metni kendiliğinden dolar. Kontrol edip <b>Yayınla</b> deyin.</span>
-			</div>
-			<button type="button" class="df-pai__btn" data-pai-vision<?php disabled( ! df_opt( 'pai_on', 1 ) || ! $has_key ); ?>><span class="df-pai__btn-t">Görselden oluştur</span><span class="df-pai__spin" data-pai-vspin></span></button>
-		</div>
 		<div class="df-pai__ai<?php echo $has_key ? ' is-live' : ''; ?>">
 			<div class="df-pai__ai-text">
 				<span class="df-pai__badge"><i></i><?php echo $has_key ? esc_html( $names[ $prov ] . ' bağlı' ) : 'Yapay zekâ bağlı değil'; ?></span>
-				<strong>Ürün metnini yapay zekâ yazsın</strong>
-				<span><?php echo $has_key ? 'Açıklama, SEO başlığı, Google açıklaması, görsel ALT metni ve etiketler hazırlanır. Taslak gelir; kontrol edip "Ürüne uygula" deyin.' : 'Anahtar girilmediği için hazır şablon metin üretilir. Anahtar: Site Ayarları → Ürün & Mağaza → Yapay zekâ ürün içeriği.'; ?></span>
+				<strong>✨ Hepsini tek tuşla oluştur</strong>
+				<span><?php echo $has_key ? '1) Sağdaki <b>Ürün görseli</b>ne fotoğrafı ekleyin 2) <b>Fiyatı</b> yazın 3) Bu düğmeye basın. Ürün adı, kategori, kısa ve uzun açıklama, Rank Math SEO (başlık, açıklama, odak anahtar kelime), etiketler ve görsellerin başlık / ALT / açıklaması dolar ve ürüne uygulanır. Sonra <b>Yayınla</b>.' : 'Anahtar girilmediği için hazır şablon metin üretilir (görselden oluşturma için anahtar gerekir). Anahtar: Site Ayarları → Ürün & Mağaza → Yapay zekâ ürün içeriği.'; // phpcs:ignore ?></span>
 			</div>
-			<button type="button" class="df-pai__btn" data-pai-go<?php disabled( ! df_opt( 'pai_on', 1 ) ); ?>><svg class="df-pai__spark" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M12 2.5l1.9 5.6 5.6 1.9-5.6 1.9L12 17.5l-1.9-5.6L4.5 10l5.6-1.9L12 2.5z"/><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9L19 15z" opacity=".75"/></svg><span class="df-pai__btn-t"><?php echo $has_key ? esc_html( $names[ $prov ] . ' ile içerik oluştur' ) : 'Şablonla içerik oluştur'; ?></span><span class="df-pai__spin" data-pai-spin></span></button>
+			<button type="button" class="df-pai__btn" data-pai-go<?php disabled( ! df_opt( 'pai_on', 1 ) ); ?>><svg class="df-pai__spark" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M12 2.5l1.9 5.6 5.6 1.9-5.6 1.9L12 17.5l-1.9-5.6L4.5 10l5.6-1.9L12 2.5z"/><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9L19 15z" opacity=".75"/></svg><span class="df-pai__btn-t"><?php echo $has_key ? 'Hepsini oluştur' : 'Şablonla içerik oluştur'; ?></span><span class="df-pai__spin" data-pai-spin></span></button>
 		</div>
 		<p class="df-pai__err" data-pai-err hidden></p>
 
@@ -645,6 +637,7 @@ function df_pai_box( $post ) {
 				if ( window.rankMathEditor && rankMathEditor.refresh ) { rankMathEditor.refresh( 'content' ); }
 			} catch ( e ) {}
 		}
+		function kwFrom( n ) { return ( 'izmir ' + String( n || '' ).toLocaleLowerCase( 'tr' ).replace( /[^a-zçğıöşü0-9 ]+/g, ' ' ).replace( /\s+/g, ' ' ) ).trim(); }
 		function catSet( ids ) {
 			if ( ! ids || ! ids.length ) { return 0; }
 			var def = <?php echo (int) get_option( 'default_product_cat' ); ?>, n = 0;
@@ -693,8 +686,11 @@ function df_pai_box( $post ) {
 				var d = r.data;
 				f( 'short' ).value = d.short || ''; f( 'long' ).value = htmlToText( d.long || '' );
 				f( 'seo_title' ).value = d.seo_title || ''; f( 'seo_desc' ).value = d.seo_desc || '';
-				f( 'keyword' ).value = d.keyword || ''; f( 'alt' ).value = d.alt || ''; f( 'tags' ).value = ( d.tags || [] ).join( ', ' ); rmSet();
-				$( '[data-pai-result]' ).hidden = false; $( '[data-pai-ok]' ).hidden = true;
+				f( 'keyword' ).value = d.keyword || kwFrom( title.value ); f( 'alt' ).value = d.alt || title.value; f( 'tags' ).value = ( d.tags || [] ).join( ', ' );
+				editorSet( 'excerpt', f( 'short' ).value.replace( /\n/g, '<br>' ) );
+				editorSet( 'content', textToHtml( f( 'long' ).value ) );
+				rmSet();
+				$( '[data-pai-result]' ).hidden = false; $( '[data-pai-ok]' ).hidden = false;
 				if ( d.note ) { err.hidden = false; err.style.background = '#fff7e6'; err.style.color = '#7a5200'; err.textContent = d.note; }
 				count();
 				$( '[data-pai-result]' ).scrollIntoView( { behavior: 'smooth', block: 'center' } );
@@ -702,12 +698,14 @@ function df_pai_box( $post ) {
 				err.hidden = false; err.style.background = ''; err.style.color = ''; err.textContent = 'İçerik oluşturulamadı: ' + e.message;
 			} ).finally( function () { btn.disabled = false; spin.classList.remove( 'is-active' ); } );
 		}
-		$( '[data-pai-go]' ).addEventListener( 'click', go );
-		var vbtn = $( '[data-pai-vision]' );
+		var hasKey = <?php echo $has_key ? 'true' : 'false'; ?>;
+		function thumbId() { var th = document.getElementById( '_thumbnail_id' ); return th && +th.value > 0 ? th.value : ''; }
+		$( '[data-pai-go]' ).addEventListener( 'click', function () { if ( ! ( hasKey && thumbId() ) ) { go(); } } );
+		var vbtn = $( '[data-pai-go]' );
 		if ( vbtn ) {
 			vbtn.addEventListener( 'click', function () {
-				var err = $( '[data-pai-err]' ), spin = $( '[data-pai-vspin]' ), th = document.getElementById( '_thumbnail_id' );
-				if ( ! th || ! ( +th.value > 0 ) ) { err.hidden = false; err.style.background = ''; err.style.color = ''; err.textContent = 'Önce sağdaki "Ürün görseli" kutusundan fotoğraf ekleyin.'; return; }
+				var err = $( '[data-pai-err]' ), spin = $( '[data-pai-spin]' ), th = document.getElementById( '_thumbnail_id' );
+				if ( ! hasKey || ! thumbId() ) { return; }
 				err.hidden = true; vbtn.disabled = true; spin.classList.add( 'is-active' );
 				var fd = new FormData();
 				fd.append( 'action', 'df_pai_vision' ); fd.append( 'nonce', nonce ); fd.append( 'thumb', th.value );
@@ -721,16 +719,17 @@ function df_pai_box( $post ) {
 					var nc = catSet( d.cats );
 					f( 'short' ).value = d.short || ''; f( 'long' ).value = htmlToText( d.long || '' );
 					f( 'seo_title' ).value = d.seo_title || ''; f( 'seo_desc' ).value = d.seo_desc || '';
-					f( 'keyword' ).value = d.keyword || ''; f( 'alt' ).value = d.alt || ''; f( 'tags' ).value = ( d.tags || [] ).join( ', ' );
+					f( 'keyword' ).value = d.keyword || kwFrom( d.name ); f( 'alt' ).value = d.alt || d.name; f( 'tags' ).value = ( d.tags || [] ).join( ', ' );
 					editorSet( 'excerpt', ( d.short || '' ).replace( /\n/g, '<br>' ) );
 					editorSet( 'content', textToHtml( f( 'long' ).value ) );
 					$( '[data-pai-result]' ).hidden = false; $( '[data-pai-ok]' ).hidden = false;
 					count(); rmSet();
 					err.hidden = false; err.style.background = '#eaf6ec'; err.style.color = '#1e5b2c';
-					err.textContent = '✓ Ürün adı, ' + ( nc ? 'kategori (' + ( d.cat_names || [] ).join( ', ' ) + '), ' : '' ) + 'açıklamalar, Rank Math SEO (odak kelime: ' + ( d.keyword || '-' ) + '), etiketler ve görsellerin başlık/ALT/açıklaması dolduruldu.' + ( nc ? '' : ' Kategori bulunamadı, sağdan elle seçin.' ) + ' Fiyatı kontrol edip "Yayınla"ya basın.';
+					err.textContent = '✓ Ürün adı, ' + ( nc ? 'kategori (' + ( d.cat_names || [] ).join( ', ' ) + '), ' : '' ) + 'açıklamalar, Rank Math SEO (odak kelime: ' + f( 'keyword' ).value + '), etiketler ve görsellerin başlık/ALT/açıklaması dolduruldu.' + ( nc ? '' : ' Kategori bulunamadı, sağdan elle seçin.' ) + ' Fiyatı kontrol edip "Yayınla"ya basın.';
 					window.scrollTo( { top: 0, behavior: 'smooth' } );
 				} ).catch( function ( e ) {
-					err.hidden = false; err.style.background = ''; err.style.color = ''; err.textContent = 'Görselden oluşturulamadı: ' + e.message;
+					err.hidden = false; err.style.background = ''; err.style.color = ''; err.textContent = 'Görselden oluşturulamadı: ' + e.message + ( title && title.value.trim() ? ' — ürün adından oluşturuluyor…' : '' );
+					if ( title && title.value.trim() ) { setTimeout( go, 400 ); }
 				} ).finally( function () { vbtn.disabled = false; spin.classList.remove( 'is-active' ); } );
 			} );
 		}
@@ -1214,6 +1213,23 @@ function df_pai_vision() {
 		$v         = isset( $json[ $k ] ) ? html_entity_decode( (string) $json[ $k ], ENT_QUOTES, 'UTF-8' ) : '';
 		$out[ $k ] = df_pai_fix_name( sanitize_textarea_field( $v ), $name );
 	}
+	if ( '' === $out['keyword'] ) {
+		foreach ( array( 'focus_keyword', 'focus_kw', 'odak_kelime', 'anahtar_kelime' ) as $alt_key ) {
+			if ( ! empty( $json[ $alt_key ] ) ) {
+				$out['keyword'] = sanitize_text_field( (string) $json[ $alt_key ] );
+				break;
+			}
+		}
+	}
+	if ( '' === $out['keyword'] ) {
+		$out['keyword'] = trim( preg_replace( '/\s+/', ' ', 'izmir ' . mb_strtolower( preg_replace( '/[^\p{L}\p{N} ]+/u', ' ', $name ), 'UTF-8' ) ) );
+	}
+	if ( '' === $out['alt'] ) {
+		$out['alt'] = $name;
+	}
+	if ( '' === $out['seo_title'] ) {
+		$out['seo_title'] = mb_substr( $name . ' | İzmir Çiçek Siparişi', 0, 60 );
+	}
 	$out['long'] = df_pai_long_html( $out['long'] );
 	$out['tags'] = isset( $json['tags'] ) ? array_slice( array_values( array_filter( array_map( 'sanitize_text_field', (array) $json['tags'] ) ) ), 0, 8 ) : array();
 	$out['cats']      = df_pai_match_cats( (array) ( $json['categories'] ?? array() ), $terms, $name . ' ' . $out['keyword'] );
@@ -1328,6 +1344,14 @@ function df_pai_seo_last( $post_id ) {
 		$v = isset( $_POST[ $field ] ) ? sanitize_text_field( wp_unslash( $_POST[ $field ] ) ) : '';
 		if ( '' !== $v ) {
 			update_post_meta( $post_id, $rm, $v );
+		}
+	}
+	// Odak anahtar kelime hiç yoksa ürün adından.
+	if ( '' === trim( (string) get_post_meta( $post_id, 'rank_math_focus_keyword', true ) ) ) {
+		$kw = trim( preg_replace( '/\s+/', ' ', 'izmir ' . mb_strtolower( preg_replace( '/[^\p{L}\p{N} ]+/u', ' ', get_the_title( $post_id ) ), 'UTF-8' ) ) );
+		if ( 'izmir' !== $kw ) {
+			update_post_meta( $post_id, 'rank_math_focus_keyword', $kw );
+			update_post_meta( $post_id, '_df_seo_kw', $kw );
 		}
 	}
 	// phpcs:enable
