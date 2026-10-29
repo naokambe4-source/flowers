@@ -573,6 +573,44 @@ function df_img_webp( $formats ) {
 add_filter( 'image_editor_output_format', 'df_img_webp' );
 
 /**
+ * Saydam olmayan PNG fotoğrafları yüklenirken JPEG'e çevir (yapay zekâ / ekran görüntüsü PNG'leri 3 MB'a kadar çıkar,
+ * JPEG'de aynı görünüm ~300 KB). Saydam PNG'ler (logo vb.) olduğu gibi kalır.
+ *
+ * @param array $upload wp_handle_upload sonucu.
+ * @return array
+ */
+function df_img_png_to_jpg( $upload ) {
+	if ( ! df_opt( 'img_png_jpg', 1 ) || empty( $upload['file'] ) || 'image/png' !== ( $upload['type'] ?? '' ) || ! file_exists( $upload['file'] ) ) {
+		return $upload;
+	}
+	// PNG başlığı: 25. bayt renk türü (0 gri, 2 RGB = saydamlık yok); tRNS parçası varsa saydamdır.
+	$head = (string) file_get_contents( $upload['file'], false, null, 0, 4096 ); // phpcs:ignore
+	if ( strlen( $head ) < 26 || ! in_array( ord( $head[25] ), array( 0, 2 ), true ) || false !== strpos( $head, 'tRNS' ) ) {
+		return $upload;
+	}
+	$editor = wp_get_image_editor( $upload['file'] );
+	if ( is_wp_error( $editor ) ) {
+		return $upload;
+	}
+	$editor->set_quality( function_exists( 'df_img_quality' ) ? df_img_quality() : 85 );
+	$dir   = dirname( $upload['file'] );
+	$name  = wp_unique_filename( $dir, pathinfo( $upload['file'], PATHINFO_FILENAME ) . '.jpg' );
+	$saved = $editor->save( $dir . '/' . $name, 'image/jpeg' );
+	if ( is_wp_error( $saved ) || empty( $saved['path'] ) || ! file_exists( $saved['path'] ) || filesize( $saved['path'] ) >= filesize( $upload['file'] ) ) {
+		if ( ! is_wp_error( $saved ) && ! empty( $saved['path'] ) && file_exists( $saved['path'] ) ) {
+			wp_delete_file( $saved['path'] );
+		}
+		return $upload;
+	}
+	wp_delete_file( $upload['file'] );
+	$upload['file'] = $saved['path'];
+	$upload['url']  = trailingslashit( dirname( $upload['url'] ) ) . basename( $saved['path'] );
+	$upload['type'] = 'image/jpeg';
+	return $upload;
+}
+add_filter( 'wp_handle_upload', 'df_img_png_to_jpg', 5 );
+
+/**
  * Üretilen görsel boyutlarının kalitesi (WordPress varsayılanı 82 — kapak ve ürün görsellerinde yumuşama yapar).
  *
  * @return int

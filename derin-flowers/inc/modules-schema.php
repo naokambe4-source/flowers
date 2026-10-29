@@ -30,6 +30,7 @@ function df_modules_schema( $schema ) {
 			array( 'id' => 'img_seo_alt', 'type' => 'toggle', 'label' => 'ALT metni boş ürün görsellerine ürün adını yaz', 'default' => 1, 'half' => true ),
 			array( 'id' => 'img_max', 'type' => 'number', 'label' => 'Yüklenen görselin en büyük kenarı (px)', 'default' => 2400, 'min' => 1200, 'max' => 4000, 'half' => true, 'desc' => 'Daha büyük görseller bu boyuta küçültülür (WordPress büyük görsel sınırı).' ),
 			array( 'id' => 'img_quality', 'type' => 'number', 'label' => 'Görsel kalitesi (%)', 'default' => 82, 'min' => 60, 'max' => 100, 'half' => true, 'desc' => 'WordPress\'in ürettiği küçük boyutların sıkıştırma kalitesi. 90 önerilir (WordPress varsayılanı 82). Kategori kapakları her zaman orijinal dosyadan, sıkıştırılmadan gösterilir.' ),
+			array( 'id' => 'img_png_jpg', 'type' => 'toggle', 'label' => 'Saydam olmayan PNG fotoğrafları yüklerken JPEG\'e çevir', 'default' => 1, 'half' => true, 'desc' => 'Yapay zekâ ve ekran görüntüsü PNG\'leri çok ağırdır (2-3 MB). JPEG\'e çevrilince görünüm aynı kalır, dosya 5-10 kat küçülür. Logo gibi saydam PNG\'ler değişmez.' ),
 			array( 'id' => 'img_webp', 'type' => 'toggle', 'label' => 'Yeni yüklenen JPEG/PNG görsellerin boyutlarını WebP üret', 'default' => 1, 'half' => true, 'desc' => 'Sunucunuz WebP destekliyorsa açın. LiteSpeed Cache\'in WebP özelliği de kullanılabilir.' ),
 		),
 	);

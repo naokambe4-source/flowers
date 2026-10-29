@@ -1162,7 +1162,7 @@ function df_pai_vision() {
 	$cats  = array();
 	$terms = get_terms( array( 'taxonomy' => 'product_cat', 'hide_empty' => false ) );
 	foreach ( is_wp_error( $terms ) ? array() : $terms as $t ) {
-		if ( (int) get_option( 'default_product_cat' ) === (int) $t->term_id ) {
+		if ( (int) get_option( 'default_product_cat' ) === (int) $t->term_id || df_pai_cat_generic( $t ) ) {
 			continue;
 		}
 		$cats[ $t->slug ] = html_entity_decode( $t->name, ENT_QUOTES, 'UTF-8' ) . ( $t->parent && get_term( $t->parent ) ? ' (' . html_entity_decode( get_term( $t->parent )->name, ENT_QUOTES, 'UTF-8' ) . ' altında)' : '' );
@@ -1290,7 +1290,7 @@ function df_pai_match_cats( $given, $terms, $hint ) {
 			continue;
 		}
 		foreach ( $terms as $t ) {
-			if ( $def === (int) $t->term_id ) {
+			if ( $def === (int) $t->term_id || df_pai_cat_generic( $t ) ) {
 				continue;
 			}
 			$n = $fold( $t->name );
@@ -1306,7 +1306,7 @@ function df_pai_match_cats( $given, $terms, $hint ) {
 		foreach ( $terms as $t ) {
 			$n = $fold( $t->name );
 			$r = preg_replace( '/(ler|lar|leri|lari)$/', '', $n );
-			if ( $def !== (int) $t->term_id && strlen( $r ) > 2 && false !== strpos( $h, ' ' . $r ) ) {
+			if ( $def !== (int) $t->term_id && ! df_pai_cat_generic( $t ) && strlen( $r ) > 2 && false !== strpos( $h, ' ' . $r ) ) {
 				$out[ (int) $t->term_id ] = true;
 			}
 		}
@@ -1494,6 +1494,46 @@ function df_pai_img_meta( $post_id ) {
 	df_pai_img_write( array_merge( array( (int) $product->get_image_id() ), $product->get_gallery_image_ids() ), $name, $alt, $desc );
 }
 add_action( 'woocommerce_process_product_meta', 'df_pai_img_meta', 70 );
+
+/**
+ * "Genel / Kategorisiz / Diğer" gibi anlamsız kategori mi?
+ *
+ * @param WP_Term $t Kategori.
+ * @return bool
+ */
+function df_pai_cat_generic( $t ) {
+	return (bool) preg_match( '/^(genel|uncategori[sz]ed|kategorisiz|diğer|diger|other|tümü|tumu|tüm ürünler)$/iu', trim( html_entity_decode( $t->name, ENT_QUOTES, 'UTF-8' ) ) ) || in_array( $t->slug, array( 'genel', 'uncategorized', 'kategorisiz', 'diger' ), true );
+}
+
+/**
+ * Ürün kaydında yalnızca "Genel" / varsayılan kategorideyse (ya da hiç yoksa) ürün adı ve metinlerinden kategori bul.
+ *
+ * @param int $post_id Ürün.
+ */
+function df_pai_cat_fallback( $post_id ) {
+	$product = wc_get_product( $post_id );
+	if ( ! $product || ! current_user_can( 'edit_product', $post_id ) ) {
+		return;
+	}
+	$cur  = wp_get_object_terms( $post_id, 'product_cat' );
+	$real = array_filter(
+		is_array( $cur ) ? $cur : array(),
+		function ( $t ) {
+			return (int) get_option( 'default_product_cat' ) !== (int) $t->term_id && ! df_pai_cat_generic( $t );
+		}
+	);
+	if ( $real ) {
+		return;
+	}
+	$terms = get_terms( array( 'taxonomy' => 'product_cat', 'hide_empty' => false ) );
+	$tags  = wp_get_object_terms( $post_id, 'product_tag', array( 'fields' => 'names' ) );
+	$hint  = $product->get_name() . ' ' . get_post_meta( $post_id, 'rank_math_focus_keyword', true ) . ' ' . ( is_array( $tags ) ? implode( ' ', $tags ) : '' ) . ' ' . wp_strip_all_tags( $product->get_short_description() );
+	$ids   = df_pai_match_cats( array(), is_wp_error( $terms ) ? array() : $terms, $hint );
+	if ( $ids ) {
+		wp_set_object_terms( $post_id, array_slice( $ids, 0, 2 ), 'product_cat' );
+	}
+}
+add_action( 'woocommerce_process_product_meta', 'df_pai_cat_fallback', 80 );
 
 /**
  * Türkçe küçük harf.

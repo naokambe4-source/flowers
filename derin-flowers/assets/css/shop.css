@@ -178,6 +178,7 @@ table.variations select { width: 100%; min-height: 52px; }
 /* Galeri */
 .df-gallery { display: grid; grid-template-columns: 1fr; gap: 12px; position: relative; }
 .df-gallery.has-thumbs { grid-template-columns: 92px minmax(0, 1fr); }
+@media (min-width: 901px) { .df-gallery { width: 100%; margin-inline: auto; max-width: max(440px, calc((100vh - 170px) * 4 / 5 + 104px)); } }
 .df-gallery__main { position: relative; order: 2; overflow: hidden; background: var(--df-ivory); aspect-ratio: 4 / 5; }
 .df-gallery__track { position: absolute; inset: 0; }
 .df-gallery__slide { position: absolute; inset: 0; opacity: 0; visibility: hidden; transition: opacity .5s var(--df-ease), visibility .5s; }
