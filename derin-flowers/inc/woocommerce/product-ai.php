@@ -709,13 +709,14 @@ function df_pai_box( $post ) {
 				err.hidden = true; vbtn.disabled = true; spin.classList.add( 'is-active' );
 				var fd = new FormData();
 				fd.append( 'action', 'df_pai_vision' ); fd.append( 'nonce', nonce ); fd.append( 'thumb', th.value );
+				var given = ( ( document.getElementById( 'title' ) || {} ).value || '' ).trim(); fd.append( 'title', given );
 				fd.append( 'price', ( document.getElementById( '_regular_price' ) || {} ).value || '' ); fd.append( 'notes', notes.value );
 				fd.append( 'gallery', ( document.getElementById( 'product_image_gallery' ) || {} ).value || '' );
 				fetch( ajaxurl, { method: 'POST', body: fd, credentials: 'same-origin' } ).then( function ( r ) { return r.json(); } ).then( function ( r ) {
 					if ( ! r || ! r.success ) { throw new Error( r && r.data ? r.data : 'Yanıt alınamadı.' ); }
 					var d = r.data, pt = document.getElementById( 'title' );
-					if ( pt ) { pt.value = d.name; pt.dispatchEvent( new Event( 'input', { bubbles: true } ) ); var lbl = document.getElementById( 'title-prompt-text' ); if ( lbl ) { lbl.classList.add( 'screen-reader-text' ); } }
-					if ( title && title !== pt ) { title.value = d.name; }
+					if ( pt && ! given ) { pt.value = d.name; pt.dispatchEvent( new Event( 'input', { bubbles: true } ) ); var lbl = document.getElementById( 'title-prompt-text' ); if ( lbl ) { lbl.classList.add( 'screen-reader-text' ); } }
+					if ( title && title !== pt && ! given ) { title.value = d.name; }
 					var nc = catSet( d.cats );
 					f( 'short' ).value = d.short || ''; f( 'long' ).value = htmlToText( d.long || '' );
 					f( 'seo_title' ).value = d.seo_title || ''; f( 'seo_desc' ).value = d.seo_desc || '';
@@ -1131,6 +1132,7 @@ function df_pai_vision() {
 	$thumb = isset( $_POST['thumb'] ) ? absint( $_POST['thumb'] ) : 0;
 	$price = isset( $_POST['price'] ) ? sanitize_text_field( wp_unslash( $_POST['price'] ) ) : '';
 	$notes = isset( $_POST['notes'] ) ? sanitize_textarea_field( wp_unslash( $_POST['notes'] ) ) : '';
+	$given = isset( $_POST['title'] ) ? trim( sanitize_text_field( wp_unslash( $_POST['title'] ) ) ) : '';
 	if ( ! $thumb || ! wp_attachment_is_image( $thumb ) ) {
 		wp_send_json_error( 'Önce sağdaki "Ürün görseli" kutusundan fotoğraf ekleyin.' );
 	}
@@ -1182,7 +1184,8 @@ function df_pai_vision() {
 		. ( $price ? 'Fiyat: ' . $price . " TL\n" : '' )
 		. ( $notes ? 'Ek bilgi: ' . $notes . "\n" : '' )
 		. "\nKategoriler (yalnızca bu listeden seç, numarasını yaz; 1-3 tane, en uygun olan önce; boş bırakma):\n" . $list
-		. ( $pool ? "\nKullanılmamış ürün adı havuzu (fotoğrafa uyan varsa buradan seç, yoksa yeni ad üret):\n- " . implode( "\n- ", $pool ) . "\n" : '' )
+		. ( '' !== $given ? "\nÜRÜN ADI BELİRLENDİ: \"" . $given . "\". Bu adı AYNEN kullan, değiştirme, yeni ad uydurma; name alanına birebir bunu yaz. Tüm metinler, SEO ve odak kelime bu ada göre olsun.\n" : '' )
+		. ( $pool && '' === $given ? "\nKullanılmamış ürün adı havuzu (fotoğrafa uyan varsa buradan seç, yoksa yeni ad üret):\n- " . implode( "\n- ", $pool ) . "\n" : '' )
 		. "\nKurallar:\n"
 		. "- Fotoğrafta gerçekten görüneni yaz: çiçek türü, renkler, ambalaj/kutu/vazo. Emin olmadığın şeyi (adet, boy) uydurma; gül adedi net sayılamıyorsa yazma.\n"
 		. "- name: zarif, akılda kalan ürün adı, en fazla 55 karakter, her kelimenin baş harfi büyük (Türkçe kurala göre), marka adı yazma.\n"
@@ -1201,11 +1204,14 @@ function df_pai_vision() {
 		wp_send_json_error( $text->get_error_message() );
 	}
 	$json = preg_match( '/\{.*\}/s', (string) $text, $m ) ? json_decode( $m[0], true ) : null;
+	if ( is_array( $json ) && '' !== $given ) {
+		$json['name'] = $given;
+	}
 	if ( ! is_array( $json ) || empty( $json['name'] ) ) {
 		wp_send_json_error( 'Yapay zekâ yanıtı okunamadı, tekrar deneyin.' );
 	}
 	$name = sanitize_text_field( html_entity_decode( (string) $json['name'], ENT_QUOTES, 'UTF-8' ) );
-	if ( function_exists( 'df_loc_title_case' ) && mb_strtoupper( $name, 'UTF-8' ) === $name ) {
+	if ( '' === $given && function_exists( 'df_loc_title_case' ) && mb_strtoupper( $name, 'UTF-8' ) === $name ) {
 		$name = df_loc_title_case( $name );
 	}
 	$out = array( 'name' => $name );
