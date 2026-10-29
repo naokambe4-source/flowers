@@ -14,23 +14,23 @@ while ( have_posts() ) :
 	$df_cats = get_the_category();
 	?>
 	<article <?php post_class( 'df-article' ); ?>>
-		<header class="df-article__head df-container df-container--narrow">
-			<p class="df-eyebrow">
-				<?php if ( $df_cats ) : ?>
-					<a href="<?php echo esc_url( get_category_link( $df_cats[0] ) ); ?>"><?php echo esc_html( $df_cats[0]->name ); ?></a> ·
-				<?php endif; ?>
-				<time datetime="<?php echo esc_attr( get_the_date( 'c' ) ); ?>"><?php echo esc_html( get_the_date( 'j F Y' ) ); ?></time>
-			</p>
-			<h1 class="df-article__title"><?php the_title(); ?></h1>
-			<?php if ( has_excerpt() ) : ?>
-				<p class="df-article__lead"><?php echo esc_html( get_the_excerpt() ); ?></p>
+		<header class="df-article__hero<?php echo has_post_thumbnail() ? ' has-image' : ''; ?>">
+			<?php if ( has_post_thumbnail() ) : ?>
+				<?php the_post_thumbnail( 'df-banner', array( 'class' => 'df-article__bg', 'loading' => 'eager', 'fetchpriority' => 'high', 'sizes' => '100vw', 'alt' => get_the_title() ) ); ?>
 			<?php endif; ?>
+			<div class="df-article__head df-container df-container--narrow">
+				<p class="df-eyebrow">
+					<?php if ( $df_cats ) : ?>
+						<a href="<?php echo esc_url( get_category_link( $df_cats[0] ) ); ?>"><?php echo esc_html( $df_cats[0]->name ); ?></a> ·
+					<?php endif; ?>
+					<time datetime="<?php echo esc_attr( get_the_date( 'c' ) ); ?>"><?php echo esc_html( get_the_date( 'j F Y' ) ); ?></time>
+				</p>
+				<h1 class="df-article__title"><?php the_title(); ?></h1>
+				<?php if ( has_excerpt() ) : ?>
+					<p class="df-article__lead"><?php echo esc_html( get_the_excerpt() ); ?></p>
+				<?php endif; ?>
+			</div>
 		</header>
-		<?php if ( has_post_thumbnail() ) : ?>
-			<figure class="df-article__cover df-container">
-				<?php the_post_thumbnail( 'df-banner', array( 'loading' => 'eager', 'sizes' => '(max-width: 1440px) 100vw, 1440px' ) ); ?>
-			</figure>
-		<?php endif; ?>
 		<div class="df-container df-container--narrow">
 			<div class="df-prose df-article__content">
 				<?php the_content(); ?>

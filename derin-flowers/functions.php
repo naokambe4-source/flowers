@@ -7,7 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'DF_VERSION', '1.19.0' );
+define( 'DF_VERSION', '1.19.1' );
 define( 'DF_DIR', get_template_directory() );
 define( 'DF_URI', get_template_directory_uri() );
 define( 'DF_OPTION', 'derin_options' );
@@ -54,6 +54,7 @@ if ( class_exists( 'WooCommerce' ) ) {
 	require DF_DIR . '/inc/woocommerce/quick-order.php';
 	require DF_DIR . '/inc/woocommerce/rose-count.php';
 	require DF_DIR . '/inc/woocommerce/extra-roses.php';
+	require DF_DIR . '/inc/woocommerce/wrap-color.php';
 	require DF_DIR . '/inc/woocommerce/bank-transfer.php';
 	require DF_DIR . '/inc/woocommerce/gifts-ai.php';
 	require DF_DIR . '/inc/woocommerce/order-status.php';

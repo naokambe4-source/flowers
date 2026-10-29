@@ -65,3 +65,13 @@
 	.df-archive .df-blog__grid, .df-blog__grid { grid-template-columns: 1fr; }
 	.df-article__nav { flex-direction: column; }
 }
+
+/* Blog yazısı kapağı: başlık görselin üstünde */
+.df-article__hero { position: relative; isolation: isolate; margin-bottom: clamp(32px, 5vw, 64px); }
+.df-article__hero.has-image { display: flex; align-items: flex-end; min-height: clamp(340px, 52vw, 620px); color: #fff; }
+.df-article__hero .df-article__bg { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; }
+.df-article__hero.has-image::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(20, 14, 12, .15) 0%, rgba(20, 14, 12, .35) 45%, rgba(20, 14, 12, .78) 100%); }
+.df-article__hero.has-image .df-article__head { padding-top: 80px; padding-bottom: clamp(32px, 5vw, 64px); }
+.df-article__hero.has-image .df-article__title, .df-article__hero.has-image .df-eyebrow, .df-article__hero.has-image .df-eyebrow a { color: #fff; text-shadow: 0 2px 18px rgba(0, 0, 0, .25); }
+.df-article__hero.has-image .df-article__lead { color: rgba(255, 255, 255, .9); }
+@media (max-width: 700px) { .df-article__hero.has-image { min-height: 300px; } .df-article__hero.has-image .df-article__title { font-size: clamp(28px, 8vw, 40px); } }

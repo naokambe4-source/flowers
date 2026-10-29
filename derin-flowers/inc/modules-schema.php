@@ -35,6 +35,17 @@ function df_modules_schema( $schema ) {
 	);
 
 	$schema['product']['groups'][] = array(
+		'title'  => 'Ambalaj rengi seçimi',
+		'desc'   => 'Ürün sayfasında renkli yuvarlak düğmelerle ambalaj rengi seçilir; sepette, siparişte ve fişte "Ambalaj rengi" olarak görünür.',
+		'fields' => array(
+			array( 'id' => 'wrap_on', 'type' => 'toggle', 'label' => 'Ambalaj rengi seçimi açık', 'default' => 1, 'half' => true ),
+			array( 'id' => 'wrap_required', 'type' => 'toggle', 'label' => 'Renk seçmek zorunlu olsun', 'default' => 0, 'half' => true ),
+			array( 'id' => 'wrap_colors', 'type' => 'lines', 'label' => 'Renkler (Ad | renk kodu)', 'default' => "Beyaz | #FFFFFF\nPembe | #F4A7C0\nSiyah | #1F1B1A\nAdaçayı | #9CAF88\nFuşya | #D6246E\nSarı | #F5C842\nMavi | #6FA8DC", 'rows' => 7, 'half' => true ),
+			array( 'id' => 'wrap_skip_cats', 'type' => 'text', 'label' => 'Gösterilmeyecek kategoriler (adres, virgülle)', 'default' => 'hediyeler', 'half' => true ),
+		),
+	);
+
+	$schema['product']['groups'][] = array(
 		'title'  => 'Gül adedi: kartta adet seçimi ve ek gül',
 		'desc'   => 'Kartlarda "Adet / Gül adedi" seçenekli ürünlerde 11 · 21 · 51 · 101 düğmeleri çıkar; seçilince kart fiyatı değişir ve ürüne o adet seçili gidilir. Ürün sayfasında "Buketinize ek gül ekleyin" ile paketin üstüne gül eklenir (örn. 101 + 50). Ürün bazında Ürün verileri → Genel sekmesinden açıp kapatabilir, birim fiyat girebilirsiniz.',
 		'fields' => array(
