@@ -545,3 +545,10 @@ hr { border: 0; border-top: 1px solid var(--df-line); margin: 2em 0; }
 	.df-langtoast { left: 12px; right: 76px; bottom: 16px; max-width: none; transform: none; justify-content: space-between; }
 	.df-langtoast.is-out { transform: translateY(20px); }
 }
+
+/* Kartta gül adedi seçimi */
+.df-card__qty { position: relative; z-index: 3; display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 2px; }
+.df-card__qtybtn { min-width: 38px; height: 30px; padding: 0 9px; border: 1px solid var(--df-line); border-radius: 30px; background: #fff; color: var(--df-text); font: inherit; font-size: 12.5px; font-weight: 600; cursor: pointer; transition: border-color .2s, background .2s, color .2s; }
+.df-card__qtybtn:hover { border-color: var(--df-text); }
+.df-card__qtybtn.is-on { background: var(--df-text); border-color: var(--df-text); color: #fff; }
+@media (max-width: 782px) { .df-card__qty { gap: 4px; } .df-card__qtybtn { min-width: 32px; height: 28px; padding: 0 7px; font-size: 12px; } }

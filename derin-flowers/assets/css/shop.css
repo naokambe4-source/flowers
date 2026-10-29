@@ -1048,3 +1048,20 @@ form.df-rose-active .woocommerce-variation-price { display: none; }
 	.df-bacs__row.is-big .df-bacs__copy { justify-content: center; width: 100%; min-height: 46px; font-size: 15px; }
 	.df-bacs__row.is-big .df-bacs__copy span { display: inline; }
 }
+
+/* Ürün sayfası: ek gül */
+.df-extra { margin: 0 0 18px; padding: 14px 16px; border: 1px solid var(--df-line); border-radius: 10px; background: #fff; transition: border-color .2s, box-shadow .2s; }
+.df-extra.is-on { border-color: var(--df-accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--df-accent) 12%, transparent); }
+.df-extra__head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px; margin-bottom: 10px; }
+.df-extra__title { display: inline-flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 500; }
+.df-extra__title .df-icon { color: var(--df-accent); }
+.df-extra__unit { color: var(--df-muted); font-size: 13px; }
+.df-extra__row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.df-extra__row input { width: 84px; min-height: 46px; text-align: center; font-size: 17px; font-weight: 600; -moz-appearance: textfield; }
+.df-extra__row input::-webkit-outer-spin-button, .df-extra__row input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.df-extra__quick { display: flex; gap: 6px; margin-left: auto; }
+.df-extra__chip { height: 36px; padding: 0 12px; border: 1px dashed var(--df-accent); border-radius: 30px; background: transparent; color: var(--df-accent); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
+.df-extra__chip:hover { background: var(--df-accent-soft); }
+.df-extra__sum { margin: 10px 0 0; font-size: 14px; color: var(--df-text); }
+.df-extra__sum:empty { display: none; }
+@media (max-width: 560px) { .df-extra__quick { margin-left: 0; width: 100%; } .df-extra__chip { flex: 1; } }

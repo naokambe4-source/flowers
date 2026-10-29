@@ -109,6 +109,7 @@ $img_size = ( ! empty( $args['variant'] ) && 'vitrin' === $args['variant'] ) ? '
 		<?php if ( df_opt( 'card_show_sku' ) && $product->get_sku() ) : ?>
 			<span class="df-card__sku"><?php echo esc_html( $product->get_sku() ); ?></span>
 		<?php endif; ?>
+		<?php if ( function_exists( 'df_card_qty_chips' ) ) { df_card_qty_chips( $product ); } ?>
 		<div class="df-card__foot">
 			<div class="df-card__price"><?php echo wp_kses_post( $product->get_price_html() ); ?></div>
 			<?php if ( ! empty( $args['variant'] ) && 'vitrin' === $args['variant'] ) : ?>
