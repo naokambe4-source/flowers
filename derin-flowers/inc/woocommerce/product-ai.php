@@ -1340,6 +1340,79 @@ function df_pai_save( $post_id ) {
 add_action( 'woocommerce_process_product_meta', 'df_pai_save', 60 );
 
 /**
+ * Görsel adı dosya adından mı geliyor (IMG_1234, WhatsApp Image…, boş)?
+ *
+ * @param string $title Başlık.
+ * @param int    $id    Görsel.
+ * @return bool
+ */
+function df_img_title_auto( $title, $id ) {
+	$title = trim( (string) $title );
+	$file  = pathinfo( (string) get_attached_file( $id ), PATHINFO_FILENAME );
+	$file  = preg_replace( '/-(scaled|rotated|\d+x\d+)$/', '', $file );
+	return '' === $title
+		|| sanitize_title( $title ) === sanitize_title( $file )
+		|| preg_match( '/^(img|image|dsc|dcim|pxl|photo|foto|whatsapp|screenshot|ekran|resim|gorsel|görsel|untitled|\d)/iu', $title );
+}
+
+/**
+ * Ürün kaydedilince öne çıkan görsel ve galeri görsellerine başlık, ALT metni, açıklama yaz.
+ * Elle yazılmış başlık/ALT korunur; yalnızca boş ya da dosya adından gelenler doldurulur.
+ *
+ * @param int $post_id Ürün.
+ */
+function df_pai_img_meta( $post_id ) {
+	$product = wc_get_product( $post_id );
+	if ( ! $product || ! current_user_can( 'edit_product', $post_id ) ) {
+		return;
+	}
+	$name  = trim( wp_strip_all_tags( $product->get_name() ) );
+	if ( '' === $name || 'AUTO-DRAFT' === strtoupper( $name ) ) {
+		return;
+	}
+	$brand = df_opt( 'pai_brand' ) ? df_opt( 'pai_brand' ) : get_bloginfo( 'name' );
+	$cat   = '';
+	$terms = get_the_terms( $post_id, 'product_cat' );
+	foreach ( is_array( $terms ) ? $terms : array() as $t ) {
+		if ( (int) get_option( 'default_product_cat' ) !== (int) $t->term_id ) {
+			$cat = html_entity_decode( $t->name, ENT_QUOTES, 'UTF-8' );
+			break;
+		}
+	}
+	$short = trim( preg_replace( '/\s+/', ' ', wp_strip_all_tags( $product->get_short_description() ) ) );
+	$ids   = array_values( array_unique( array_filter( array_merge( array( (int) $product->get_image_id() ), array_map( 'intval', $product->get_gallery_image_ids() ) ) ) ) );
+	foreach ( $ids as $i => $id ) {
+		$att = get_post( $id );
+		if ( ! $att || 'attachment' !== $att->post_type ) {
+			continue;
+		}
+		$n     = $i + 1;
+		$title = 0 === $i ? $name : $name . ' – Görsel ' . $n;
+		$alt   = 0 === $i
+			? $name . ( $cat ? ' – ' . $cat : '' ) . ' | İzmir çiçek siparişi, ' . $brand
+			: $name . ' – farklı açıdan görünüm ' . $n . ' | ' . $brand;
+		$upd   = array( 'ID' => $id );
+		if ( df_img_title_auto( $att->post_title, $id ) ) {
+			$upd['post_title'] = $title;
+		}
+		if ( '' === trim( (string) $att->post_excerpt ) ) {
+			$upd['post_excerpt'] = $title;
+		}
+		if ( '' === trim( (string) $att->post_content ) && '' !== $short ) {
+			$upd['post_content'] = mb_substr( $short, 0, 300 );
+		}
+		if ( count( $upd ) > 1 ) {
+			wp_update_post( $upd );
+		}
+		$cur = trim( (string) get_post_meta( $id, '_wp_attachment_image_alt', true ) );
+		if ( '' === $cur || df_img_title_auto( $cur, $id ) ) {
+			update_post_meta( $id, '_wp_attachment_image_alt', mb_substr( $alt, 0, 125 ) );
+		}
+	}
+}
+add_action( 'woocommerce_process_product_meta', 'df_pai_img_meta', 70 );
+
+/**
  * Türkçe küçük harf.
  *
  * @param string $s Metin.
