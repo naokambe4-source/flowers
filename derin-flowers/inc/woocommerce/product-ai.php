@@ -633,6 +633,27 @@ function df_pai_box( $post ) {
 			var ta = document.getElementById( id );
 			if ( ta ) { ta.value = html; }
 		}
+		// Rank Math kutusuna doğrudan yaz (kendi kaydıyla saklar, kutuda hemen görünür).
+		function rmSet() {
+			var t = f( 'seo_title' ).value.trim(), d = f( 'seo_desc' ).value.trim(), k = f( 'keyword' ).value.trim();
+			try {
+				var rm = window.wp && wp.data && wp.data.dispatch( 'rank-math' );
+				if ( ! rm ) { return; }
+				if ( k && rm.updateKeywords ) { rm.updateKeywords( k ); }
+				if ( t ) { if ( rm.updateTitle ) { rm.updateTitle( t ); } if ( rm.updateSerpTitle ) { rm.updateSerpTitle( t ); } }
+				if ( d ) { if ( rm.updateDescription ) { rm.updateDescription( d ); } if ( rm.updateSerpDescription ) { rm.updateSerpDescription( d ); } }
+				if ( window.rankMathEditor && rankMathEditor.refresh ) { rankMathEditor.refresh( 'content' ); }
+			} catch ( e ) {}
+		}
+		function catSet( ids ) {
+			if ( ! ids || ! ids.length ) { return 0; }
+			var def = <?php echo (int) get_option( 'default_product_cat' ); ?>, n = 0;
+			document.querySelectorAll( '#product_catchecklist input[type=checkbox], #product_cat-pop input[type=checkbox]' ).forEach( function ( c ) { if ( +c.value === def ) { c.checked = false; } } );
+			ids.forEach( function ( id ) {
+				document.querySelectorAll( '#product_catchecklist input[value="' + id + '"], #product_cat-pop input[value="' + id + '"]' ).forEach( function ( c ) { c.checked = true; n++; } );
+			} );
+			return n;
+		}
 		function htmlToText( h ) {
 			var t = h.replace( /<li>/g, '- ' ).replace( /<\/li>\s*/g, '\n' ).replace( /<\/p>\s*/g, '\n\n' ).replace( /<\/?ul>\s*/g, '' ).replace( /<[^>]+>/g, '' );
 			var ta = document.createElement( 'textarea' );
@@ -672,7 +693,7 @@ function df_pai_box( $post ) {
 				var d = r.data;
 				f( 'short' ).value = d.short || ''; f( 'long' ).value = htmlToText( d.long || '' );
 				f( 'seo_title' ).value = d.seo_title || ''; f( 'seo_desc' ).value = d.seo_desc || '';
-				f( 'keyword' ).value = d.keyword || ''; f( 'alt' ).value = d.alt || ''; f( 'tags' ).value = ( d.tags || [] ).join( ', ' );
+				f( 'keyword' ).value = d.keyword || ''; f( 'alt' ).value = d.alt || ''; f( 'tags' ).value = ( d.tags || [] ).join( ', ' ); rmSet();
 				$( '[data-pai-result]' ).hidden = false; $( '[data-pai-ok]' ).hidden = true;
 				if ( d.note ) { err.hidden = false; err.style.background = '#fff7e6'; err.style.color = '#7a5200'; err.textContent = d.note; }
 				count();
@@ -696,20 +717,16 @@ function df_pai_box( $post ) {
 					var d = r.data, pt = document.getElementById( 'title' );
 					if ( pt ) { pt.value = d.name; pt.dispatchEvent( new Event( 'input', { bubbles: true } ) ); var lbl = document.getElementById( 'title-prompt-text' ); if ( lbl ) { lbl.classList.add( 'screen-reader-text' ); } }
 					if ( title && title !== pt ) { title.value = d.name; }
-					if ( d.cats && d.cats.length ) {
-						var def = <?php echo (int) get_option( 'default_product_cat' ); ?>;
-						document.querySelectorAll( '#product_catchecklist input[type=checkbox]' ).forEach( function ( c ) { if ( +c.value === def ) { c.checked = false; } } );
-						d.cats.forEach( function ( id ) { var c = document.querySelector( '#in-product_cat-' + id ); if ( c ) { c.checked = true; } } );
-					}
+					var nc = catSet( d.cats );
 					f( 'short' ).value = d.short || ''; f( 'long' ).value = htmlToText( d.long || '' );
 					f( 'seo_title' ).value = d.seo_title || ''; f( 'seo_desc' ).value = d.seo_desc || '';
 					f( 'keyword' ).value = d.keyword || ''; f( 'alt' ).value = d.alt || ''; f( 'tags' ).value = ( d.tags || [] ).join( ', ' );
 					editorSet( 'excerpt', ( d.short || '' ).replace( /\n/g, '<br>' ) );
 					editorSet( 'content', textToHtml( f( 'long' ).value ) );
 					$( '[data-pai-result]' ).hidden = false; $( '[data-pai-ok]' ).hidden = false;
-					count();
+					count(); rmSet();
 					err.hidden = false; err.style.background = '#eaf6ec'; err.style.color = '#1e5b2c';
-					err.textContent = '✓ Ürün adı, kategori, açıklamalar, SEO ve etiketler dolduruldu. Fiyatı ve stoğu kontrol edip "Yayınla"ya basın.';
+					err.textContent = '✓ Ürün adı, ' + ( nc ? 'kategori (' + ( d.cat_names || [] ).join( ', ' ) + '), ' : '' ) + 'açıklamalar, Rank Math SEO (odak kelime: ' + ( d.keyword || '-' ) + ') ve etiketler dolduruldu.' + ( nc ? '' : ' Kategori bulunamadı, sağdan elle seçin.' ) + ' Fiyatı kontrol edip "Yayınla"ya basın.';
 					window.scrollTo( { top: 0, behavior: 'smooth' } );
 				} ).catch( function ( e ) {
 					err.hidden = false; err.style.background = ''; err.style.color = ''; err.textContent = 'Görselden oluşturulamadı: ' + e.message;
@@ -719,8 +736,10 @@ function df_pai_box( $post ) {
 		$( '[data-pai-apply]' ).addEventListener( 'click', function () {
 			editorSet( 'excerpt', f( 'short' ).value.replace( /\n/g, '<br>' ) );
 			editorSet( 'content', textToHtml( f( 'long' ).value ) );
+			rmSet();
 			$( '[data-pai-ok]' ).hidden = false;
 		} );
+		[ 'seo_title', 'seo_desc', 'keyword' ].forEach( function ( k ) { if ( f( k ) ) { f( k ).addEventListener( 'change', rmSet ); } } );
 		if ( '1' === box.getAttribute( 'data-auto' ) ) {
 			box.scrollIntoView( { block: 'start' } );
 		}
@@ -1156,12 +1175,13 @@ function df_pai_vision() {
 	}
 	$list = '';
 	foreach ( $cats as $slug => $name ) {
-		$list .= '- ' . $slug . ': ' . $name . "\n";
+		$t     = get_term_by( 'slug', $slug, 'product_cat' );
+		$list .= '- ' . ( $t ? $t->term_id : $slug ) . ': ' . $name . "\n";
 	}
 	$prompt = "Bir Türk çiçekçinin (" . df_opt( 'pai_brand' ) . ") e-ticaret sitesi için, ekteki ürün fotoğrafına bakarak ürün kaydı hazırla. Google SEO kurallarını bilen bir metin yazarısın.\n"
 		. ( $price ? 'Fiyat: ' . $price . " TL\n" : '' )
 		. ( $notes ? 'Ek bilgi: ' . $notes . "\n" : '' )
-		. "\nKategoriler (yalnızca bu listeden, adres/slug olarak seç; 1-3 tane, en uygun olan önce):\n" . $list
+		. "\nKategoriler (yalnızca bu listeden seç, numarasını yaz; 1-3 tane, en uygun olan önce; boş bırakma):\n" . $list
 		. ( $pool ? "\nKullanılmamış ürün adı havuzu (fotoğrafa uyan varsa buradan seç, yoksa yeni ad üret):\n- " . implode( "\n- ", $pool ) . "\n" : '' )
 		. "\nKurallar:\n"
 		. "- Fotoğrafta gerçekten görüneni yaz: çiçek türü, renkler, ambalaj/kutu/vazo. Emin olmadığın şeyi (adet, boy) uydurma; gül adedi net sayılamıyorsa yazma.\n"
@@ -1174,7 +1194,7 @@ function df_pai_vision() {
 		. "- keyword: tek odak anahtar kelime, küçük harf (örn. 'izmir kırmızı gül buketi').\n"
 		. "- alt: görseli anlatan en fazla 120 karakterlik ALT metni.\n"
 		. "- tags: 5-8 küçük harfli Türkçe etiket.\n"
-		. 'Yanıtı yalnızca JSON olarak ver: {"name":"","categories":[""],"short":"","long":"","seo_title":"","seo_desc":"","keyword":"","alt":"","tags":[""]}';
+		. 'Yanıtı yalnızca JSON olarak ver: {"name":"","categories":[0],"short":"","long":"","seo_title":"","seo_desc":"","keyword":"","alt":"","tags":[""]}';
 	$GLOBALS['df_pai_busy_retries'] = 3;
 	$text = df_pai_call( $prov, $prompt, $img );
 	if ( is_wp_error( $text ) ) {
@@ -1195,16 +1215,61 @@ function df_pai_vision() {
 	}
 	$out['long'] = df_pai_long_html( $out['long'] );
 	$out['tags'] = isset( $json['tags'] ) ? array_slice( array_values( array_filter( array_map( 'sanitize_text_field', (array) $json['tags'] ) ) ), 0, 8 ) : array();
-	$out['cats'] = array();
-	foreach ( (array) ( $json['categories'] ?? array() ) as $slug ) {
-		$t = get_term_by( 'slug', sanitize_title( (string) $slug ), 'product_cat' );
-		if ( $t && count( $out['cats'] ) < 3 ) {
-			$out['cats'][] = (int) $t->term_id;
-		}
+	$out['cats']      = df_pai_match_cats( (array) ( $json['categories'] ?? array() ), $terms, $name . ' ' . $out['keyword'] );
+	$out['cat_names'] = array();
+	foreach ( $out['cats'] as $cid ) {
+		$out['cat_names'][] = html_entity_decode( get_term( $cid )->name, ENT_QUOTES, 'UTF-8' );
 	}
 	wp_send_json_success( $out );
 }
 add_action( 'wp_ajax_df_pai_vision', 'df_pai_vision' );
+
+/**
+ * Yapay zekânın verdiği kategoriyi (numara, ad ya da adres) gerçek kategoriye eşle; hiçbiri tutmazsa ürün adından tahmin et.
+ *
+ * @param array  $given Yapay zekâ yanıtı.
+ * @param array  $terms Kategoriler.
+ * @param string $hint  Ürün adı + odak kelime.
+ * @return int[]
+ */
+function df_pai_match_cats( $given, $terms, $hint ) {
+	$terms = is_array( $terms ) ? $terms : array();
+	$def   = (int) get_option( 'default_product_cat' );
+	$fold  = function ( $s ) {
+		$s = mb_strtolower( html_entity_decode( (string) $s, ENT_QUOTES, 'UTF-8' ), 'UTF-8' );
+		return trim( preg_replace( '/[^a-z0-9]+/', ' ', strtr( $s, array( 'ı' => 'i', 'İ' => 'i', 'ş' => 's', 'ğ' => 'g', 'ü' => 'u', 'ö' => 'o', 'ç' => 'c', 'â' => 'a', 'î' => 'i', 'û' => 'u' ) ) ) );
+	};
+	$out = array();
+	foreach ( $given as $g ) {
+		$g = is_array( $g ) ? reset( $g ) : $g;
+		$k = $fold( $g );
+		if ( '' === $k ) {
+			continue;
+		}
+		foreach ( $terms as $t ) {
+			if ( $def === (int) $t->term_id ) {
+				continue;
+			}
+			$n = $fold( $t->name );
+			if ( (string) $t->term_id === $k || $fold( $t->slug ) === $k || $n === $k || ( strlen( $k ) > 3 && ( false !== strpos( $n, $k ) || false !== strpos( $k, $n ) ) ) ) {
+				$out[ (int) $t->term_id ] = true;
+				break;
+			}
+		}
+	}
+	if ( ! $out ) {
+		// Yedek: kategori adının kökü ürün adında geçiyorsa (Güller → gül).
+		$h = ' ' . $fold( $hint ) . ' ';
+		foreach ( $terms as $t ) {
+			$n = $fold( $t->name );
+			$r = preg_replace( '/(ler|lar|leri|lari)$/', '', $n );
+			if ( $def !== (int) $t->term_id && strlen( $r ) > 2 && false !== strpos( $h, ' ' . $r ) ) {
+				$out[ (int) $t->term_id ] = true;
+			}
+		}
+	}
+	return array_slice( array_keys( $out ), 0, 3 );
+}
 
 /**
  * Rank Math kendi kutusunu bizden sonra (boş) kaydedip yapay zekâ SEO'sunu silmesin: en son biz yazarız.
