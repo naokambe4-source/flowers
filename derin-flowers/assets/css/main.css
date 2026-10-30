@@ -287,7 +287,7 @@ hr { border: 0; border-top: 1px solid var(--df-line); margin: 2em 0; }
 /* ---------- Ürün kartı ---------- */
 .df-card { position: relative; display: flex; flex-direction: column; background: #fff; border: 1px solid var(--df-line); border-radius: var(--df-radius); transition: box-shadow .4s var(--df-ease), border-color .4s var(--df-ease); min-width: 0; }
 .df-card:hover { box-shadow: var(--df-shadow); border-color: transparent; }
-.df-card__media { position: relative; overflow: hidden; aspect-ratio: 4 / 5; background: var(--df-ivory); border-radius: var(--df-radius) var(--df-radius) 0 0; }
+.df-card__media { position: relative; overflow: hidden; aspect-ratio: var(--df-card-ar, 4 / 5); background: var(--df-ivory); border-radius: var(--df-radius) var(--df-radius) 0 0; }
 .df-card__img { display: block; position: absolute; inset: 0; }
 .df-card__img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center top; transition: opacity .6s var(--df-ease), transform 1.2s var(--df-ease); }
 .df-card:hover .df-card__primary { transform: scale(1.04); }

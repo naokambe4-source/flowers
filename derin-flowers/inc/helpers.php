@@ -629,6 +629,10 @@ function df_css_variables() {
 		'--df-logo-w'       => absint( $o['logo_width'] ) . 'px',
 		'--df-logo-w-m'     => absint( $o['logo_width_mobile'] ) . 'px',
 	);
+	$ar = array( '2-3' => array( 2, 3 ), '3-4' => array( 3, 4 ), '4-5' => array( 4, 5 ), '1-1' => array( 1, 1 ) );
+	$ar = $ar[ (string) df_opt( 'card_ratio', '2-3' ) ] ?? $ar['2-3'];
+	$vars['--df-card-ar'] = $ar[0] . ' / ' . $ar[1];
+	$vars['--df-card-w']  = round( $ar[0] / $ar[1], 4 );
 	$css = ':root{';
 	foreach ( $vars as $k => $v ) {
 		$css .= $k . ':' . wp_strip_all_tags( (string) $v ) . ';';

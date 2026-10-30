@@ -178,8 +178,8 @@ table.variations select { width: 100%; min-height: 52px; }
 /* Galeri */
 .df-gallery { display: grid; grid-template-columns: 1fr; gap: 12px; position: relative; }
 .df-gallery.has-thumbs { grid-template-columns: 92px minmax(0, 1fr); }
-@media (min-width: 901px) { .df-gallery { width: 100%; margin-inline: auto; max-width: max(440px, calc((100vh - 170px) * 4 / 5 + 104px)); } }
-.df-gallery__main { position: relative; order: 2; overflow: hidden; background: var(--df-ivory); aspect-ratio: 4 / 5; }
+@media (min-width: 901px) { .df-gallery { width: 100%; margin-inline: auto; max-width: max(440px, calc((100vh - 170px) * var(--df-card-w, .8) + 104px)); } }
+.df-gallery__main { position: relative; order: 2; overflow: hidden; background: var(--df-ivory); aspect-ratio: var(--df-card-ar, 4 / 5); }
 .df-gallery__track { position: absolute; inset: 0; }
 .df-gallery__slide { position: absolute; inset: 0; opacity: 0; visibility: hidden; transition: opacity .5s var(--df-ease), visibility .5s; }
 .df-gallery__slide.is-active { opacity: 1; visibility: visible; z-index: 1; }
@@ -204,7 +204,7 @@ table.variations select { width: 100%; min-height: 52px; }
 .df-gallery__zoom { position: absolute; right: 14px; bottom: 14px; z-index: 3; width: 42px; height: 42px; border-radius: 50%; border: 0; background: rgba(255, 255, 255, .92); display: grid; place-items: center; }
 .df-gallery__thumbs { order: 1; display: flex; flex-direction: column; gap: 10px; max-height: 100%; overflow-y: auto; scrollbar-width: none; }
 .df-gallery__thumbs::-webkit-scrollbar { display: none; }
-.df-gallery__thumb { position: relative; flex: none; width: 100%; aspect-ratio: 4 / 5; padding: 0; border: 1px solid transparent; background: var(--df-ivory); overflow: hidden; opacity: .6; transition: opacity .2s, border-color .2s; }
+.df-gallery__thumb { position: relative; flex: none; width: 100%; aspect-ratio: var(--df-card-ar, 4 / 5); padding: 0; border: 1px solid transparent; background: var(--df-ivory); overflow: hidden; opacity: .6; transition: opacity .2s, border-color .2s; }
 .df-gallery__thumb img { width: 100%; height: 100%; object-fit: cover; }
 .df-gallery__thumb.is-active, .df-gallery__thumb:hover { opacity: 1; border-color: var(--df-text); }
 .df-gallery__thumb.is-video { background: var(--df-sand); }

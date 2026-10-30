@@ -332,7 +332,7 @@ function df_single_related() {
 	$all  = $cats ? get_term_link( (int) $cats[0], 'product_cat' ) : wc_get_page_permalink( 'shop' );
 	echo '<section class="df-related"><div class="df-container">';
 	echo '<header class="df-vitrin__head"><h2>' . esc_html( df_opt( 'related_title', 'Bunları da Beğenebilirsiniz' ) ) . '</h2><a class="df-link" href="' . esc_url( is_wp_error( $all ) ? wc_get_page_permalink( 'shop' ) : $all ) . '">Tümünü gör ' . df_icon( 'arrow-right', array( 'size' => 14 ) ) . '</a></header>'; // phpcs:ignore
-	echo '<div class="df-vitrin df-vitrin--r' . esc_attr( sanitize_key( df_opt( 'vit_ratio', '1-1' ) ) ) . '"><div class="df-vitrin__grid">';
+	echo '<div class="df-vitrin df-vitrin--r' . esc_attr( sanitize_key( df_opt( 'vit_ratio', 'card' ) ) ) . '"><div class="df-vitrin__grid">';
 	foreach ( $ids as $id ) {
 		df_product_card( $id, array( 'variant' => 'vitrin' ) );
 	}

@@ -47,7 +47,7 @@ function df_setup() {
 	// Görsel boyutları — her kullanım için doğru oran, bulanık/küçük görsel yok.
 	add_image_size( 'df-hero', 2400, 1400, false );
 	add_image_size( 'df-hero-mobile', 1080, 1600, false );
-	add_image_size( 'df-card', 720, 900, true );        // 4:5 ürün kartı.
+	add_image_size( 'df-card', 720, 1080, false );      // Ürün kartı: kırpılmaz (oran CSS'ten, görsel üstten hizalı).
 	add_image_size( 'df-portrait', 900, 1200, true );   // 3:4 kategori.
 	add_image_size( 'df-wide', 1600, 1000, true );      // 16:10 editorial.
 	add_image_size( 'df-banner', 2400, 1100, false );   // Tam genişlik banner.
@@ -87,15 +87,15 @@ add_filter( 'image_resize_dimensions', 'df_crop_top', 10, 6 );
  * (yönetici paneli açıldıkça arka planda, her seferinde birkaç görsel).
  */
 function df_crop_top_regen() {
-	if ( get_option( 'df_crop_top_done' ) || ! current_user_can( 'upload_files' ) || wp_doing_ajax() ) {
+	if ( get_option( 'df_card_soft_done' ) || ! current_user_can( 'upload_files' ) || wp_doing_ajax() ) {
 		return;
 	}
-	$last = (int) get_option( 'df_crop_top_last', 0 );
+	$last = (int) get_option( 'df_card_soft_last', 0 );
 	global $wpdb;
 	// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 	$ids = $wpdb->get_col( $wpdb->prepare( "SELECT ID FROM {$wpdb->posts} WHERE post_type = 'attachment' AND post_mime_type LIKE 'image/%%' AND ID > %d ORDER BY ID ASC LIMIT 8", $last ) );
 	if ( ! $ids ) {
-		update_option( 'df_crop_top_done', 1, false );
+		update_option( 'df_card_soft_done', 1, false );
 		return;
 	}
 	require_once ABSPATH . 'wp-admin/includes/image.php';
@@ -108,11 +108,24 @@ function df_crop_top_regen() {
 		if ( is_array( $meta ) && ! empty( $meta['width'] ) && $file && file_exists( $file ) ) {
 			$changed = false;
 			foreach ( array( 'df-card', 'df-portrait' ) as $name ) {
-				if ( empty( $sizes[ $name ] ) || ( $meta['height'] / $meta['width'] ) <= ( $sizes[ $name ]['height'] / $sizes[ $name ]['width'] ) + 0.01 ) {
+				if ( empty( $sizes[ $name ] ) ) {
+					continue;
+				}
+				$crop = ! empty( $sizes[ $name ]['crop'] );
+				$cur  = $meta['sizes'][ $name ] ?? null;
+				if ( $crop && ( $meta['height'] / $meta['width'] ) <= ( $sizes[ $name ]['height'] / $sizes[ $name ]['width'] ) + 0.01 ) {
+					continue; // Kırpılan boyut: yalnızca dik fotoğraflar (üstten kırpılsın diye).
+				}
+				if ( ! $crop && $cur && abs( $cur['width'] / max( 1, $cur['height'] ) - $meta['width'] / $meta['height'] ) < 0.02 && 0 === strpos( basename( (string) $cur['file'] ), pathinfo( $file, PATHINFO_FILENAME ) ) ) {
+					continue; // Kırpılmayan boyut zaten orijinal oranında.
+				}
+				if ( ! $crop && $meta['width'] <= $sizes[ $name ]['width'] && $meta['height'] <= $sizes[ $name ]['height'] ) {
+					unset( $meta['sizes'][ $name ] ); // Görsel zaten küçük: orijinali kullanılır.
+					$changed = true;
 					continue;
 				}
 				$ed = wp_get_image_editor( $file );
-				if ( is_wp_error( $ed ) || is_wp_error( $ed->resize( $sizes[ $name ]['width'], $sizes[ $name ]['height'], true ) ) ) {
+				if ( is_wp_error( $ed ) || is_wp_error( $ed->resize( $sizes[ $name ]['width'], $sizes[ $name ]['height'], $crop ) ) ) {
 					continue;
 				}
 				$dim   = $ed->get_size();
@@ -139,12 +152,28 @@ function df_crop_top_regen() {
 		}
 		$last = $id;
 	}
-	update_option( 'df_crop_top_last', $last, false );
+	update_option( 'df_card_soft_last', $last, false );
 	if ( $any && function_exists( 'df_pc_flush' ) ) {
 		df_pc_flush();
 	}
 }
 add_action( 'admin_init', 'df_crop_top_regen', 50 );
+
+/**
+ * Anasayfa vitrini kare kırpıyordu: ürün kartı oranına geçir (bir kez).
+ */
+function df_mig_card_ratio() {
+	if ( get_option( 'df_mig_card_ratio' ) ) {
+		return;
+	}
+	$o = get_option( DF_OPTION );
+	if ( is_array( $o ) && ( empty( $o['vit_ratio'] ) || '1-1' === $o['vit_ratio'] ) ) {
+		$o['vit_ratio'] = 'card';
+		update_option( DF_OPTION, $o );
+	}
+	update_option( 'df_mig_card_ratio', 1, false );
+}
+add_action( 'admin_init', 'df_mig_card_ratio', 5 );
 
 /**
  * İçerik genişliği.

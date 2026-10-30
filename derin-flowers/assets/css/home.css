@@ -614,7 +614,8 @@ a.df-sstrip__card:hover { color: var(--df-text); transform: translateY(-2px); bo
 .df-vitrin--r1-1 .df-card__media { aspect-ratio: 1 / 1; }
 .df-vitrin--r4-5 .df-card__media { aspect-ratio: 4 / 5; }
 .df-vitrin--r3-4 .df-card__media { aspect-ratio: 3 / 4; }
-.df-vitrin .df-card__media img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
+.df-vitrin--rcard .df-card__media { aspect-ratio: var(--df-card-ar, 4 / 5); }
+.df-vitrin .df-card__media img { width: 100%; height: 100%; object-fit: cover; object-position: center top; }
 .df-vitrin--rfit .df-card__media img { object-fit: contain; }
 .df-vitrin .df-card { display: flex; flex-direction: column; height: 100%; }
 .df-vitrin .df-card__body { display: flex; flex-direction: column; flex: 1; }
