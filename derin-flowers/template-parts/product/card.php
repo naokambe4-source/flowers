@@ -27,7 +27,7 @@ if ( ! $product->is_in_stock() ) {
 }
 $subtitle = get_post_meta( $product->get_id(), '_df_subtitle', true );
 // Vitrinde kırpılmamış görsel: kare/dikey fotoğraflar kesilmeden sığar.
-$img_size = ( ! empty( $args['variant'] ) && 'vitrin' === $args['variant'] ) ? 'large' : 'df-card';
+$img_size = 'large'; // Kırpılmamış görsel: oran CSS'ten, üstten hizalı (kafa kesilmez).
 ?>
 <<?php echo esc_attr( $tag ); ?> <?php wc_product_class( $classes, $product ); ?>>
 	<div class="df-card__media">

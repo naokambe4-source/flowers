@@ -163,15 +163,15 @@ add_action( 'admin_init', 'df_crop_top_regen', 50 );
  * Anasayfa vitrini kare kırpıyordu: ürün kartı oranına geçir (bir kez).
  */
 function df_mig_card_ratio() {
-	if ( get_option( 'df_mig_card_ratio' ) ) {
+	if ( get_option( 'df_mig_card_ratio' ) >= 2 ) {
 		return;
 	}
 	$o = get_option( DF_OPTION );
-	if ( is_array( $o ) && ( empty( $o['vit_ratio'] ) || '1-1' === $o['vit_ratio'] ) ) {
+	if ( is_array( $o ) && ( empty( $o['vit_ratio'] ) || in_array( $o['vit_ratio'], array( '1-1', '3-4', '4-5' ), true ) ) ) {
 		$o['vit_ratio'] = 'card';
 		update_option( DF_OPTION, $o );
 	}
-	update_option( 'df_mig_card_ratio', 1, false );
+	update_option( 'df_mig_card_ratio', 2, false );
 }
 add_action( 'admin_init', 'df_mig_card_ratio', 5 );
 

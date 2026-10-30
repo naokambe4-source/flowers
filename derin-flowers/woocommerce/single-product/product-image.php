@@ -102,7 +102,7 @@ $df_first = true;
 			<?php foreach ( $df_media as $df_i => $df_item ) : ?>
 				<button type="button" class="df-gallery__thumb<?php echo 0 === $df_i ? ' is-active' : ''; ?><?php echo 'video' === $df_item['type'] ? ' is-video' : ''; ?>" data-df-gallery-go="<?php echo (int) $df_i; ?>" aria-label="<?php echo esc_attr( 'video' === $df_item['type'] ? 'Ürün videosu' : ( $df_i + 1 ) . '. görsel' ); ?>">
 					<?php if ( 'image' === $df_item['type'] ) : ?>
-						<?php echo wp_get_attachment_image( $df_item['id'], 'df-card', false, array( 'loading' => 'lazy', 'alt' => '', 'sizes' => '(max-width: 900px) 64px, 92px' ) ); ?>
+						<?php echo wp_get_attachment_image( $df_item['id'], 'medium', false, array( 'loading' => 'lazy', 'alt' => '', 'sizes' => '(max-width: 900px) 64px, 92px' ) ); ?>
 					<?php else : ?>
 						<?php if ( $df_item['poster'] ) : ?>
 							<img src="<?php echo esc_url( $df_item['poster'] ); ?>" alt="" loading="lazy">
