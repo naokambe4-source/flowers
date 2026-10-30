@@ -510,7 +510,7 @@ function df_img_seo_prefilter( $file ) {
 		return $file;
 	}
 	$title = get_the_title( $pid );
-	if ( ! $title || 'Otomatik Taslak' === $title || 'Auto Draft' === $title ) {
+	if ( ! $title || preg_match( '/^(otomatik taslak|auto[\s_-]?draft)/iu', trim( $title ) ) || 'auto-draft' === get_post_status( $pid ) ) {
 		return $file;
 	}
 	$base = pathinfo( $file['name'], PATHINFO_FILENAME );
