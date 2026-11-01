@@ -326,6 +326,17 @@ function df_perf_heartbeat( $s ) {
 	$s['interval'] = 60;
 	return $s;
 }
+
+/**
+ * Kalp atışı yalnızca yazı / ürün düzenleme ekranında (kilit ve otomatik kayıt için); diğer panel sayfalarında kapalı.
+ */
+function df_perf_heartbeat_admin() {
+	global $pagenow;
+	if ( ! in_array( $pagenow, array( 'post.php', 'post-new.php' ), true ) ) {
+		wp_deregister_script( 'heartbeat' );
+	}
+}
+add_action( 'admin_enqueue_scripts', 'df_perf_heartbeat_admin', 1 );
 add_filter( 'heartbeat_settings', 'df_perf_heartbeat' );
 
 /**
@@ -360,4 +371,50 @@ add_filter( 'action_scheduler_retention_period', 'df_perf_as_retention' );
 
 // WooCommerce panelindeki eklenti mağazası önerilerini kapat (her açılışta uzak istek yapıyor).
 add_filter( 'woocommerce_allow_marketplace_suggestions', '__return_false' );
+
+// WooCommerce Analiz / Ana sayfa / Pazarlama (wc-admin) ekranlarını kapat: panelin en ağır kısmı.
+if ( df_opt( 'perf_wc_admin', 1 ) ) {
+	add_filter( 'woocommerce_admin_disabled', '__return_true' );
+}
+
+/**
+ * WooCommerce'in kendi ayarlarıyla Analiz (sipariş verisini arka planda yeniden işler), uzak bildirim / öneri
+ * ve kullanım izlemeyi kapat; ayar kapatılırsa Analiz geri açılır.
+ */
+function df_perf_wc_lite() {
+	$on   = (bool) df_opt( 'perf_wc_admin', 1 );
+	$done = (bool) get_option( 'df_wc_lite' );
+	if ( $on && ! $done ) {
+		update_option( 'woocommerce_analytics_enabled', 'no' );
+		update_option( 'woocommerce_show_marketplace_suggestions', 'no' );
+		update_option( 'woocommerce_allow_tracking', 'no' );
+		update_option( 'df_wc_lite', 1, false );
+	} elseif ( ! $on && $done ) {
+		update_option( 'woocommerce_analytics_enabled', 'yes' );
+		delete_option( 'df_wc_lite' );
+	}
+}
+add_action( 'admin_init', 'df_perf_wc_lite', 2 );
+
+/**
+ * Pano (Başlangıç) sayfasındaki ağır kutuları kaldır: WooCommerce durum raporu (büyük sipariş sorgusu),
+ * WordPress haberleri (dış istek), Elementor / Wordfence / Rank Math özetleri, site sağlığı.
+ */
+function df_perf_dashboard_widgets() {
+	foreach (
+		array(
+			array( 'woocommerce_dashboard_status', 'normal' ),
+			array( 'woocommerce_dashboard_recent_reviews', 'normal' ),
+			array( 'dashboard_primary', 'side' ),
+			array( 'dashboard_site_health', 'normal' ),
+			array( 'e-dashboard-overview', 'normal' ),
+			array( 'wordfence_activity_report_widget', 'normal' ),
+			array( 'rank_math_dashboard_widget', 'normal' ),
+			array( 'litespeed_dashboard_widget', 'normal' ),
+		) as $w
+	) {
+		remove_meta_box( $w[0], 'dashboard', $w[1] );
+	}
+}
+add_action( 'wp_dashboard_setup', 'df_perf_dashboard_widgets', 999 );
 

@@ -1023,6 +1023,7 @@ function df_options_schema() {
 			array( 'id' => 'perf_fragments', 'type' => 'toggle', 'label' => 'Sepet boşken sepet yenileme isteği atma', 'default' => 1, 'half' => true ),
 			array( 'id' => 'perf_attribution', 'type' => 'toggle', 'label' => 'WooCommerce sipariş kaynak takibini kapat', 'default' => 1, 'half' => true ),
 			array( 'id' => 'perf_select', 'type' => 'toggle', 'label' => 'Ürün sayfasında hafif ilçe listesi', 'default' => 1, 'half' => true ),
+			array( 'id' => 'perf_wc_admin', 'type' => 'toggle', 'label' => 'Yönetim panelini hızlandır (WooCommerce Analiz ve Pazarlama ekranlarını kapat)', 'default' => 1, 'half' => true, 'desc' => 'WooCommerce\'in ağır "Analiz / Ana sayfa / Pazarlama" ekranları her panel açılışında çok sayıda arka plan isteği yapar. Kapatınca panel belirgin hızlanır; siparişler, ürünler ve temanın Sipariş Paneli aynen çalışır.' ),
 			array( 'id' => 'perf_emoji', 'type' => 'toggle', 'label' => 'Emoji ve gereksiz başlık etiketlerini kaldır', 'default' => 1, 'half' => true ),
 		),
 	);
