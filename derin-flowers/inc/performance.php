@@ -275,3 +275,89 @@ function df_perf_inline_css( $html, $handle, $href, $media ) {
 	return '<style id="' . esc_attr( $handle ) . '-css">' . str_ireplace( '</style', '', $css ) . "</style>\n";
 }
 add_filter( 'style_loader_tag', 'df_perf_inline_css', 30, 4 );
+
+/**
+ * Saat dilimi: WordPress UTC'de kalmışsa İstanbul'a al (panel saati, sipariş saati ve aynı gün teslimat saati doğru olsun).
+ */
+function df_perf_timezone() {
+	if ( get_option( 'df_tz_fixed' ) ) {
+		return;
+	}
+	$tz = (string) get_option( 'timezone_string' );
+	if ( '' === $tz || in_array( $tz, array( 'UTC', 'Etc/UTC', 'Etc/GMT' ), true ) ) {
+		update_option( 'timezone_string', 'Europe/Istanbul' );
+		update_option( 'gmt_offset', '' );
+	}
+	update_option( 'df_tz_fixed', 1, false );
+}
+add_action( 'admin_init', 'df_perf_timezone', 1 );
+
+/**
+ * Ürün görseli yüklenirken yalnızca ürünlerde kullanılan boyutları üret (her yüklemede 15+ kopya yerine ~8):
+ * yükleme hızlanır, sunucu işlemcisi ve disk rahatlar. Anasayfa / banner görselleri etkilenmez.
+ *
+ * @param array $sizes Boyutlar.
+ * @param array $meta  Görsel bilgisi.
+ * @param int   $id    Görsel.
+ * @return array
+ */
+function df_perf_product_sizes( $sizes, $meta = array(), $id = 0 ) {
+	$parent = $id ? (int) wp_get_post_parent_id( $id ) : 0;
+	// phpcs:ignore WordPress.Security.NonceVerification
+	$parent = $parent ? $parent : ( isset( $_REQUEST['post_id'] ) ? absint( $_REQUEST['post_id'] ) : 0 );
+	if ( ! $parent || 'product' !== get_post_type( $parent ) ) {
+		return $sizes;
+	}
+	foreach ( array( 'df-hero', 'df-hero-mobile', 'df-banner', 'df-wide', 'df-square', 'df-portrait', '1536x1536', '2048x2048' ) as $k ) {
+		unset( $sizes[ $k ] );
+	}
+	return $sizes;
+}
+add_filter( 'intermediate_image_sizes_advanced', 'df_perf_product_sizes', 10, 3 );
+
+/**
+ * Yönetim paneli: WordPress "kalp atışı" isteklerini seyrelt (her 15 sn yerine 60 sn; admin-ajax yükünü azaltır).
+ * Ön yüzde kapalı (ziyaretçide gereksiz).
+ *
+ * @param array $s Ayarlar.
+ * @return array
+ */
+function df_perf_heartbeat( $s ) {
+	$s['interval'] = 60;
+	return $s;
+}
+add_filter( 'heartbeat_settings', 'df_perf_heartbeat' );
+
+/**
+ * Ön yüzde kalp atışını kaldır.
+ */
+function df_perf_heartbeat_front() {
+	if ( ! is_admin() ) {
+		wp_deregister_script( 'heartbeat' );
+	}
+}
+add_action( 'wp_enqueue_scripts', 'df_perf_heartbeat_front', 100 );
+
+/**
+ * Veritabanı şişmesin: yazı / ürün başına en fazla 5 eski sürüm, WooCommerce zamanlanmış görev kayıtları 7 gün.
+ *
+ * @return int
+ */
+function df_perf_revisions() {
+	return 5;
+}
+add_filter( 'wp_revisions_to_keep', 'df_perf_revisions' );
+
+/**
+ * Tamamlanmış arka plan görevi kayıtlarını 7 günde temizle (varsayılan 30 gün).
+ *
+ * @return int
+ */
+function df_perf_as_retention() {
+	return WEEK_IN_SECONDS;
+}
+add_filter( 'action_scheduler_retention_period', 'df_perf_as_retention' );
+
+// WooCommerce panelindeki eklenti mağazası önerilerini kapat (her açılışta uzak istek yapıyor).
+add_filter( 'woocommerce_allow_marketplace_suggestions', '__return_false' );
+
