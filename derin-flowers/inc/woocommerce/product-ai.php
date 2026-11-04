@@ -515,6 +515,7 @@ function df_pai_box( $post ) {
 			</div>
 			<button type="button" class="df-pai__btn" data-pai-go<?php disabled( ! df_opt( 'pai_on', 1 ) ); ?>><svg class="df-pai__spark" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M12 2.5l1.9 5.6 5.6 1.9-5.6 1.9L12 17.5l-1.9-5.6L4.5 10l5.6-1.9L12 2.5z"/><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9L19 15z" opacity=".75"/></svg><span class="df-pai__btn-t"><?php echo $has_key ? 'Hepsini oluştur' : 'Şablonla içerik oluştur'; ?></span><span class="df-pai__spin" data-pai-spin></span></button>
 		</div>
+		<p class="df-pai__test"><button type="button" class="button-link" data-pai-test>🔌 Yapay zekâ bağlantısını test et</button></p>
 		<p class="df-pai__err" data-pai-err hidden></p>
 
 		<div class="df-pai__result" data-pai-result hidden>
@@ -571,6 +572,7 @@ function df_pai_box( $post ) {
 		.df-pai__ok{color:#3f5e45;font-weight:600}.df-pai__two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 		.df-pai small{font-weight:400;color:#6b625c}.df-pai small.is-bad{color:#b32d2e}
 		.df-pai__seo{border-top:1px solid #eee;padding-top:16px}
+		.df-pai__test{margin:-8px 0 8px;text-align:right}.df-pai__test .button-link{font-size:12px;color:#5e7b61}
 		@media(max-width:782px){.df-pai__two{grid-template-columns:1fr}.df-pai__btn{width:100%;justify-content:center}}
 	</style>
 	<script>
@@ -598,7 +600,7 @@ function df_pai_box( $post ) {
 			if ( v.length < 3 ) { setWarn( '' ); return; }
 			var fd = new FormData();
 			fd.append( 'action', 'df_title_check' ); fd.append( 'nonce', nonce ); fd.append( 'title', v ); fd.append( 'id', <?php echo (int) $post->ID; ?> );
-			fetch( ajaxurl, { method: 'POST', body: fd, credentials: 'same-origin' } ).then( function ( r ) { return r.json(); } ).then( function ( r ) {
+			fetch( ajaxurl, { method: 'POST', body: fd, credentials: 'same-origin' } ).then( jsonOf ).then( function ( r ) {
 				setWarn( r && r.success && r.data.length ? '⚠ Bu başlık daha önce kullanıldı: ' + r.data.map( function ( p ) { return '<a href="' + p.url + '" target="_blank">' + p.title + ' (' + p.sku + ')</a>'; } ).join( ', ' ) + '. Havuzdan farklı bir başlık seçin.' : '' );
 			} );
 		}
@@ -637,6 +639,14 @@ function df_pai_box( $post ) {
 				if ( d ) { if ( rm.updateDescription ) { rm.updateDescription( d ); } if ( rm.updateSerpDescription ) { rm.updateSerpDescription( d ); } }
 				if ( window.rankMathEditor && rankMathEditor.refresh ) { rankMathEditor.refresh( 'content' ); }
 			} catch ( e ) {}
+		}
+		// Sunucu zaman aşımında HTML hata sayfası dönerse anlaşılır mesaj ver.
+		function jsonOf( r ) {
+			return r.text().then( function ( t ) {
+				try { return JSON.parse( t ); } catch ( e ) {
+					throw new Error( ( r.status >= 500 || ! t ? 'Sunucu zaman aşımına uğradı (hosting isteği ' + ( r.status || '' ) + ' ile kesti). Ayarlardan daha hızlı bir model seçin ya da tekrar deneyin.' : 'Sunucudan beklenmeyen yanıt: ' + t.replace( /<[^>]+>/g, ' ' ).replace( /\s+/g, ' ' ).slice( 0, 160 ) ) );
+				}
+			} );
 		}
 		function kwFrom( n ) { return ( 'izmir ' + String( n || '' ).toLocaleLowerCase( 'tr' ).replace( /[^a-zçğıöşü0-9 ]+/g, ' ' ).replace( /\s+/g, ' ' ) ).trim(); }
 		function catSet( ids ) {
@@ -682,7 +692,7 @@ function df_pai_box( $post ) {
 			fd.append( 'subtitle', ( document.getElementById( 'df_subtitle' ) || {} ).value || '' );
 			fd.append( 'price', ( document.getElementById( '_regular_price' ) || {} ).value || '' );
 			fd.append( 'pool', $( '[data-pai-pool-id]' ).value );
-			fetch( ajaxurl, { method: 'POST', body: fd, credentials: 'same-origin' } ).then( function ( r ) { return r.json(); } ).then( function ( r ) {
+			fetch( ajaxurl, { method: 'POST', body: fd, credentials: 'same-origin' } ).then( jsonOf ).then( function ( r ) {
 				if ( ! r || ! r.success ) { throw new Error( r && r.data ? r.data : 'Yanıt alınamadı.' ); }
 				var d = r.data;
 				f( 'short' ).value = d.short || ''; f( 'long' ).value = htmlToText( d.long || '' );
@@ -700,6 +710,15 @@ function df_pai_box( $post ) {
 			} ).finally( function () { btn.disabled = false; spin.classList.remove( 'is-active' ); } );
 		}
 		var hasKey = <?php echo $has_key ? 'true' : 'false'; ?>;
+		$( '[data-pai-test]' ).addEventListener( 'click', function () {
+			var b = this, err = $( '[data-pai-err]' );
+			b.disabled = true; err.hidden = false; err.style.background = '#f3f6f1'; err.style.color = '#3f5e45'; err.textContent = 'Test ediliyor… (en fazla 2 dakika)';
+			var fd = new FormData(); fd.append( 'action', 'df_pai_test' ); fd.append( 'nonce', nonce );
+			fetch( ajaxurl, { method: 'POST', body: fd, credentials: 'same-origin' } ).then( function ( r ) { return r.text(); } ).then( function ( t ) {
+				var r; try { r = JSON.parse( t ); } catch ( e ) { r = { success: false, data: 'Sunucu JSON dışı yanıt verdi (zaman aşımı ya da PHP hatası olabilir): ' + t.replace( /<[^>]+>/g, ' ' ).slice( 0, 200 ) }; }
+				err.style.background = r.success ? '#eaf6ec' : ''; err.style.color = r.success ? '#1e5b2c' : ''; err.textContent = r.data;
+			} ).catch( function ( e ) { err.style.background = ''; err.style.color = ''; err.textContent = 'İstek tamamlanamadı: ' + e.message; } ).finally( function () { b.disabled = false; } );
+		} );
 		function thumbId() { var th = document.getElementById( '_thumbnail_id' ); return th && +th.value > 0 ? th.value : ''; }
 		$( '[data-pai-go]' ).addEventListener( 'click', function () { if ( ! ( hasKey && thumbId() ) ) { go(); } } );
 		var vbtn = $( '[data-pai-go]' );
@@ -713,7 +732,7 @@ function df_pai_box( $post ) {
 				var given = ( ( document.getElementById( 'title' ) || {} ).value || '' ).trim(); fd.append( 'title', given );
 				fd.append( 'price', ( document.getElementById( '_regular_price' ) || {} ).value || '' ); fd.append( 'notes', notes.value );
 				fd.append( 'gallery', ( document.getElementById( 'product_image_gallery' ) || {} ).value || '' );
-				fetch( ajaxurl, { method: 'POST', body: fd, credentials: 'same-origin' } ).then( function ( r ) { return r.json(); } ).then( function ( r ) {
+				fetch( ajaxurl, { method: 'POST', body: fd, credentials: 'same-origin' } ).then( jsonOf ).then( function ( r ) {
 					if ( ! r || ! r.success ) { throw new Error( r && r.data ? r.data : 'Yanıt alınamadı.' ); }
 					var d = r.data, pt = document.getElementById( 'title' );
 					if ( pt && ! given ) { pt.value = d.name; pt.dispatchEvent( new Event( 'input', { bubbles: true } ) ); var lbl = document.getElementById( 'title-prompt-text' ); if ( lbl ) { lbl.classList.add( 'screen-reader-text' ); } }
@@ -863,6 +882,142 @@ function df_pai_prompt( $in ) {
 }
 
 /**
+ * Yapay zekâ yanıtından JSON'u sağlam biçimde çıkar: ```json çitleri, baştaki/sondaki açıklama,
+ * metin içindeki satır sonları ve sondaki virgüller gibi küçük biçim hataları düzeltilir.
+ *
+ * @param string $text Yanıt.
+ * @return array|null
+ */
+function df_pai_json( $text ) {
+	$t = trim( (string) $text );
+	$t = preg_replace( '/^```(?:json)?\s*|\s*```$/i', '', $t );
+	$a = strpos( $t, '{' );
+	$z = strrpos( $t, '}' );
+	if ( false === $a || false === $z || $z <= $a ) {
+		return null;
+	}
+	$t = substr( $t, $a, $z - $a + 1 );
+	$j = json_decode( $t, true );
+	if ( is_array( $j ) ) {
+		return $j;
+	}
+	// Tırnak içindeki ham satır sonlarını kaçır, sondaki virgülleri sil, akıllı tırnakları düzelt.
+	$t = preg_replace_callback(
+		'/"(?:[^"\\\\]|\\\\.)*"/s',
+		function ( $m ) {
+			return str_replace( array( "\r", "\n", "\t" ), array( '', '\\n', '\\t' ), $m[0] );
+		},
+		$t
+	);
+	$t = preg_replace( '/,\s*([}\]])/', '$1', $t );
+	$j = json_decode( $t, true );
+	return is_array( $j ) ? $j : null;
+}
+
+/**
+ * AJAX: yapay zekâ bağlantı testi (yönetici) — kısa bir istek atar, sonucu ve süresini gösterir.
+ */
+function df_pai_test() {
+	check_ajax_referer( 'df_pai', 'nonce' );
+	if ( ! current_user_can( 'edit_products' ) ) {
+		wp_send_json_error( 'Yetkiniz yok.', 403 );
+	}
+	$prov  = df_opt( 'pai_provider', 'openai' );
+	$names = array( 'openai' => 'ChatGPT', 'gemini' => 'Gemini', 'claude' => 'Claude', 'evren' => 'EVREN' );
+	$label = $names[ $prov ] ?? $prov;
+	if ( '' === df_pai_key( $prov ) ) {
+		wp_send_json_error( $label . ' seçili ama anahtarı kayıtlı değil. Tema Ayarları → Yapay zekâ ürün içeriği bölümünde anahtarı girip "Kaydet"e basın.' );
+	}
+	$t0   = microtime( true );
+	$GLOBALS['df_pai_busy_retries'] = 1;
+	$text = df_pai_call( $prov, 'Sadece şu JSON\'u döndür: {"durum":"tamam","mesaj":"Merhaba Derin Flowers"}' );
+	$sec  = round( microtime( true ) - $t0, 1 );
+	if ( is_wp_error( $text ) ) {
+		wp_send_json_error( $label . ' bağlantısı başarısız (' . $sec . ' sn): ' . $text->get_error_message() );
+	}
+	$j = df_pai_json( $text );
+	wp_send_json_success( $label . ' çalışıyor ✓ (' . $sec . ' sn' . ( 'evren' === $prov ? ', model: ' . df_opt( 'pai_evren_model', 'google/gemma-4-31b' ) : '' ) . '). ' . ( $j ? 'JSON yanıtı okundu.' : 'Yanıt geldi ama JSON değil: ' . mb_substr( wp_strip_all_tags( (string) $text ), 0, 160 ) ) );
+}
+add_action( 'wp_ajax_df_pai_test', 'df_pai_test' );
+
+/**
+ * EVREN'e akışlı (stream) istek: yanıt parça parça gelir; veri aktığı sürece beklenir, hiç veri gelmezse
+ * $idle saniyede kesilir. cURL yoksa WordPress'in normal isteğine düşer.
+ *
+ * @param string $key     Anahtar.
+ * @param string $payload JSON gövde (stream: true).
+ * @param int    $idle    İlk veri / sessizlik için en fazla bekleme (sn).
+ * @param int    $total   Toplam süre sınırı (sn).
+ * @return array{code:int,body:string,text:string}|WP_Error
+ */
+function df_pai_evren_post( $key, $payload, $idle, $total ) {
+	$url = 'https://evren-llmapi.ssyz.org.tr/v1/chat/completions';
+	if ( ! function_exists( 'curl_init' ) ) {
+		$p   = json_decode( $payload, true );
+		unset( $p['stream'] );
+		$res = wp_remote_post( $url, array( 'timeout' => $total, 'headers' => array( 'Content-Type' => 'application/json', 'Authorization' => 'Bearer ' . $key ), 'body' => wp_json_encode( $p ) ) );
+		if ( is_wp_error( $res ) ) {
+			return $res;
+		}
+		$b = json_decode( wp_remote_retrieve_body( $res ), true );
+		$c = $b['choices'][0]['message']['content'] ?? '';
+		return array( 'code' => (int) wp_remote_retrieve_response_code( $res ), 'body' => wp_remote_retrieve_body( $res ), 'text' => is_string( $c ) ? $c : '' );
+	}
+	$buf  = '';
+	$text = '';
+	$raw  = '';
+	// phpcs:disable WordPress.WP.AlternativeFunctions -- akış (stream) için doğrudan cURL gerekiyor.
+	$ch = curl_init( $url );
+	curl_setopt_array(
+		$ch,
+		array(
+			CURLOPT_POST            => true,
+			CURLOPT_POSTFIELDS      => $payload,
+			CURLOPT_HTTPHEADER      => array( 'Content-Type: application/json', 'Accept: text/event-stream', 'Authorization: Bearer ' . $key ),
+			CURLOPT_CONNECTTIMEOUT  => 15,
+			CURLOPT_TIMEOUT         => max( 20, (int) $total ),
+			CURLOPT_LOW_SPEED_LIMIT => 1,
+			CURLOPT_LOW_SPEED_TIME  => max( 10, (int) $idle ),
+			CURLOPT_RETURNTRANSFER  => false,
+			CURLOPT_WRITEFUNCTION   => function ( $c, $chunk ) use ( &$buf, &$text, &$raw ) {
+				$raw .= strlen( $raw ) < 20000 ? $chunk : '';
+				$buf .= $chunk;
+				while ( false !== ( $pos = strpos( $buf, "\n" ) ) ) {
+					$line = trim( substr( $buf, 0, $pos ) );
+					$buf  = substr( $buf, $pos + 1 );
+					if ( 0 !== strpos( $line, 'data:' ) ) {
+						continue;
+					}
+					$data = trim( substr( $line, 5 ) );
+					if ( '[DONE]' === $data ) {
+						continue;
+					}
+					$j = json_decode( $data, true );
+					$d = $j['choices'][0]['delta']['content'] ?? ( $j['choices'][0]['message']['content'] ?? '' );
+					$text .= is_string( $d ) ? $d : '';
+				}
+				return strlen( $chunk );
+			},
+		)
+	);
+	$ok   = curl_exec( $ch );
+	$code = (int) curl_getinfo( $ch, CURLINFO_HTTP_CODE );
+	$err  = curl_error( $ch );
+	curl_close( $ch );
+	// phpcs:enable
+	if ( false === $ok && '' === $text ) {
+		return new WP_Error( 'df_pai_evren', '' !== $err ? $err : 'bağlantı kurulamadı' );
+	}
+	// Akış yerine düz JSON döndüyse (hata ya da stream desteklenmiyorsa) onu oku.
+	if ( '' === $text && '' !== trim( $buf . $raw ) ) {
+		$b = json_decode( trim( $raw ), true );
+		$c = $b['choices'][0]['message']['content'] ?? '';
+		$text = is_string( $c ) ? $c : '';
+	}
+	return array( 'code' => $code, 'body' => $raw, 'text' => $text );
+}
+
+/**
  * EVREN (Savunma Sanayiinin Yapay Zekâ platformu) — OpenAI uyumlu sohbet API'si.
  * Yoğunlukta (429 / 503) Retry-After kadar bekleyip yeniden dener; görselli istekte görsel anlayan model kullanılır.
  *
@@ -872,57 +1027,48 @@ function df_pai_prompt( $in ) {
  * @return string|WP_Error
  */
 function df_pai_call_evren( $key, $prompt, $image = null ) {
-	$main = trim( (string) df_opt( 'pai_evren_model', 'qwen3.8-flash-next' ) );
-	$main = '' !== $main ? $main : 'qwen3.8-flash-next';
-	// Sırayla denenecek modeller: seçilen model yanıt vermezse hızlı modele geçilir (sayfa donmasın).
-	$models = $image ? array( 'mimo-v2.6-pro' ) : array_values( array_unique( array( $main, 'qwen3.8-flash-next', 'deepseek-v4.1-flash' ) ) );
+	$main = trim( (string) df_opt( 'pai_evren_model', 'google/gemma-4-31b' ) );
+	$main = '' !== $main ? $main : 'google/gemma-4-31b';
+	// Sırayla denenecek modeller: seçilen model yanıt vermezse yedeğe geçilir (sayfa donmasın).
+	$models = $image ? array( 'mimo-v2.6-pro', $main ) : array_values( array_unique( array( $main, 'google/gemma-4-31b', 'qwen3.8-flash-next' ) ) );
 	if ( function_exists( 'set_time_limit' ) ) {
-		@set_time_limit( 150 ); // phpcs:ignore WordPress.PHP.NoSilencedErrors
+		@set_time_limit( 170 ); // phpcs:ignore WordPress.PHP.NoSilencedErrors
 	}
 	$start = time();
 	$last  = '';
 	foreach ( $models as $n => $model ) {
-		$left = 110 - ( time() - $start );
+		$left = 125 - ( time() - $start );
 		if ( $left < 15 ) {
 			break;
 		}
-		$res = wp_remote_post(
-			'https://evren-llmapi.ssyz.org.tr/v1/chat/completions',
+		$payload = wp_json_encode(
 			array(
-				'timeout' => min( $image ? 70 : ( 0 === $n ? 45 : 35 ), $left ),
-				'headers' => array(
-					'Content-Type'  => 'application/json',
-					'Authorization' => 'Bearer ' . $key,
-				),
-				'body'    => wp_json_encode(
+				'model'       => $model,
+				'stream'      => true,
+				'max_tokens'  => 2048,
+				'temperature' => 1.0,
+				'thinking'    => false,
+				'messages'    => array(
 					array(
-						'model'       => $model,
-						'max_tokens'  => 2048,
-						'temperature' => 1.0,
-						'thinking'    => false,
-						'messages'    => array(
-							array(
-								'role'    => 'user',
-								'content' => $image ? array(
-									array( 'type' => 'text', 'text' => $prompt ),
-									array( 'type' => 'image_url', 'image_url' => array( 'url' => 'data:' . $image['mime'] . ';base64,' . $image['data'] ) ),
-								) : $prompt,
-							),
-						),
-					)
+						'role'    => 'user',
+						'content' => $image ? array(
+							array( 'type' => 'text', 'text' => $prompt ),
+							array( 'type' => 'image_url', 'image_url' => array( 'url' => 'data:' . $image['mime'] . ';base64,' . $image['data'] ) ),
+						) : $prompt,
+					),
 				),
 			)
 		);
+		$res = df_pai_evren_post( $key, $payload, 0 === $n ? 60 : 35, min( 120, $left ) );
 		if ( is_wp_error( $res ) ) {
 			$last = $model . ' yanıt vermedi (' . $res->get_error_message() . ')';
 			continue; // Zaman aşımı / bağlantı: sıradaki modele geç.
 		}
-		$code = (int) wp_remote_retrieve_response_code( $res );
-		$raw  = wp_remote_retrieve_body( $res );
+		$code = $res['code'];
+		$raw  = $res['body'];
 		$b    = json_decode( $raw, true );
 		if ( 200 === $code ) {
-			$text = isset( $b['choices'][0]['message']['content'] ) ? (string) $b['choices'][0]['message']['content'] : '';
-			$text = trim( preg_replace( '/<think>.*?<\/think>/s', '', $text ) ); // Düşünen modellerin iç notu.
+			$text = trim( preg_replace( '/<think>.*?<\/think>/s', '', $res['text'] ) ); // Düşünen modellerin iç notu.
 			if ( '' !== $text ) {
 				return $text;
 			}
@@ -1204,7 +1350,7 @@ function df_pai_generate() {
 		}
 		wp_send_json_error( $text->get_error_message() );
 	}
-	$json = preg_match( '/\{.*\}/s', (string) $text, $m ) ? json_decode( $m[0], true ) : null;
+	$json = df_pai_json( $text );
 	if ( ! is_array( $json ) ) {
 		wp_send_json_error( 'Yapay zekâ yanıtı okunamadı, tekrar deneyin.' );
 	}
@@ -1305,7 +1451,7 @@ function df_pai_vision() {
 	if ( is_wp_error( $text ) ) {
 		wp_send_json_error( $text->get_error_message() );
 	}
-	$json = preg_match( '/\{.*\}/s', (string) $text, $m ) ? json_decode( $m[0], true ) : null;
+	$json = df_pai_json( $text );
 	if ( is_array( $json ) && '' !== $given ) {
 		$json['name'] = $given;
 	}

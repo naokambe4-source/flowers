@@ -457,10 +457,10 @@ function df_ai_notes_remote( $in ) {
 	if ( is_wp_error( $text ) ) {
 		return $text;
 	}
-	if ( ! preg_match( '/\{.*\}/s', (string) $text, $m ) ) {
+	$json = function_exists( 'df_pai_json' ) ? df_pai_json( $text ) : null;
+	if ( ! is_array( $json ) ) {
 		return new WP_Error( 'df_ai', 'Yanıt okunamadı.' );
 	}
-	$json  = json_decode( $m[0], true );
 	$max   = absint( df_opt( 'note_max', 300 ) );
 	$notes = array();
 	foreach ( isset( $json['notes'] ) ? (array) $json['notes'] : array() as $n ) {

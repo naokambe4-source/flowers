@@ -73,7 +73,7 @@ function df_modules_schema( $schema ) {
 				),
 			),
 			array( 'id' => 'pai_evren_key', 'type' => 'text', 'label' => 'EVREN API anahtarı (evren_llm_…)', 'half' => true, 'desc' => 'evren.ssyz.org.tr → API Anahtarları → Yeni Anahtar (sınıf: LLM Çıkarım). İlk kullanımdan önce Test Alanı\'nda (/playground) kullanım şartlarını bir kez onaylayın.' ),
-			array( 'id' => 'pai_evren_model', 'type' => 'text', 'label' => 'EVREN modeli', 'default' => 'qwen3.8-flash-next', 'half' => true, 'desc' => 'qwen3.8-flash-next (hızlı, önerilen), glm-5.3 (en güçlü ama yavaş olabilir), auto. Seçilen model yanıt vermezse otomatik olarak hızlı modele geçilir. Görselden oluşturmada otomatik olarak görsel anlayan mimo-v2.6-pro kullanılır.' ),
+			array( 'id' => 'pai_evren_model', 'type' => 'text', 'label' => 'EVREN modeli', 'default' => 'google/gemma-4-31b', 'half' => true, 'desc' => 'google/gemma-4-31b (önerilen), qwen3.8-flash-next (hızlı), glm-5.3 (güçlü ama yavaş). Seçilen model yanıt vermezse yedek modele geçilir. Görselden oluşturmada otomatik olarak görsel anlayan mimo-v2.6-pro kullanılır.' ),
 			array( 'id' => 'pai_openai_key', 'type' => 'text', 'label' => 'OpenAI API anahtarı', 'half' => true, 'desc' => 'platform.openai.com → API keys' ),
 			array( 'id' => 'pai_openai_model', 'type' => 'text', 'label' => 'OpenAI modeli', 'default' => 'gpt-4.1-mini', 'half' => true ),
 			array( 'id' => 'pai_gemini_key', 'type' => 'text', 'label' => 'Gemini API anahtarı', 'half' => true, 'desc' => 'aistudio.google.com → Get API key' ),
