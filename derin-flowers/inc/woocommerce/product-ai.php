@@ -894,7 +894,7 @@ function df_pai_json( $text ) {
 	$a = strpos( $t, '{' );
 	$z = strrpos( $t, '}' );
 	if ( false === $a || false === $z || $z <= $a ) {
-		return null;
+		return df_pai_json_loose( $text ); // Yarım kalmış yanıt: gelen alanları kurtar.
 	}
 	$t = substr( $t, $a, $z - $a + 1 );
 	$j = json_decode( $t, true );
@@ -911,7 +911,56 @@ function df_pai_json( $text ) {
 	);
 	$t = preg_replace( '/,\s*([}\]])/', '$1', $t );
 	$j = json_decode( $t, true );
-	return is_array( $j ) ? $j : null;
+	return is_array( $j ) ? $j : df_pai_json_loose( $text );
+}
+
+/**
+ * Son çare: JSON bozuksa (metin içinde kaçırılmamış tırnak, yarım kalmış yanıt) bilinen alanları
+ * anahtar adlarına göre tek tek çek.
+ *
+ * @param string $text Yanıt.
+ * @return array|null
+ */
+function df_pai_json_loose( $text ) {
+	$keys = array( 'name', 'categories', 'short', 'long', 'seo_title', 'seo_desc', 'keyword', 'alt', 'tags', 'notes' );
+	$pos  = array();
+	foreach ( $keys as $k ) {
+		if ( preg_match( '/"' . $k . '"\s*:\s*/u', (string) $text, $m, PREG_OFFSET_CAPTURE ) ) {
+			$pos[ $k ] = array( $m[0][1], $m[0][1] + strlen( $m[0][0] ) );
+		}
+	}
+	if ( ! $pos ) {
+		return null;
+	}
+	uasort(
+		$pos,
+		function ( $a, $b ) {
+			return $a[0] - $b[0];
+		}
+	);
+	$names = array_keys( $pos );
+	$out   = array();
+	foreach ( $names as $i => $k ) {
+		$from = $pos[ $k ][1];
+		$to   = isset( $names[ $i + 1 ] ) ? $pos[ $names[ $i + 1 ] ][0] : ( false !== strrpos( $text, '}' ) && strrpos( $text, '}' ) > $from ? strrpos( $text, '}' ) : strlen( $text ) );
+		$v    = trim( substr( $text, $from, $to - $from ) );
+		$v    = rtrim( $v, " \t\n\r," );
+		if ( '' !== $v && '[' === $v[0] ) {
+			$arr = json_decode( $v, true );
+			if ( ! is_array( $arr ) ) {
+				preg_match_all( '/"((?:[^"\\\\]|\\\\.)*)"/u', $v, $mm );
+				$arr = $mm[1];
+			}
+			$out[ $k ] = array_map( 'stripcslashes', array_map( 'strval', $arr ) );
+			continue;
+		}
+		if ( '' !== $v && '"' === $v[0] ) {
+			$v = substr( $v, 1 );
+			$v = preg_replace( '/"\s*$/u', '', $v );
+		}
+		$out[ $k ] = str_replace( array( '\\n', '\\"', '\\t' ), array( "\n", '"', ' ' ), $v );
+	}
+	return $out;
 }
 
 /**
@@ -1045,7 +1094,7 @@ function df_pai_call_evren( $key, $prompt, $image = null ) {
 			array(
 				'model'       => $model,
 				'stream'      => true,
-				'max_tokens'  => 2048,
+				'max_tokens'  => 3500,
 				'temperature' => 1.0,
 				'thinking'    => false,
 				'messages'    => array(
@@ -1350,10 +1399,18 @@ function df_pai_generate() {
 		}
 		wp_send_json_error( $text->get_error_message() );
 	}
+	update_option( 'df_pai_last_raw', mb_substr( (string) $text, 0, 6000 ), false );
 	$json = df_pai_json( $text );
-	if ( ! is_array( $json ) ) {
-		wp_send_json_error( 'Yapay zekâ yanıtı okunamadı, tekrar deneyin.' );
+	if ( ! is_array( $json ) || ( empty( $json['long'] ) && empty( $json['short'] ) ) ) {
+		// Yapay zekâ JSON vermedi: düz yazdığı metin varsa uzun açıklama olarak kullan, eksikleri hazır metinle tamamla.
+		$tpl  = df_pai_template( $in );
+		$prose = trim( preg_replace( '/^```\w*|```$/m', '', wp_strip_all_tags( (string) $text ) ) );
+		if ( mb_strlen( $prose ) > 120 && false === strpos( $prose, '{' ) ) {
+			$tpl['long'] = df_pai_long_html( $prose );
+		}
+		wp_send_json_success( $tpl + array( 'note' => 'Yapay zekâ yanıtı beklenen biçimde gelmedi; ' . ( mb_strlen( $prose ) > 120 && false === strpos( $prose, '{' ) ? 'yazdığı metin uzun açıklamaya kondu, diğer alanlar hazır metinle dolduruldu.' : 'hazır (her seferinde farklı) metin getirildi. Tekrar basarak yeniden deneyebilirsiniz.' ) ) );
 	}
+	$json = array_merge( array_intersect_key( df_pai_template( $in ), array_flip( array( 'seo_title', 'seo_desc', 'keyword', 'alt', 'tags' ) ) ), array_filter( $json ) ); // Eksik SEO alanı kalmasın.
 	$out = array();
 	foreach ( array( 'short', 'long', 'seo_title', 'seo_desc', 'keyword', 'alt' ) as $k ) {
 		$v         = isset( $json[ $k ] ) ? html_entity_decode( (string) $json[ $k ], ENT_QUOTES, 'UTF-8' ) : '';
@@ -1451,12 +1508,23 @@ function df_pai_vision() {
 	if ( is_wp_error( $text ) ) {
 		wp_send_json_error( $text->get_error_message() );
 	}
+	update_option( 'df_pai_last_raw', mb_substr( (string) $text, 0, 6000 ), false );
 	$json = df_pai_json( $text );
+	if ( ! is_array( $json ) && '' !== $given ) {
+		$json = array();
+	}
 	if ( is_array( $json ) && '' !== $given ) {
 		$json['name'] = $given;
 	}
 	if ( ! is_array( $json ) || empty( $json['name'] ) ) {
-		wp_send_json_error( 'Yapay zekâ yanıtı okunamadı, tekrar deneyin.' );
+		wp_send_json_error( 'Yapay zekâ fotoğraf için okunabilir yanıt vermedi. Ürün adını yazıp tekrar basın; ad varsa metin addan oluşturulur.' );
+	}
+	if ( empty( $json['long'] ) || empty( $json['short'] ) ) {
+		// Açıklama gelmediyse hazır (değişken) metinle tamamla.
+		$tpl = df_pai_template( array( 'title' => (string) $json['name'], 'subtitle' => '', 'cats' => '', 'price' => $price, 'notes' => $notes, 'pool' => '' ) );
+		$json['short'] = ! empty( $json['short'] ) ? $json['short'] : $tpl['short'];
+		$json['long']  = ! empty( $json['long'] ) ? $json['long'] : wp_strip_all_tags( str_replace( array( '</p>', '<li>', '</li>' ), array( "\n\n", '- ', "\n" ), $tpl['long'] ) );
+		$json['seo_desc'] = ! empty( $json['seo_desc'] ) ? $json['seo_desc'] : $tpl['seo_desc'];
 	}
 	$name = sanitize_text_field( html_entity_decode( (string) $json['name'], ENT_QUOTES, 'UTF-8' ) );
 	if ( '' === $given && function_exists( 'df_loc_title_case' ) && mb_strtoupper( $name, 'UTF-8' ) === $name ) {
