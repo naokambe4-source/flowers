@@ -859,7 +859,7 @@ function df_pai_key( $prov ) {
  * @return string
  */
 function df_pai_prompt( $in ) {
-	return "Bir Türk çiçekçinin e-ticaret sitesi için ürün içeriği yazan, Google SEO kurallarını bilen bir metin yazarısın.\n"
+	return "Bir Türk çiçekçinin e-ticaret sitesi için SATIŞ ODAKLI ürün açıklaması yazan, dönüşüm (sepete ekleme) ve Google SEO konusunda deneyimli bir e-ticaret metin yazarısın.\n"
 		. 'Marka: ' . df_opt( 'pai_brand' ) . "\n\n"
 		. 'Ürün adı: ' . $in['title'] . " (metinde ürün adını harfi harfine bu şekilde yaz, büyük/küçük harfini değiştirme)\n"
 		. ( $in['subtitle'] ? 'Türkçe anlamı / alt başlık: ' . $in['subtitle'] . "\n" : '' )
@@ -1427,7 +1427,7 @@ function df_pai_vision() {
 		$t     = get_term_by( 'slug', $slug, 'product_cat' );
 		$list .= '- ' . ( $t ? $t->term_id : $slug ) . ': ' . $name . "\n";
 	}
-	$prompt = "Bir Türk çiçekçinin (" . df_opt( 'pai_brand' ) . ") e-ticaret sitesi için, ekteki ürün fotoğrafına bakarak ürün kaydı hazırla. Google SEO kurallarını bilen bir metin yazarısın.\n"
+	$prompt = "Bir Türk çiçekçinin (" . df_opt( 'pai_brand' ) . ") e-ticaret sitesi için, ekteki ürün fotoğrafına bakarak ürün kaydı hazırla. Satış odaklı (dönüşüm) ve Google SEO bilen bir e-ticaret metin yazarısın.\n"
 		. ( $price ? 'Fiyat: ' . $price . " TL\n" : '' )
 		. ( $notes ? 'Ek bilgi: ' . $notes . "\n" : '' )
 		. "\nKategoriler (yalnızca bu listeden seç, numarasını yaz; 1-3 tane, en uygun olan önce; boş bırakma):\n" . $list

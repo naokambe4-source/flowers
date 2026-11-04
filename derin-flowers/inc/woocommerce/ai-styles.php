@@ -2,8 +2,8 @@
 /**
  * Yapay zekâ metinlerinde çeşitlilik: ürün açıklaması ve kart notu her seferinde başka bir tarzda yazılsın.
  *
- * Ürün açıklaması için 5 boyut (anlatım sesi × açılış × yapı × odak × liste başlığı) birleşir: 300.000'i aşkın
- * tarz. Son kullanılan tarzlar ve son açılış cümleleri tekrar edilmez. Yapay zekâya ulaşılamazsa hazır şablon da
+ * Ürün açıklaması satış odaklıdır: önce ürünün ne olduğu, sonra fayda, güvence ve siparişe çağrı. Bu çerçevede
+ * 7 boyut (satış yöntemi × ton × açılış × yapı × odak × liste başlığı × çağrı) birleşir: 2,8 milyondan fazla tarz. Son kullanılan tarzlar ve son açılış cümleleri tekrar edilmez. Yapay zekâya ulaşılamazsa hazır şablon da
  * cümle havuzlarından her seferinde farklı kurulur. Kart notlarında da aynı mantık: not başına ayrı tarz, yapay
  * zekâ yoksa özel güne göre giriş × ana cümle × kapanış birleşimi (her özel gün için yüzlerce farklı not).
  *
@@ -29,89 +29,55 @@ function df_pick( $a ) {
  */
 function df_style_dims() {
 	return array(
-		'voice'       => array(
-			'zarif bir butik çiçekçinin sakin, rafine sesiyle', 'bir moda dergisinin editoryal, şık diliyle',
-			'sıcak bir hikâye anlatıcısı gibi, okuru bir sahnenin içine alarak', 'minimalist bir lüks markanın az ve öz cümleleriyle',
-			'çiçekleri iyi tanıyan bir botanik tutkununun bilgili ama samimi diliyle', 'sevdiğine yazılmış kısa bir mektubun içtenliğiyle',
-			'modern, şehirli ve enerjik bir dille', 'bir sanat galerisi küratörünün tasarımı anlatır gibi özenli diliyle',
-			'Ege\'nin ferah, güneşli ruhunu taşıyan bir dille', 'koku, doku ve renk gibi duyulara seslenen betimleyici bir dille',
-			'hafif nostaljik, zamansız bir zarafetle', 'yalın, net ve güven veren bilgilendirici bir dille',
-			'davetkâr ve sıcak, okuru hediye anını hayal etmeye çağıran bir dille', 'kutlama coşkusu taşıyan neşeli bir dille',
-			'huzur veren, yumuşak ve dingin bir dille', 'deneyimli bir hediye danışmanının yol gösteren diliyle',
-			'İzmir\'i ve şehrin hayatını tanıyan yerel bir çiçekçinin samimi diliyle', 'şiirsel ama abartısız, ölçülü bir dille',
-			'özgüvenli, iddialı ve premium bir marka diliyle', 'kısa cümleli, ritmik ve akıcı bir dille',
-			'bir iç mimarın dekorasyon önerisi gibi, mekânla kurduğu uyumu anlatan bir dille', 'bir fotoğrafçının kareyi anlatır gibi ışık ve kompozisyona odaklanan diliyle',
-			'eski bir dostun tavsiyesi gibi rahat ve içten bir dille', 'bir parfüm tanıtımı gibi notalarla (ilk izlenim, kalp, kalıcı iz) anlatan bir dille',
-			'bir düğün planlayıcısının incelikli, detaycı diliyle', 'genç ve dinamik, sosyal medyaya yakın ama özenli bir dille',
-			'klasik, ağırbaşlı ve saygın bir dille', 'merak uyandıran, sırrını yavaş yavaş açan bir dille',
-			'bir seyahat yazarının mekân ve an betimlemesi gibi', 'tatlı bir mizah dokunuşu taşıyan, gülümseten bir dille',
-			'bir şefin tabak anlatır gibi katman katman tarif eden diliyle', 'mektup değil, kısa bir günlük sayfası gibi kişisel bir dille',
-			'butik bir otel lobisinin sakin lüksünü çağrıştıran bir dille', 'romantik bir film sahnesi anlatır gibi sinematik bir dille',
-			'bilgece, olgun ve yavaş akan bir dille', 'pratik, çözüm odaklı ve hızlı karar verdiren bir dille',
-			'bir müzik parçası gibi ritim, ton ve uyumdan söz eden bir dille', 'bahar sabahı gibi taze, aydınlık bir dille',
-			'kadife gibi yumuşak, sıcak ve sarmalayan bir dille', 'cesur, çarpıcı ve akılda kalan kısa vurgularla',
+		// Satış metni çerçevesi: her biri kanıtlanmış bir e-ticaret yazım yöntemi.
+		'frame'     => array(
+			'AIDA: dikkat çeken net bir giriş, ilgi uyandıran ürün özellikleri, isteği artıran fayda, siparişe çağrı',
+			'Fayda önce: ürünün alıcıya ne kazandırdığını önce söyle, sonra içeriği ve teslimatı anlat',
+			'Özellik → Avantaj → Fayda: her özelliği alıcıya sağladığı somut faydaya bağla',
+			'Problem → Çözüm: "doğru hediyeyi bulamamak" ya da "son dakika" derdini, bu ürünün nasıl çözdüğünü anlat',
+			'Hediye rehberi: kime, hangi durumda, neden bu ürün; karar vermeyi kolaylaştır',
+			'Premium konumlandırma: kaliteyi, el işçiliğini ve sunumu öne çıkar; fiyatın karşılığını hissettir',
+			'Güven odaklı: taze çiçek, fotoğraftakiyle aynı tasarım, zamanında teslimat ve kart notu gibi güvenceleri öne çıkar',
+			'Duygu + mantık: önce hissettireceği duyguyu bir cümleyle ver, sonra net bilgilerle ikna et',
+			'Anı odaklı: teslim edildiği anı kısa bir sahneyle anlat, sonra ürünü ve sipariş kolaylığını yaz',
+			'Kısa ve net satış: gereksiz süs yok, kısa paragraflar, güçlü fiiller, net bilgi',
 		),
-		'opening'     => array(
-			'okura doğrudan yöneltilen kısa bir soruyla', 'çiçeklerin teslim edildiği anı betimleyen bir sahneyle',
-			'tasarımın uyandırdığı duyguyla', 'baskın rengin ve tonların etkisiyle',
-			'kapı çaldığında karşıdakinin yüzünde oluşacak ifadeyle', 'tek cümlelik, güçlü ve kısa bir girişle',
-			'bu çiçeği alacak kişiyi hayal ettirerek', 'çiçeklerin taşıdığı anlam ve simgeyle',
-			'mevsimin ya da günün ruhuyla', 'tasarımdaki dikkat çeken bir ayrıntıyla (ambalaj, kurdele, form)',
-			'çiçeklerin bir mekâna (masa, salon, ofis) kattığı havayla', 'bir zıtlıkla (sade ama etkileyici, küçük ama anlamlı gibi)',
-			'ürün adının kendisinden yola çıkan bir cümleyle', 'sözcüklerin yetmediği anlara gönderme yaparak',
-			'atölyede hazırlanma anına değinerek', 'bir kutlamanın ya da sürprizin heyecanıyla',
-			'bir benzetmeyle (çiçeği bir şeye benzeterek)', 'günün bir saatine (sabah, akşam üstü) gönderme yaparak',
-			'bir sessizliği ya da durgun bir anı anlatarak', 'okurun aklındaki bir soruyu yanıtlayarak',
-			'çiçeğe bakan birinin ilk saniyesini anlatarak', 'bir dokunuşu (kurdeleyi çözmek, ambalajı açmak) anlatarak',
-			'tek kelimelik bir cümleyle ve ardından açıklamayla', 'bir dileği dile getirerek',
-			'bir ilişkiyi (anne, sevgili, arkadaş) anarak', 'renklerin birbirini tamamlayışını anlatarak',
-			'bir hatıraya gönderme yaparak', 'kısa bir tanımla (Bu bir buket değil, bir … gibi)',
-			'bir sürprizin planlanma anını anlatarak', 'çiçeklerin kokusunu ya da tazeliğini hissettirerek',
+		'tone'      => array(
+			'samimi ve sıcak', 'zarif ve premium', 'net ve güven veren', 'enerjik ve neşeli', 'romantik ama ölçülü',
+			'profesyonel ve kurumsal', 'içten ve yalın', 'davetkâr ve ikna edici', 'modern ve şık', 'nazik ve özenli',
 		),
-		'structure'   => array(
-			'2 paragraf ve sonunda 3-4 maddelik kısa bir liste', '3 kısa paragraf ve sonunda 3 maddelik bir liste',
-			'1 akıcı paragraf, ardından 4 maddelik liste, ardından tek cümlelik kapanış paragrafı', '2 paragraf, ardından 3 maddelik liste; ilk paragraf duygu, ikincisi tasarım ve teslimat',
-			'kısa bir giriş cümlesi paragrafı, bir betimleme paragrafı ve 4 maddelik liste', '2 orta uzunlukta paragraf ve sonda 5 kısa maddelik liste',
-			'3 paragraf (duygu, tasarım, sipariş kolaylığı) ve 3 maddelik liste', '1 giriş paragrafı, 3 maddelik liste ve liste sonrası kısa bir davet paragrafı',
-			'çok kısa bir giriş, 2 maddelik liste, bir betimleme paragrafı ve ikinci bir 3 maddelik liste (iki ayrı başlıkla)', '4 kısa paragraf (her biri 1-2 cümle) ve sonda 3 maddelik liste',
-			'önce liste (4 madde), sonra 2 paragraf', 'bir paragraf, 3 maddelik liste, bir paragraf daha',
-			'soru-cevap düzeni: 2 kısa soru başlığı ve altında birer paragraf, sonda 3 maddelik liste', 'tek uzun paragraf ve sonda 4 maddelik liste',
-			'2 paragraf ve sonda madde yerine kısa bir kapanış cümlesi; liste ikinci paragraftan önce olsun', '3 paragraf; ikincisi tamamen tasarımın ayrıntılarına ayrılsın, sonda 3 maddelik liste',
+		'opening'   => array(
+			'ürünün ne olduğunu (adet, çiçek, renk, vazo/kutu/buket) net söyleyen bir cümleyle',
+			'alıcının yaşayacağı duyguyu söyleyen bir cümleyle; ikinci cümlede ürünün ne olduğunu net yaz',
+			'hangi anlar için ideal olduğunu söyleyen bir cümleyle; hemen ardından ürünün içeriğini yaz',
+			'kısa bir soruyla (ör. "Ona ne kadar önemli olduğunu göstermek mi istiyorsunuz?"); ardından ürünün içeriğini yaz',
+			'ürünün en güçlü özelliğiyle (renk, adet, sunum) başlayan bir cümleyle',
+			'hediye almayı kolaylaştıran bir cümleyle (ör. "Doğru hediyeyi düşünmenize gerek yok")',
+			'teslim anını anlatan kısa bir cümleyle; ardından ürünün ne olduğunu net yaz',
+			'ürünün simgelediği anlamla (kırmızı gül = aşk gibi) başlayan kısa bir cümleyle',
 		),
-		'focus'       => array(
-			'renk uyumu ve görsel etki', 'yarattığı duygu ve bıraktığı iz', 'hediye edilme anı ve sürpriz etkisi',
-			'tasarım, ambalaj ve el işçiliği', 'tazelik ve günlük hazırlanma', 'uygun olduğu özel günler',
-			'alıcının kim olabileceği ve ona ne hissettireceği', 'evde ya da ofiste yarattığı atmosfer', 'zarafet ve sadelik',
-			'İzmir içinde aynı gün teslimatın kolaylığı', 'çiçeklerin anlamı ve sembolizmi', 'fotoğraftaki görünümün aynısının gelmesi (güven)',
-			'not kartıyla kişiselleştirme', 'son dakika hediyesi olarak pratikliği', 'premium ve gösterişli duruşu',
-			'romantik etkisi', 'aile ve büyüklere uygunluğu', 'iş dünyasında şık bir jest oluşu', 'uzun süre canlı kalması',
-			'fotoğraf ve paylaşım anına yakışması',
+		'structure' => array(
+			"1 giriş paragrafı (2-3 cümle), 'Ürün içeriği:' listesi, 1 fayda/kullanım paragrafı, kısa siparişe çağrı cümlesi",
+			"2 kısa paragraf (ürün + fayda), ardından 3-4 maddelik özel gün listesi, son paragrafta teslimat ve çağrı",
+			"1 giriş paragrafı, 'Ürün içeriği:' listesi, 'Kimler için uygun:' listesi, tek cümlelik çağrı",
+			"3 kısa paragraf: ne olduğu, kime/ne zaman, teslimat ve kart notu; sonda 3 maddelik liste",
+			"1 güçlü giriş paragrafı, 4 maddelik 'Neden bu ürün:' listesi, kısa teslimat ve çağrı paragrafı",
+			"1 giriş paragrafı, 'Ürün içeriği:' listesi, 'Teslimat:' paragrafı (aynı gün, saat aralığı, not kartı)",
 		),
-		'list'        => array(
-			'Kimler için uygun', 'Neden seveceksiniz', 'Bu tasarımı öne çıkaranlar', 'Hangi anlar için', 'Öne çıkanlar',
-			'Tasarım notları', 'Kime yakışır', 'Bir bakışta', 'Sizi neler bekliyor', 'Bu buketle söyleyebilecekleriniz',
-			'En çok tercih edildiği anlar', 'Siparişinizle birlikte', 'Kısaca', 'Neden bu tasarım', 'Hediye ipuçları',
-			'Tasarımın imzası', 'Hangi duygular için', 'Akılda kalanlar', 'Küçük ayrıntılar', 'Ne zaman gönderilir',
-			'Size kazandırdıkları', 'Bu çiçekle', 'Tasarımın hikâyesi', 'Kimin gününü güzelleştirir', 'Neler içerir',
+		'focus'     => array(
+			'romantik etki ve sevgiyi gösterme', 'özel günler (doğum günü, yıl dönümü, sevgililer günü)', 'premium sunum ve kalite',
+			'son dakika hediyesinde aynı gün teslimatın rahatlığı', 'tazelik ve uzun ömür', 'fotoğraftakiyle aynı tasarımın gelmesi',
+			'özür, barışma ve gönül alma', 'ev, ofis veya masaya yakışan şık görünüm', 'kişisel not kartıyla mesaj iletmek',
+			'iş dünyasında ve kurumsal hediyede prestij',
 		),
-		'perspective' => array(
-			'okura "siz" diye seslen', 'okura hiç doğrudan seslenme, tasarımı üçüncü şahısla anlat',
-			'okura "siz" diye seslen ve çiçeği alacak kişiden "o" diye söz et', 'çiçeğin kendisini anlatıcı yapmadan, ama ona canlı bir karakter gibi davranarak anlat',
-			'atölye olarak "biz" dilini kullan',
+		'list'      => array(
+			'Kimler için uygun', 'Neden bu ürün', 'Hangi anlar için', 'Öne çıkanlar', 'Bir bakışta', 'Siparişinizle birlikte',
+			'Kime yakışır', 'Neden tercih ediliyor', 'Sizi neler bekliyor', 'Hediye ipuçları',
 		),
-		'rhythm'      => array(
-			'kısa ve uzun cümleleri dengeli karıştır', 'çoğunlukla kısa cümleler kullan', 'akıcı, orta uzunlukta cümleler kullan',
-			'her paragrafı vurucu kısa bir cümleyle bitir', 'en az bir paragrafı tek cümleden oluştur', 'cümleleri farklı kelimelerle başlat, aynı başlangıcı iki kez kullanma',
-		),
-		'imagery'     => array(
-			'ışık ve gün batımı', 'deniz ve Ege esintisi', 'müzik ve melodi', 'ipek ve kadife gibi dokular', 'bahçe ve doğa',
-			'sanat ve tablo', 'mektup ve sözcükler', 'zaman ve anılar', 'kutlama ve ışıltı', 'sabah kahvesi ve sakinlik',
-			'imza ve kalıcı iz', 'yolculuk ve kavuşma', 'hiçbir benzetme kullanma, somut ve net anlat',
-		),
-		'closing'     => array(
-			'okuru siparişe nazikçe davet eden bir cümle', 'akılda kalan kısa bir slogan cümlesi', 'alıcının hissedeceği duyguyla biten bir cümle',
-			'teslimat kolaylığını hatırlatan bir cümle', 'not kartına ne yazılabileceğine dair kısa bir öneri', 'kapanış cümlesi olmadan, doğrudan listeyle bitir',
-			'bir soruyla biten cümle', 'zamansız bir dilekle biten cümle',
+		'cta'       => array(
+			'İzmir içi aynı gün teslimat için şimdi sipariş verin', 'Teslimat gününü ve saatini seçin, gerisini bize bırakın',
+			'Not kartınıza mesajınızı yazın, siparişinizi hemen oluşturun', 'Sevdiğinizi bugün şaşırtın: hemen sepete ekleyin',
+			'Özel günü kaçırmamak için teslimat tarihini şimdiden seçin', 'Tek tıkla sipariş verin, kapısına biz götürelim',
 		),
 	);
 }
@@ -146,20 +112,26 @@ function df_style_pick() {
 function df_style_prompt() {
 	$s    = df_style_pick();
 	$used = array_filter( (array) get_option( 'df_style_openers', array() ) );
-	$txt  = "\nBu metnin tarzı (her ürün farklı tarzda yazılır, bu tarza sadık kal; önceki ürünlere benzemesin):\n"
-		. '- Anlatım: ' . $s['voice'] . "\n"
+	$txt  = "\nAMAÇ: SATIŞ. Bu bir e-ticaret ürün açıklaması; okuyan 5 saniyede ürünün ne olduğunu anlamalı ve sipariş vermek istemeli.\n"
+		. "Satış kuralları:\n"
+		. "- Ürün adındaki bilgileri (adet, çiçek türü, renk, vazo / kutu / buket gibi sunum) ilk iki cümlede açıkça yaz. Örn. 'Vazoda 19 Kırmızı Gül' → vazoda sunulan 19 adet kırmızı gül.\n"
+		. "- Sadece bilinen bilgiyi yaz; vazonun malzemesi, çiçeğin boyu, ek süs gibi verilmeyen ayrıntıları uydurma.\n"
+		. "- Somut faydalar yaz: aynı gün İzmir içi teslimat, teslimat gün ve saatini seçebilme, ücretsiz kişisel not kartı, günlük taze çiçek, fotoğraftaki tasarım.\n"
+		. "- Şiirsel ve soyut cümle kurma; benzetme en fazla bir tane olsun. Her cümle ya bilgi versin ya da satın almaya ikna etsin.\n"
+		. "- Kısa paragraflar (en fazla 3 cümle). Okunması kolay olsun.\n"
+		. "- 'Ürün içeriği:' listesi varsa yalnızca ürün adından ve verilen bilgiden çıkan gerçek kalemleri yaz.\n"
+		. "- Kısa açıklama (short): ürünün ne olduğu + en güçlü fayda + teslimat, 1-2 cümle; ürün adını aynen tekrar etmekle başlamasın.\n"
+		. "\nBu ürünün yazım tarzı (her ürün farklı yazılır):\n"
+		. '- Satış çerçevesi: ' . $s['frame'] . "\n"
+		. '- Ton: ' . $s['tone'] . "\n"
 		. '- Uzun açıklamaya ' . $s['opening'] . " başla.\n"
 		. '- Yapı: ' . $s['structure'] . ".\n"
 		. '- Ağırlık ver: ' . $s['focus'] . ".\n"
-		. '- Bakış açısı: ' . $s['perspective'] . ".\n"
-		. '- Cümle ritmi: ' . $s['rhythm'] . ".\n"
-		. '- İmge dünyası: ' . $s['imagery'] . ".\n"
-		. '- Kapanış: ' . $s['closing'] . ".\n"
-		. "- Liste başlığı tam olarak '" . $s['list'] . ":' olsun (ayrı satırda, ardından maddeler); ikinci liste varsa başka bir başlık seç.\n"
-		. "- Kısa açıklama, uzun açıklamadan farklı bir açıdan yazılsın; ürün adıyla başlamasın.\n"
-		. "- Şu kalıpları kullanma: 'özenle hazırlanan', 'mükemmel bir seçim', 'sevdiklerinizi mutlu edin', 'eşsiz', 'büyüleyici', 'göz alıcı', 'en özel anlarınız', 'unutulmaz bir hediye', 'kalpleri fethedecek'.\n";
+		. "- Yapıda adı verilen liste başlıklarını aynen kullan; başlığı belirtilmemiş bir liste varsa başlığı '" . $s['list'] . ":' olsun.\n"
+		. "- Son cümle şu fikirde bir siparişe çağrı olsun (kelimesi kelimesine değil): " . $s['cta'] . ".\n"
+		. "- Şu kalıpları kullanma: 'özenle hazırlanan', 'mükemmel bir seçim', 'eşsiz', 'büyüleyici', 'göz alıcı', 'unutulmaz bir hediye', 'kalpleri fethedecek', 'sihirli', 'masalsı'.\n";
 	if ( $used ) {
-		$txt .= "- Son ürünlerde şu cümlelerle başlandı; bunlara benzeyen bir girişle BAŞLAMA:\n  * " . implode( "\n  * ", array_slice( $used, -8 ) ) . "\n";
+		$txt .= "- Son ürünlerde şu cümlelerle başlandı; aynı kalıpla BAŞLAMA:\n  * " . implode( "\n  * ", array_slice( $used, -6 ) ) . "\n";
 	}
 	return $txt;
 }
