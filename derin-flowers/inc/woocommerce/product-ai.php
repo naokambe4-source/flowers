@@ -872,9 +872,10 @@ function df_pai_prompt( $in ) {
 		. "- Anahtar kelimeleri doğal kullan, aynı kelimeyi tekrar tekrar yığma.\n"
 		. "- short: 1-2 cümle, en fazla 220 karakter.\n"
 		. "- long: 120-200 kelime; paragraflar arasında boş satır, madde satırları '- ' ile başlar; yapı ve liste başlığı aşağıdaki tarza göre.\n"
-		. "- seo_title: en fazla 60 karakter, ürün adını ve doğal biçimde 'İzmir' içersin.\n"
-		. "- seo_desc: 140-155 karakter, aynı gün teslimat gibi gerçek bir fayda ve tıklamaya davet içersin.\n"
-		. "- keyword: tek odak anahtar kelime (örn. 'izmir kırmızı gül buketi').\n"
+		. "- seo_title: en fazla 60 karakter; ürün adı + ' | İzmir Çiçek Siparişi' benzeri, ciddi ve net.\n"
+		. "- seo_desc: 130-155 karakter, Google'da görünen satış metni: ürünün ne olduğu + İzmir içi aynı gün teslimat + net bir çağrı (Sipariş verin). Soru, espri, emoji yok.\n"
+		. "- keyword: insanların Google'da arayacağı 2-5 kelimelik ürün araması, küçük harf. Ürün adı çiçeği ve sunumu anlatıyorsa ürün adının küçük harflisi (örn. 'Vazoda 19 Kırmızı Gül' → 'vazoda 19 kırmızı gül'); ad şiirselse ürünün ne olduğu (örn. 'kırmızı gül buketi').\n"
+		. "- Ciddi ve profesyonel yaz: espri, şaka, ironi, abartılı övgü yok.\n"
 		. "- alt: görseli anlatan en fazla 120 karakterlik ALT metni.\n"
 		. "- tags: 5-8 küçük harfli Türkçe etiket (çiçek türü, renk, özel gün, kullanım).\n"
 		. ( function_exists( 'df_style_prompt' ) ? df_style_prompt() : '' )
@@ -1095,7 +1096,7 @@ function df_pai_call_evren( $key, $prompt, $image = null ) {
 				'model'       => $model,
 				'stream'      => true,
 				'max_tokens'  => 3500,
-				'temperature' => 1.0,
+				'temperature' => 0.8,
 				'thinking'    => false,
 				'messages'    => array(
 					array(
@@ -1228,7 +1229,7 @@ function df_pai_call( $prov, $prompt, $image = null ) {
 									'parts' => $image ? array( array( 'text' => $prompt ), array( 'inline_data' => array( 'mime_type' => $image['mime'], 'data' => $image['data'] ) ) ) : array( array( 'text' => $prompt ) ),
 								),
 							),
-							'generationConfig' => array( 'responseMimeType' => 'application/json', 'temperature' => 1.15, 'topP' => 0.95 ),
+							'generationConfig' => array( 'responseMimeType' => 'application/json', 'temperature' => 0.9, 'topP' => 0.95 ),
 						)
 					),
 				)
@@ -1418,6 +1419,7 @@ function df_pai_generate() {
 	}
 	$out['long'] = df_pai_long_html( $out['long'] );
 	$out['tags'] = isset( $json['tags'] ) ? array_slice( array_values( array_filter( array_map( 'sanitize_text_field', (array) $json['tags'] ) ) ), 0, 8 ) : array();
+	$out         = df_pai_seo_fix( $out, $in['title'], $in['cats'] );
 	if ( function_exists( 'df_style_remember' ) ) {
 		df_style_remember( $out['long'] );
 	}
@@ -1496,9 +1498,10 @@ function df_pai_vision() {
 		. "- Kusursuz Türkçe: yazım ve noktalama hatası yok, Türkçe karakterler doğru, emoji ve HTML yok, abartı ve klişe yok.\n"
 		. "- short: 1-2 cümle, en fazla 220 karakter.\n"
 		. "- long: 120-200 kelime; paragraflar arasında boş satır, madde satırları '- ' ile başlar; yapı ve liste başlığı aşağıdaki tarza göre.\n"
-		. "- seo_title: en fazla 60 karakter, ürün adı ve doğal biçimde 'İzmir'.\n"
-		. "- seo_desc: 140-155 karakter, odak kelimeyi ve aynı gün teslimat gibi gerçek bir faydayı içersin.\n"
-		. "- keyword: tek odak anahtar kelime, küçük harf (örn. 'izmir kırmızı gül buketi').\n"
+		. "- seo_title: en fazla 60 karakter; ürün adı + ' | İzmir Çiçek Siparişi' benzeri, ciddi ve net.\n"
+		. "- seo_desc: 130-155 karakter, Google'da görünen satış metni: ürünün ne olduğu + İzmir içi aynı gün teslimat + net bir çağrı (Sipariş verin). Soru, espri, emoji yok.\n"
+		. "- keyword: insanların Google'da arayacağı 2-5 kelimelik ürün araması, küçük harf (örn. 'vazoda kırmızı gül', 'beyaz orkide'); şiirsel ad kullanma.\n"
+		. "- Ciddi ve profesyonel yaz: espri, şaka, ironi, abartılı övgü yok.\n"
 		. "- alt: görseli anlatan en fazla 120 karakterlik ALT metni.\n"
 		. "- tags: 5-8 küçük harfli Türkçe etiket.\n"
 		. ( function_exists( 'df_style_prompt' ) ? df_style_prompt() : '' )
@@ -1558,6 +1561,8 @@ function df_pai_vision() {
 	$out['long'] = df_pai_long_html( $out['long'] );
 	$out['tags'] = isset( $json['tags'] ) ? array_slice( array_values( array_filter( array_map( 'sanitize_text_field', (array) $json['tags'] ) ) ), 0, 8 ) : array();
 	$out['cats']      = df_pai_match_cats( (array) ( $json['categories'] ?? array() ), $terms, $name . ' ' . $out['keyword'] );
+	$cat_one          = $out['cats'] ? html_entity_decode( get_term( $out['cats'][0] )->name, ENT_QUOTES, 'UTF-8' ) : '';
+	$out              = df_pai_seo_fix( $out, $name, $cat_one );
 	$out['cat_names'] = array();
 	foreach ( $out['cats'] as $cid ) {
 		$out['cat_names'][] = html_entity_decode( get_term( $cid )->name, ENT_QUOTES, 'UTF-8' );
@@ -1567,6 +1572,98 @@ function df_pai_vision() {
 	wp_send_json_success( $out );
 }
 add_action( 'wp_ajax_df_pai_vision', 'df_pai_vision' );
+
+/**
+ * Ürün / çiçek kelimeleri (odak kelime gerçek bir ürün araması mı?).
+ *
+ * @return string[]
+ */
+function df_pai_flower_words() {
+	return array( 'gül', 'orkide', 'lilyum', 'papatya', 'lale', 'karanfil', 'gerbera', 'ayçiçeği', 'şakayık', 'hortensia', 'ortanca', 'kasımpatı', 'zambak', 'frezya', 'gypsophila', 'cipso', 'okaliptüs', 'buket', 'aranjman', 'çiçek', 'sukulent', 'kaktüs', 'bonsai', 'teraryum', 'saksı', 'çikolata', 'ayıcık', 'balon', 'pasta', 'sepet', 'kutu', 'vazo', 'tasarım' );
+}
+
+/**
+ * SEO alanlarını denetle: odak kelime gerçek bir ürün araması, Google açıklaması satış odaklı ve doğru uzunlukta,
+ * SEO başlığı ürün adını içeriyor olsun. Uymayan alan, ürün adından kurulan düzgün bir satış metniyle değişir.
+ *
+ * @param array  $out  Üretilen alanlar.
+ * @param string $name Ürün adı.
+ * @param string $cats Kategori adları (virgüllü) ya da tek kategori.
+ * @return array
+ */
+function df_pai_seo_fix( $out, $name, $cats = '' ) {
+	$name  = trim( (string) $name );
+	$lower = function ( $t ) {
+		return trim( preg_replace( '/\s+/u', ' ', mb_strtolower( strtr( (string) $t, array( 'I' => 'ı', 'İ' => 'i' ) ), 'UTF-8' ) ) );
+	};
+	$words   = df_pai_flower_words();
+	$has_fl  = function ( $t ) use ( $words, $lower ) {
+		$t = ' ' . $lower( $t ) . ' ';
+		foreach ( $words as $w ) {
+			if ( false !== mb_strpos( $t, $w ) ) {
+				return true;
+			}
+		}
+		return false;
+	};
+	$cat     = trim( (string) strtok( (string) $cats, ',' ) );
+	$cat_one = preg_replace( '/(ler|lar)$/u', '', $lower( $cat ) );
+	$joke    = '/(!{2,}|\?|haha|:\)|😂|😄|şaka|espri|lol|vay be|hadi ama)/iu';
+
+	// 1) Odak kelime: ürün adı tanımlayıcıysa adın kendisi; değilse yapay zekânınki (geçerliyse) ya da kategori.
+	$kw    = $lower( preg_replace( '/[^\p{L}\p{N} ]+/u', ' ', (string) ( $out['keyword'] ?? '' ) ) );
+	$nkw   = $lower( preg_replace( '/[^\p{L}\p{N} ]+/u', ' ', $name ) );
+	$count = count( array_filter( explode( ' ', $kw ) ) );
+	if ( $has_fl( $nkw ) && count( explode( ' ', $nkw ) ) <= 6 ) {
+		$kw = $nkw;
+	} elseif ( '' === $kw || $count < 2 || $count > 6 || ! $has_fl( $kw ) || false !== mb_strpos( $kw, 'derin' ) ) {
+		$kw = '' !== $cat_one && $has_fl( $cat_one ) ? 'izmir ' . $cat_one : 'izmir çiçek siparişi';
+	}
+	$out['keyword'] = $kw;
+
+	// 2) SEO başlığı: ürün adı içinde olmalı, 60 karakteri aşmamalı, şaka olmamalı.
+	$st = trim( (string) ( $out['seo_title'] ?? '' ) );
+	if ( '' === $st || mb_strlen( $st ) > 65 || false === mb_strpos( $lower( $st ), $lower( $name ) ) || preg_match( $joke, $st ) ) {
+		$opts = array( $name . ' | İzmir Çiçek Siparişi', $name . ' | İzmir Aynı Gün Teslimat', $name . ' - İzmir Çiçekçi', $name . ' | İzmir' );
+		foreach ( $opts as $o ) {
+			if ( mb_strlen( $o ) <= 60 ) {
+				$st = $o;
+				break;
+			}
+		}
+		$st = mb_strlen( $st ) > 60 ? mb_substr( $name, 0, 60 ) : $st;
+	}
+	$out['seo_title'] = $st;
+
+	// 3) Google açıklaması: 110-160 karakter, ürünü ve teslimatı anlatan ciddi satış metni.
+	$sd  = trim( preg_replace( '/\s+/u', ' ', (string) ( $out['seo_desc'] ?? '' ) ) );
+	$len = mb_strlen( $sd );
+	if ( $len < 110 || $len > 165 || preg_match( $joke, $sd ) || ( ! $has_fl( $sd ) && false === mb_strpos( $lower( $sd ), $lower( $name ) ) ) || false === mb_strpos( $lower( $sd ), 'izmir' ) ) {
+		$tpl = array(
+			"$name İzmir'e aynı gün teslim edilir. Taze çiçek, ücretsiz not kartı ve özenli paketleme ile hemen sipariş verin.",
+			"$name: taze çiçeklerle hazırlanır, İzmir içi aynı gün teslim edilir. Teslimat gün ve saatini seçin, sipariş verin.",
+			"İzmir'de aynı gün çiçek gönderin: $name, ücretsiz kişisel not kartıyla kapıda. Hemen online sipariş verin.",
+			"$name ile sevdiklerinizi şaşırtın. İzmir içi aynı gün teslimat, ücretsiz not kartı. Siparişinizi şimdi oluşturun.",
+			"$name sipariş et, İzmir içinde aynı gün teslim edelim. Taze çiçek, özenli sunum ve ücretsiz kart notu.",
+		);
+		shuffle( $tpl );
+		$sd = $tpl[0];
+		foreach ( $tpl as $t ) {
+			if ( mb_strlen( $t ) <= 160 ) {
+				$sd = $t;
+				break;
+			}
+		}
+		$sd = mb_strlen( $sd ) > 160 ? rtrim( mb_substr( $sd, 0, 157 ), ' ,.' ) . '…' : $sd;
+	}
+	$out['seo_desc'] = $sd;
+
+	// 4) Kısa açıklama espri / soru içeriyorsa ya da boşsa sade satış cümlesi.
+	if ( empty( $out['short'] ) || preg_match( '/(haha|:\)|😂|şaka|espri|lol)/iu', (string) $out['short'] ) ) {
+		$out['short'] = "$name; taze çiçeklerle hazırlanır, İzmir içinde aynı gün teslim edilir. Ücretsiz not kartıyla hemen sipariş verin.";
+	}
+	return $out;
+}
 
 /**
  * Görsellere başlık, ALT, altyazı ve açıklama yaz.
