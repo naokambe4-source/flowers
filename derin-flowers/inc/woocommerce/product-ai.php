@@ -872,68 +872,81 @@ function df_pai_prompt( $in ) {
  * @return string|WP_Error
  */
 function df_pai_call_evren( $key, $prompt, $image = null ) {
-	$model = trim( (string) df_opt( 'pai_evren_model', 'glm-5.3' ) );
-	$model = '' !== $model ? $model : 'glm-5.3';
-	if ( $image ) {
-		$model = 'mimo-v2.6-pro';
+	$main = trim( (string) df_opt( 'pai_evren_model', 'qwen3.8-flash-next' ) );
+	$main = '' !== $main ? $main : 'qwen3.8-flash-next';
+	// Sırayla denenecek modeller: seçilen model yanıt vermezse hızlı modele geçilir (sayfa donmasın).
+	$models = $image ? array( 'mimo-v2.6-pro' ) : array_values( array_unique( array( $main, 'qwen3.8-flash-next', 'deepseek-v4.1-flash' ) ) );
+	if ( function_exists( 'set_time_limit' ) ) {
+		@set_time_limit( 150 ); // phpcs:ignore WordPress.PHP.NoSilencedErrors
 	}
-	$body = array(
-		'model'       => $model,
-		'max_tokens'  => 4096,
-		'temperature' => 1.0,
-		'thinking'    => false,
-		'messages'    => array(
-			array(
-				'role'    => 'user',
-				'content' => $image ? array(
-					array( 'type' => 'text', 'text' => $prompt ),
-					array( 'type' => 'image_url', 'image_url' => array( 'url' => 'data:' . $image['mime'] . ';base64,' . $image['data'] ) ),
-				) : $prompt,
-			),
-		),
-	);
-	$tries = max( 1, df_pai_busy_retries() );
-	for ( $try = 0; $try < $tries; $try++ ) {
+	$start = time();
+	$last  = '';
+	foreach ( $models as $n => $model ) {
+		$left = 110 - ( time() - $start );
+		if ( $left < 15 ) {
+			break;
+		}
 		$res = wp_remote_post(
 			'https://evren-llmapi.ssyz.org.tr/v1/chat/completions',
 			array(
-				'timeout' => 90,
+				'timeout' => min( $image ? 70 : ( 0 === $n ? 45 : 35 ), $left ),
 				'headers' => array(
 					'Content-Type'  => 'application/json',
 					'Authorization' => 'Bearer ' . $key,
 				),
-				'body'    => wp_json_encode( $body ),
+				'body'    => wp_json_encode(
+					array(
+						'model'       => $model,
+						'max_tokens'  => 2048,
+						'temperature' => 1.0,
+						'thinking'    => false,
+						'messages'    => array(
+							array(
+								'role'    => 'user',
+								'content' => $image ? array(
+									array( 'type' => 'text', 'text' => $prompt ),
+									array( 'type' => 'image_url', 'image_url' => array( 'url' => 'data:' . $image['mime'] . ';base64,' . $image['data'] ) ),
+								) : $prompt,
+							),
+						),
+					)
+				),
 			)
 		);
 		if ( is_wp_error( $res ) ) {
-			return $res;
+			$last = $model . ' yanıt vermedi (' . $res->get_error_message() . ')';
+			continue; // Zaman aşımı / bağlantı: sıradaki modele geç.
 		}
 		$code = (int) wp_remote_retrieve_response_code( $res );
-		$b    = json_decode( wp_remote_retrieve_body( $res ), true );
+		$raw  = wp_remote_retrieve_body( $res );
+		$b    = json_decode( $raw, true );
 		if ( 200 === $code ) {
 			$text = isset( $b['choices'][0]['message']['content'] ) ? (string) $b['choices'][0]['message']['content'] : '';
-			// Düşünen modellerin <think> bölümü kalırsa at.
-			return trim( preg_replace( '/<think>.*?<\/think>/s', '', $text ) );
+			$text = trim( preg_replace( '/<think>.*?<\/think>/s', '', $text ) ); // Düşünen modellerin iç notu.
+			if ( '' !== $text ) {
+				return $text;
+			}
+			$last = $model . ' boş yanıt verdi';
+			continue;
 		}
-		$msg = isset( $b['error']['message'] ) ? (string) $b['error']['message'] : ( isset( $b['detail'] ) && is_string( $b['detail'] ) ? $b['detail'] : '' );
-		$raw = wp_remote_retrieve_body( $res );
+		$msg = isset( $b['error']['message'] ) ? (string) $b['error']['message'] : '';
 		if ( 403 === $code && false !== strpos( $raw, 'terms_not_accepted' ) ) {
 			return new WP_Error( 'df_pai', 'EVREN: kullanım şartları henüz onaylanmamış. evren.ssyz.org.tr → Test Alanı (playground) sayfasında anahtarınızı girip şartları bir kez onaylayın, sonra tekrar deneyin.' );
 		}
 		if ( 401 === $code ) {
 			return new WP_Error( 'df_pai', 'EVREN: API anahtarı geçersiz. Tema Ayarları → Yapay zekâ ürün içeriği → EVREN API anahtarını kontrol edin.' );
 		}
-		if ( in_array( $code, array( 429, 503 ), true ) ) {
-			if ( $try + 1 < $tries ) {
-				$wait = (int) wp_remote_retrieve_header( $res, 'retry-after' );
-				sleep( min( 8, max( 2, $wait ) ) );
-				continue;
-			}
-			return new WP_Error( 'df_pai_busy', 'EVREN şu an yoğun ya da günlük kota doldu' . ( '' !== $msg ? ' (' . $msg . ')' : '' ) . '.' );
+		$last = $model . ': ' . ( '' !== $msg ? $msg : 'kod ' . $code );
+		if ( 400 === $code || 404 === $code ) {
+			continue; // Model adı tanınmadı vb.: sıradaki model.
 		}
-		return new WP_Error( 'df_pai', 'EVREN: ' . ( '' !== $msg ? $msg : 'yanıt vermedi (kod ' . $code . ').' ) );
+		if ( in_array( $code, array( 429, 503, 502, 504 ), true ) ) {
+			sleep( 2 );
+			continue;
+		}
 	}
-	return new WP_Error( 'df_pai_busy', 'EVREN şu an yoğun.' );
+	// Hiçbiri olmadıysa "yoğun" say: ürün ekranı hazır (değişken) şablonla devam eder, sayfa donmaz.
+	return new WP_Error( 'df_pai_busy', 'EVREN şu an yanıt vermiyor' . ( '' !== $last ? ' (' . $last . ')' : '' ) . '.' );
 }
 
 /**
@@ -1187,7 +1200,7 @@ function df_pai_generate() {
 	$text = df_pai_call( $prov, df_pai_prompt( $in ) );
 	if ( is_wp_error( $text ) ) {
 		if ( 'df_pai_busy' === $text->get_error_code() ) {
-			wp_send_json_success( df_pai_template( $in ) + array( 'note' => 'Yapay zekâ şu an çok yoğun (Google tarafında geçici bir durum). Beklememeniz için hazır şablon metin getirildi; birkaç dakika sonra düğmeye tekrar basarak yapay zekâ metnini alabilirsiniz.' ) );
+			wp_send_json_success( df_pai_template( $in ) + array( 'note' => 'Yapay zekâ şu an yanıt vermiyor ya da çok yoğun: ' . $text->get_error_message() . ' Beklememeniz için hazır (her seferinde farklı) metin getirildi; birkaç dakika sonra düğmeye tekrar basabilirsiniz.' ) );
 		}
 		wp_send_json_error( $text->get_error_message() );
 	}
@@ -1230,7 +1243,7 @@ function df_pai_vision() {
 	}
 	// Yapay zekâya gönderilecek görsel: orta boy kopya (hızlı ve ucuz).
 	$path = '';
-	foreach ( array( 'large', 'medium_large', 'full' ) as $size ) {
+	foreach ( array( 'medium_large', 'large', 'full' ) as $size ) {
 		$src = image_get_intermediate_size( $thumb, $size );
 		if ( $src && ! empty( $src['path'] ) ) {
 			$path = trailingslashit( wp_get_upload_dir()['basedir'] ) . $src['path'];
