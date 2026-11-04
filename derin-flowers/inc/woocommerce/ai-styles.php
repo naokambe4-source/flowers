@@ -29,81 +29,89 @@ function df_pick( $a ) {
  */
 function df_style_dims() {
 	return array(
-		'voice'     => array(
-			'zarif bir butik çiçekçinin sakin, rafine sesiyle',
-			'bir moda dergisinin editoryal, şık diliyle',
-			'sıcak bir hikâye anlatıcısı gibi, okuru bir sahnenin içine alarak',
-			'minimalist bir lüks markanın az ve öz cümleleriyle',
-			'çiçekleri iyi tanıyan bir botanik tutkununun bilgili ama samimi diliyle',
-			'sevdiğine yazılmış kısa bir mektubun içtenliğiyle',
-			'modern, şehirli ve enerjik bir dille',
-			'bir sanat galerisi küratörünün tasarımı anlatır gibi özenli diliyle',
-			'Ege\'nin ferah, güneşli ruhunu taşıyan bir dille',
-			'koku, doku ve renk gibi duyulara seslenen betimleyici bir dille',
-			'hafif nostaljik, zamansız bir zarafetle',
-			'yalın, net ve güven veren bilgilendirici bir dille',
-			'davetkâr ve sıcak, okuru hediye anını hayal etmeye çağıran bir dille',
-			'kutlama coşkusu taşıyan neşeli bir dille',
-			'huzur veren, yumuşak ve dingin bir dille',
-			'deneyimli bir hediye danışmanının yol gösteren diliyle',
-			'İzmir\'i ve şehrin hayatını tanıyan yerel bir çiçekçinin samimi diliyle',
-			'şiirsel ama abartısız, ölçülü bir dille',
-			'özgüvenli, iddialı ve premium bir marka diliyle',
-			'kısa cümleli, ritmik ve akıcı bir dille',
+		'voice'       => array(
+			'zarif bir butik çiçekçinin sakin, rafine sesiyle', 'bir moda dergisinin editoryal, şık diliyle',
+			'sıcak bir hikâye anlatıcısı gibi, okuru bir sahnenin içine alarak', 'minimalist bir lüks markanın az ve öz cümleleriyle',
+			'çiçekleri iyi tanıyan bir botanik tutkununun bilgili ama samimi diliyle', 'sevdiğine yazılmış kısa bir mektubun içtenliğiyle',
+			'modern, şehirli ve enerjik bir dille', 'bir sanat galerisi küratörünün tasarımı anlatır gibi özenli diliyle',
+			'Ege\'nin ferah, güneşli ruhunu taşıyan bir dille', 'koku, doku ve renk gibi duyulara seslenen betimleyici bir dille',
+			'hafif nostaljik, zamansız bir zarafetle', 'yalın, net ve güven veren bilgilendirici bir dille',
+			'davetkâr ve sıcak, okuru hediye anını hayal etmeye çağıran bir dille', 'kutlama coşkusu taşıyan neşeli bir dille',
+			'huzur veren, yumuşak ve dingin bir dille', 'deneyimli bir hediye danışmanının yol gösteren diliyle',
+			'İzmir\'i ve şehrin hayatını tanıyan yerel bir çiçekçinin samimi diliyle', 'şiirsel ama abartısız, ölçülü bir dille',
+			'özgüvenli, iddialı ve premium bir marka diliyle', 'kısa cümleli, ritmik ve akıcı bir dille',
+			'bir iç mimarın dekorasyon önerisi gibi, mekânla kurduğu uyumu anlatan bir dille', 'bir fotoğrafçının kareyi anlatır gibi ışık ve kompozisyona odaklanan diliyle',
+			'eski bir dostun tavsiyesi gibi rahat ve içten bir dille', 'bir parfüm tanıtımı gibi notalarla (ilk izlenim, kalp, kalıcı iz) anlatan bir dille',
+			'bir düğün planlayıcısının incelikli, detaycı diliyle', 'genç ve dinamik, sosyal medyaya yakın ama özenli bir dille',
+			'klasik, ağırbaşlı ve saygın bir dille', 'merak uyandıran, sırrını yavaş yavaş açan bir dille',
+			'bir seyahat yazarının mekân ve an betimlemesi gibi', 'tatlı bir mizah dokunuşu taşıyan, gülümseten bir dille',
+			'bir şefin tabak anlatır gibi katman katman tarif eden diliyle', 'mektup değil, kısa bir günlük sayfası gibi kişisel bir dille',
+			'butik bir otel lobisinin sakin lüksünü çağrıştıran bir dille', 'romantik bir film sahnesi anlatır gibi sinematik bir dille',
+			'bilgece, olgun ve yavaş akan bir dille', 'pratik, çözüm odaklı ve hızlı karar verdiren bir dille',
+			'bir müzik parçası gibi ritim, ton ve uyumdan söz eden bir dille', 'bahar sabahı gibi taze, aydınlık bir dille',
+			'kadife gibi yumuşak, sıcak ve sarmalayan bir dille', 'cesur, çarpıcı ve akılda kalan kısa vurgularla',
 		),
-		'opening'   => array(
-			'okura doğrudan yöneltilen kısa bir soruyla',
-			'çiçeklerin teslim edildiği anı betimleyen bir sahneyle',
-			'tasarımın uyandırdığı duyguyla',
-			'baskın rengin ve tonların etkisiyle',
-			'kapı çaldığında karşıdakinin yüzünde oluşacak ifadeyle',
-			'tek cümlelik, güçlü ve kısa bir girişle',
-			'bu çiçeği alacak kişiyi hayal ettirerek',
-			'çiçeklerin taşıdığı anlam ve simgeyle',
-			'mevsimin ya da günün ruhuyla',
-			'tasarımdaki dikkat çeken bir ayrıntıyla (ambalaj, kurdele, form)',
-			'çiçeklerin bir mekâna (masa, salon, ofis) kattığı havayla',
-			'bir zıtlıkla (sade ama etkileyici, küçük ama anlamlı gibi)',
-			'ürün adının kendisinden yola çıkan bir cümleyle',
-			'sözcüklerin yetmediği anlara gönderme yaparak',
-			'özenle hazırlanma sürecine (atölye, el işçiliği) değinerek',
-			'bir kutlamanın ya da sürprizin heyecanıyla',
+		'opening'     => array(
+			'okura doğrudan yöneltilen kısa bir soruyla', 'çiçeklerin teslim edildiği anı betimleyen bir sahneyle',
+			'tasarımın uyandırdığı duyguyla', 'baskın rengin ve tonların etkisiyle',
+			'kapı çaldığında karşıdakinin yüzünde oluşacak ifadeyle', 'tek cümlelik, güçlü ve kısa bir girişle',
+			'bu çiçeği alacak kişiyi hayal ettirerek', 'çiçeklerin taşıdığı anlam ve simgeyle',
+			'mevsimin ya da günün ruhuyla', 'tasarımdaki dikkat çeken bir ayrıntıyla (ambalaj, kurdele, form)',
+			'çiçeklerin bir mekâna (masa, salon, ofis) kattığı havayla', 'bir zıtlıkla (sade ama etkileyici, küçük ama anlamlı gibi)',
+			'ürün adının kendisinden yola çıkan bir cümleyle', 'sözcüklerin yetmediği anlara gönderme yaparak',
+			'atölyede hazırlanma anına değinerek', 'bir kutlamanın ya da sürprizin heyecanıyla',
+			'bir benzetmeyle (çiçeği bir şeye benzeterek)', 'günün bir saatine (sabah, akşam üstü) gönderme yaparak',
+			'bir sessizliği ya da durgun bir anı anlatarak', 'okurun aklındaki bir soruyu yanıtlayarak',
+			'çiçeğe bakan birinin ilk saniyesini anlatarak', 'bir dokunuşu (kurdeleyi çözmek, ambalajı açmak) anlatarak',
+			'tek kelimelik bir cümleyle ve ardından açıklamayla', 'bir dileği dile getirerek',
+			'bir ilişkiyi (anne, sevgili, arkadaş) anarak', 'renklerin birbirini tamamlayışını anlatarak',
+			'bir hatıraya gönderme yaparak', 'kısa bir tanımla (Bu bir buket değil, bir … gibi)',
+			'bir sürprizin planlanma anını anlatarak', 'çiçeklerin kokusunu ya da tazeliğini hissettirerek',
 		),
-		'structure' => array(
-			'2 paragraf ve sonunda 3-4 maddelik kısa bir liste',
-			'3 kısa paragraf ve sonunda 3 maddelik bir liste',
-			'1 akıcı paragraf, ardından 4 maddelik liste, ardından tek cümlelik kapanış paragrafı',
-			'2 paragraf, ardından 3 maddelik liste; ilk paragraf duygu, ikincisi tasarım ve teslimat',
-			'kısa bir giriş cümlesi paragrafı, bir betimleme paragrafı ve 4 maddelik liste',
-			'2 orta uzunlukta paragraf ve sonda 5 kısa maddelik liste',
-			'3 paragraf (duygu, tasarım, sipariş kolaylığı) ve 3 maddelik liste',
-			'1 giriş paragrafı, 3 maddelik liste ve liste sonrası kısa bir davet paragrafı',
+		'structure'   => array(
+			'2 paragraf ve sonunda 3-4 maddelik kısa bir liste', '3 kısa paragraf ve sonunda 3 maddelik bir liste',
+			'1 akıcı paragraf, ardından 4 maddelik liste, ardından tek cümlelik kapanış paragrafı', '2 paragraf, ardından 3 maddelik liste; ilk paragraf duygu, ikincisi tasarım ve teslimat',
+			'kısa bir giriş cümlesi paragrafı, bir betimleme paragrafı ve 4 maddelik liste', '2 orta uzunlukta paragraf ve sonda 5 kısa maddelik liste',
+			'3 paragraf (duygu, tasarım, sipariş kolaylığı) ve 3 maddelik liste', '1 giriş paragrafı, 3 maddelik liste ve liste sonrası kısa bir davet paragrafı',
+			'çok kısa bir giriş, 2 maddelik liste, bir betimleme paragrafı ve ikinci bir 3 maddelik liste (iki ayrı başlıkla)', '4 kısa paragraf (her biri 1-2 cümle) ve sonda 3 maddelik liste',
+			'önce liste (4 madde), sonra 2 paragraf', 'bir paragraf, 3 maddelik liste, bir paragraf daha',
+			'soru-cevap düzeni: 2 kısa soru başlığı ve altında birer paragraf, sonda 3 maddelik liste', 'tek uzun paragraf ve sonda 4 maddelik liste',
+			'2 paragraf ve sonda madde yerine kısa bir kapanış cümlesi; liste ikinci paragraftan önce olsun', '3 paragraf; ikincisi tamamen tasarımın ayrıntılarına ayrılsın, sonda 3 maddelik liste',
 		),
-		'focus'     => array(
-			'renk uyumu ve görsel etki',
-			'yarattığı duygu ve bıraktığı iz',
-			'hediye edilme anı ve sürpriz etkisi',
-			'tasarım, ambalaj ve el işçiliği',
-			'tazelik ve günlük hazırlanma',
-			'uygun olduğu özel günler',
-			'alıcının kim olabileceği ve ona ne hissettireceği',
-			'evde ya da ofiste yarattığı atmosfer',
-			'zarafet ve sadelik',
-			'İzmir içinde aynı gün teslimatın kolaylığı',
+		'focus'       => array(
+			'renk uyumu ve görsel etki', 'yarattığı duygu ve bıraktığı iz', 'hediye edilme anı ve sürpriz etkisi',
+			'tasarım, ambalaj ve el işçiliği', 'tazelik ve günlük hazırlanma', 'uygun olduğu özel günler',
+			'alıcının kim olabileceği ve ona ne hissettireceği', 'evde ya da ofiste yarattığı atmosfer', 'zarafet ve sadelik',
+			'İzmir içinde aynı gün teslimatın kolaylığı', 'çiçeklerin anlamı ve sembolizmi', 'fotoğraftaki görünümün aynısının gelmesi (güven)',
+			'not kartıyla kişiselleştirme', 'son dakika hediyesi olarak pratikliği', 'premium ve gösterişli duruşu',
+			'romantik etkisi', 'aile ve büyüklere uygunluğu', 'iş dünyasında şık bir jest oluşu', 'uzun süre canlı kalması',
+			'fotoğraf ve paylaşım anına yakışması',
 		),
-		'list'      => array(
-			'Kimler için uygun',
-			'Neden seveceksiniz',
-			'Bu tasarımı öne çıkaranlar',
-			'Hangi anlar için',
-			'Öne çıkanlar',
-			'Tasarım notları',
-			'Kime yakışır',
-			'Bir bakışta',
-			'Sizi neler bekliyor',
-			'Bu buketle söyleyebilecekleriniz',
-			'En çok tercih edildiği anlar',
-			'Siparişinizle birlikte',
+		'list'        => array(
+			'Kimler için uygun', 'Neden seveceksiniz', 'Bu tasarımı öne çıkaranlar', 'Hangi anlar için', 'Öne çıkanlar',
+			'Tasarım notları', 'Kime yakışır', 'Bir bakışta', 'Sizi neler bekliyor', 'Bu buketle söyleyebilecekleriniz',
+			'En çok tercih edildiği anlar', 'Siparişinizle birlikte', 'Kısaca', 'Neden bu tasarım', 'Hediye ipuçları',
+			'Tasarımın imzası', 'Hangi duygular için', 'Akılda kalanlar', 'Küçük ayrıntılar', 'Ne zaman gönderilir',
+			'Size kazandırdıkları', 'Bu çiçekle', 'Tasarımın hikâyesi', 'Kimin gününü güzelleştirir', 'Neler içerir',
+		),
+		'perspective' => array(
+			'okura "siz" diye seslen', 'okura hiç doğrudan seslenme, tasarımı üçüncü şahısla anlat',
+			'okura "siz" diye seslen ve çiçeği alacak kişiden "o" diye söz et', 'çiçeğin kendisini anlatıcı yapmadan, ama ona canlı bir karakter gibi davranarak anlat',
+			'atölye olarak "biz" dilini kullan',
+		),
+		'rhythm'      => array(
+			'kısa ve uzun cümleleri dengeli karıştır', 'çoğunlukla kısa cümleler kullan', 'akıcı, orta uzunlukta cümleler kullan',
+			'her paragrafı vurucu kısa bir cümleyle bitir', 'en az bir paragrafı tek cümleden oluştur', 'cümleleri farklı kelimelerle başlat, aynı başlangıcı iki kez kullanma',
+		),
+		'imagery'     => array(
+			'ışık ve gün batımı', 'deniz ve Ege esintisi', 'müzik ve melodi', 'ipek ve kadife gibi dokular', 'bahçe ve doğa',
+			'sanat ve tablo', 'mektup ve sözcükler', 'zaman ve anılar', 'kutlama ve ışıltı', 'sabah kahvesi ve sakinlik',
+			'imza ve kalıcı iz', 'yolculuk ve kavuşma', 'hiçbir benzetme kullanma, somut ve net anlat',
+		),
+		'closing'     => array(
+			'okuru siparişe nazikçe davet eden bir cümle', 'akılda kalan kısa bir slogan cümlesi', 'alıcının hissedeceği duyguyla biten bir cümle',
+			'teslimat kolaylığını hatırlatan bir cümle', 'not kartına ne yazılabileceğine dair kısa bir öneri', 'kapanış cümlesi olmadan, doğrudan listeyle bitir',
+			'bir soruyla biten cümle', 'zamansız bir dilekle biten cümle',
 		),
 	);
 }
@@ -114,20 +122,19 @@ function df_style_dims() {
  * @return array<string,string>
  */
 function df_style_pick() {
-	$dims   = df_style_dims();
-	$recent = (array) get_option( 'df_style_recent', array() );
-	$pick   = array();
-	for ( $try = 0; $try < 12; $try++ ) {
-		$pick = array();
-		foreach ( $dims as $k => $list ) {
-			$pick[ $k ] = df_pick( $list );
-		}
-		if ( ! in_array( md5( implode( '|', $pick ) ), $recent, true ) ) {
-			break;
-		}
+	$dims = df_style_dims();
+	$last = (array) get_option( 'df_style_last', array() ); // Boyut başına son kullanılanlar.
+	$pick = array();
+	foreach ( $dims as $k => $list ) {
+		$avoid = isset( $last[ $k ] ) ? (array) $last[ $k ] : array();
+		$free  = array_values( array_diff( $list, $avoid ) );
+		$pick[ $k ] = df_pick( $free ? $free : $list );
+		// Listenin yarısı kadar (en fazla 12) son seçim tekrar edilmez: art arda ürünler hep farklı tarzda.
+		$keep        = max( 1, min( 12, (int) floor( count( $list ) / 2 ) ) );
+		$avoid[]     = $pick[ $k ];
+		$last[ $k ]  = array_slice( $avoid, -$keep );
 	}
-	$recent[] = md5( implode( '|', $pick ) );
-	update_option( 'df_style_recent', array_slice( $recent, -40 ), false );
+	update_option( 'df_style_last', $last, false );
 	return $pick;
 }
 
@@ -139,14 +146,18 @@ function df_style_pick() {
 function df_style_prompt() {
 	$s    = df_style_pick();
 	$used = array_filter( (array) get_option( 'df_style_openers', array() ) );
-	$txt  = "\nBu metnin tarzı (her ürün farklı tarzda yazılır, bu tarza sadık kal):\n"
+	$txt  = "\nBu metnin tarzı (her ürün farklı tarzda yazılır, bu tarza sadık kal; önceki ürünlere benzemesin):\n"
 		. '- Anlatım: ' . $s['voice'] . "\n"
 		. '- Uzun açıklamaya ' . $s['opening'] . " başla.\n"
 		. '- Yapı: ' . $s['structure'] . ".\n"
 		. '- Ağırlık ver: ' . $s['focus'] . ".\n"
-		. "- Listenin başlığı tam olarak '" . $s['list'] . ":' olsun (ayrı satırda, ardından maddeler).\n"
-		. "- Kısa açıklamanın ilk kelimesi ürün adı olmasın; uzun açıklamayla aynı cümleyle başlamasın.\n"
-		. "- Şu kalıpları kullanma: 'özenle hazırlanan', 'mükemmel bir seçim', 'sevdiklerinizi mutlu edin', 'eşsiz', 'büyüleyici', 'göz alıcı'.\n";
+		. '- Bakış açısı: ' . $s['perspective'] . ".\n"
+		. '- Cümle ritmi: ' . $s['rhythm'] . ".\n"
+		. '- İmge dünyası: ' . $s['imagery'] . ".\n"
+		. '- Kapanış: ' . $s['closing'] . ".\n"
+		. "- Liste başlığı tam olarak '" . $s['list'] . ":' olsun (ayrı satırda, ardından maddeler); ikinci liste varsa başka bir başlık seç.\n"
+		. "- Kısa açıklama, uzun açıklamadan farklı bir açıdan yazılsın; ürün adıyla başlamasın.\n"
+		. "- Şu kalıpları kullanma: 'özenle hazırlanan', 'mükemmel bir seçim', 'sevdiklerinizi mutlu edin', 'eşsiz', 'büyüleyici', 'göz alıcı', 'en özel anlarınız', 'unutulmaz bir hediye', 'kalpleri fethedecek'.\n";
 	if ( $used ) {
 		$txt .= "- Son ürünlerde şu cümlelerle başlandı; bunlara benzeyen bir girişle BAŞLAMA:\n  * " . implode( "\n  * ", array_slice( $used, -8 ) ) . "\n";
 	}
@@ -198,6 +209,20 @@ function df_style_template( $name, $sub, $one, $info ) {
 		"İzmir'in güneşli ruhunu taşıyan $n, ferah ve canlı bir $one tasarımı.",
 		"Küçük bir sürpriz, büyük bir mutluluk: $n ile sevdiklerinize kendinizi hatırlatın.",
 		"$n, ilk bakışta sade, yakından bakıldığında ise her ayrıntısıyla etkileyici.",
+		"Ambalajı açıldığı an odaya yayılan tazelik: $n.",
+		"Bir teşekkürü, bir özlemi ya da bir kutlamayı taşımaya hazır: $n.",
+		"Renklerin uyumu, formun dengesi, tazeliğin canlılığı; $n üçünü bir araya getiriyor.",
+		"Bugün birinin gününü güzelleştirmek istiyorsanız, $n iyi bir başlangıç.",
+		"Akşam üstü kapıya gelen bir sürpriz düşünün: $n tam o an için.",
+		"Sadeliği seven ama etkileyici olmaktan vazgeçmeyenler için: $n.",
+		"Bazı hediyeler unutulur, bazıları ise o günün kendisi olur. $n ikincilerden.",
+		"$n; ister bir masanın ortasında, ister bir başucunda, bulunduğu yeri aydınlatır.",
+		"Söze gerek bırakmayan bir jest arıyorsanız: $n.",
+		"$n, bir mektup kadar kişisel, bir kutlama kadar neşeli.",
+		"İlk izlenim renkler, kalıcı iz ise duygu: $n ikisini birden bırakıyor.",
+		"Planlı bir kutlama ya da son dakika sürprizi; $n her ikisine de yakışır.",
+		"Bir sabah kahvesinin yanında bile anı güzelleştirecek bir tasarım: $n.",
+		"Uzakta olsanız da yanında olduğunuzu hissettirmenin zarif yolu: $n.",
 	);
 	$body = array(
 		'Çiçekler sipariş gününde seçilir, el işçiliğiyle bir araya getirilir ve özenli bir ambalajla yola çıkar.',
@@ -210,6 +235,14 @@ function df_style_template( $name, $sub, $one, $info ) {
 		'Fotoğraftaki tasarım, aynı özen ve aynı çiçek kalitesiyle sizin için yeniden hazırlanır.',
 		'Doğal dokusu ve canlı tonlarıyla, bir hediyeden çok bir anı bırakır.',
 		'Sade bir not kartıyla birlikte bile söylemek istediğiniz her şeyi anlatır.',
+		'Formu dengeli, renkleri yumuşak; uzun süre bakmaktan yorulmayacağınız bir tasarım.',
+		'Her çiçek tek tek seçilir, yerleştirilir ve son kontrolden geçtikten sonra paketlenir.',
+		'Kurdelesinden ambalajına kadar, açıldığı an ilk izlenimi güçlü olsun diye düşünüldü.',
+		'Hem klasik hem modern zevklere hitap eden çizgisiyle yaş ve tarz ayırt etmez.',
+		'Fotoğraflarda olduğu kadar canlı görünür; çoğu zaman daha da güzel.',
+		'Bir vazoya alındığında da formunu korur, günlerce evin havasını değiştirir.',
+		'İçindeki her çiçek, renk ve boy dengesi gözetilerek bir araya getirildi.',
+		'Gösterişli ama yorucu değil; tam kıvamında bir zarafet.',
 	);
 	$deliv = array(
 		"İzmir içindeki teslimat bölgelerine aynı gün gönderilebilir; teslimat gününü ve saat aralığını sipariş sırasında siz seçersiniz.",
@@ -272,9 +305,18 @@ function df_note_styles() {
 		'uzaktan özlemi anlatan', 'gurur ve takdir ifade eden', 'sevgiyi doğrudan söyleyen',
 		'küçük bir itirafla başlayan', 'bir soruyla başlayan', 'mevsime ya da güne gönderme yapan',
 		'çiçeklerin yerine konuşturduğu', 'yalın ve olgun', 'neşeli ve enerjik', 'sakin ve huzur veren',
-		'birlikte geçirilen zamana değinen', 'sözünü tutan, söz veren', 'cesaret ve destek veren',
+		'birlikte geçirilen zamana değinen', 'söz veren', 'cesaret ve destek veren',
 		'kutlama coşkusu taşıyan', 'nazik ve saygılı', 'kısa bir hatırlatma gibi', 'romantik ve tutkulu',
 		'dostça ve rahat', 'gülümseten bir benzetme kullanan', 'teselli eden ve umut veren', 'minnettarlık dolu',
+		'bir şarkı sözü gibi akan (alıntı yapmadan)', 'tek kelimeyle başlayıp açıklayan', 'iki zıt duyguyu buluşturan',
+		'küçük bir sırrı paylaşır gibi', 'bir fotoğraf karesini anlatır gibi', 'bir gün planı öneren (bugün şunu yap gibi)',
+		'gelecekteki bir buluşmaya gönderme yapan', 'karşıdakinin gülüşünü anlatan', 'bir alışkanlığına sevgiyle takılan',
+		'hayatına kattıklarını sayan', 'bir "keşke"yi güzel bir dileğe çeviren', 'uzun bir cümleyle akan, tek nefeslik',
+		'üç kısa cümlelik, ritmik', 'çok sade, süssüz ve samimi', 'biraz çocuksu ve tatlı', 'olgun ve bilge',
+		'ilk tanışmaya gönderme yapan', 'bir rengi ona benzeten', 'bir kokuyu ona benzeten', 'hayaline gönderme yapan',
+		'emeğini takdir eden', 'onu güldürmeyi amaçlayan', 'sessiz bir sarılma gibi', 'bir teşekkürle biten',
+		'bir sözle (sözüm olsun gibi) biten', 'bir soruyla biten', 'bir dilekle biten', 'zamanla ilgili (her gün, her yıl) vurgulu',
+		'şehre (İzmir, deniz, kordon) dokunan', 'mektup başlangıcı gibi', 'kartpostal gibi kısa ve neşeli',
 	);
 }
 
@@ -377,6 +419,20 @@ function df_note_combos( $cat, $tone ) {
 		: array( '', '', 'Seni seviyorum.', 'İyi ki varsın.', 'Kocaman sarılıyorum.', 'Hep yanındayım.', 'Sevgiyle.' );
 	if ( in_array( $cat, array( 'Geçmiş Olsun', 'Teşekkür', 'Tebrik & Yeni İş', 'Söz & Nişan', 'Yeni Doğan', 'Öğretmenler Günü' ), true ) ) {
 		$post = array_values( array_diff( $post, array( 'Seni seviyorum.' ) ) );
+	}
+	$formal = array(
+		'Doğum Günü'       => array( 'Yeni yaşınızın sağlık, mutluluk ve başarıyla geçmesini dileriz.', 'Doğum gününüzü en içten dileklerimizle kutlarız.', 'Nice sağlıklı ve huzurlu yıllara.', 'Yeni yaşınız size güzellikler getirsin.' ),
+		'Yıl Dönümü'       => array( 'Yıl dönümünüzü içtenlikle kutlarız.', 'Nice mutlu ve huzurlu yıllar dileriz.', 'Birlikteliğinizin daim olmasını dileriz.', 'Bu anlamlı gününüzü kutlarız.' ),
+		'Geçmiş Olsun'     => array( 'Geçmiş olsun, en kısa sürede sağlığınıza kavuşmanızı dileriz.', 'Acil şifalar diler, sevgiyle selamlarız.', 'Sağlığınıza kısa sürede kavuşmanızı temenni ederiz.', 'Bu çiçekler size moral olsun; geçmiş olsun.' ),
+		'Teşekkür'         => array( 'Desteğiniz için içtenlikle teşekkür ederiz.', 'Gösterdiğiniz ilgi ve emek için teşekkürler.', 'Nezaketiniz için minnettarız.', 'Değerli katkılarınız için teşekkür ederiz.' ),
+		'Tebrik & Yeni İş' => array( 'Yeni görevinizde başarılarınızın devamını dileriz.', 'Başarınızı tebrik eder, nice güzel adımlar dileriz.', 'Yeni işinizin hayırlı olmasını dileriz.', 'Emeğinizin karşılığını aldığınız bu günü kutlarız.' ),
+		'Söz & Nişan'      => array( 'Mutluluğunuzun daim olmasını dileriz.', 'Bu güzel başlangıcınızı içtenlikle kutlarız.', 'Bir ömür boyu mutluluklar dileriz.', 'Sevgi ve huzur dolu bir hayat dileriz.' ),
+		'Yeni Doğan'       => array( 'Bebeğinizin sağlıkla büyümesini dileriz.', 'Aileniz için hayırlı uğurlu olsun.', 'Gözünüz aydın, minik bebeğinize sağlıklı bir ömür dileriz.', 'Evinize gelen mutluluk daim olsun.' ),
+		'Öğretmenler Günü' => array( 'Öğretmenler Gününüzü kutlar, emekleriniz için teşekkür ederiz.', 'Değerli emekleriniz için minnettarız.', 'Işık olduğunuz için teşekkür ederiz.', 'Öğrettikleriniz için sonsuz teşekkürler.' ),
+		''                 => array( 'En içten dileklerimizle.', 'Güzel bir gün geçirmenizi dileriz.', 'Sevgi ve saygılarımızla.', 'Bu küçük jestimizi kabul etmenizi dileriz.' ),
+	);
+	if ( 'resmi' === $tone ) {
+		$core = $formal;
 	}
 	$list = isset( $core[ $cat ] ) ? $core[ $cat ] : $core[''];
 	shuffle( $list );

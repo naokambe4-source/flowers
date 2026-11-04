@@ -888,9 +888,11 @@ function df_pai_call( $prov, $prompt, $image = null ) {
 					'Authorization' => 'Bearer ' . $key,
 				),
 				'body'    => wp_json_encode(
+					array_filter(
 					array(
 						'model'           => df_opt( 'pai_openai_model', 'gpt-4.1-mini' ),
 						'response_format' => array( 'type' => 'json_object' ),
+						'temperature'     => 0 === strpos( (string) df_opt( 'pai_openai_model', 'gpt-4.1-mini' ), 'gpt-4' ) ? 1.0 : null,
 						'messages'        => array(
 							array(
 								'role'    => 'user',
@@ -900,6 +902,10 @@ function df_pai_call( $prov, $prompt, $image = null ) {
 								) : $prompt,
 							),
 						),
+					),
+					function ( $v ) {
+						return null !== $v;
+					}
 					)
 				),
 			)
@@ -935,7 +941,7 @@ function df_pai_call( $prov, $prompt, $image = null ) {
 									'parts' => $image ? array( array( 'text' => $prompt ), array( 'inline_data' => array( 'mime_type' => $image['mime'], 'data' => $image['data'] ) ) ) : array( array( 'text' => $prompt ) ),
 								),
 							),
-							'generationConfig' => array( 'responseMimeType' => 'application/json' ),
+							'generationConfig' => array( 'responseMimeType' => 'application/json', 'temperature' => 1.15, 'topP' => 0.95 ),
 						)
 					),
 				)
