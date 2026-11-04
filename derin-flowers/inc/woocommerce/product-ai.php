@@ -481,6 +481,7 @@ function df_pai_box( $post ) {
 		'openai' => 'ChatGPT',
 		'gemini' => 'Gemini',
 		'claude' => 'Claude',
+		'evren'  => 'EVREN',
 	);
 	$thumb   = get_post_thumbnail_id( $post->ID );
 	wp_nonce_field( 'df_pai_save', 'df_pai_nonce' );
@@ -827,6 +828,7 @@ function df_pai_key( $prov ) {
 		'openai' => 'pai_openai_key',
 		'gemini' => 'pai_gemini_key',
 		'claude' => 'ai_key',
+		'evren'  => 'pai_evren_key',
 	);
 	return isset( $map[ $prov ] ) ? trim( (string) df_opt( $map[ $prov ] ) ) : '';
 }
@@ -861,6 +863,80 @@ function df_pai_prompt( $in ) {
 }
 
 /**
+ * EVREN (Savunma Sanayiinin Yapay Zekâ platformu) — OpenAI uyumlu sohbet API'si.
+ * Yoğunlukta (429 / 503) Retry-After kadar bekleyip yeniden dener; görselli istekte görsel anlayan model kullanılır.
+ *
+ * @param string     $key    Anahtar.
+ * @param string     $prompt Talimat.
+ * @param array|null $image  mime + base64 data.
+ * @return string|WP_Error
+ */
+function df_pai_call_evren( $key, $prompt, $image = null ) {
+	$model = trim( (string) df_opt( 'pai_evren_model', 'glm-5.3' ) );
+	$model = '' !== $model ? $model : 'glm-5.3';
+	if ( $image ) {
+		$model = 'mimo-v2.6-pro';
+	}
+	$body = array(
+		'model'       => $model,
+		'max_tokens'  => 4096,
+		'temperature' => 1.0,
+		'thinking'    => false,
+		'messages'    => array(
+			array(
+				'role'    => 'user',
+				'content' => $image ? array(
+					array( 'type' => 'text', 'text' => $prompt ),
+					array( 'type' => 'image_url', 'image_url' => array( 'url' => 'data:' . $image['mime'] . ';base64,' . $image['data'] ) ),
+				) : $prompt,
+			),
+		),
+	);
+	$tries = max( 1, df_pai_busy_retries() );
+	for ( $try = 0; $try < $tries; $try++ ) {
+		$res = wp_remote_post(
+			'https://evren-llmapi.ssyz.org.tr/v1/chat/completions',
+			array(
+				'timeout' => 90,
+				'headers' => array(
+					'Content-Type'  => 'application/json',
+					'Authorization' => 'Bearer ' . $key,
+				),
+				'body'    => wp_json_encode( $body ),
+			)
+		);
+		if ( is_wp_error( $res ) ) {
+			return $res;
+		}
+		$code = (int) wp_remote_retrieve_response_code( $res );
+		$b    = json_decode( wp_remote_retrieve_body( $res ), true );
+		if ( 200 === $code ) {
+			$text = isset( $b['choices'][0]['message']['content'] ) ? (string) $b['choices'][0]['message']['content'] : '';
+			// Düşünen modellerin <think> bölümü kalırsa at.
+			return trim( preg_replace( '/<think>.*?<\/think>/s', '', $text ) );
+		}
+		$msg = isset( $b['error']['message'] ) ? (string) $b['error']['message'] : ( isset( $b['detail'] ) && is_string( $b['detail'] ) ? $b['detail'] : '' );
+		$raw = wp_remote_retrieve_body( $res );
+		if ( 403 === $code && false !== strpos( $raw, 'terms_not_accepted' ) ) {
+			return new WP_Error( 'df_pai', 'EVREN: kullanım şartları henüz onaylanmamış. evren.ssyz.org.tr → Test Alanı (playground) sayfasında anahtarınızı girip şartları bir kez onaylayın, sonra tekrar deneyin.' );
+		}
+		if ( 401 === $code ) {
+			return new WP_Error( 'df_pai', 'EVREN: API anahtarı geçersiz. Tema Ayarları → Yapay zekâ ürün içeriği → EVREN API anahtarını kontrol edin.' );
+		}
+		if ( in_array( $code, array( 429, 503 ), true ) ) {
+			if ( $try + 1 < $tries ) {
+				$wait = (int) wp_remote_retrieve_header( $res, 'retry-after' );
+				sleep( min( 8, max( 2, $wait ) ) );
+				continue;
+			}
+			return new WP_Error( 'df_pai_busy', 'EVREN şu an yoğun ya da günlük kota doldu' . ( '' !== $msg ? ' (' . $msg . ')' : '' ) . '.' );
+		}
+		return new WP_Error( 'df_pai', 'EVREN: ' . ( '' !== $msg ? $msg : 'yanıt vermedi (kod ' . $code . ').' ) );
+	}
+	return new WP_Error( 'df_pai_busy', 'EVREN şu an yoğun.' );
+}
+
+/**
  * Yoğunlukta kaç kez yeniden denensin (ürün ekranında 3, müşterinin kart notunda 1 — müşteri beklemesin).
  *
  * @return int
@@ -878,6 +954,9 @@ function df_pai_busy_retries() {
  */
 function df_pai_call( $prov, $prompt, $image = null ) {
 	$key = df_pai_key( $prov );
+	if ( 'evren' === $prov ) {
+		return df_pai_call_evren( $key, $prompt, $image );
+	}
 	if ( 'openai' === $prov ) {
 		$res = wp_remote_post(
 			'https://api.openai.com/v1/chat/completions',
