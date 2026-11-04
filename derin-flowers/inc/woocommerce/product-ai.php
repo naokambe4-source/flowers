@@ -2111,3 +2111,38 @@ function df_seo_meta_desc() {
 	}
 }
 add_action( 'wp_head', 'df_seo_meta_desc', 2 );
+
+/**
+ * Ürün ekranından (ürün kaydı, "Yeni kategori ekle" kısayolu, yapay zekâ akışı) yeni ürün kategorisi açılmasın:
+ * ürünler yalnızca mevcut kategorilerden seçilir. Yeni kategori yalnızca Ürünler → Kategoriler sayfasından eklenir.
+ *
+ * @param string|WP_Error $term     Terim adı.
+ * @param string          $taxonomy Sınıflandırma.
+ * @return string|WP_Error
+ */
+function df_block_product_cat_create( $term, $taxonomy ) {
+	if ( 'product_cat' !== $taxonomy || is_wp_error( $term ) ) {
+		return $term;
+	}
+	global $pagenow;
+	// phpcs:disable WordPress.Security.NonceVerification
+	$ajax_add = wp_doing_ajax() && isset( $_POST['action'] ) && 'add-product_cat' === $_POST['action'];
+	$product  = ( isset( $_POST['post_type'] ) && 'product' === $_POST['post_type'] ) || in_array( $pagenow, array( 'post.php', 'post-new.php' ), true ) || ( wp_doing_ajax() && isset( $_POST['action'] ) && 0 === strpos( (string) $_POST['action'], 'df_pai' ) );
+	// phpcs:enable
+	if ( $ajax_add || $product ) {
+		return new WP_Error( 'df_no_new_cat', 'Ürün ekranından yeni kategori açılamaz. Mevcut kategorilerden seçin; yeni kategori gerekiyorsa Ürünler → Kategoriler sayfasından ekleyin.' );
+	}
+	return $term;
+}
+add_filter( 'pre_insert_term', 'df_block_product_cat_create', 10, 2 );
+
+/**
+ * Ürün düzenleme ekranında "+ Yeni kategori ekle" kısayolunu gizle.
+ */
+function df_hide_product_cat_adder() {
+	$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+	if ( $screen && 'product' === $screen->post_type && 'post' === $screen->base ) {
+		echo '<style>#product_cat-adder{display:none!important}</style>';
+	}
+}
+add_action( 'admin_head', 'df_hide_product_cat_adder' );
