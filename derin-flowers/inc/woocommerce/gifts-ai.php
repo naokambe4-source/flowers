@@ -346,8 +346,9 @@ function df_ai_lower( $s ) {
  * @return string[]
  */
 function df_ai_local( $cat, $tone, $to, $hint ) {
-	$all  = df_note_templates();
-	$pool = isset( $all[ $cat ] ) ? $all[ $cat ] : array();
+	$all   = df_note_templates();
+	$pool  = isset( $all[ $cat ] ) ? $all[ $cat ] : array();
+	$found = $cat;
 	if ( ! $pool ) {
 		// Kategori seçilmediyse ipucundan tahmin et; karışık (alakasız) notlar gösterme.
 		$h   = df_ai_lower( $hint . ' ' . $cat );
@@ -366,8 +367,9 @@ function df_ai_local( $cat, $tone, $to, $hint ) {
 		);
 		foreach ( $map as $c => $words ) {
 			foreach ( $words as $w ) {
-				if ( isset( $all[ $c ] ) && false !== mb_strpos( $h, $w ) ) {
-					$pool = $all[ $c ];
+				if ( false !== mb_strpos( $h, $w ) ) {
+					$found = $c;
+					$pool  = isset( $all[ $c ] ) ? $all[ $c ] : array();
 					break 2;
 				}
 			}
@@ -377,6 +379,10 @@ function df_ai_local( $cat, $tone, $to, $hint ) {
 		foreach ( array( 'Teşekkür', 'Tebrik & Yeni İş', 'Doğum Günü' ) as $c ) {
 			$pool = array_merge( $pool, isset( $all[ $c ] ) ? array_slice( $all[ $c ], 0, 2 ) : array() );
 		}
+	}
+	// Hazır mesajlar + özel güne göre birleşen yüzlerce farklı not: her istekte başka öneriler.
+	if ( function_exists( 'df_note_combos' ) ) {
+		$pool = array_merge( array_slice( $pool, 0, 3 ), df_note_combos( $found, $tone ) );
 	}
 	shuffle( $pool );
 	$first = trim( strtok( (string) $to, ' ' ) );
@@ -427,6 +433,7 @@ function df_ai_note_prompt( $in ) {
 		. "- Doğal, içten, günlük Türkçe; klişe ve abartı yok; emoji, hashtag, tırnak işareti yok.\n"
 		. "- İmza ekleme (imza kartta ayrıca basılır). Uydurma bilgi ekleme.\n"
 		. "- Resmi tonda 'siz' dili, diğerlerinde 'sen' dili kullan.\n"
+		. ( function_exists( 'df_note_style_prompt' ) ? df_note_style_prompt() : '' )
 		. 'Yanıtı yalnızca JSON olarak ver: {"notes": ["...", "...", "...", "..."]}';
 }
 

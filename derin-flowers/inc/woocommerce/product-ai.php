@@ -850,12 +850,13 @@ function df_pai_prompt( $in ) {
 		. "- Verilmeyen bilgi uydurma (çiçek adedi, boy, içerik verilmediyse yazma).\n"
 		. "- Anahtar kelimeleri doğal kullan, aynı kelimeyi tekrar tekrar yığma.\n"
 		. "- short: 1-2 cümle, en fazla 220 karakter.\n"
-		. "- long: 120-200 kelime; 2-3 kısa paragraf (paragraflar arasında boş satır) ve en sonda 'Kimler için uygun' gibi kısa bir madde listesi (satır başı '- ').\n"
+		. "- long: 120-200 kelime; paragraflar arasında boş satır, madde satırları '- ' ile başlar; yapı ve liste başlığı aşağıdaki tarza göre.\n"
 		. "- seo_title: en fazla 60 karakter, ürün adını ve doğal biçimde 'İzmir' içersin.\n"
 		. "- seo_desc: 140-155 karakter, aynı gün teslimat gibi gerçek bir fayda ve tıklamaya davet içersin.\n"
 		. "- keyword: tek odak anahtar kelime (örn. 'izmir kırmızı gül buketi').\n"
 		. "- alt: görseli anlatan en fazla 120 karakterlik ALT metni.\n"
 		. "- tags: 5-8 küçük harfli Türkçe etiket (çiçek türü, renk, özel gün, kullanım).\n"
+		. ( function_exists( 'df_style_prompt' ) ? df_style_prompt() : '' )
 		. 'Yanıtı yalnızca JSON olarak ver: {"short":"","long":"","seo_title":"","seo_desc":"","keyword":"","alt":"","tags":[""]}';
 }
 
@@ -1052,9 +1053,8 @@ function df_pai_template( $in ) {
 	} elseif ( '' !== trim( $in['notes'] ) && false === strpos( $in['notes'], ':' ) ) {
 		$bits[] = 'İçerik: ' . trim( $in['notes'] ) . '.';
 	}
-	$long = $name . ( $sub ? ' (' . $sub . ')' : '' ) . ', atölyemizde günlük taze çiçeklerle özenle hazırlanan bir ' . $one . " tasarımıdır. " . implode( ' ', $bits ) . "\n\n"
-		. "İzmir içindeki teslimat bölgelerine aynı gün gönderilebilir; teslimat tarihini ve saat aralığını sipariş sırasında siz seçersiniz. Siparişinize ücretsiz, kişiye özel bir not kartı ekleyebilirsiniz.\n\n"
-		. "- Sevdiklerinizi mutlu etmek için\n- Doğum günü, yıldönümü ve özel günler için\n- Teşekkür ve tebrik için";
+	$var  = df_style_template( $name, $sub, $one, implode( ' ', $bits ) );
+	$long = $var['long'];
 	$st   = $name . ' | İzmir Çiçek Siparişi';
 	$tags = array( $one );
 	if ( $r ) {
@@ -1062,10 +1062,10 @@ function df_pai_template( $in ) {
 	}
 	$tags[] = 'izmir çiçek siparişi';
 	return array(
-		'short'     => $name . ( $sub ? ' — ' . $sub . '.' : '.' ) . ' Taze çiçeklerle hazırlanır, İzmir\'e aynı gün teslim edilir.',
+		'short'     => $var['short'],
 		'long'      => df_pai_long_html( $long ),
 		'seo_title' => mb_strlen( $st ) > 60 ? $name . ' | İzmir' : $st,
-		'seo_desc'  => mb_substr( $name . ' İzmir\'e aynı gün teslimat ile kapınızda. Taze çiçekler, ücretsiz not kartı ve özenli paketleme. Hemen sipariş verin.', 0, 155 ),
+		'seo_desc'  => $var['seo_desc'],
 		'keyword'   => 'izmir ' . $one,
 		'alt'       => $name . ( $sub ? ' - ' . $sub : '' ) . ' - Derin Flowers İzmir',
 		'tags'      => array_slice( array_values( array_unique( array_filter( $tags ) ) ), 0, 8 ),
@@ -1117,6 +1117,9 @@ function df_pai_generate() {
 	}
 	$out['long'] = df_pai_long_html( $out['long'] );
 	$out['tags'] = isset( $json['tags'] ) ? array_slice( array_values( array_filter( array_map( 'sanitize_text_field', (array) $json['tags'] ) ) ), 0, 8 ) : array();
+	if ( function_exists( 'df_style_remember' ) ) {
+		df_style_remember( $out['long'] );
+	}
 	wp_send_json_success( $out );
 }
 add_action( 'wp_ajax_df_pai_generate', 'df_pai_generate' );
@@ -1191,12 +1194,13 @@ function df_pai_vision() {
 		. "- name: zarif, akılda kalan ürün adı, en fazla 55 karakter, her kelimenin baş harfi büyük (Türkçe kurala göre), marka adı yazma.\n"
 		. "- Kusursuz Türkçe: yazım ve noktalama hatası yok, Türkçe karakterler doğru, emoji ve HTML yok, abartı ve klişe yok.\n"
 		. "- short: 1-2 cümle, en fazla 220 karakter.\n"
-		. "- long: 120-200 kelime; 2-3 kısa paragraf (paragraflar arasında boş satır) ve sonda 'Kimler için uygun' gibi kısa madde listesi (satır başı '- ').\n"
+		. "- long: 120-200 kelime; paragraflar arasında boş satır, madde satırları '- ' ile başlar; yapı ve liste başlığı aşağıdaki tarza göre.\n"
 		. "- seo_title: en fazla 60 karakter, ürün adı ve doğal biçimde 'İzmir'.\n"
 		. "- seo_desc: 140-155 karakter, odak kelimeyi ve aynı gün teslimat gibi gerçek bir faydayı içersin.\n"
 		. "- keyword: tek odak anahtar kelime, küçük harf (örn. 'izmir kırmızı gül buketi').\n"
 		. "- alt: görseli anlatan en fazla 120 karakterlik ALT metni.\n"
 		. "- tags: 5-8 küçük harfli Türkçe etiket.\n"
+		. ( function_exists( 'df_style_prompt' ) ? df_style_prompt() : '' )
 		. 'Yanıtı yalnızca JSON olarak ver: {"name":"","categories":[0],"short":"","long":"","seo_title":"","seo_desc":"","keyword":"","alt":"","tags":[""]}';
 	$GLOBALS['df_pai_busy_retries'] = 3;
 	$text = df_pai_call( $prov, $prompt, $img );
@@ -1235,6 +1239,9 @@ function df_pai_vision() {
 	}
 	if ( '' === $out['seo_title'] ) {
 		$out['seo_title'] = mb_substr( $name . ' | İzmir Çiçek Siparişi', 0, 60 );
+	}
+	if ( function_exists( 'df_style_remember' ) ) {
+		df_style_remember( $out['long'] );
 	}
 	$out['long'] = df_pai_long_html( $out['long'] );
 	$out['tags'] = isset( $json['tags'] ) ? array_slice( array_values( array_filter( array_map( 'sanitize_text_field', (array) $json['tags'] ) ) ), 0, 8 ) : array();
@@ -1414,6 +1421,9 @@ function df_pai_long_html( $text ) {
 			}
 			if ( preg_match( '/^[-•*]\s+(.*)$/u', $line, $m ) ) {
 				$list[] = esc_html( $m[1] );
+			} elseif ( ':' === mb_substr( $line, -1 ) && mb_strlen( $line ) < 60 ) {
+				$flush();
+				$html .= '<p><strong>' . esc_html( $line ) . "</strong></p>\n";
 			} else {
 				$flush();
 				$html .= '<p>' . esc_html( $line ) . "</p>\n";
