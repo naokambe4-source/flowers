@@ -727,6 +727,7 @@ function df_options_schema() {
 						array( 'id' => 'card_btn_text', 'type' => 'text', 'label' => 'Kart buton metni', 'default' => 'İncele', 'half' => true ),
 						array( 'id' => 'card_cart_icon', 'type' => 'toggle', 'label' => 'Kartta fiyat yanında sepet ikonu', 'default' => 0, 'half' => true, 'desc' => 'Hızlı sepete ekle kapalıysa ikon ürün detayına götürür.' ),
 						array( 'id' => 'card_show_sku', 'type' => 'toggle', 'label' => 'Kartta ürün kodu (SKU)', 'default' => 0, 'half' => true ),
+						array( 'id' => 'card_show_sub', 'type' => 'toggle', 'label' => 'Kartta alt başlık / Türkçe anlam', 'default' => 0, 'half' => true, 'desc' => 'Kapalıyken kartta yalnızca kısa ürün adı ve kodu görünür; adın "—" sonrası ve alt başlık ürün sayfasında kalır.' ),
 						array( 'id' => 'card_hover_image', 'type' => 'toggle', 'label' => 'Üzerine gelince 2. görseli göster', 'default' => 1, 'third' => true ),
 						array( 'id' => 'card_show_cat', 'type' => 'toggle', 'label' => 'Kategori etiketini göster', 'default' => 1, 'third' => true ),
 						array( 'id' => 'badge_new_days', 'type' => 'number', 'label' => '"Yeni" etiketi (gün)', 'default' => 14, 'min' => 0, 'max' => 90, 'third' => true ),

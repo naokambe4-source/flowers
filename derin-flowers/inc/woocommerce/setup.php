@@ -664,3 +664,18 @@ function df_cat_hero_pos( $pos ) {
 	);
 	return isset( $map[ $pos ] ) ? $map[ $pos ] : 'right center';
 }
+
+/**
+ * Kartta gösterilecek kısa ürün adı: "41 Fuşya Gül — Tutkunun ve Sevginin En Güzel İfadesi" → "41 Fuşya Gül".
+ * Ayırıcılar: — – - : | (tam ad ürün sayfasında ve bağlantı başlığında kalır).
+ *
+ * @param string $name Ürün adı.
+ * @return string
+ */
+function df_card_short_name( $name ) {
+	$name  = trim( (string) $name );
+	$parts = preg_split( '/\s+[—–\-|]\s+|:\s+/u', $name, 2 );
+	$short = trim( (string) $parts[0], " \t\"'“”" );
+	return mb_strlen( $short ) >= 3 ? $short : $name;
+}
+

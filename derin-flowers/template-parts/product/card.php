@@ -102,8 +102,8 @@ $img_size = 'large'; // Kırpılmamış görsel: oran CSS'ten, üstten hizalı (
 		<?php if ( $cat ) : ?>
 			<a class="df-card__cat" href="<?php echo esc_url( get_term_link( $cat ) ); ?>"><?php echo esc_html( $cat->name ); ?></a>
 		<?php endif; ?>
-		<h3 class="df-card__title"><a href="<?php echo esc_url( $link ); ?>"><?php echo esc_html( $name ); ?></a></h3>
-		<?php if ( $subtitle ) : ?>
+		<h3 class="df-card__title"><a href="<?php echo esc_url( $link ); ?>" title="<?php echo esc_attr( $name ); ?>"><?php echo esc_html( df_card_short_name( $name ) ); ?></a></h3>
+		<?php if ( $subtitle && df_opt( 'card_show_sub', 0 ) ) : ?>
 			<p class="df-card__sub"><?php echo esc_html( $subtitle ); ?></p>
 		<?php endif; ?>
 		<?php if ( df_opt( 'card_show_sku' ) && $product->get_sku() ) : ?>
