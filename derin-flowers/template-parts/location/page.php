@@ -87,7 +87,7 @@ get_header();
 
 		<?php
 		$df_cat      = absint( df_opt( 'loc_cat' ) );
-		$df_products = df_wc() ? df_query_products( $df_cat ? 'category' : 'bestsellers', array( 'cat' => $df_cat, 'limit' => max( 4, min( 24, (int) df_opt( 'loc_count', 8 ) ) ) ) ) : array();
+		$df_products = df_wc() ? ( '__index' === $df_cur ? df_query_products( $df_cat ? 'category' : 'bestsellers', array( 'cat' => $df_cat, 'limit' => max( 4, min( 24, (int) df_opt( 'loc_count', 20 ) ) ) ) ) : df_loc_products( $df_cur, $df_cat ) ) : array();
 		?>
 		<?php if ( $df_products ) : ?>
 			<section class="df-loc__section df-vitrin" id="df-loc-products">

@@ -230,7 +230,7 @@ function df_modules_schema( $schema ) {
 					array( 'id' => 'loc_banner', 'type' => 'image', 'label' => 'İlçe sayfası banner görseli (sağ taraf)', 'half' => true, 'desc' => 'Buket fotoğrafı, üzerinde yazı olmasın; 1600 × 1000 px. Boşsa sayfadaki kategorinin en çok satan ürününün görseli kullanılır.' ),
 					array( 'id' => 'loc_color', 'type' => 'color', 'label' => 'İlçe banner rengi (degrade)', 'default' => '#5E7B61', 'half' => true ),
 					array( 'id' => 'loc_cat', 'type' => 'product_cat', 'label' => 'Sayfada gösterilecek ürün kategorisi (boşsa çok satanlar)', 'half' => true ),
-					array( 'id' => 'loc_count', 'type' => 'number', 'label' => 'Ürün sayısı', 'default' => 8, 'min' => 4, 'max' => 24, 'half' => true ),
+					array( 'id' => 'loc_count', 'type' => 'number', 'label' => 'İlçe sayfası ürün sayısı', 'default' => 20, 'min' => 4, 'max' => 24, 'half' => true, 'desc' => 'Ürünler katalogdan kendiliğinden seçilir ve ürünün kendi görseli kullanılır; ilçeye tek tek ürün yüklemeniz gerekmez. Her ilçe farklı sırayla farklı ürünler gösterir.' ),
 					array( 'id' => 'loc_home_links', 'type' => 'toggle', 'label' => 'Ana sayfadaki ilçe kısayolları ilçe sayfalarına gitsin', 'default' => 1, 'half' => true ),
 					array( 'id' => 'loc_llms', 'type' => 'toggle', 'label' => 'Yapay zekâ arama motorları için /llms.txt', 'default' => 1, 'half' => true ),
 				),

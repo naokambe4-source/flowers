@@ -606,3 +606,67 @@ function df_loc_title_case( $s ) {
 	}
 	return implode( ' ', $words );
 }
+
+/**
+ * İlçe sayfası ürün vitrini: katalogdan kendiliğinden seçilir (yayında, katalogda görünür, görseli olan ürünler;
+ * ilk sıralar çok satanlardan). Her ilçe, adına göre sabit bir karıştırmayla farklı ürünler gösterir; böylece ilçe sayfaları
+ * birbirinin kopyası görünmez ve ürün görsellerini ilçelere tek tek yüklemek gerekmez. 30 dakika önbellek.
+ *
+ * @param string $slug İlçe adresi.
+ * @param int    $cat  İsteğe bağlı kategori (Lokasyon ayarı).
+ * @return int[]
+ */
+function df_loc_products( $slug, $cat = 0 ) {
+	$limit = max( 4, min( 24, (int) df_opt( 'loc_count', 20 ) ) );
+	$key   = 'df_loc_p_' . md5( $slug . '|' . $cat . '|' . $limit . '|' . get_option( 'df_loc_p_ver', 1 ) );
+	$ids   = get_transient( $key );
+	if ( is_array( $ids ) ) {
+		return $ids;
+	}
+	$q = array(
+		'status'     => 'publish',
+		'limit'      => 300,
+		'visibility' => 'catalog',
+		'orderby'    => 'popularity',
+		'return'     => 'ids',
+	);
+	if ( $cat && ( $t = get_term( (int) $cat, 'product_cat' ) ) && ! is_wp_error( $t ) ) {
+		$q['category'] = array( $t->slug );
+	}
+	$all = array();
+	foreach ( wc_get_products( $q ) as $id ) {
+		if ( get_post_thumbnail_id( $id ) && ( ! function_exists( 'df_aeo_is_test' ) || ! df_aeo_is_test( get_the_title( $id ) ) ) ) {
+			$all[] = (int) $id;
+		}
+	}
+	if ( ! $all ) {
+		return array();
+	}
+	// İlçeye özel sabit karıştırma: ilk 4 yer en çok satan 8 üründen, kalanı tüm katalogdan (her ilçede farklı).
+	$seed = function ( $list ) use ( $slug ) {
+		usort(
+			$list,
+			function ( $a, $b ) use ( $slug ) {
+				return strcmp( md5( $slug . '|' . $a ), md5( $slug . '|' . $b ) );
+			}
+		);
+		return $list;
+	};
+	$top  = array_slice( $seed( array_slice( $all, 0, 8 ) ), 0, min( 4, $limit ) );
+	$ids  = array_slice( array_merge( $top, $seed( array_values( array_diff( $all, $top ) ) ) ), 0, $limit );
+	set_transient( $key, $ids, 30 * MINUTE_IN_SECONDS );
+	return $ids;
+}
+
+/**
+ * Ürün eklenince / değişince ilçe vitrinleri yenilensin.
+ *
+ * @param int $post_id Yazı.
+ */
+function df_loc_products_flush( $post_id ) {
+	if ( 'product' === get_post_type( $post_id ) ) {
+		update_option( 'df_loc_p_ver', (int) get_option( 'df_loc_p_ver', 1 ) + 1, false );
+	}
+}
+add_action( 'save_post', 'df_loc_products_flush' );
+
