@@ -152,3 +152,44 @@ function df_archive_css() {
 	echo '<style>.order-status.status-df-archived{background:#ece9e6;color:#6b625c}</style>';
 }
 add_action( 'admin_head', 'df_archive_css' );
+
+/**
+ * Silinmiş / adı değişmiş kategori adresi (ör. /urun-kategori/guller/) 404 vermesin: menü ve anasayfa
+ * bannerlarındaki eski bağlantılar en yakın mevcut kategoriye (tek ya da iki aday varsa) ya da tüm ürünlere gider.
+ */
+function df_missing_cat_redirect() {
+	if ( ! is_404() || ! function_exists( 'wc_get_page_permalink' ) ) {
+		return;
+	}
+	$base = trim( (string) ( get_option( 'woocommerce_permalinks' )['category_base'] ?? '' ), '/' );
+	$base = '' !== $base ? $base : 'urun-kategori';
+	$path = trim( (string) wp_parse_url( isset( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '', PHP_URL_PATH ), '/' );
+	if ( 0 !== strpos( $path, $base . '/' ) ) {
+		return;
+	}
+	$parts = explode( '/', substr( $path, strlen( $base ) + 1 ) );
+	$slug  = sanitize_title( (string) end( $parts ) );
+	$slug  = 'page' === ( $parts[ count( $parts ) - 2 ] ?? '' ) ? sanitize_title( (string) $parts[0] ) : $slug;
+	$root  = preg_replace( '/(leri|lari|ler|lar)$/', '', $slug );
+	$cands = array();
+	if ( strlen( $root ) >= 3 ) {
+		foreach ( get_terms( array( 'taxonomy' => 'product_cat', 'hide_empty' => true ) ) as $t ) {
+			if ( false !== strpos( $t->slug, $root ) ) {
+				$cands[] = $t;
+			}
+		}
+	}
+	$to = wc_get_page_permalink( 'shop' );
+	if ( $cands && count( $cands ) <= 2 ) {
+		usort(
+			$cands,
+			function ( $a, $b ) {
+				return $b->count - $a->count;
+			}
+		);
+		$to = get_term_link( $cands[0] );
+	}
+	wp_safe_redirect( is_wp_error( $to ) ? home_url( '/' ) : $to, 302 );
+	exit;
+}
+add_action( 'template_redirect', 'df_missing_cat_redirect', 1 );
