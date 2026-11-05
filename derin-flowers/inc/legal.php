@@ -29,7 +29,7 @@ function df_firma( $key ) {
 		'vergi_no'      => df_opt( 'legal_tax_no', '' ),
 		'mersis'        => df_opt( 'legal_mersis', '' ),
 		'kep'           => df_opt( 'legal_kep', '' ),
-		'adres'         => trim( preg_replace( '/\s*\n\s*/', ', ', (string) df_opt( 'contact_address', '' ) ) ),
+		'adres'         => trim( preg_replace( '/\s*\n\s*/', ', ', (string) ( df_opt( 'legal_address', '' ) ? df_opt( 'legal_address', '' ) : df_opt( 'contact_address', '' ) ) ) ),
 		'telefon'       => df_opt( 'contact_phone1', '' ),
 		'eposta'        => df_opt( 'contact_email', '' ),
 		'site'          => $site ? $site : home_url(),
@@ -475,4 +475,32 @@ function df_test_product_404() {
 	}
 }
 add_action( 'template_redirect', 'df_test_product_404', 5 );
+
+/**
+ * Vergi levhası bilgileri (bir kez): yasal alanlar boşsa doldurulur, elle girilmiş değere dokunulmaz.
+ */
+function df_legal_seed_firm() {
+	if ( get_option( 'df_legal_firm_seeded' ) || ! current_user_can( 'manage_options' ) ) {
+		return;
+	}
+	$o    = get_option( DF_OPTION, array() );
+	$o    = is_array( $o ) ? $o : array();
+	$seed = array(
+		'legal_company'    => 'SERGEN KIS',
+		'legal_tax_office' => 'Konak',
+		'legal_tax_no'     => '5580747390',
+		'legal_address'    => 'Akdeniz Mah. 1338 Sk. No: 5/G İç Kapı No: G, Konak / İzmir',
+	);
+	foreach ( $seed as $k => $v ) {
+		if ( empty( $o[ $k ] ) ) {
+			$o[ $k ] = $v;
+		}
+	}
+	update_option( DF_OPTION, $o );
+	update_option( 'df_legal_firm_seeded', 1, false );
+	if ( function_exists( 'df_pc_flush' ) ) {
+		df_pc_flush();
+	}
+}
+add_action( 'admin_init', 'df_legal_seed_firm', 3 );
 

@@ -177,6 +177,7 @@ function df_modules_schema( $schema ) {
 			array( 'id' => 'legal_company', 'type' => 'text', 'label' => 'Ticari unvan (şahıs şirketinde ad soyad)', 'default' => '', 'half' => true ),
 			array( 'id' => 'legal_tax_office', 'type' => 'text', 'label' => 'Vergi dairesi', 'default' => '', 'half' => true ),
 			array( 'id' => 'legal_tax_no', 'type' => 'text', 'label' => 'Vergi no / TC kimlik no', 'default' => '', 'half' => true ),
+			array( 'id' => 'legal_address', 'type' => 'textarea', 'label' => 'Vergi levhasındaki iş yeri adresi (sözleşmelerde kullanılır; boşsa İletişim adresi)', 'default' => '', 'rows' => 2 ),
 			array( 'id' => 'legal_mersis', 'type' => 'text', 'label' => 'MERSİS no (varsa)', 'default' => '', 'half' => true ),
 			array( 'id' => 'legal_kep', 'type' => 'text', 'label' => 'KEP adresi (varsa)', 'default' => '', 'half' => true ),
 		),
