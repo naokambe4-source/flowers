@@ -52,6 +52,16 @@ function df_firma_shortcode( $atts ) {
 add_shortcode( 'derin_firma', 'df_firma_shortcode' );
 
 /**
+ * [derin_teslimat_saati] — aynı gün teslimat için son sipariş saati (Tema Ayarları).
+ *
+ * @return string
+ */
+function df_cutoff_shortcode() {
+	return esc_html( (string) df_opt( 'df_cutoff', '16:00' ) );
+}
+add_shortcode( 'derin_teslimat_saati', 'df_cutoff_shortcode' );
+
+/**
  * [derin_firma_bilgileri] — satıcı bilgileri listesi (isteğe bağlı boş alanlar gizlenir).
  *
  * @return string
@@ -145,6 +155,35 @@ function df_legal_pages() {
 
 <h2>5. Şikâyet ve başvuru</h2>
 <p>Talep ve şikâyetlerinizi ' . $f( 'telefon' ) . ' numaralı telefondan veya ' . $f( 'eposta' ) . ' adresinden iletebilirsiniz. Uyuşmazlıklarda, Ticaret Bakanlığınca ilan edilen parasal sınırlar dahilinde Tüketici Hakem Heyetleri, bu sınırları aşan durumlarda Tüketici Mahkemeleri yetkilidir.</p>',
+		),
+		'teslimat-ve-kargo-kosullari' => array(
+			'Teslimat ve Kargo Koşulları',
+			'<h2>Teslimat bölgeleri ve ücretleri</h2>
+<p>Siparişler ' . $f( 'sehir' ) . ' içinde, <a href="/teslimat-bolgeleri/">Teslimat Bölgeleri</a> sayfasında listelenen bölgelere teslim edilir. Teslimat ücreti bölgeye göre değişir; ödeme adımında adresinize göre otomatik hesaplanır ve sipariş tamamlanmadan önce gösterilir.</p>
+
+<h2>Teslimat şekli</h2>
+<p>Çiçekler canlı ve çabuk bozulabilen ürünler olduğundan kargo ile değil, Satıcının kuryesi veya anlaşmalı kurye ile elden teslim edilir. Listede bulunmayan bir bölge için sipariş vermeden önce ' . $f( 'telefon' ) . ' numaralı telefondan bize ulaşabilirsiniz.</p>
+
+<h2>Teslimat zamanı</h2>
+<ul>
+<li>Teslimat tarihini ve saat aralığını sipariş sırasında siz seçersiniz.</li>
+<li>Saat [derin_teslimat_saati]’a kadar verilen siparişler, uygun saat aralığı bulunması halinde aynı gün teslim edilir; daha sonra verilen siparişler ertesi gün ya da seçtiğiniz ileri bir tarihte teslim edilir.</li>
+<li>Özel günlerde (Sevgililer Günü, Anneler Günü vb.) yoğunluk nedeniyle teslimat, seçilen saat aralığı içinde daha geç bir saatte gerçekleşebilir.</li>
+<li>Havale / EFT ile ödenen siparişler, ödeme hesabımıza geçtikten sonra hazırlanır.</li>
+</ul>
+
+<h2>Teslim edilemeyen siparişler</h2>
+<ul>
+<li>Adresin eksik veya hatalı olması, alıcıya ulaşılamaması ya da adreste kimsenin bulunmaması halinde sizi arayarak bilgilendiririz; ürün mümkünse komşuya, site / apartman görevlisine bırakılır veya yeni bir teslimat zamanı planlanır.</li>
+<li>Alıcı kaynaklı nedenlerle teslim edilemeyen siparişlerde ikinci teslimat için ek ücret talep edilebilir.</li>
+<li>Çiçek kabul etmeyen yerlere (bazı hastane ve yoğun bakım bölümleri, askeri birlikler vb.) teslimat yapılamaması halinde sizi bilgilendiririz.</li>
+</ul>
+
+<h2>Teslimat bildirimi</h2>
+<p>Siparişinizin durumunu “Sipariş Takip” sayfasından izleyebilirsiniz. Teslimat tamamlandığında tarafınıza bilgi verilir.</p>
+
+<h2>İletişim</h2>
+' . $seller,
 		),
 		'iade-ve-iptal-kosullari'     => array(
 			'İade ve İptal Koşulları',
@@ -272,10 +311,10 @@ function df_legal_create() {
  * Tema güncellenince bir kez oluştur.
  */
 function df_legal_autocreate() {
-	if ( get_option( 'df_legal_seeded' ) || ! current_user_can( 'manage_options' ) ) {
+	if ( 2 <= (int) get_option( 'df_legal_seeded' ) || ! current_user_can( 'manage_options' ) ) {
 		return;
 	}
-	update_option( 'df_legal_seeded', 1, false );
+	update_option( 'df_legal_seeded', 2, false ); // 2: Teslimat ve Kargo Koşulları sayfası eklendi.
 	df_legal_create();
 }
 add_action( 'admin_init', 'df_legal_autocreate' );
@@ -338,3 +377,102 @@ function df_legal_privacy_text() {
 	return 'Kişisel verileriniz siparişinizin hazırlanması ve teslimi amacıyla [privacy_policy] kapsamında işlenir.';
 }
 add_filter( 'woocommerce_checkout_privacy_policy_text', 'df_legal_privacy_text' );
+
+/**
+ * Ödeme kuruluşu (PayTR vb.) incelemesi için eksik firma bilgilerini yöneticiye hatırlat.
+ */
+function df_legal_missing_notice() {
+	if ( ! current_user_can( 'manage_options' ) ) {
+		return;
+	}
+	$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+	if ( $screen && ! in_array( $screen->base, array( 'dashboard', 'toplevel_page_derin-flowers', 'edit' ), true ) && false === strpos( (string) $screen->id, 'derin' ) ) {
+		return;
+	}
+	$need = array(
+		'legal_company'    => 'Ticari unvan',
+		'legal_tax_office' => 'Vergi dairesi',
+		'legal_tax_no'     => 'Vergi no / TC kimlik no',
+		'contact_address'  => 'Adres',
+		'contact_phone1'   => 'Telefon',
+		'contact_email'    => 'E-posta',
+	);
+	$miss = array();
+	foreach ( $need as $k => $label ) {
+		if ( '' === trim( (string) df_opt( $k, '' ) ) ) {
+			$miss[] = $label;
+		}
+	}
+	if ( $miss ) {
+		echo '<div class="notice notice-warning"><p><strong>Yasal sayfalarda eksik firma bilgisi:</strong> ' . esc_html( implode( ', ', $miss ) ) . '. Ödeme kuruluşu (PayTR) incelemesi için Tema Ayarları → Firma / Yasal bilgiler bölümünden doldurun; Mesafeli Satış Sözleşmesi ve Ön Bilgilendirme Formu kendiliğinden güncellenir.</p></div>';
+	}
+}
+add_action( 'admin_notices', 'df_legal_missing_notice' );
+
+/**
+ * Test / deneme ürünleri (adında "test", "deneme" geçen) ziyaretçiye görünmesin: listelerden çıkar,
+ * ürün sayfası 404. Yönetici görmeye devam eder. Kalıcı çözüm: ürünleri silmek ya da taslağa almak.
+ *
+ * @return int[]
+ */
+function df_test_product_ids() {
+	$ids = get_transient( 'df_test_products' );
+	if ( is_array( $ids ) ) {
+		return $ids;
+	}
+	global $wpdb;
+	$rows = $wpdb->get_results( "SELECT ID, post_title FROM {$wpdb->posts} WHERE post_type = 'product' AND post_status = 'publish'" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+	$ids  = array();
+	foreach ( (array) $rows as $r ) {
+		if ( function_exists( 'df_aeo_is_test' ) && df_aeo_is_test( $r->post_title ) ) {
+			$ids[] = (int) $r->ID;
+		}
+	}
+	set_transient( 'df_test_products', $ids, HOUR_IN_SECONDS );
+	return $ids;
+}
+
+/**
+ * Ürün kaydında test listesini yenile.
+ *
+ * @param int $post_id Yazı.
+ */
+function df_test_products_flush( $post_id ) {
+	if ( 'product' === get_post_type( $post_id ) ) {
+		delete_transient( 'df_test_products' );
+	}
+}
+add_action( 'save_post', 'df_test_products_flush' );
+
+/**
+ * Ön yüz sorgularından test ürünlerini çıkar.
+ *
+ * @param WP_Query $q Sorgu.
+ */
+function df_test_products_hide( $q ) {
+	if ( is_admin() || current_user_can( 'edit_products' ) ) {
+		return;
+	}
+	$pt = $q->get( 'post_type' );
+	if ( 'product' === $pt || ( is_array( $pt ) && in_array( 'product', $pt, true ) ) || $q->is_tax( array( 'product_cat', 'product_tag' ) ) || $q->is_post_type_archive( 'product' ) || $q->is_search() ) {
+		$ids = df_test_product_ids();
+		if ( $ids ) {
+			$q->set( 'post__not_in', array_merge( (array) $q->get( 'post__not_in' ), $ids ) );
+		}
+	}
+}
+add_action( 'pre_get_posts', 'df_test_products_hide' );
+
+/**
+ * Test ürününün sayfası ziyaretçiye 404.
+ */
+function df_test_product_404() {
+	if ( is_singular( 'product' ) && ! current_user_can( 'edit_products' ) && in_array( (int) get_queried_object_id(), df_test_product_ids(), true ) ) {
+		global $wp_query;
+		$wp_query->set_404();
+		status_header( 404 );
+		nocache_headers();
+	}
+}
+add_action( 'template_redirect', 'df_test_product_404', 5 );
+
