@@ -868,7 +868,7 @@ function df_options_schema() {
 					'fields' => array(
 						array( 'id' => 'footer_bg', 'type' => 'color', 'label' => 'Footer zemini', 'default' => '#F1E9E1', 'half' => true ),
 						array( 'id' => 'footer_logo', 'type' => 'image', 'label' => 'Footer logosu (opsiyonel)', 'half' => true ),
-						array( 'id' => 'footer_about', 'type' => 'textarea', 'label' => 'Marka metni', 'default' => "İzmir Alsancak'taki atölyemizde her gün taze seçilen çiçeklerle, sevdiklerinize söylemek istediklerinizi zarif tasarımlara dönüştürüyoruz.", 'rows' => 3 ),
+						array( 'id' => 'footer_about', 'type' => 'textarea', 'label' => 'Marka metni (footer\'da ilk 1-2 cümlesi, en fazla ~170 karakter görünür)', 'default' => "İzmir Alsancak'taki atölyemizde her gün taze seçilen çiçeklerle, sevdiklerinize söylemek istediklerinizi zarif tasarımlara dönüştürüyoruz.", 'rows' => 3 ),
 						array( 'id' => 'footer_col2_title', 'type' => 'text', 'label' => '2. sütun başlığı', 'default' => 'Hakkımızda', 'third' => true ),
 						array( 'id' => 'footer_col3_title', 'type' => 'text', 'label' => '3. sütun başlığı', 'default' => 'Müşteri Hizmetleri', 'third' => true ),
 						array( 'id' => 'footer_col4_title', 'type' => 'text', 'label' => '4. sütun başlığı', 'default' => 'İletişim', 'third' => true ),

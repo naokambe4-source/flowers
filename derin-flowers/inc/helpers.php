@@ -893,3 +893,36 @@ function df_rank_math_live() {
 	}
 	return ! ( class_exists( '\RankMath\Helper' ) && method_exists( '\RankMath\Helper', 'is_invalid_registration' ) && \RankMath\Helper::is_invalid_registration() );
 }
+
+/**
+ * Kısa metin: ilk paragrafın, $max karakteri aşmayan tam cümleleri (yoksa kelime sınırında kesilir).
+ * Footer marka metni gibi alanlar uzun yazılsa da derli toplu görünür.
+ *
+ * @param string $text Metin.
+ * @param int    $max  En fazla karakter.
+ * @return string
+ */
+function df_short_text( $text, $max = 170 ) {
+	$lines = array_values( array_filter( array_map( 'trim', preg_split( '/\R/u', trim( (string) $text ) ) ) ) );
+	// Noktalamasız ilk satır başlıktır ("Duygulara Atılan Zarif Bir İmza: Derin Flowers"): asıl metin varsa atla.
+	if ( count( $lines ) > 1 && ! preg_match( '/[.!?…]$/u', $lines[0] ) ) {
+		array_shift( $lines );
+	}
+	$text = trim( preg_replace( '/\s+/u', ' ', implode( ' ', $lines ) ) );
+	if ( mb_strlen( $text ) <= $max ) {
+		return $text;
+	}
+	$out = '';
+	foreach ( preg_split( '/(?<=[.!?…])\s+/u', $text ) as $s ) {
+		if ( mb_strlen( $out . ' ' . $s ) > $max ) {
+			break;
+		}
+		$out = trim( $out . ' ' . $s );
+	}
+	if ( '' === $out ) {
+		$out = mb_substr( $text, 0, $max );
+		$out = preg_replace( '/\s+\S*$/u', '', $out ) . '…';
+	}
+	return $out;
+}
+

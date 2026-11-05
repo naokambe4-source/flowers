@@ -17,7 +17,7 @@ $social = df_social_links();
 			<div class="df-footer__brand">
 				<?php df_logo( 'footer' ); ?>
 				<?php if ( df_opt( 'footer_about' ) ) : ?>
-					<p class="df-footer__about"<?php echo df_e( 'footer_about' ); // phpcs:ignore ?>><?php echo esc_html( df_opt( 'footer_about' ) ); ?></p>
+					<p class="df-footer__about"<?php echo df_e( 'footer_about' ); // phpcs:ignore ?>><?php echo esc_html( df_short_text( df_opt( 'footer_about' ), 170 ) ); ?></p>
 				<?php endif; ?>
 				<?php if ( $social ) : ?>
 					<ul class="df-social">
