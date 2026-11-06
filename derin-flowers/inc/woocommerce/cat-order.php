@@ -36,7 +36,7 @@ function df_co_get( $term_id ) {
 function df_co_products( $term ) {
 	$ids   = wc_get_products(
 		array(
-			'status'   => array( 'publish', 'private' ),
+			'status'   => array( 'publish', 'private', 'draft', 'pending' ),
 			'limit'    => -1,
 			'category' => array( $term->slug ),
 			'orderby'  => 'date',
@@ -61,7 +61,7 @@ function df_co_page() {
 	?>
 	<div class="wrap df-co">
 		<h1>Kategori Sıralama</h1>
-		<p class="description">Kategoriyi seçin, ürünleri sürükleyip istediğiniz sıraya dizin ve <b>Sırayı kaydet</b>'e basın. Kategori sayfasında ürünler bu sırayla görünür. Sonradan eklenen ürünler, siz yerini belirleyene kadar en üstte çıkar.</p>
+		<p class="description">Kategoriyi seçin, ürünleri sürükleyip istediğiniz sıraya dizin ve <b>Sırayı kaydet</b>'e basın. Sağdaki <b>Aktif / Pasif</b> düğmesiyle ürünü sitede anında gösterip gizleyebilirsiniz (pasif ürün silinmez, taslağa alınır). Kategori sayfasında ürünler bu sırayla görünür. Sonradan eklenen ürünler, siz yerini belirleyene kadar en üstte çıkar.</p>
 		<form method="get" class="df-co__pick">
 			<input type="hidden" name="post_type" value="product">
 			<input type="hidden" name="page" value="df-cat-order">
@@ -87,12 +87,14 @@ function df_co_page() {
 					<?php foreach ( $ids as $id ) : ?>
 						<?php $p = wc_get_product( $id ); ?>
 						<?php if ( ! $p ) { continue; } ?>
-						<li data-id="<?php echo (int) $id; ?>" data-price="<?php echo esc_attr( (string) (float) $p->get_price() ); ?>">
+						<?php $on = 'publish' === $p->get_status(); ?>
+						<li data-id="<?php echo (int) $id; ?>" data-price="<?php echo esc_attr( (string) (float) $p->get_price() ); ?>" class="<?php echo $on ? '' : 'is-off'; ?>">
 							<span class="df-co__h" aria-hidden="true">⠿</span>
 							<span class="df-co__img"><?php echo $p->get_image( 'thumbnail' ); // phpcs:ignore ?></span>
-							<span class="df-co__t"><strong><?php echo esc_html( $p->get_name() ); ?></strong><small><?php echo esc_html( $p->get_sku() ); ?><?php echo 'publish' !== $p->get_status() ? ' · gizli' : ''; ?></small></span>
+							<span class="df-co__t"><strong><?php echo esc_html( $p->get_name() ); ?></strong><small><?php echo esc_html( $p->get_sku() ); ?> · <a href="<?php echo esc_url( get_edit_post_link( $id ) ); ?>" target="_blank" rel="noopener">Düzenle</a></small></span>
 							<span class="df-co__p"><?php echo wp_kses_post( $p->get_price_html() ); ?></span>
 							<span class="df-co__mv"><button type="button" class="button-link" data-co-top title="En üste taşı">⇡ En üste</button></span>
+							<button type="button" class="df-co__sw" data-co-status role="switch" aria-checked="<?php echo $on ? 'true' : 'false'; ?>"><i></i><span><?php echo $on ? 'Aktif' : 'Pasif'; ?></span></button>
 						</li>
 					<?php endforeach; ?>
 				</ol>
@@ -105,7 +107,11 @@ function df_co_page() {
 		.df-co__list li::before{counter-increment:co;content:counter(co);min-width:24px;color:#8c8f94;font-weight:600}
 		.df-co__list li.ui-sortable-helper{box-shadow:0 8px 24px rgba(0,0,0,.15);cursor:grabbing}.df-co__list .ui-sortable-placeholder{visibility:visible!important;background:#f0f6f1;border:2px dashed #5e7b61}
 		.df-co__h{color:#a7aaad;font-size:18px}.df-co__img img{width:48px;height:60px;object-fit:cover;border-radius:4px;display:block}
-		.df-co__t{flex:1;display:flex;flex-direction:column}.df-co__t small{color:#8c8f94}.df-co__p{min-width:110px;text-align:right}.df-co__msg{font-weight:600}
+		.df-co__t{flex:1;display:flex;flex-direction:column}
+		.df-co__list li.is-off{background:#f6f7f7}.df-co__list li.is-off .df-co__img,.df-co__list li.is-off .df-co__t strong{opacity:.45}
+		.df-co__sw{display:inline-flex;align-items:center;gap:8px;min-width:92px;padding:6px 10px;border:1px solid #c3c4c7;border-radius:20px;background:#fff;cursor:pointer;font-weight:600;color:#50575e}
+		.df-co__sw i{position:relative;width:30px;height:16px;border-radius:10px;background:#c3c4c7;transition:background .2s}.df-co__sw i::after{content:"";position:absolute;top:2px;left:2px;width:12px;height:12px;border-radius:50%;background:#fff;transition:left .2s}
+		.df-co__sw[aria-checked=true]{border-color:#5e7b61;color:#3f5e45}.df-co__sw[aria-checked=true] i{background:#5e7b61}.df-co__sw[aria-checked=true] i::after{left:16px}.df-co__sw:disabled{opacity:.5;cursor:wait}.df-co__t small{color:#8c8f94}.df-co__p{min-width:110px;text-align:right}.df-co__msg{font-weight:600}
 	</style>
 	<script>
 	jQuery( function ( $ ) {
@@ -123,6 +129,18 @@ function df_co_page() {
 			$.post( ajaxurl, { action: 'df_co_save', nonce: <?php echo wp_json_encode( wp_create_nonce( 'df_co' ) ); ?>, term: $l.data( 'term' ), ids: $l.children( 'li' ).map( function () { return this.dataset.id; } ).get().join( ',' ) } )
 				.done( function ( r ) { dirty = false; $m.text( r && r.success ? '✓ Kaydedildi' : 'Kaydedilemedi' ).css( 'color', r && r.success ? '#1e5b2c' : '#b32d2e' ); } )
 				.fail( function () { $m.text( 'Kaydedilemedi' ).css( 'color', '#b32d2e' ); } )
+				.always( function () { b.disabled = false; } );
+		} );
+		$l.on( 'click', '[data-co-status]', function () {
+			var b = this, li = $( b ).closest( 'li' ), on = 'true' !== b.getAttribute( 'aria-checked' );
+			b.disabled = true;
+			$.post( ajaxurl, { action: 'df_co_status', nonce: <?php echo wp_json_encode( wp_create_nonce( 'df_co' ) ); ?>, id: li.data( 'id' ), on: on ? 1 : 0 } )
+				.done( function ( r ) {
+					if ( ! r || ! r.success ) { $m.text( r && r.data ? r.data : 'Değiştirilemedi' ).css( 'color', '#b32d2e' ); return; }
+					b.setAttribute( 'aria-checked', on ? 'true' : 'false' ); $( b ).find( 'span' ).text( on ? 'Aktif' : 'Pasif' ); li.toggleClass( 'is-off', ! on );
+					$m.text( on ? '✓ Ürün sitede gösteriliyor' : '✓ Ürün gizlendi (taslağa alındı)' ).css( 'color', '#1e5b2c' );
+				} )
+				.fail( function () { $m.text( 'Değiştirilemedi' ).css( 'color', '#b32d2e' ); } )
 				.always( function () { b.disabled = false; } );
 		} );
 		$( window ).on( 'beforeunload', function () { if ( dirty ) { return 'Sıra kaydedilmedi.'; } } );
@@ -152,6 +170,28 @@ function df_co_save() {
 	wp_send_json_success();
 }
 add_action( 'wp_ajax_df_co_save', 'df_co_save' );
+
+/**
+ * AJAX: ürünü aktif (yayında) / pasif (taslak) yap.
+ */
+function df_co_status() {
+	check_ajax_referer( 'df_co', 'nonce' );
+	$id = isset( $_POST['id'] ) ? absint( $_POST['id'] ) : 0;
+	$on = ! empty( $_POST['on'] );
+	if ( ! $id || 'product' !== get_post_type( $id ) || ! current_user_can( $on ? 'publish_post' : 'edit_post', $id ) ) {
+		wp_send_json_error( 'Bu ürünü değiştirme yetkiniz yok.', 403 );
+	}
+	$res = wp_update_post( array( 'ID' => $id, 'post_status' => $on ? 'publish' : 'draft' ), true );
+	if ( is_wp_error( $res ) ) {
+		wp_send_json_error( $res->get_error_message() );
+	}
+	if ( function_exists( 'df_pc_flush' ) ) {
+		df_pc_flush();
+	}
+	do_action( 'litespeed_purge_all' );
+	wp_send_json_success();
+}
+add_action( 'wp_ajax_df_co_status', 'df_co_status' );
 
 /**
  * Kategori sayfasında kayıtlı sırayı uygula (ziyaretçi başka bir sıralama seçmediyse).
