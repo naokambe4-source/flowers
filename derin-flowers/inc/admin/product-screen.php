@@ -33,26 +33,14 @@ function df_ps_lock() {
 	<style>
 		.post-type-product .postbox .handle-actions .handle-order-higher,
 		.post-type-product .postbox .handle-actions .handle-order-lower,
-		.post-type-product .postbox .handle-actions .handlediv,
-		.post-type-product #screen-options-link-wrap { display: none !important; }
+		.post-type-product .postbox .handle-actions .handlediv { display: none !important; }
 		.post-type-product .postbox .postbox-header .hndle { cursor: default !important; }
-		.post-type-product .postbox.closed .inside { display: block !important; }
-		.post-type-product .meta-box-sortables .postbox { cursor: default; }
-		.post-type-product .sortable-placeholder { display: none !important; }
-		/* Rank Math Content AI kalıntıları (modül kapalı olsa da düğme kalırsa). */
-		.post-type-product [class*="content-ai"], .post-type-product #rank-math-content-ai-tab, .post-type-product .rank-math-content-ai-wrapper { display: none !important; }
+		.post-type-product .df-top-boxes { margin: 16px 0 4px; }
 	</style>
 	<script>
-	jQuery( function ( $ ) {
-		$( '.postbox' ).removeClass( 'closed' );
-		// Sürükle-bırak ve aç/kapa kapat (WordPress postboxes betiği yüklendikten sonra).
-		setTimeout( function () {
-			var $s = $( '.meta-box-sortables' );
-			if ( $s.sortable && $s.hasClass( 'ui-sortable' ) ) { $s.sortable( 'destroy' ); }
-			$( '.postbox .hndle, .postbox .handlediv' ).off( 'click.postboxes' );
-			$( document ).off( 'click.postboxes' );
-			if ( window.postboxes ) { postboxes.save_state = function () {}; postboxes.save_order = function () {}; }
-		}, 300 );
+	jQuery( window ).on( 'load', function () {
+		// Kutuları sürükleme kapalı (WordPress'in kendi sıralayıcısı varsa yalnızca devre dışı bırakılır).
+		jQuery( '.meta-box-sortables.ui-sortable' ).sortable( 'option', 'disabled', true );
 	} );
 	</script>
 	<?php

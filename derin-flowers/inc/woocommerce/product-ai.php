@@ -429,7 +429,7 @@ function df_pool_page() {
  * Kutu kaydı.
  */
 function df_pai_box_register() {
-	add_meta_box( 'df-pai', 'Ürün Asistanı — başlık havuzu, yapay zekâ içerik & SEO', 'df_pai_box', 'product', 'normal', 'high' );
+	add_meta_box( 'df-pai', 'Ürün Asistanı — başlık havuzu, yapay zekâ içerik & SEO', 'df_pai_box', 'product', 'df_top', 'high' );
 }
 add_action( 'add_meta_boxes_product', 'df_pai_box_register', 5 );
 
@@ -2146,3 +2146,18 @@ function df_hide_product_cat_adder() {
 	}
 }
 add_action( 'admin_head', 'df_hide_product_cat_adder' );
+
+/**
+ * Ürün Asistanı kutusu başlığın hemen altında, açıklama editörünün üstünde dursun.
+ *
+ * @param WP_Post $post Yazı.
+ */
+function df_pai_top_context( $post ) {
+	if ( 'product' === $post->post_type ) {
+		echo '<div id="df-top-sortables" class="df-top-boxes">';
+		do_meta_boxes( get_current_screen(), 'df_top', $post );
+		echo '</div>';
+	}
+}
+add_action( 'edit_form_after_title', 'df_pai_top_context' );
+
