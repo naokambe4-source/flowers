@@ -7,7 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'DF_VERSION', '1.29.0' );
+define( 'DF_VERSION', '1.29.1' );
 define( 'DF_DIR', get_template_directory() );
 define( 'DF_URI', get_template_directory_uri() );
 define( 'DF_OPTION', 'derin_options' );
@@ -46,6 +46,7 @@ if ( is_admin() ) {
 	require DF_DIR . '/inc/admin/tools.php';
 	require DF_DIR . '/inc/admin/studio.php';
 	require DF_DIR . '/inc/admin/skin.php';
+	require DF_DIR . '/inc/admin/product-screen.php';
 }
 
 if ( class_exists( 'WooCommerce' ) ) {
