@@ -41,7 +41,7 @@ if ( ! $df_term instanceof WP_Term && is_shop() ) {
 $df_o    = $df_img ? df_img_original( $df_img ) : null;
 $df_om   = $df_imgm ? df_img_original( $df_imgm ) : null;
 ?>
-<header class="df-cathero<?php echo $df_o ? ' has-image' : ''; ?>" style="--df-ch:<?php echo esc_attr( $df_term instanceof WP_Term ? df_cat_hero_color( $df_term ) : ( sanitize_hex_color( (string) df_opt( 'shop_hero_color', '' ) ) ? df_opt( 'shop_hero_color' ) : df_cat_hero_color( (object) array( 'term_id' => 0, 'slug' => '', 'name' => '' ), false ) ) ); ?>">
+<header class="df-cathero df-cathero--<?php echo esc_attr( in_array( df_opt( 'cathero_size', 's' ), array( 's', 'm', 'l' ), true ) ? df_opt( 'cathero_size', 's' ) : 's' ); ?><?php echo $df_o ? ' has-image' : ''; ?>" style="--df-ch:<?php echo esc_attr( $df_term instanceof WP_Term ? df_cat_hero_color( $df_term ) : ( sanitize_hex_color( (string) df_opt( 'shop_hero_color', '' ) ) ? df_opt( 'shop_hero_color' ) : df_cat_hero_color( (object) array( 'term_id' => 0, 'slug' => '', 'name' => '' ), false ) ) ); ?>">
 	<div class="df-cathero__glow" aria-hidden="true"></div>
 	<?php if ( $df_o ) : ?>
 		<picture class="df-cathero__media">

@@ -633,6 +633,8 @@ function df_css_variables() {
 	$ar = $ar[ (string) df_opt( 'card_ratio', '2-3' ) ] ?? $ar['2-3'];
 	$vars['--df-card-ar'] = $ar[0] . ' / ' . $ar[1];
 	$vars['--df-card-w']  = round( $ar[0] / $ar[1], 4 );
+	$vars['--df-img-fit'] = 'cover' === df_opt( 'img_fit', 'contain' ) ? 'cover' : 'contain';
+	$vars['--df-img-bg']  = '#ffffff';
 	$css = ':root{';
 	foreach ( $vars as $k => $v ) {
 		$css .= $k . ':' . wp_strip_all_tags( (string) $v ) . ';';

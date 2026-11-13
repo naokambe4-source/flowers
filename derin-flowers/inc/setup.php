@@ -325,3 +325,20 @@ function df_admin_bar( $bar ) {
 	);
 }
 add_action( 'admin_bar_menu', 'df_admin_bar', 80 );
+
+/**
+ * Anasayfa vitrini daha küçük kartlar: 4 sütundan 5'e (bir kez; sonradan ayardan değiştirilebilir).
+ */
+function df_mig_vit_cols() {
+	if ( get_option( 'df_mig_vit_cols' ) ) {
+		return;
+	}
+	$o = get_option( DF_OPTION );
+	if ( is_array( $o ) && ( empty( $o['vit_cols'] ) || '4' === (string) $o['vit_cols'] ) ) {
+		$o['vit_cols'] = '5';
+		update_option( DF_OPTION, $o );
+	}
+	update_option( 'df_mig_vit_cols', 1, false );
+}
+add_action( 'admin_init', 'df_mig_vit_cols', 6 );
+

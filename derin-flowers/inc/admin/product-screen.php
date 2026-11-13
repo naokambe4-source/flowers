@@ -11,7 +11,17 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Ürün ekranında kullanıcıya kaydedilmiş kutu düzenini yok say: herkes aynı, varsayılan düzeni görür.
  */
-add_filter( 'get_user_option_meta-box-order_product', '__return_false' );
+add_filter(
+	'get_user_option_meta-box-order_product',
+	function () {
+		// Sağ sütun: önce ürün görseli ve galerisi, sonra kategoriler, etiketler; Yayınla en altta.
+		return array(
+			'side'     => 'postimagediv,woocommerce-product-images,product_catdiv,tagsdiv-product_tag,submitdiv',
+			'normal'   => '',
+			'advanced' => '',
+		);
+	}
+);
 add_filter( 'get_user_option_closedpostboxes_product', '__return_empty_array' );
 add_filter( 'get_user_option_metaboxhidden_product', '__return_empty_array' );
 add_filter(

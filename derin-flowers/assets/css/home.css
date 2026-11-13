@@ -610,12 +610,12 @@ a.df-sstrip__card:hover { color: var(--df-text); transform: translateY(-2px); bo
 .df-banner--focus-fit .df-banner__media img { object-fit: contain; object-position: left center; }
 
 /* Vitrin: görsel oranı ve eşit kart yüksekliği */
-.df-vitrin .df-card__media { aspect-ratio: 1 / 1; background: #fff; }
+.df-vitrin .df-card__media { aspect-ratio: 1 / 1; background: var(--df-img-bg, #fff); }
 .df-vitrin--r1-1 .df-card__media { aspect-ratio: 1 / 1; }
 .df-vitrin--r4-5 .df-card__media { aspect-ratio: 4 / 5; }
 .df-vitrin--r3-4 .df-card__media { aspect-ratio: 3 / 4; }
 .df-vitrin--rcard .df-card__media { aspect-ratio: var(--df-card-ar, 4 / 5); }
-.df-vitrin .df-card__media img { width: 100%; height: 100%; object-fit: cover; object-position: center top; }
+.df-vitrin .df-card__media img { width: 100%; height: 100%; object-fit: var(--df-img-fit, contain); object-position: center; }
 .df-vitrin--rfit .df-card__media img { object-fit: contain; }
 .df-vitrin .df-card { display: flex; flex-direction: column; height: 100%; }
 .df-vitrin .df-card__body { display: flex; flex-direction: column; flex: 1; }
@@ -664,3 +664,9 @@ a.df-sstrip__card:hover { color: var(--df-text); transform: translateY(-2px); bo
 .df-sidebn--dark:hover { color: var(--df-sage-ink); }
 .df-sidebn--dark .df-sidebn__title { color: var(--df-sage-ink); }
 @media (max-width: 900px) { .df-sidebn--dark .df-sidebn__media::before { background: linear-gradient(0deg, rgba(221, 230, 213, .94) 0%, rgba(221, 230, 213, 0) 70%); } }
+
+/* Vitrin kartları daha kompakt (v1.30): görsel altındaki boşluk azaltıldı */
+.df-vitrin .df-card__body { padding: 12px 14px 14px; gap: 2px; }
+.df-vitrin .df-card__title { min-height: 0; font-size: calc(17px * var(--df-scale)); margin: 0 0 2px; }
+.df-vitrin .df-card__foot { padding-top: 6px; }
+.df-vitrin--c5 .df-card__title { font-size: calc(16px * var(--df-scale)); }
