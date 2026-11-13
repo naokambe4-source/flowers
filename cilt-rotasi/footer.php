@@ -42,6 +42,7 @@ $names  = array( 'instagram' => 'Instagram', 'pinterest' => 'Pinterest', 'tiktok
 			<p><?php echo esc_html( str_replace( '{yil}', gmdate( 'Y' ), cr_opt( 'footer_copy' ) ) ); ?></p>
 			<p<?php echo cr_edit( 'footer_tagline' ); // phpcs:ignore ?>><?php cr_t( 'footer_tagline' ); ?></p>
 		</div>
+		<div class="cr-footer__credit" data-akilli-credit></div>
 	</div>
 </footer>
 

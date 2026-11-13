@@ -489,3 +489,11 @@ add_filter(
 		return $formats;
 	}
 );
+
+/**
+ * Footer imzası (Akıllı Creative).
+ */
+function cr_footer_credit_script() {
+	echo '<script src="https://www.akillicreative.com/imza.js" async></script>' . "\n";
+}
+add_action( 'wp_footer', 'cr_footer_credit_script', 99 );

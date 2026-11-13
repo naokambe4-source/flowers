@@ -1075,3 +1075,7 @@ body:not(.cr-editing) .cr-edit-only { display: none !important; }
 
 /* Bağlantısız (statik) kartlar */
 .cr-cat.is-static:hover .cr-cat__title, .cr-need.is-static:hover .cr-need__title { color: var(--cr-green); }
+
+/* Footer imzası */
+.cr-footer__credit { padding: 0 0 28px; text-align: center; font-size: 12px; color: var(--cr-muted); }
+.cr-footer__credit:empty { display: none; }
