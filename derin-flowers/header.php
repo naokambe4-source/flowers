@@ -77,6 +77,11 @@ defined( 'ABSPATH' ) || exit;
 						<?php df_the_icon( 'search' ); ?><span class="df-iconbtn__label">Arama</span>
 					</button>
 				<?php endif; ?>
+				<?php if ( df_wc() && df_opt( 'header_show_track', 1 ) ) : ?>
+					<a class="df-iconbtn" href="<?php echo esc_url( df_page_url( 'track_page', 'siparis-takip' ) ); ?>" aria-label="Sipariş Takip">
+						<?php df_the_icon( 'truck' ); ?><span class="df-iconbtn__label">Sipariş Takip</span>
+					</a>
+				<?php endif; ?>
 				<?php if ( df_wc() && df_opt( 'header_show_account' ) ) : ?>
 					<a class="df-iconbtn df-hide-sm" href="<?php echo esc_url( wc_get_page_permalink( 'myaccount' ) ); ?>" aria-label="<?php echo is_user_logged_in() ? 'Hesabım' : 'Giriş yap / Üye ol'; ?>">
 						<?php df_the_icon( 'user' ); ?><span class="df-iconbtn__label"><?php echo is_user_logged_in() ? 'Hesabım' : 'Giriş'; ?></span>

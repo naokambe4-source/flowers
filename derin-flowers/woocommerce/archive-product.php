@@ -62,9 +62,6 @@ $df_om   = $df_imgm ? df_img_original( $df_imgm ) : null;
 			<?php if ( $df_sub ) : ?>
 				<p class="df-cathero__sub"><?php echo esc_html( $df_sub ); ?></p>
 			<?php endif; ?>
-			<?php if ( $df_desc_h && $df_data['desc_top'] ) : ?>
-				<div class="df-cathero__desc"><?php echo $df_desc_h; // phpcs:ignore ?></div>
-			<?php endif; ?>
 		</div>
 	</div>
 </header>
@@ -130,8 +127,7 @@ $df_om   = $df_imgm ? df_img_original( $df_imgm ) : null;
 		<?php do_action( 'woocommerce_no_products_found' ); ?>
 	<?php endif; ?>
 </div>
-<?php if ( function_exists( 'df_aeo_category_faq' ) ) { df_aeo_category_faq(); } ?>
-<?php if ( $df_desc_h && ! $df_data['desc_top'] ) : ?>
+<?php if ( $df_desc_h ) : ?>
 	<section class="df-catdesc" aria-label="<?php echo esc_attr( $df_data['title'] ); ?> hakkında">
 		<div class="df-container df-container--narrow">
 			<div class="df-catdesc__wrap" data-df-catdesc><?php echo $df_desc_h; // phpcs:ignore ?></div>
@@ -154,6 +150,8 @@ $df_om   = $df_imgm ? df_img_original( $df_imgm ) : null;
 	}() );
 	</script>
 <?php endif; ?>
+<?php if ( function_exists( 'df_aeo_category_faq' ) ) { df_aeo_category_faq(); } ?>
+
 <?php
 do_action( 'woocommerce_after_main_content' );
 get_footer( 'shop' );

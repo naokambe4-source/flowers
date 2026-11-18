@@ -37,7 +37,7 @@ function df_single_hooks() {
 	add_action( 'woocommerce_after_single_product_summary', 'df_single_details', 10 );
 	add_action( 'woocommerce_after_single_product_summary', 'df_single_reviews', 20 );
 	add_action( 'woocommerce_after_single_product_summary', 'df_single_faq', 30 );
-	add_action( 'woocommerce_after_single_product_summary', 'df_single_related', df_opt( 'single_related_first', 1 ) ? 5 : 40 );
+	add_action( 'woocommerce_after_single_product_summary', 'df_single_related', df_opt( 'single_related_first', 0 ) ? 5 : 15 );
 }
 add_action( 'init', 'df_single_hooks' );
 

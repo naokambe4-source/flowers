@@ -342,3 +342,19 @@ function df_mig_vit_cols() {
 }
 add_action( 'admin_init', 'df_mig_vit_cols', 6 );
 
+/**
+ * Ürün sayfasında açıklama benzer ürünlerden önce gelsin (bir kez; ayardan değiştirilebilir).
+ */
+function df_mig_related_after() {
+	if ( get_option( 'df_mig_related_after' ) ) {
+		return;
+	}
+	$o = get_option( DF_OPTION );
+	if ( is_array( $o ) && ! empty( $o['single_related_first'] ) ) {
+		$o['single_related_first'] = 0;
+		update_option( DF_OPTION, $o );
+	}
+	update_option( 'df_mig_related_after', 1, false );
+}
+add_action( 'admin_init', 'df_mig_related_after', 6 );
+

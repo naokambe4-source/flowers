@@ -212,3 +212,23 @@ function df_tracking_shortcode() {
 	return ob_get_clean();
 }
 add_shortcode( 'derin_siparis_takip', 'df_tracking_shortcode' );
+
+/**
+ * Sipariş Takip sayfasında form her zaman görünsün (sayfa içeriğinde kısa kod silinmiş olsa bile).
+ *
+ * @param string $content İçerik.
+ * @return string
+ */
+function df_tracking_autoform( $content ) {
+	if ( ! is_page() || ! in_the_loop() || ! is_main_query() || has_shortcode( $content, 'derin_siparis_takip' ) || has_shortcode( $content, 'woocommerce_order_tracking' ) ) {
+		return $content;
+	}
+	$pid  = (int) df_opt( 'track_page', 0 );
+	$slug = (string) get_post_field( 'post_name', get_the_ID() );
+	if ( ( $pid && (int) get_the_ID() === $pid ) || in_array( $slug, array( 'siparis-takip', 'siparis-takibi' ), true ) ) {
+		$content .= do_shortcode( '[derin_siparis_takip]' );
+	}
+	return $content;
+}
+add_filter( 'the_content', 'df_tracking_autoform', 20 );
+

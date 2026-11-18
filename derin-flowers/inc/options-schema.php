@@ -257,6 +257,7 @@ function df_options_schema() {
 						array( 'id' => 'header_phone_on', 'type' => 'toggle', 'label' => 'Kategori butonu yanında telefon', 'default' => 0, 'half' => true ),
 						array( 'id' => 'header_show_search', 'type' => 'toggle', 'label' => 'Arama', 'default' => 1, 'quarter' => true ),
 						array( 'id' => 'header_show_account', 'type' => 'toggle', 'label' => 'Hesabım', 'default' => 1, 'quarter' => true ),
+						array( 'id' => 'header_show_track', 'type' => 'toggle', 'label' => 'Sipariş Takip', 'default' => 1, 'quarter' => true ),
 						array( 'id' => 'header_show_wishlist', 'type' => 'toggle', 'label' => 'Favoriler', 'default' => 1, 'quarter' => true ),
 						array( 'id' => 'header_show_cart', 'type' => 'toggle', 'label' => 'Sepet', 'default' => 1, 'quarter' => true ),
 					),
@@ -763,7 +764,7 @@ function df_options_schema() {
 						array( 'id' => 'gift_cat', 'type' => 'product_cat', 'label' => 'Hediye ürünleri kategorisi (ör. "Hediyeler")', 'half' => true, 'desc' => 'Bu kategorideki ürünler hediye seçeneği olarak gösterilir ve vitrin / benzer ürünlerde çıkmaz.' ),
 						array( 'id' => 'gift_products', 'type' => 'products', 'label' => 'Ya da hediye ürünlerini tek tek seçin (sıralı)', 'half' => true ),
 						array( 'id' => 'gift_title', 'type' => 'text', 'label' => 'Hediye adımı başlığı', 'default' => 'Hediye Ekle', 'half' => true ),
-						array( 'id' => 'single_related_first', 'type' => 'toggle', 'label' => 'Benzer ürünler hemen ürünün altında (açıklama ve SSS sonra)', 'default' => 1, 'half' => true ),
+						array( 'id' => 'single_related_first', 'type' => 'toggle', 'label' => 'Benzer ürünler hemen ürünün altında (açıklama ve SSS sonra)', 'default' => 0, 'half' => true ),
 					),
 				),
 				array(
