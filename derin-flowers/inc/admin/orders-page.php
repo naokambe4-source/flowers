@@ -59,11 +59,17 @@ function df_ord_url( $args = array() ) {
  * @return int
  */
 function df_ord_count( $statuses ) {
-	$n = 0;
-	foreach ( $statuses as $s ) {
-		$n += (int) wc_orders_count( $s );
-	}
-	return $n;
+	// Listeyle birebir aynı sorgu (önbellekteki sayaçlara güvenmeden).
+	$r = wc_get_orders(
+		array(
+			'status'   => $statuses,
+			'type'     => 'shop_order',
+			'limit'    => 1,
+			'paginate' => true,
+			'return'   => 'ids',
+		)
+	);
+	return (int) $r->total;
 }
 
 /**
@@ -140,7 +146,8 @@ function df_ord_content() {
 		</form>
 		<nav class="df-ord__tabs">
 			<?php foreach ( $tabs as $k => $t ) : ?>
-				<a class="df-ord__tab<?php echo $k === $tab ? ' is-on' : ''; ?>" style="--c:<?php echo esc_attr( $t[2] ); ?>" href="<?php echo esc_url( df_ord_url( array( 'tab' => $k ) ) ); ?>"><?php echo esc_html( $t[0] ); ?> <b>(<?php echo (int) df_ord_count( $t[1] ); ?>)</b></a>
+				<?php $cnt = df_ord_count( $t[1] ); ?>
+				<a class="df-ord__tab<?php echo $k === $tab ? ' is-on' : ''; ?><?php echo $cnt ? '' : ' is-zero'; ?>" style="--c:<?php echo esc_attr( $t[2] ); ?>" href="<?php echo esc_url( df_ord_url( array( 'tab' => $k ) ) ); ?>"><span><?php echo esc_html( $t[0] ); ?></span><b><?php echo (int) $cnt; ?></b></a>
 			<?php endforeach; ?>
 		</nav>
 		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="df-ord__form" data-ord-form>
@@ -151,12 +158,13 @@ function df_ord_content() {
 			$bar = function () {
 				?>
 				<div class="df-ord__bulk">
-					<button class="button" name="do" value="df-preparing">✔ Hazırlanıyor olarak işaretle</button>
-					<button class="button" name="do" value="df-on-the-way">🚚 Kuryede</button>
-					<button class="button" name="do" value="completed">✅ Teslim edildi</button>
-					<button class="button" name="do" value="df-archived">🗄 Arşive gönder</button>
-					<button class="button" name="do" value="print">🖨 Seçilenleri yazdır</button>
-					<button class="button df-ord__del" name="do" value="trash" data-ord-confirm="Seçilen siparişler çöp kutusuna taşınsın mı? (WooCommerce → Siparişler → Çöp'ten geri alınabilir)">✖ Seçilenleri sil</button>
+					<span class="df-ord__sel" data-ord-sel>Seçili: 0</span>
+					<button class="df-ord__b" name="do" value="df-preparing"><span class="dashicons dashicons-admin-customizer"></span>Hazırlanıyor</button>
+					<button class="df-ord__b" name="do" value="df-on-the-way"><span class="dashicons dashicons-car"></span>Kuryede</button>
+					<button class="df-ord__b" name="do" value="completed"><span class="dashicons dashicons-yes-alt"></span>Teslim edildi</button>
+					<button class="df-ord__b" name="do" value="df-archived"><span class="dashicons dashicons-archive"></span>Arşive gönder</button>
+					<button class="df-ord__b" name="do" value="print"><span class="dashicons dashicons-printer"></span>Yazdır</button>
+					<button class="df-ord__b df-ord__del" name="do" value="trash" data-ord-confirm="Seçilen siparişler çöp kutusuna taşınsın mı? (WooCommerce → Siparişler → Çöp'ten geri alınabilir)"><span class="dashicons dashicons-trash"></span>Sil</button>
 				</div>
 				<?php
 			};
@@ -218,19 +226,31 @@ function df_ord_content() {
 		<p class="description">Toplam <?php echo (int) $total; ?> sipariş. <?php echo df_opt( 'archive_instant', 1 ) ? '“Teslim edildi” yapılan siparişler otomatik olarak arşive taşınır.' : ''; ?></p>
 	</div>
 	<style>
-		.df-ord__filter{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 0 14px}.df-ord__filter input[type=search]{min-width:260px}
-		.df-ord__tabs{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px}
-		.df-ord__tab{padding:9px 14px;border-radius:6px;background:var(--c);color:#fff;text-decoration:none;font-weight:600;opacity:.82}.df-ord__tab:hover{color:#fff;opacity:1}.df-ord__tab.is-on{opacity:1;box-shadow:0 0 0 3px rgba(0,0,0,.15)}
-		.df-ord__bulk{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end;margin:10px 0}.df-ord__del{background:#c62828!important;border-color:#c62828!important;color:#fff!important}
-		.df-ord__table td{vertical-align:middle}.df-ord__table small{display:block;color:#8c8f94}.df-ord__prod{display:flex;align-items:center;gap:10px;min-width:220px}.df-ord__prod img{width:48px;height:60px;object-fit:cover;border-radius:4px}
-		.df-ord__empty{text-align:center;padding:30px!important;color:#8c8f94}.df-ord__act{white-space:nowrap}.df-ord__pages{display:flex;gap:6px;margin:12px 0}
-		.df-ord__st.is-saving{opacity:.5}.df-ord__st.is-ok{outline:2px solid #2e7d32}
+		.df-ord{max-width:1500px}
+		.df-ord__filter{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 0 16px;padding:14px 16px;background:#fff;border:1px solid #e5e0da;border-radius:10px}
+		.df-ord__filter input[type=search]{min-width:280px;height:38px;border-radius:6px}.df-ord__filter input[type=date]{height:38px;border-radius:6px}.df-ord__filter label{display:flex;align-items:center;gap:6px;color:#50575e}
+		.df-ord__tabs{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:0 0 16px}
+		.df-ord__tab{display:flex;flex-direction:column;gap:2px;padding:12px 14px;border-radius:10px;background:#fff;border:1px solid #e5e0da;border-left:5px solid var(--c);text-decoration:none!important;color:#1d2327!important;transition:box-shadow .15s,transform .15s}
+		.df-ord__tab span{font-size:12.5px;font-weight:600;color:#50575e!important}.df-ord__tab b{font-size:24px;line-height:1.1;color:var(--c)!important}
+		.df-ord__tab:hover{box-shadow:0 4px 14px rgba(0,0,0,.08);transform:translateY(-1px)}
+		.df-ord__tab.is-on{background:var(--c);border-color:var(--c)}.df-ord__tab.is-on span,.df-ord__tab.is-on b{color:#fff!important}.df-ord__tab.is-zero:not(.is-on){opacity:.6}
+		.df-ord__bulk{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:flex-end;margin:10px 0}
+		.df-ord__sel{margin-right:auto;color:#50575e;font-weight:600}
+		.df-ord__b{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 14px;border:1px solid #d0cbc5;border-radius:8px;background:#fff;color:#1d2327;font-weight:600;cursor:pointer}
+		.df-ord__b:hover{border-color:#5e7b61;color:#3f5e45}.df-ord__b .dashicons{font-size:17px;width:17px;height:17px}
+		.df-ord__del{background:#c62828;border-color:#c62828;color:#fff}.df-ord__del:hover{background:#a51f1f;color:#fff;border-color:#a51f1f}
+		.df-ord__table{border-radius:10px;overflow:hidden}.df-ord__table th,.df-ord__table td{vertical-align:middle;padding:10px}.df-ord__table small{display:block;color:#8c8f94}
+		.df-ord__prod{display:flex;align-items:center;gap:10px;min-width:220px}.df-ord__prod img{width:48px;height:60px;object-fit:cover;border-radius:6px}
+		.df-ord__empty{text-align:center;padding:40px!important;color:#8c8f94;font-size:14px}.df-ord__act{white-space:nowrap}.df-ord__pages{display:flex;gap:6px;margin:12px 0}
+		.df-ord__st{max-width:170px}.df-ord__st.is-saving{opacity:.5}.df-ord__st.is-ok{outline:2px solid #2e7d32}
 	</style>
 	<script>
 	( function () {
 		var f = document.querySelector( '[data-ord-form]' ); if ( ! f ) { return; }
 		var all = f.querySelector( '[data-ord-all]' );
-		if ( all ) { all.addEventListener( 'change', function () { f.querySelectorAll( 'input[name="ids[]"]' ).forEach( function ( c ) { c.checked = all.checked; } ); } ); }
+		function cnt() { var n = f.querySelectorAll( 'input[name="ids[]"]:checked' ).length; f.querySelectorAll( '[data-ord-sel]' ).forEach( function ( el ) { el.textContent = 'Seçili: ' + n; } ); }
+		if ( all ) { all.addEventListener( 'change', function () { f.querySelectorAll( 'input[name="ids[]"]' ).forEach( function ( c ) { c.checked = all.checked; } ); cnt(); } ); }
+		f.addEventListener( 'change', function ( e ) { if ( e.target.name === 'ids[]' ) { cnt(); } } );
 		f.addEventListener( 'submit', function ( e ) {
 			var b = e.submitter; if ( ! f.querySelector( 'input[name="ids[]"]:checked' ) ) { e.preventDefault(); alert( 'Önce sipariş seçin.' ); return; }
 			if ( b && b.dataset.ordConfirm && ! confirm( b.dataset.ordConfirm ) ) { e.preventDefault(); }
