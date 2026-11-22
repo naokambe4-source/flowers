@@ -16,6 +16,7 @@ defined( 'ABSPATH' ) || exit;
 function df_app_pages() {
 	return array(
 		'df-dashboard'  => array( 'Genel Bakış', 'df_app_dashboard' ),
+		'df-orders'     => array( 'Siparişler', 'df_app_orders_page' ),
 		'df-deliveries' => array( 'İzmir Teslimat', 'df_app_deliveries' ),
 		'df-print'      => array( 'Yazdırma Merkezi', 'df_app_print' ),
 		'df-couriers'   => array( 'Kurye Yönetimi', 'df_app_couriers' ),
@@ -125,6 +126,9 @@ add_filter( 'login_redirect', 'df_app_login_redirect', 20, 3 );
  * @return string
  */
 function df_app_orders_url( $status = '' ) {
+	if ( function_exists( 'df_ord_url' ) ) {
+		return df_ord_url( array( 'tab' => $status ? df_ord_tab_for( $status ) : 'hepsi' ) );
+	}
 	$hpos = class_exists( '\Automattic\WooCommerce\Utilities\OrderUtil' ) && \Automattic\WooCommerce\Utilities\OrderUtil::custom_orders_table_usage_is_enabled();
 	$url  = $hpos ? admin_url( 'admin.php?page=wc-orders' ) : admin_url( 'edit.php?post_type=shop_order' );
 	if ( $status ) {
@@ -663,6 +667,7 @@ function df_app_dashboard() {
 	);
 	$recent = wc_get_orders(
 		array(
+			'status'  => array( 'processing', 'on-hold', 'df-preparing', 'df-on-the-way' ), // Teslim / iptal / arşiv burada görünmez.
 			'limit'   => 8,
 			'orderby' => 'date',
 			'order'   => 'DESC',

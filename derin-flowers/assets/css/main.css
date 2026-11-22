@@ -571,3 +571,6 @@ hr { border: 0; border-top: 1px solid var(--df-line); margin: 2em 0; }
 .df-nav--band .df-nav__list > li > a .df-icon { color: inherit; }
 .df-nav--band .sub-menu a { color: var(--df-text); }
 
+/* Rakamlar başlık yazı tipinde de düz görünsün ("101", "ıoı" gibi eski stil değil) */
+body, h1, h2, h3, h4, h5, h6, .df-card__title, .df-card__price, .price { font-variant-numeric: lining-nums; font-feature-settings: "lnum" 1; }
+

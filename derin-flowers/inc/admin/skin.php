@@ -106,6 +106,9 @@ function df_menu_simple() {
  */
 function df_menu_orders_slug() {
 	$hpos = class_exists( '\Automattic\WooCommerce\Utilities\OrderUtil' ) && \Automattic\WooCommerce\Utilities\OrderUtil::custom_orders_table_usage_is_enabled();
+	if ( function_exists( 'df_app_orders_page' ) ) {
+		return 'admin.php?page=df-orders'; // Kolay sipariş ekranı (sekmeler, toplu işlemler).
+	}
 	return $hpos ? 'admin.php?page=wc-orders' : 'edit.php?post_type=shop_order';
 }
 

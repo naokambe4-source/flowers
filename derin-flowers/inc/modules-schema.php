@@ -149,6 +149,7 @@ function df_modules_schema( $schema ) {
 		'title'  => 'Sipariş arşivi',
 		'desc'   => 'Teslim edilen siparişler belirtilen gün sonra "Arşiv" durumuna alınır; aktif sipariş listesinden çıkar, raporlarda sayılmaya devam eder. Siparişler → Arşiv sekmesinden ya da sipariş numarasıyla aranarak her zaman bulunur.',
 		'fields' => array(
+			array( 'id' => 'archive_instant', 'type' => 'toggle', 'label' => '"Teslim edildi" yapılan siparişi hemen arşive taşı', 'default' => 1, 'half' => true ),
 			array( 'id' => 'archive_on', 'type' => 'toggle', 'label' => 'Teslim edilenleri otomatik arşivle', 'default' => 1, 'half' => true ),
 			array( 'id' => 'archive_days', 'type' => 'number', 'label' => 'Teslimden kaç gün sonra (0 = hemen)', 'default' => 2, 'min' => 0, 'max' => 60, 'half' => true ),
 		),

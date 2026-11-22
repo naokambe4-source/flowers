@@ -193,3 +193,31 @@ function df_missing_cat_redirect() {
 	exit;
 }
 add_action( 'template_redirect', 'df_missing_cat_redirect', 1 );
+
+/**
+ * "Teslim edildi" yapılan sipariş, e-posta ve yorum daveti gibi işler bittikten sonra (istek sonunda) arşive geçer.
+ *
+ * @param int $order_id Sipariş.
+ */
+function df_ord_archive_on_complete( $order_id ) {
+	if ( ! df_opt( 'archive_instant', 1 ) ) {
+		return;
+	}
+	static $queued = array();
+	if ( empty( $queued ) ) {
+		add_action(
+			'shutdown',
+			function () use ( &$queued ) {
+				foreach ( array_unique( $queued ) as $id ) {
+					$o = wc_get_order( $id );
+					if ( $o && 'completed' === $o->get_status() ) {
+						$o->update_status( 'df-archived', 'Teslim edildi, arşive taşındı.' );
+					}
+				}
+			},
+			5
+		);
+	}
+	$queued[] = (int) $order_id;
+}
+add_action( 'woocommerce_order_status_completed', 'df_ord_archive_on_complete', 999 );
