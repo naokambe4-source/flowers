@@ -635,6 +635,7 @@ function df_css_variables() {
 	$vars['--df-card-w']  = round( $ar[0] / $ar[1], 4 );
 	$vars['--df-img-fit'] = 'cover' === df_opt( 'img_fit', 'contain' ) ? 'cover' : 'contain';
 	$vars['--df-img-bg']  = '#ffffff';
+	$vars['--df-band']    = sanitize_hex_color( (string) df_opt( 'nav_band_color', '#1E4A14' ) ) ? df_opt( 'nav_band_color', '#1E4A14' ) : '#1E4A14';
 	$css = ':root{';
 	foreach ( $vars as $k => $v ) {
 		$css .= $k . ':' . wp_strip_all_tags( (string) $v ) . ';';

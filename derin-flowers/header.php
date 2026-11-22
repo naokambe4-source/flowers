@@ -105,7 +105,7 @@ defined( 'ABSPATH' ) || exit;
 		</div>
 	</div>
 
-	<nav class="df-nav df-nav--<?php echo esc_attr( df_opt( 'nav_align', 'center' ) ); ?><?php echo df_opt( 'nav_serif' ) ? ' df-nav--serif' : ''; ?>" aria-label="Ana menü">
+	<nav class="df-nav df-nav--<?php echo esc_attr( df_opt( 'nav_align', 'center' ) ); ?><?php echo 'plain' !== df_opt( 'nav_band', 'green' ) ? ' df-nav--band' : ''; ?><?php echo df_opt( 'nav_serif' ) ? ' df-nav--serif' : ''; ?>" aria-label="Ana menü">
 		<div class="df-container">
 			<?php
 			wp_nav_menu(

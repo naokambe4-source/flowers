@@ -358,3 +358,55 @@ function df_mig_related_after() {
 }
 add_action( 'admin_init', 'df_mig_related_after', 6 );
 
+/**
+ * Yeni Derin Flowers logosu (temadaki assets/img/logo-derin-flowers.png) bir kez kitaplığa eklenip logo yapılır.
+ * Eski logo kimliği df_logo_prev seçeneğinde saklanır; Tema Ayarları → Logo'dan istenirse geri seçilebilir.
+ */
+function df_new_logo_once() {
+	if ( get_option( 'df_new_logo_2026' ) || ! current_user_can( 'manage_options' ) || wp_doing_ajax() ) {
+		return;
+	}
+	update_option( 'df_new_logo_2026', 1, false );
+	$src = DF_DIR . '/assets/img/logo-derin-flowers.png';
+	$up  = wp_upload_dir();
+	if ( ! file_exists( $src ) || ! empty( $up['error'] ) ) {
+		return;
+	}
+	$dest = trailingslashit( $up['path'] ) . wp_unique_filename( $up['path'], 'derin-flowers-logo.png' );
+	if ( ! copy( $src, $dest ) ) {
+		return;
+	}
+	$id = wp_insert_attachment(
+		array(
+			'post_mime_type' => 'image/png',
+			'post_title'     => 'Derin Flowers Logo',
+			'post_status'    => 'inherit',
+		),
+		$dest
+	);
+	if ( ! $id || is_wp_error( $id ) ) {
+		return;
+	}
+	require_once ABSPATH . 'wp-admin/includes/image.php';
+	wp_update_attachment_metadata( $id, wp_generate_attachment_metadata( $id, $dest ) );
+	update_post_meta( $id, '_wp_attachment_image_alt', 'Derin Flowers' );
+	$o = get_option( DF_OPTION, array() );
+	$o = is_array( $o ) ? $o : array();
+	update_option( 'df_logo_prev', isset( $o['logo_image'] ) ? (int) $o['logo_image'] : 0, false );
+	$o['logo_image'] = (int) $id;
+	if ( ! empty( $o['footer_logo'] ) ) {
+		$o['footer_logo'] = (int) $id;
+	}
+	if ( empty( $o['logo_width'] ) || (int) $o['logo_width'] < 240 ) {
+		$o['logo_width'] = 240;
+	}
+	if ( empty( $o['logo_width_mobile'] ) || (int) $o['logo_width_mobile'] < 150 ) {
+		$o['logo_width_mobile'] = 150;
+	}
+	update_option( DF_OPTION, $o );
+	if ( function_exists( 'df_pc_flush' ) ) {
+		df_pc_flush();
+	}
+}
+add_action( 'admin_init', 'df_new_logo_once', 4 );
+

@@ -412,7 +412,7 @@ hr { border: 0; border-top: 1px solid var(--df-line); margin: 2em 0; }
 	.df-header__cats { width: 44px; padding: 0; justify-content: center; border: 0; }
 	.df-iconbtn__label { display: none; }
 	.df-header__inner { gap: 8px; }
-	.df-logo__img { width: var(--df-logo-w-m); max-height: 62px; transform: scale(1.22); } /* Logo dosyasındaki boş kenarı telafi eder. */
+	.df-logo__img { width: var(--df-logo-w-m); max-height: 56px; }
 	.df-logo__text { font-size: 22px; letter-spacing: .16em; }
 	.df-logo__tag { font-size: 7.5px; letter-spacing: .34em; }
 	.df-grid--4 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -562,3 +562,12 @@ hr { border: 0; border-top: 1px solid var(--df-line); margin: 2em 0; }
 	.df-header__lang .df-lang__btn { min-height: 34px; padding: 3px 6px; border-color: transparent; }
 	.df-header__lang .df-lang__code, .df-header__lang .df-lang__btn > .df-icon { display: none; }
 }
+
+/* Kategori menüsü şeridi: logo yeşili zemin, altın alt çizgi (Tema Ayarları → Header) */
+.df-nav--band { background: var(--df-band, #1E4A14); border-top: 0; border-bottom: 2px solid #D09807; }
+.df-nav--band .df-nav__list > li > a { color: #fff; }
+.df-nav--band .df-nav__list > li > a::after { background: #E2B23A; height: 2px; bottom: 10px; }
+.df-nav--band .df-nav__list > .current-menu-item > a, .df-nav--band .df-nav__list > .current-menu-ancestor > a, .df-nav--band .df-nav__list > li > a:hover { color: #F3D27A; }
+.df-nav--band .df-nav__list > li > a .df-icon { color: inherit; }
+.df-nav--band .sub-menu a { color: var(--df-text); }
+

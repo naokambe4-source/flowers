@@ -147,6 +147,8 @@ function df_options_schema() {
 				array(
 					'title'  => 'Logo',
 					'fields' => array(
+						array( 'id' => 'nav_band', 'type' => 'select', 'label' => 'Kategori menüsü şeridi', 'default' => 'green', 'half' => true, 'options' => array( 'green' => 'Renkli (logo yeşili, altın çizgi)', 'plain' => 'Sade (beyaz)' ) ),
+						array( 'id' => 'nav_band_color', 'type' => 'color', 'label' => 'Menü şeridi rengi', 'default' => '#1E4A14', 'half' => true ),
 						array( 'id' => 'logo_image', 'type' => 'image', 'label' => 'Logo görseli', 'desc' => 'Boş bırakılırsa aşağıdaki metin logo kullanılır. SVG / şeffaf PNG önerilir.' ),
 						array( 'id' => 'logo_width', 'type' => 'number', 'label' => 'Logo genişliği (px, masaüstü)', 'default' => 220, 'min' => 80, 'max' => 420, 'half' => true ),
 						array( 'id' => 'logo_width_mobile', 'type' => 'number', 'label' => 'Logo genişliği (px, mobil)', 'default' => 150, 'min' => 60, 'max' => 300, 'half' => true ),
