@@ -510,12 +510,12 @@ function df_pai_box( $post ) {
 		<div class="df-pai__ai<?php echo $has_key ? ' is-live' : ''; ?>">
 			<div class="df-pai__ai-text">
 				<span class="df-pai__badge"><i></i><?php echo $has_key ? esc_html( $names[ $prov ] . ' bağlı' ) : 'Yapay zekâ bağlı değil'; ?></span>
-				<strong>✨ Hepsini tek tuşla oluştur</strong>
+				<strong>Hepsini tek tuşla oluştur</strong>
 				<span><?php echo $has_key ? '1) Sağdaki <b>Ürün görseli</b>ne fotoğrafı ekleyin 2) <b>Fiyatı</b> yazın 3) Bu düğmeye basın. Ürün adı, kategori, kısa ve uzun açıklama, Rank Math SEO (başlık, açıklama, odak anahtar kelime), etiketler ve görsellerin başlık / ALT / açıklaması dolar ve ürüne uygulanır. Sonra <b>Yayınla</b>.' : 'Anahtar girilmediği için hazır şablon metin üretilir (görselden oluşturma için anahtar gerekir). Anahtar: Site Ayarları → Ürün & Mağaza → Yapay zekâ ürün içeriği.'; // phpcs:ignore ?></span>
 			</div>
 			<button type="button" class="df-pai__btn" data-pai-go<?php disabled( ! df_opt( 'pai_on', 1 ) ); ?>><svg class="df-pai__spark" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M12 2.5l1.9 5.6 5.6 1.9-5.6 1.9L12 17.5l-1.9-5.6L4.5 10l5.6-1.9L12 2.5z"/><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9L19 15z" opacity=".75"/></svg><span class="df-pai__btn-t"><?php echo $has_key ? 'Hepsini oluştur' : 'Şablonla içerik oluştur'; ?></span><span class="df-pai__spin" data-pai-spin></span></button>
 		</div>
-		<p class="df-pai__test"><button type="button" class="button-link" data-pai-test>🔌 Yapay zekâ bağlantısını test et</button></p>
+		<p class="df-pai__test"><button type="button" class="button-link" data-pai-test><span class="dashicons dashicons-admin-plugins" style="font-size:15px;width:15px;height:15px;vertical-align:-3px"></span> Yapay zekâ bağlantısını test et</button></p>
 		<p class="df-pai__err" data-pai-err hidden></p>
 
 		<div class="df-pai__result" data-pai-result hidden>
@@ -1435,16 +1435,37 @@ function df_pai_vision() {
 	if ( ! current_user_can( 'edit_products' ) || ! df_opt( 'pai_on', 1 ) ) {
 		wp_send_json_error( 'Yetkiniz yok.', 403 );
 	}
-	$thumb = isset( $_POST['thumb'] ) ? absint( $_POST['thumb'] ) : 0;
-	$price = isset( $_POST['price'] ) ? sanitize_text_field( wp_unslash( $_POST['price'] ) ) : '';
-	$notes = isset( $_POST['notes'] ) ? sanitize_textarea_field( wp_unslash( $_POST['notes'] ) ) : '';
-	$given = isset( $_POST['title'] ) ? trim( sanitize_text_field( wp_unslash( $_POST['title'] ) ) ) : '';
+	$out = df_pai_vision_core(
+		isset( $_POST['thumb'] ) ? absint( $_POST['thumb'] ) : 0,
+		isset( $_POST['price'] ) ? sanitize_text_field( wp_unslash( $_POST['price'] ) ) : '',
+		isset( $_POST['notes'] ) ? sanitize_textarea_field( wp_unslash( $_POST['notes'] ) ) : '',
+		isset( $_POST['title'] ) ? trim( sanitize_text_field( wp_unslash( $_POST['title'] ) ) ) : '',
+		isset( $_POST['gallery'] ) ? explode( ',', sanitize_text_field( wp_unslash( $_POST['gallery'] ) ) ) : array()
+	);
+	if ( is_wp_error( $out ) ) {
+		wp_send_json_error( $out->get_error_message() );
+	}
+	wp_send_json_success( $out );
+}
+
+/**
+ * Görselden ürün içeriği üret (ürün ekranı düğmesi ve uygulamadan yüklenen ürünlerin otomatik doldurulması).
+ *
+ * @param int    $thumb   Ürün görseli.
+ * @param string $price   Fiyat.
+ * @param string $notes   Ek bilgi.
+ * @param string $given   Girilen ürün adı (korunur).
+ * @param int[]  $gallery Galeri görselleri.
+ * @return array|WP_Error
+ */
+function df_pai_vision_core( $thumb, $price = '', $notes = '', $given = '', $gallery = array() ) {
+	$thumb = absint( $thumb );
 	if ( ! $thumb || ! wp_attachment_is_image( $thumb ) ) {
-		wp_send_json_error( 'Önce sağdaki "Ürün görseli" kutusundan fotoğraf ekleyin.' );
+		return new WP_Error( 'df_pai', 'Önce sağdaki "Ürün görseli" kutusundan fotoğraf ekleyin.' );
 	}
 	$prov = df_opt( 'pai_provider', 'openai' );
 	if ( '' === df_pai_key( $prov ) ) {
-		wp_send_json_error( 'Görselden oluşturmak için yapay zekâ anahtarı gerekli: Tema Ayarları → Ürün & Mağaza → Yapay zekâ ürün içeriği.' );
+		return new WP_Error( 'df_pai', 'Görselden oluşturmak için yapay zekâ anahtarı gerekli: Tema Ayarları → Ürün & Mağaza → Yapay zekâ ürün içeriği.' );
 	}
 	// Yapay zekâya gönderilecek görsel: orta boy kopya (hızlı ve ucuz).
 	$path = '';
@@ -1459,7 +1480,7 @@ function df_pai_vision() {
 		$path = get_attached_file( $thumb );
 	}
 	if ( ! $path || ! file_exists( $path ) || filesize( $path ) > 8 * MB_IN_BYTES ) {
-		wp_send_json_error( 'Görsel dosyası okunamadı.' );
+		return new WP_Error( 'df_pai', 'Görsel dosyası okunamadı.' );
 	}
 	$mime = wp_check_filetype( $path )['type'];
 	$mime = in_array( $mime, array( 'image/jpeg', 'image/png', 'image/webp', 'image/gif' ), true ) ? $mime : 'image/jpeg';
@@ -1509,7 +1530,7 @@ function df_pai_vision() {
 	$GLOBALS['df_pai_busy_retries'] = 3;
 	$text = df_pai_call( $prov, $prompt, $img );
 	if ( is_wp_error( $text ) ) {
-		wp_send_json_error( $text->get_error_message() );
+		return new WP_Error( 'df_pai', $text->get_error_message() );
 	}
 	update_option( 'df_pai_last_raw', mb_substr( (string) $text, 0, 6000 ), false );
 	$json = df_pai_json( $text );
@@ -1520,7 +1541,7 @@ function df_pai_vision() {
 		$json['name'] = $given;
 	}
 	if ( ! is_array( $json ) || empty( $json['name'] ) ) {
-		wp_send_json_error( 'Yapay zekâ fotoğraf için okunabilir yanıt vermedi. Ürün adını yazıp tekrar basın; ad varsa metin addan oluşturulur.' );
+		return new WP_Error( 'df_pai', 'Yapay zekâ fotoğraf için okunabilir yanıt vermedi. Ürün adını yazıp tekrar basın; ad varsa metin addan oluşturulur.' );
 	}
 	if ( empty( $json['long'] ) || empty( $json['short'] ) ) {
 		// Açıklama gelmediyse hazır (değişken) metinle tamamla.
@@ -1567,10 +1588,11 @@ function df_pai_vision() {
 	foreach ( $out['cats'] as $cid ) {
 		$out['cat_names'][] = html_entity_decode( get_term( $cid )->name, ENT_QUOTES, 'UTF-8' );
 	}
-	$gal = isset( $_POST['gallery'] ) ? array_filter( array_map( 'absint', explode( ',', sanitize_text_field( wp_unslash( $_POST['gallery'] ) ) ) ) ) : array();
+	$gal = array_filter( array_map( 'absint', (array) $gallery ) );
 	df_pai_img_write( array_merge( array( $thumb ), $gal ), $name, $out['alt'], $out['seo_desc'] ? $out['seo_desc'] : $out['short'], true );
-	wp_send_json_success( $out );
+	return $out;
 }
+
 add_action( 'wp_ajax_df_pai_vision', 'df_pai_vision' );
 
 /**
@@ -2160,4 +2182,86 @@ function df_pai_top_context( $post ) {
 	}
 }
 add_action( 'edit_form_after_title', 'df_pai_top_context' );
+
+/* -------------------------------------------------------------------------
+ * WooCommerce uygulamasından (telefon) yüklenen ürünler: uygulama temanın kutularını göstermez.
+ * Görseli olan ama açıklaması boş ürün kaydedilince yapay zekâ arka planda çalışır; açıklama, kısa
+ * açıklama, kategori (boşsa), etiket, Rank Math SEO ve görsel bilgilerini doldurur. Ürün adı korunur.
+ * ---------------------------------------------------------------------- */
+
+/**
+ * Uygulamadan gelen ürünü sıraya al.
+ *
+ * @param WC_Product      $product  Ürün.
+ * @param WP_REST_Request $request  İstek.
+ * @param bool            $creating Yeni mi.
+ */
+function df_pai_app_queue( $product, $request = null, $creating = false ) {
+	if ( ! $product instanceof WC_Product || ! df_opt( 'pai_app_auto', 1 ) || ! df_opt( 'pai_on', 1 ) ) {
+		return;
+	}
+	$id = $product->get_id();
+	if ( ! $product->get_image_id() || '' !== trim( wp_strip_all_tags( $product->get_description() ) ) || 'done' === get_post_meta( $id, '_df_pai_auto', true ) ) {
+		return;
+	}
+	update_post_meta( $id, '_df_pai_auto', 'queued' );
+	if ( ! wp_next_scheduled( 'df_pai_autofill', array( $id ) ) ) {
+		wp_schedule_single_event( time() + 5, 'df_pai_autofill', array( $id ) );
+	}
+	if ( function_exists( 'spawn_cron' ) ) {
+		spawn_cron();
+	}
+}
+add_action( 'woocommerce_rest_insert_product_object', 'df_pai_app_queue', 20, 3 );
+
+/**
+ * Arka planda doldur.
+ *
+ * @param int $id Ürün.
+ */
+function df_pai_autofill( $id ) {
+	$p = wc_get_product( $id );
+	if ( ! $p || '' !== trim( wp_strip_all_tags( $p->get_description() ) ) ) {
+		return;
+	}
+	wp_set_current_user( (int) get_post_field( 'post_author', $id ) );
+	$name = $p->get_name();
+	$out  = '' !== df_pai_key( df_opt( 'pai_provider', 'openai' ) ) ? df_pai_vision_core( $p->get_image_id(), (string) $p->get_regular_price(), '', $name, $p->get_gallery_image_ids() ) : new WP_Error( 'df_pai', 'anahtar yok' );
+	if ( is_wp_error( $out ) ) {
+		$cats = array_values( array_diff( (array) wp_get_post_terms( $id, 'product_cat', array( 'fields' => 'names' ) ), array( get_term( (int) get_option( 'default_product_cat' ) )->name ?? '' ) ) );
+		$out  = df_pai_seo_fix( df_pai_template( array( 'title' => $name, 'subtitle' => '', 'cats' => is_array( $cats ) ? implode( ', ', $cats ) : '', 'price' => '', 'notes' => '', 'pool' => '' ) ), $name, is_array( $cats ) && $cats ? $cats[0] : '' );
+		$out['cats'] = array();
+	}
+	$p->set_description( (string) $out['long'] );
+	if ( '' === trim( wp_strip_all_tags( $p->get_short_description() ) ) ) {
+		$p->set_short_description( (string) $out['short'] );
+	}
+	$def  = (int) get_option( 'default_product_cat' );
+	$real = array_diff( $p->get_category_ids(), array( $def ) );
+	if ( ! $real ) {
+		$ids = ! empty( $out['cats'] ) ? $out['cats'] : df_pai_match_cats( array(), get_terms( array( 'taxonomy' => 'product_cat', 'hide_empty' => false ) ), $name . ' ' . ( $out['keyword'] ?? '' ) );
+		if ( $ids ) {
+			$p->set_category_ids( array_map( 'intval', array_slice( $ids, 0, 2 ) ) );
+		}
+	}
+	$p->save();
+	if ( ! empty( $out['tags'] ) ) {
+		wp_set_object_terms( $id, array_slice( (array) $out['tags'], 0, 8 ), 'product_tag', true );
+	}
+	foreach ( array( 'title' => 'seo_title', 'desc' => 'seo_desc', 'kw' => 'keyword' ) as $field => $k ) {
+		if ( ! empty( $out[ $k ] ) ) {
+			foreach ( df_seo_keys( $field ) as $mk ) {
+				update_post_meta( $id, $mk, sanitize_text_field( (string) $out[ $k ] ) );
+			}
+		}
+	}
+	if ( function_exists( 'df_pai_img_write' ) ) {
+		df_pai_img_write( array_merge( array( (int) $p->get_image_id() ), $p->get_gallery_image_ids() ), $name, (string) ( $out['alt'] ?? '' ), (string) ( $out['seo_desc'] ?? '' ) );
+	}
+	update_post_meta( $id, '_df_pai_auto', 'done' );
+	if ( function_exists( 'df_pc_flush' ) ) {
+		df_pc_flush();
+	}
+}
+add_action( 'df_pai_autofill', 'df_pai_autofill' );
 

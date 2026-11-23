@@ -46,11 +46,16 @@ function df_ps_lock() {
 		.post-type-product .postbox .handle-actions .handlediv { display: none !important; }
 		.post-type-product .postbox .postbox-header .hndle { cursor: default !important; }
 		.post-type-product .df-top-boxes { margin: 16px 0 4px; }
+		/* Telefonda başlığa dokununca kutu kapanmasın (Ürün Asistanı kaybolmasın). */
+		.post-type-product .postbox.closed .inside { display: block !important; }
+		.post-type-product .postbox .postbox-header .hndle { pointer-events: none; }
 	</style>
 	<script>
 	jQuery( window ).on( 'load', function () {
 		// Kutuları sürükleme kapalı (WordPress'in kendi sıralayıcısı varsa yalnızca devre dışı bırakılır).
 		jQuery( '.meta-box-sortables.ui-sortable' ).sortable( 'option', 'disabled', true );
+		jQuery( '.postbox' ).removeClass( 'closed' );
+		jQuery( document ).on( 'postbox-toggled', function ( e, box ) { jQuery( box ).removeClass( 'closed' ); } );
 	} );
 	</script>
 	<?php
