@@ -315,8 +315,9 @@ add_action( 'admin_init', 'df_editor_assets' );
  * @return array
  */
 function df_editor_numbers( $init ) {
-	$font  = str_replace( array( '"', "'" ), '', (string) df_opt( 'font_body', 'Jost' ) );
-	$style = 'body#tinymce,body.mce-content-body{font-family:"' . $font . '",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;font-size:15px;line-height:1.7;font-variant-numeric:lining-nums;font-feature-settings:"lnum" 1}';
+	// Dikkat: WordPress bu değeri JS'e çift tırnak içinde, kaçırmadan yazar; içinde çift tırnak olursa editör açılmaz.
+	$font  = preg_replace( '/[^A-Za-z0-9 \-]/', '', (string) df_opt( 'font_body', 'Jost' ) );
+	$style = "body#tinymce,body.mce-content-body{font-family:'" . $font . "',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;font-size:15px;line-height:1.7;font-variant-numeric:lining-nums;font-feature-settings:'lnum' 1}";
 	$init['content_style'] = ( isset( $init['content_style'] ) ? $init['content_style'] . ' ' : '' ) . $style;
 	return $init;
 }
