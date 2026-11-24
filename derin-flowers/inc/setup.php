@@ -308,6 +308,21 @@ function df_editor_assets() {
 add_action( 'admin_init', 'df_editor_assets' );
 
 /**
+ * Klasik editör (ürün / sayfa açıklaması) içinde düz rakamlar ve sitenin gövde yazı tipi:
+ * WordPress varsayılanı Georgia rakamları "eski stil" (aşağı yukarı inip çıkan) gösterir.
+ *
+ * @param array $init TinyMCE ayarları.
+ * @return array
+ */
+function df_editor_numbers( $init ) {
+	$font  = str_replace( array( '"', "'" ), '', (string) df_opt( 'font_body', 'Jost' ) );
+	$style = 'body#tinymce,body.mce-content-body{font-family:"' . $font . '",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;font-size:15px;line-height:1.7;font-variant-numeric:lining-nums;font-feature-settings:"lnum" 1}';
+	$init['content_style'] = ( isset( $init['content_style'] ) ? $init['content_style'] . ' ' : '' ) . $style;
+	return $init;
+}
+add_filter( 'tiny_mce_before_init', 'df_editor_numbers' );
+
+/**
  * Admin çubuğuna kısayol.
  *
  * @param WP_Admin_Bar $bar Çubuk.

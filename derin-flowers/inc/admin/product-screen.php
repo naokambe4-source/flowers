@@ -72,3 +72,12 @@ function df_ps_no_content_ai( $mods ) {
 	return is_array( $mods ) ? array_values( array_diff( $mods, array( 'content-ai' ) ) ) : $mods;
 }
 add_filter( 'option_rank_math_modules', 'df_ps_no_content_ai' );
+
+/**
+ * Yönetim panelinin tamamında rakamlar düz görünsün (başlık yazı tiplerinde "eski stil" rakam olmasın).
+ */
+function df_admin_lining_nums() {
+	echo '<style>body.wp-admin,body.wp-admin input,body.wp-admin textarea,body.wp-admin select,body.wp-admin h1,body.wp-admin h2,body.wp-admin h3{font-variant-numeric:lining-nums;font-feature-settings:"lnum" 1}</style>';
+}
+add_action( 'admin_head', 'df_admin_lining_nums' );
+
