@@ -1012,6 +1012,7 @@ function df_print_bulk() {
 		.slip .box { border: 1.5px solid #2B2522; padding: 4mm; margin: 4mm 0; }
 		@page { margin: 0; }
 		@media screen { body { background: #eee; } .page { background: #fff; margin: 20px auto; box-shadow: 0 4px 20px rgba(0,0,0,.1); } }
+			.gift { margin: 10px 0; padding: 10px 14px; border: 2px solid #2B2522; background: #f3ede6; font-size: 15pt; font-weight: 700; text-transform: uppercase; }
 	</style></head>
 	<body onload="window.print()">
 	<?php
@@ -1033,13 +1034,19 @@ function df_print_bulk() {
 			echo '<div class="box"><div class="big">' . esc_html( $o->get_meta( '_df_recipient_name' ) ) . ' · ' . esc_html( $o->get_meta( '_df_recipient_phone' ) ) . '</div>';
 			echo '<div>' . esc_html( df_app_district( $o ) ) . ' — ' . esc_html( $o->get_meta( '_df_address' ) ) . '</div>';
 			echo $o->get_meta( '_df_address_hint' ) ? '<div>Tarif: ' . esc_html( $o->get_meta( '_df_address_hint' ) ) . '</div>' : '';
-			echo '</div><table>';
+			echo '</div>';
+			$gifts = function_exists( 'df_slip_gifts' ) ? df_slip_gifts( $o ) : array();
+			if ( $gifts ) {
+				echo '<div class="gift">HEDİYE — çiçekle birlikte gönderilecek: ' . esc_html( implode( ', ', $gifts ) ) . '</div>';
+			}
+			echo '<table>';
 			foreach ( $rows as $label => $value ) {
 				echo '<tr><th>' . esc_html( $label ) . '</th><td>' . nl2br( esc_html( $value ) ) . '</td></tr>';
 			}
 			echo '<tr><th>Ürünler</th><td>';
 			foreach ( $o->get_items() as $item ) {
-				echo esc_html( $item->get_name() . ' × ' . $item->get_quantity() ) . '<br>';
+				$label = $item->get_name() . ( $item->get_quantity() > 1 ? ' × ' . $item->get_quantity() : '' );
+				echo in_array( $label, $gifts, true ) ? '<strong>[HEDİYE] ' . esc_html( $label ) . '</strong><br>' : esc_html( $label ) . '<br>';
 			}
 			echo '</td></tr>';
 			if ( $o->get_customer_note() ) {

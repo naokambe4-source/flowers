@@ -19,7 +19,14 @@ function df_slip_gifts( $o ) {
 	$gift_ids = function_exists( 'df_gift_ids_all' ) ? (array) df_gift_ids_all() : array();
 	$out      = array();
 	foreach ( $o->get_items() as $item ) {
-		if ( $item->get_meta( 'Hediye' ) || in_array( (int) $item->get_product_id(), array_map( 'intval', $gift_ids ), true ) ) {
+		// Hediye: hediye adımından eklenen, hediye ürünleri listesindeki ya da "Hediye…" kategorisindeki ürünler.
+		$in_gift_cat = false;
+		foreach ( (array) wp_get_post_terms( (int) $item->get_product_id(), 'product_cat', array( 'fields' => 'slugs' ) ) as $slug ) {
+			if ( false !== strpos( (string) $slug, 'hediye' ) ) {
+				$in_gift_cat = true;
+			}
+		}
+		if ( $item->get_meta( 'Hediye' ) || $in_gift_cat || in_array( (int) $item->get_product_id(), array_map( 'intval', $gift_ids ), true ) ) {
 			$out[] = $item->get_name() . ( $item->get_quantity() > 1 ? ' × ' . $item->get_quantity() : '' );
 		}
 	}
@@ -168,7 +175,7 @@ function df_print_perfo( $ids ) {
 			echo $sign ? '<div class="sign">' . esc_html( $sign ) . '</div>' : '';
 			echo '</div></div><div class="info">';
 			if ( $gifts ) {
-				echo '<div class="gift">★ Ek ürün: ' . esc_html( implode( ', ', $gifts ) ) . '</div>';
+				echo '<div class="gift">HEDİYE: ' . esc_html( implode( ', ', $gifts ) ) . '</div>';
 			}
 			echo '<div class="body">';
 			if ( $img ) {
