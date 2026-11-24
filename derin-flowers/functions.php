@@ -7,7 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'DF_VERSION', '1.33.0' );
+define( 'DF_VERSION', '1.34.0' );
 define( 'DF_DIR', get_template_directory() );
 define( 'DF_URI', get_template_directory_uri() );
 define( 'DF_OPTION', 'derin_options' );
@@ -69,6 +69,7 @@ if ( class_exists( 'WooCommerce' ) ) {
 	require DF_DIR . '/inc/woocommerce/product-ai.php';
 	require DF_DIR . '/inc/woocommerce/ai-styles.php';
 	require DF_DIR . '/inc/woocommerce/cat-order.php';
+	require DF_DIR . '/inc/woocommerce/cat-toggle.php';
 	require DF_DIR . '/inc/woocommerce/operations.php';
 	require DF_DIR . '/inc/woocommerce/archive.php';
 	require DF_DIR . '/inc/woocommerce/courier.php';
