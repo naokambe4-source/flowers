@@ -7,7 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'DF_VERSION', '1.34.2' );
+define( 'DF_VERSION', '1.35.0' );
 define( 'DF_DIR', get_template_directory() );
 define( 'DF_URI', get_template_directory_uri() );
 define( 'DF_OPTION', 'derin_options' );
@@ -74,6 +74,7 @@ if ( class_exists( 'WooCommerce' ) ) {
 	require DF_DIR . '/inc/woocommerce/archive.php';
 	require DF_DIR . '/inc/woocommerce/courier.php';
 	require DF_DIR . '/inc/woocommerce/integrations.php';
+	require DF_DIR . '/inc/woocommerce/netgsm.php';
 	require DF_DIR . '/inc/woocommerce/print-slip.php';
 	require DF_DIR . '/inc/woocommerce/category-seo.php';
 	require DF_DIR . '/inc/woocommerce/address-check.php';

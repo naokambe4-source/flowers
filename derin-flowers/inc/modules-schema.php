@@ -147,6 +147,31 @@ function df_modules_schema( $schema ) {
 	);
 
 	$schema['delivery']['groups'][] = array(
+		'title'  => 'Netgsm SMS',
+		'desc'   => 'Sipariş durumları değişince müşteriye (gönderen telefonuna), yeni siparişte yönetici numaralarına SMS gider. Netgsm panelinde bir <b>API alt kullanıcısı</b> açıp bilgilerini girin; SMS başlığı Netgsm\'de onaylı gönderici adınızdır. Mesajlarda kullanılabilecek alanlar: {ad} {siparis} {tutar} {alici} {tarih} {saat} {takip} {site}. Kaydettikten sonra: <a href="' . esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=df_sms_test' ), 'df_sms_test' ) ) . '">Yönetici numaralarına deneme SMS\'i gönder</a>.',
+		'fields' => array(
+			array( 'id' => 'sms_on', 'type' => 'toggle', 'label' => 'Netgsm SMS açık', 'default' => 0, 'half' => true ),
+			array( 'id' => 'sms_header', 'type' => 'text', 'label' => 'SMS başlığı (gönderici adı)', 'default' => '', 'half' => true, 'desc' => 'Netgsm\'de onaylı başlık, ör. DERINFLOWER' ),
+			array( 'id' => 'sms_user', 'type' => 'text', 'label' => 'Netgsm kullanıcı adı (abone no / API kullanıcısı)', 'default' => '', 'half' => true ),
+			array( 'id' => 'sms_pass', 'type' => 'text', 'label' => 'Netgsm şifresi (API kullanıcısı şifresi)', 'default' => '', 'half' => true ),
+			array( 'id' => 'sms_admin_phones', 'type' => 'text', 'label' => 'Yönetici cep numaraları (virgülle)', 'default' => '', 'half' => true, 'desc' => 'Yeni sipariş bildirimi ve deneme SMS\'i bu numaralara gider.' ),
+			array( 'id' => 'sms_admin_on', 'type' => 'toggle', 'label' => 'Yeni siparişte yöneticiye SMS', 'default' => 1, 'half' => true ),
+			array( 'id' => 'sms_t_admin', 'type' => 'textarea', 'label' => 'Yönetici mesajı', 'default' => 'Yeni sipariş {siparis}: {tutar}, teslimat {tarih} {saat}, alıcı {alici}.', 'rows' => 2 ),
+			array( 'id' => 'sms_t_new_on', 'type' => 'toggle', 'label' => 'Sipariş alındı (kartla ödendi)', 'default' => 1, 'half' => true ),
+			array( 'id' => 'sms_t_new', 'type' => 'textarea', 'label' => 'Sipariş alındı mesajı', 'default' => 'Sayın {ad}, {siparis} numaralı siparişiniz alındı. Teslimat: {tarih} {saat}. Sipariş takibi: {takip} - {site}', 'rows' => 2 ),
+			array( 'id' => 'sms_t_hold_on', 'type' => 'toggle', 'label' => 'Havale bekleniyor', 'default' => 1, 'half' => true ),
+			array( 'id' => 'sms_t_hold', 'type' => 'textarea', 'label' => 'Havale bekleniyor mesajı', 'default' => 'Sayın {ad}, {siparis} numaralı siparişiniz alındı. Havale/EFT ödemeniz hesabımıza geçince hazırlanmaya başlanacaktır. - {site}', 'rows' => 2 ),
+			array( 'id' => 'sms_t_prep_on', 'type' => 'toggle', 'label' => 'Hazırlanıyor', 'default' => 1, 'half' => true ),
+			array( 'id' => 'sms_t_prep', 'type' => 'textarea', 'label' => 'Hazırlanıyor mesajı', 'default' => 'Sayın {ad}, {siparis} numaralı siparişiniz atölyemizde hazırlanıyor. - {site}', 'rows' => 2 ),
+			array( 'id' => 'sms_t_way_on', 'type' => 'toggle', 'label' => 'Kuryede / yolda', 'default' => 1, 'half' => true ),
+			array( 'id' => 'sms_t_way', 'type' => 'textarea', 'label' => 'Kuryede mesajı', 'default' => 'Sayın {ad}, {siparis} numaralı siparişiniz kuryemizle yola çıktı. - {site}', 'rows' => 2 ),
+			array( 'id' => 'sms_t_done_on', 'type' => 'toggle', 'label' => 'Teslim edildi', 'default' => 1, 'half' => true ),
+			array( 'id' => 'sms_t_done', 'type' => 'textarea', 'label' => 'Teslim edildi mesajı', 'default' => 'Sayın {ad}, {siparis} numaralı siparişiniz {alici} adlı alıcıya teslim edildi. Bizi tercih ettiğiniz için teşekkürler. - {site}', 'rows' => 2 ),
+			array( 'id' => 'sms_t_cancel_on', 'type' => 'toggle', 'label' => 'İptal', 'default' => 0, 'half' => true ),
+			array( 'id' => 'sms_t_cancel', 'type' => 'textarea', 'label' => 'İptal mesajı', 'default' => 'Sayın {ad}, {siparis} numaralı siparişiniz iptal edilmiştir. Bilgi için bize ulaşabilirsiniz. - {site}', 'rows' => 2 ),
+		),
+	);
+	$schema['delivery']['groups'][] = array(
 		'title'  => 'Sipariş arşivi',
 		'desc'   => 'Teslim edilen siparişler belirtilen gün sonra "Arşiv" durumuna alınır; aktif sipariş listesinden çıkar, raporlarda sayılmaya devam eder. Siparişler → Arşiv sekmesinden ya da sipariş numarasıyla aranarak her zaman bulunur.',
 		'fields' => array(
